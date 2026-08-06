@@ -1,0 +1,9 @@
+# 工具本地配置（不纳入版本控制）
+.claude/
+.workbuddy/
+.joycode/
+
+# Python
+__pycache__/
+*.pyc
+.venv/

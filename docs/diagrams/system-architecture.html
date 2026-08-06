@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kairos v0.1.0 系统架构总览图</title>
+<style>
+  :root {
+    --border: #e2e8f0;
+    --muted: #64748b;
+    --bg: #f8fafc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: #1e293b;
+  }
+  header {
+    padding: 24px 32px 16px;
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+  }
+  header h1 { margin: 0 0 6px; font-size: 22px; }
+  header .sub { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  main { padding: 24px 32px 48px; max-width: 1200px; margin: 0 auto; }
+  .toolbar {
+    display: flex; gap: 8px; align-items: center;
+    margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .toolbar button {
+    padding: 6px 14px; border: 1px solid var(--border);
+    border-radius: 6px; background: #fff; cursor: pointer;
+    font-size: 13px; color: #1e293b;
+  }
+  .toolbar button:hover { background: #f1f5f9; }
+  .toolbar .hint { margin-left: auto; color: var(--muted); font-size: 12px; }
+  .diagram-wrap {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 10px; padding: 24px;
+    overflow: auto;  /* 宽屏时可横向滚动 */
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  #diagram { transition: transform .15s ease; transform-origin: top left; }
+  .legend {
+    margin-top: 20px; background: #fff; border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 22px; font-size: 13px; line-height: 1.75;
+  }
+  .legend h2 { font-size: 15px; margin: 0 0 10px; }
+  .legend ul { margin: 6px 0; padding-left: 20px; }
+  .legend .num-list { list-style: none; padding-left: 0; }
+  .legend .num-list li { margin-bottom: 4px; }
+  footer {
+    padding: 14px 32px; color: var(--muted); font-size: 12px;
+    border-top: 1px solid var(--border); background: #fff;
+  }
+  footer code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Kairos v0.1.0 系统架构总览图</h1>
+  <div class="sub">
+    来源：<code>docs/foundation/architecture-v0.1.0.md</code> §0.4.1（2026-08-05，0.0.21 批次）<br>
+    六层功能栈 + 三个正交治理面 + 横切基础设施，编号①~⑦为关键数据流（说明见下方图例）。
+  </div>
+</header>
+<main>
+  <div class="toolbar">
+    <button onclick="setZoom(1)">100%</button>
+    <button onclick="setZoom(1.5)">150%</button>
+    <button onclick="setZoom(2)">200%</button>
+    <button onclick="fitWidth()">适应宽度</button>
+    <span class="hint">提示：图中节点可点击高亮所属章节；宽屏可横向滚动</span>
+  </div>
+  <div class="diagram-wrap">
+    <div id="diagram">
+      <pre class="mermaid">
+flowchart TB
+    subgraph EXT["外部世界"]
+        U["用户 / Agent<br/>（Tool / CLI / REST API）"]
+        CAL["外部校准信号源"]
+        ADM["外部管理员"]
+    end
+
+    subgraph GOV["正交治理面"]
+        CS["宪法主权面 / 外部治理接口（§1）<br/>外部校准 · 宪法修订 · 强制冻结<br/>单向旁观 + 至高否决权"]
+        SP["监督平面（§1.7）<br/>审计庭 · 证伪信号路由<br/>独立快照校验（只读）"]
+    end
+
+    subgraph STACK["功能栈（六层）"]
+        ACC["接入层（§7）<br/>编译器（L1 规则 + L2 模型）· 感知缓冲"]
+        WM["WM 层（§6）<br/>多路径结果集 · 模拟隔离区 · 沙箱验证环<br/>本地绑定器 · 边缘槽"]
+        RC["推理皮层（§4）<br/>调度预处理器（候选排序 / 触发匹配 / 上下文裁剪）<br/>物理驻留 WM 子模块"]
+        STR["策略层（§3）<br/>预测器 · 调节器 · 路径注册表<br/>价值上下文管理器（帕累托排序 + 辞典式裁决器）"]
+        STO["存储层（§5）<br/>统一 LTM · 见证锚定（主副本）· 使用权重（影子副本）<br/>遗忘调度器 · 升华管道 · 实体知识图谱"]
+        META["元认知层（§2）<br/>检测器族 · 治理器族 · 自观察记忆<br/>（横切监测，非功能栈第七层）"]
+    end
+
+    IDP["预提交总线（§1.8）<br/>身份总线监听器 + 否决裁决器<br/>事件总线 topic：pre_commit_bus"]
+    ATT["注意力调度器（§9）<br/>横切执行实体<br/>编码 / 巩固 / 检索三环节算力分配"]
+    EBUS["系统事件总线（§10）<br/>跨层通信载体"]
+
+    U -->|"① 读写请求"| ACC
+    CAL -->|"② 校准信号"| CS
+    ADM -->|"冻结 / 解冻指令"| CS
+    ADM -->|"管理信令 / 审计报告"| SP
+
+    ACC -->|"③ 结构化通信单元"| WM
+    STR -->|"④ 预激活集（预测）"| WM
+    WM -->|"⑤ 检索候选集"| STR
+    STR -->|"⑥ 裁决产出（必经）"| IDP
+    IDP -->|"⑦ 否决检查通过 → 放行"| STO
+    WM -->|"记忆写入 / 检索"| STO
+    STO -->|"检索结果"| WM
+    RC -.->|"调度预处理（候选排序等）"| WM
+    STR -.->|"排序调制"| RC
+
+    META -.->|"监测 + 调节"| ACC
+    META -.->|"监测 + 调节"| WM
+    META -.->|"监测 + 调节"| STR
+    META -.->|"监测 + 调节"| STO
+    CS -.->|"单向否决 / 强制冻结"| STR
+    CS -.->|"单向否决 / 强制冻结"| STO
+    CS -.->|"否决监听（优先级最高）"| IDP
+    SP -.->|"只读快照校验"| STO
+    SP -.->|"审计日志比对"| EBUS
+    ATT -.->|"算力预算"| WM
+    ATT -.->|"算力预算（巩固 / 检索）"| STO
+    EBUS -.->|"事件收发"| WM
+    EBUS -.->|"事件收发"| STO
+      </pre>
+    </div>
+  </div>
+
+  <div class="legend">
+    <h2>图例与说明</h2>
+    <ul>
+      <li><strong>实线</strong> = 数据流（编号见下方）；<strong>虚线</strong> = 监测 / 治理 / 审计 / 横切关系。</li>
+      <li>图中仅示代表性事件总线边——<strong>所有跨层交互经系统事件总线收发</strong>（§10），未逐层画出。</li>
+      <li>结构原则对应（六类）：层级栈 = 六层；路由协调层 = 策略层 + 推理皮层；横切执行实体 = 注意力调度器；正交治理面 = 宪法主权面 + 监督平面 + 身份面。</li>
+      <li>预提交总线 = 事件总线特定话题（<code>pre_commit_bus</code>，§1.8）——宪法主权面与身份面监听器并行，宪法否决优先（外部安全高于内部同一性）。</li>
+      <li>元认知层为横切监测关注点，<strong>非功能栈「第七层」</strong>（§2 定位）。</li>
+    </ul>
+    <h2>关键数据流</h2>
+    <ol class="num-list">
+      <li>① 外部读写请求经接入层编译器净化为标准<strong>结构化通信单元</strong>（§7.0）</li>
+      <li>② 外部校准信号是宪法主权面唯一治理输入（§1.4）</li>
+      <li>③ 通信单元注入 WM</li>
+      <li>④ 策略层预测器输出<strong>预激活集</strong>（§3.1）</li>
+      <li>⑤ 检索候选集回流策略层裁决（§3.3）</li>
+      <li>⑥ <strong>裁决产出写入存储层前必须经预提交总线</strong>（§1.8，不可绕过）</li>
+      <li>⑦ 否决检查通过后放行写入</li>
+    </ol>
+  </div>
+</main>
+<footer>
+  Kairos 记忆系统 · 设计阶段文档 · 权威定义见
+  <code>docs/foundation/architecture-v0.1.0.md</code>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    flowchart: { curve: 'basis', htmlLabels: true, useMaxWidth: true },
+    securityLevel: 'loose'
+  });
+
+  let zoom = 1;
+  const diagram = document.getElementById('diagram');
+  function setZoom(z) {
+    zoom = z;
+    diagram.style.transform = 'scale(' + zoom + ')';
+    diagram.style.width = (100 / zoom) + '%';
+  }
+  function fitWidth() {
+    const wrap = document.querySelector('.diagram-wrap');
+    const w = wrap.clientWidth - 48;  // padding 24*2
+    const svg = diagram.querySelector('svg');
+    if (!svg) return;
+    const natural = svg.getBoundingClientRect().width / zoom;
+    setZoom(Math.min(2, Math.max(0.5, w / natural)));
+  }
+  window.addEventListener('load', () => setTimeout(fitWidth, 300));
+</script>
+</body>
+</html>

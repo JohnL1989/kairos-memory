@@ -1,0 +1,50 @@
+# Kairos 认知维度承载能力矩阵
+# 定位: 各版本对各认知维度的承载程度与恢复债编号(0.0.16 新增, 建议七)
+# 权威: 架构 §0.1(承载完整度) / §10.11(P6 压缩比) / §10.13(v0.1.0 能力边界)
+# 用途: memories.compression_trail 的填充依据; P6 受控例外登记(架构 §3.3 四类)的结构化展开
+# 维护: 版本变更时同步本文件与架构 §10.11
+
+version: "v0.1.0"
+status: "known_exceeded"          # P6 压缩比双口径均超 30% 硬上限(架构 §10.11)
+p6_threshold: 0.30
+compression_ratio:
+  core_12d: 0.33                  # 核心认知维度口径
+  full_14d: 0.43                  # 全量维度口径(含工程代理)
+recovery_target: "v1.1"
+
+dimensions:
+  usage_value:
+    carrier: "full"
+    compression_ratio: 0.0
+    covered: ["usage_weight_shadow_copy", "pareto_frontier_input"]
+    recovery_debt: null
+  witness_value:
+    carrier: "full"
+    compression_ratio: 0.0
+    covered: ["witness_anchor_primary_copy", "narrative_coherence_score(proxy)"]
+    recovery_debt: null
+  time_physical_decay:
+    carrier: "full"
+    compression_ratio: 0.0
+    covered: ["decontextualization_level", "forgetting_freshness_curve"]
+    recovery_debt: null
+  time_logical_causal:
+    carrier: "partial"
+    compression_ratio: 0.50
+    covered: ["causal_chain_queries(relation_index)"]
+    missing: ["rhythm_memory", "temporal_discounting", "execution_flow_structure"]
+    recovery_debt: "D-301"        # 逻辑-因果轴完整落地(v1.1)
+  cognitive_integrity:
+    carrier: "semiquant_reduction"  # 0.0.16 起: 布尔 is_structure → structural_value 0/1/2 半定量
+    compression_ratio: 1.0
+    covered: ["structural_value(0/1/2)", "is_structure_boolean"]
+    missing: ["anti_example_coverage", "dead_end_density", "connectivity"]
+    recovery_debt: "D-306/D-311/D-312"  # 四轴完整度量函数 / 三维度量增强 / 参与帕累托计算(v1.1)
+  accessibility:
+    carrier: "path_registry_proxy"
+    compression_ratio: 0.67
+    covered: ["path_competition_deprioritization", "path_density_monitoring"]
+    missing: ["retrieval_induced_forgetting_depth_tracking"]
+    recovery_debt: "D-313"        # 可及性轴完整实现(协议槽位, v1.1)
+
+# 检索侧维度丢失: 不写记忆 trail, 记事件总线 use_event payload 标记 retrieval_dimension_loss(架构 §10.10)

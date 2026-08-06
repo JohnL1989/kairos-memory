@@ -1,0 +1,226 @@
+{
+  "main": {
+    "id": "b68440b75a8741c6",
+    "type": "split",
+    "children": [
+      {
+        "id": "8ccb36ca13a615ae",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5ffa8329393e6341",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "README"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "0944230b847b5488",
+    "type": "split",
+    "children": [
+      {
+        "id": "a4c3d0ea45680192",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1d94cb2a33d525c0",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "3dc0c0aa62367a52",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "f474a79f10f57762",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "27e0f21fe03dbe24",
+    "type": "split",
+    "children": [
+      {
+        "id": "f19252cace206498",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6046919dfd8f7390",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "README.md",
+                "collapseAll": true,
+                "extraContext": true,
+                "sortOrder": "alphabetical",
+                "showSearch": true,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "反向链接"
+            }
+          },
+          {
+            "id": "41bbfee312b86deb",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "README.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "出链"
+            }
+          },
+          {
+            "id": "45e615361d066e3a",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "fe1beaf26ff0918b",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "192ee0b58e3fe4e9",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "README.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "大纲"
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "5ffa8329393e6341",
+  "lastOpenFiles": [
+    "foundation/architecture-v0.1.0.md",
+    "reviews/audit-history-summary.md.tmp.26308.09d8fb06ed69",
+    "reviews/audit-history-summary.md.tmp.26308.58e46ac381e0",
+    "governance/changelog.md.tmp.26308.6d140961762c",
+    "foundation/architecture-v0.1.0.md.tmp.26308.bc8703c757f7",
+    "foundation/architecture-v0.1.0.md.tmp.26308.61dc9eebf5fa",
+    "development/technology-stack.md.tmp.26308.1b74036f27ed",
+    "specification/feature-list.md.tmp.26308.578c5336ae3b",
+    "ops/configuration.md.tmp.26308.02ed3a784f91",
+    "governance/release-guide.md.tmp.26308.f729dfbac0b3",
+    "development/slice-implementation-guide.md.tmp.26308.1e37d4b813df",
+    "reviews/2026-08-05-round9-deep-audit.md",
+    "reviews/2026-08-05-round8-deep-audit.md",
+    "reviews/2026-08-05-round7-deep-audit.md",
+    "foundation/architecture-blueprint-v1.1.md",
+    "foundation/cognitive-foundation.md",
+    "reviews/2026-08-05-round6-deep-audit.md",
+    "foundation/design-philosophy-relations.md",
+    "ops/configuration.md",
+    "reviews/2026-08-05-round5-deep-audit.md",
+    "reviews/2026-08-05-master-documentation-audit.md",
+    "reviews/audit-history-summary.md",
+    "references/concept-tiers.md",
+    "reviews/2026-08-05-marvis-proposals-evaluation.md",
+    "reviews/2026-08-05-comprehensive-documentation-audit.md",
+    "reviews/2026-08-05-development-readiness-audit.md",
+    "reviews/2026-08-04-cognitive-architecture-fixes.md",
+    "reviews/2026-08-04-maturity-audit.md",
+    "foundation/architecture-blueprint-v1.1+.md",
+    "reviews/2026-08-04-market-ideas-absorption.md",
+    "README.md"
+  ]
+}
