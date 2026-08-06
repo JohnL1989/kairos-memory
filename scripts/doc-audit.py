@@ -330,6 +330,16 @@ def check_numeric() -> None:
         "adr.md ADR 数",
     )
 
+    # 6.8a 操作目录 OP 数（README 声明 ↔ operation-catalog 实际 OP 行数；0.0.31 补盲区，
+    # 闭环第十一轮审计 2.1-02）
+    opc = (DOCS / "specification" / "operation-catalog.md").read_text(encoding="utf-8")
+    op_n = len(re.findall(r"^\|\s*OP-\d{3}", opc, re.M))
+    _assert_eq(
+        op_n,
+        _declared(readme, r"操作目录\*\* — (\d+) 项标准操作", "README 操作数"),
+        "operation-catalog OP 数",
+    )
+
     # 6.9 implementation-map 组件路径数 ↔ 实际统计 ↔ test-plan 单元下界
     comp_rows = len(re.findall(r"^\|\s*[^|]+\|\s*`src/", imp, re.M))
     _assert_eq(
@@ -555,6 +565,20 @@ def check_hard_line_refs() -> None:
             fail(f"硬行号引用禁令（6.15）: {p.relative_to(DOCS)} -> {h}（改「文档 §章节」语义引用）")
             bad += 1
     print(f"[6.15] 硬行号引用禁令: {bad} 处残留")
+
+
+def check_line_endings() -> None:
+    """6.16 行尾一致性检查（0.0.31 补，闭环第十一轮审计 2.4-01）。
+
+    全库 md 统一 LF 行尾（.gitattributes: * text=auto eol=lf）——CRLF 残留
+    会产生跨平台行尾噪声 diff。
+    """
+    bad = 0
+    for p in md_files():
+        if b"\r\n" in p.read_bytes():
+            fail(f"CRLF 行尾残留（6.16）: {p.relative_to(DOCS)}（统一 LF，见 .gitattributes）")
+            bad += 1
+    print(f"[6.16] 行尾一致性检查: {bad} 份 CRLF 残留")
 
 
 def check_mcp_tool_rows() -> None:
@@ -1028,6 +1052,7 @@ def main() -> int:
     check_mechanism_sections()
     check_hard_line_refs()
     check_mcp_tool_rows()
+    check_line_endings()
     check_config_index()
     check_fences()
     check_table_render()

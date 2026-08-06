@@ -103,7 +103,7 @@ status: draft
 | 事件总线 | Event Bus | 基于数据库表（events，ADR-002）承载的跨层异步通信机制——10 类事件（v0.1.0 首迭代 4 类），优先级 0–9，发布/订阅/背压/优先级规则见架构 §10.10 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 / [adr.md](../governance/adr.md) ADR-002 |
 | 沙箱验证环 | Sandbox Verification Loop | WM 层新类型/新价值轴试运行→元审计确认→合并的验证机制 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §6 |
 | 模拟隔离区 | Simulation Isolation Zone | WM 层反事实假设空间，模拟产物不可未经实证转正（S-13） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §6 |
-| WM调度预处理器 | Reasoning Cortex | WM 子模块——常设最小推理内核，仅用于前瞻监控/事件排序/候选裁剪三类操作 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §6 |
+| WM调度预处理器（推理皮层） | Reasoning Cortex | WM 子模块（架构 §4 核心层组件）——常设最小推理内核，仅用于前瞻监控/事件排序/候选裁剪三类操作，非通用推理引擎；「推理皮层」为全库正文两称之一（WM调度预处理器为主称，同义别名非更名完成态，见架构 §4） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4 / §6 |
 | 健康计数器 | Health Counter | 元认知层独立旁路——仅监测环延迟/死锁/解释衰减，唯一权限触发降级信号 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.2 |
 | 注意力调度器 | Attention Scheduler | 横切组件——统一管理全系统注意力资源分配、容量限制、动态调权 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §9 |
 | 噪音规则库 | Noise Rule Library | 摄取门禁的纯正则规则集（单字/短确认、语气词、元命令、分隔符与纯标点行，零 LLM 成本），命中不计轮数、不触发使用权重升温；重要性加分表（未完成 5/纠正 4/决策 3/情绪 3/路径变更 2/工具结果 1/寒喧 0/保护 ∞）作编码深度分配参考 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 噪音规则库层 |
@@ -142,3 +142,4 @@ status: draft
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：关系索引补派生关系 derived_from；意图契约引用 §8→§3.2。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：辞典式排序落点 §3.2→§3.3（H-01）。 |
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：D-04 术语表补 7 条（编译器/结构化通信单元/编译净化/检索深度分级/命名配置集/竖切/结构性记忆），60→67 条。 |
+| 0.0.31 | 2026-08-06 | 第十一轮全库深度审计修复批次（changelog 0.0.31）：WM调度预处理器条目补「推理皮层」中文别名与架构 §4 定位（计数不变 67）。 |

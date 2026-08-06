@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import collections
 import json
+import tempfile
 import pathlib
 import re
 import sys
@@ -242,7 +243,7 @@ for p in docs_iter():
     if bare:
         REPORT["code_no_lang"].append(f"{rel}: {bare} 处")
 
-out = ROOT / "scripts" / "_deep_audit_out.json"
+out = pathlib.Path(tempfile.gettempdir()) / "kairos_deep_audit_out.json"  # 0.0.31：输出移入系统临时目录，仓库不残留（round11 审计 2.3-02）
 out.write_text(json.dumps(REPORT, ensure_ascii=False, indent=1), encoding="utf-8")
 
 for k in sorted(REPORT):
