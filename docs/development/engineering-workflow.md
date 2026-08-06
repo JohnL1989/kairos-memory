@@ -64,7 +64,7 @@ status: draft
 3. 代码检查（代码就绪后）：lint + 类型检查 + 单元测试 + 集成测试（测试矩阵见 [test-plan.md](../quality/test-plan.md) 与 [slice-implementation-guide.md](slice-implementation-guide.md) 竖切验收标准）；
 4. 安全扫描：依赖漏洞扫描 + 密钥扫描（防密钥入库）。
 
-门禁失败处理：失败项须在本 PR/批次内闭环——禁止以「跳过门禁」方式合并（0.0.22 批次「门禁虚假绿灯」教训，见 [audit-history-summary.md](../reviews/audit-history-summary.md)）。
+门禁失败处理：失败项须在本 PR/批次内闭环——禁止以「跳过门禁」方式合并（0.0.22 批次「门禁虚假绿灯」教训，处置记录见 changelog 0.0.22）。
 
 ## 五、发布流程
 
@@ -72,7 +72,7 @@ status: draft
 
 1. `develop` 门禁全绿 → 切 `release/<版本>` 分支；
 2. release 分支仅接受发布阻断级修复（修复后回归门禁）；
-3. 发布检查清单（release-guide §2）逐项执行，含文档同步（changelog 版本记录、audit-history-summary 轮次登记）；
+3. 发布检查清单（release-guide §2）逐项执行，含文档同步（changelog 版本记录与批次登记）；
 4. 打 tag → 合并 `main` → 合并回 `develop`；
 5. 发布说明模板见 release-guide §4。
 

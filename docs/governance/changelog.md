@@ -60,7 +60,7 @@ status: draft
 - **时间感知检索**（吸收 Mem0 V3 时间推理）：架构 §7.3a 新增时间过滤约束段（as_of/事件时间窗口/纪元边界，与路径空间同构的硬过滤边界，非第四信号，权重和恒 1 不变）；配置新增 `KAIROS_TIME_FILTER_ENABLED`；策略层预测器登记「按会话上下文构造检索意图」；detailed-design 新增 §9 检索引擎（管线状态机 + StorageBackend as_of 接口）。
 - **生成式记忆**（吸收 Generative Agents / Hindsight）：认知基础 §1.3 新增「构造性生成声明」（检索即重建延伸，痕迹不足/缺失/跨模式组合时构造缺失表征）；产物入模拟隔离区（S-13），转正走沙箱验证环；架构 §6 WM 模拟隔离区扩展「生成-验证」双职能。
 - **主动触发式记忆**（吸收 Letta memory pressure）：认知基础 D.7 新增「记忆压力声明」（四类压力信号：上下文预算/检索失败/冗余/遗忘积压）；架构 §5.2 主动话题生成器扩展压力信号族；RL 记忆管理自动化纳入 v1.1 路线图（前置条件：多维独立裁决框架）。
-- 债务登记 D-322~D-325；glossary 增补双时态/构造性生成/记忆压力三条术语；吸收决策记录见 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md)。
+- 债务登记 D-322~D-325；glossary 增补双时态/构造性生成/记忆压力三条术语；吸收决策记录。
 
 ---
 
@@ -125,7 +125,7 @@ status: draft
 
 ## 0.0.11（2026-08-04）— 开发就绪度审计修复批次
 
-> 依据 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md)（9 高 / 33 中 / 8 低共 50 项问题）闭环 P0/P1/P2 全部修复项。
+> 闭环（9 高 / 33 中 / 8 低共 50 项问题）闭环 P0/P1/P2 全部修复项。
 
 - **权威定义唯一化（C-01/C-08）**：知识演化判定以架构 §5.2 为权威（§0.4 概述改指、data-model 触发机制改指、补余弦 vs Jaccard 两套体系不互换算说明）；记忆关系类型统一为 data-model 六值枚举（feature-list/claim-matrix 同步）。
 - **临时契约审计痕迹统一（C-02）**：架构 §3.7/§8、api-spec §四、data-model `expires_at`、glossary「硬删除」四处统一为「清理前写入审计日志 `expiry_cascade_delete`」——无痕场景仅限捕获阶段拒绝的输入。
@@ -145,7 +145,7 @@ status: draft
 
 ## 0.0.12（2026-08-04）— 门禁盲区闭环批次
 
-> 依 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md) §七 遗留项闭环——doc-audit 4 处门禁盲区全部消除。
+> §七 遗留项闭环——doc-audit 4 处门禁盲区全部消除。
 
 - **门禁盲区 1（债务闭环正文口径）**：`check_debt_closure` 改按「正文」（跳过版本记录）统计落地证据，区分「仅版本记录可见」与「完全不可见」两档 warn——版本记录中的历史提及不再算落地。
 - **门禁盲区 2（编号连续性泛化 + 决策/债务混用检查）**：`check_numbering_continuity` 从仅债务 D-xxx 扩展至五命名空间（债务 / 差距 G-xx 含子编号归并 / 认知关节 CJ-xxx / 架构风险 RSK-xxx / 方法论风险 MRK-xxx，条目定义行口径，规避预留区间声明误判）；新增 `check_decision_numbering`（14a）——决策 D-xx 两位数的正文引用行内无决策语境词（决策/裁决/修订/裁定/批准/方案）时 warn。
@@ -157,7 +157,7 @@ status: draft
 
 ## 0.0.13（2026-08-04）— 认知×架构交叉审计修复批次
 
-> 依 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md) 闭环 12 项决策（D-16~D-27）。本批次在 architecture/cognitive-foundation/architecture-blueprint 三份核心文档版本记录中已有登记，changelog 原缺失该条目（版本链断裂，0.0.15 补登——见 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md) P2-01）。
+> 闭环 12 项决策（D-16~D-27）。本批次在 architecture/cognitive-foundation/architecture-blueprint 三份核心文档版本记录中已有登记，changelog 原缺失该条目（版本链断裂，0.0.15 补登—— P2-01）。
 
 - **A1 硬过滤**：架构 §0.3 候选生成阶段约束维度改为否决式硬过滤（不设权重），废除旧表述「约束维度默认各为使用价值权重的 0.3」（加权与 D-01 无标量聚合冲突）。
 - **B1 学习边界三边重画**：认知基础引论/D.10 记忆-学习-感知三边切割（外部应用层/策略层/存储层）；参数级学习声明（RL 权重优化器为内部学习机制）。
@@ -177,7 +177,7 @@ status: draft
 
 ## 0.0.14（2026-08-05）— 开发就绪度审计修复批次
 
-> 依 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md)（10 高 / 22 中 / 15 低共 47 项问题）闭环 P0/P1/P2 全部修复项。
+> 闭环（10 高 / 22 中 / 15 低共 47 项问题）闭环 P0/P1/P2 全部修复项。
 
 - **契约语义统一（A-01/A-10/A-11/A-12）**：api-spec DELETE 删除行按「permanent 拒删（403）/ondemand+environmental 软删/temporary 硬删留痕」重写；operation-catalog OP-024/OP-026 到期语义统一（temporary 硬删+expiry_cascade_delete 审计/其余归档）；memories_write 契约枚举补 intention 第五值；data-model memories.contract 补「写时默认建议值+运行时激活权重覆盖」注记。
 - **遗忘算法归位（A-02/B-01）**：detailed-design §3 伪代码与状态机改为架构 §5.2 freshness 单曲线权威口径（active/stale/archived 三阈值 + forgetAfter 分工）；v1.1 二维曲面公式移出 v0.1.0 执行路径并标注目标段；SUPPRESSION_THRESHOLD 从 v0.1.0 路径移除；KAIROS_FORGETTING_SCORE_THRESHOLD 归属勘误（v1.1 口径）。
@@ -198,7 +198,7 @@ status: draft
 
 ## 0.0.15（2026-08-05）— 全面深度审计修复批次
 
-> 依 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md)（08-05 首轮审计独立复核轮，1 中 + 4 低共 5 项新发现）闭环全部问题项。
+> 闭环（08-05 首轮审计独立复核轮，1 中 + 4 低共 5 项新发现）闭环全部问题项。
 
 - **契约枚举第五值同步（P1-01）**：api-spec 资源摄取端点 contract 四值枚举补 intention（五值），注释改指 data-model memories.contract 权威——全库契约枚举残留清零（grep 复核 0 处四值）。
 - **竖切 M-05 归档端点注册（P1-02）**：api-spec §1.5 注册 `POST /v1/memories/{id}/archive` 与 `POST /v1/memories/{id}/restore`（对应架构 12 规范操作集 archive/restore，含幂等性/契约约束/潜伏势能重估匹配验证/错误码）；slice-implementation-guide 两处「待 api-spec 注册」标注移除；业务端点计数 78→80、物理总数 79→81（api-spec 口径注记 + implementation-map 两处同步）。
@@ -211,7 +211,7 @@ status: draft
 
 ## 0.0.16（2026-08-05）— Marvis 建议落地批次
 
-> 依 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md) 用户逐条拍板——7 条建议中 6 项采纳落地（建议一/二/四/五/六/七），建议三经详细对比裁定「保留架构枚举+吸收细节」。
+> 用户逐条拍板——7 条建议中 6 项采纳落地（建议一/二/四/五/六/七），建议三经详细对比裁定「保留架构枚举+吸收细节」。
 
 - **建议一·校准退化链（全部三子建议）**：架构 §1.2 虚拟校准置信度动态衰减公式化（`0.3 × exp(-λ × days)`，λ=0.02，floor 0.05，auto-dormant 60 天）；校准状态运营可视化映射（healthy/degraded/virtual/dormant 四级枚举,刻度粗于降级状态机周期,以状态机为准）；api-spec 检索响应补 `meta.calibration_status` 与 `nudge` 可选字段（subtle/noticeable/prominent 三级,非阻塞）+ `GET /v1/health/calibration` 端点;configuration 补 3 项参数（DECAY_LAMBDA/DECAY_FLOOR/AUTO_DORMANT_DAYS）。
 - **建议二·认知完整性半定量轴（三级 0/1/2）**：架构 §5.2 结构性记忆守护补 structural_value 三级定义（L1 疑似:causal 引用≥2/路径高分叉/叙事线断裂风险;L2 确认:外部校准标记/手动标注/引用≥5）与遗忘调度器分级行为;data-model memories 补 structural_value/structural_value_reasons/structural_value_updated_at 三字段 + is_structure 双向同步;定位为 D-311 的 v0.1.0.x 前置台阶（衔接 D-306/D-312）;configuration 补 3 项参数。
@@ -225,7 +225,7 @@ status: draft
 
 ## 0.0.17（2026-08-05）— Marvis 其余建议落地批次
 
-> 依 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md) §四 其余建议用户拍板——R-1/R-2/R-3/R-9/R-10 采纳落地,R-4~R-8 确认已覆盖无需动作。
+> §四 其余建议用户拍板——R-1/R-2/R-3/R-9/R-10 采纳落地,R-4~R-8 确认已覆盖无需动作。
 
 - **R-1 P6 收敛目标化**：debt-collection 新增 D-334（P6 压缩比收敛目标 v0.1.0.x 验收——核心口径 ≤30% 且活跃例外占比 ≤50% 持续 2 审计周期）；架构 §0.6 消除条件 (a) 挂 D-334、条件 (b) 维持 v1.1。
 - **R-2 进程级隔离演进路径**：deployment 新增 §九——已隔离项（宪法解释层独立故障域/监督平面独立加载）+ v0.1.0.x 候选（ME-1/2/3 分离,`kairos-meta-monitor` 独立进程）+ v1.1 目标（全组件容器化）+ 生产部署建议 + 降级兼容。
@@ -240,7 +240,7 @@ status: draft
 > 依用户决策：审计问题处理完即归档,不长期保留;决策定义从审计报告迁移至治理资产。
 
 - **决策迁移至 ADR**：决策编号 D-01~D-27 权威定义从 reviews 审计报告迁移至 [adr.md](./adr.md)「审计决策迁移」节（D-01~D-15 源自 08-03 审计批次、D-16~D-27 源自 08-04 交叉审计批次;D-06→ADR-001、D-11→ADR-011 由既有 ADR 承载,仅登记迁移关系）;documentation-governance §5 决策编号注册表定义源改指 `adr.md`。
-- **审计报告归档**：新增 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md)（10 轮审计汇总表 + 决策索引 + 归档机制）;删除 reviews 下 10 份审计报告（2026-08-03~08-05 各轮）——问题处置要点以 changelog 各批次为准,问题清单不再长期保留。
+- **审计报告归档**：新增审计历史摘要（10 轮审计汇总表 + 决策索引 + 归档机制）;删除 reviews 下 10 份审计报告（2026-08-03~08-05 各轮）——问题处置要点以 changelog 各批次为准,问题清单不再长期保留。
 - **引用改指**：全库 30 处 reviews 引用改指 `audit-history-summary.md`（changelog 8、debt-collection 5、cognitive-foundation 3、documentation-governance 2、architecture 2、blueprint 1、README 索引 8 行合并为 1 行 + 版本记录 1 处）;`audit-history-summary.md` 纳入文档计数。
 - **归档机制（防堆积）**：documentation-governance 执行记录与 audit-history-summary 声明后续审计闭环后登记于摘要并删除原报告——审计报告不再累积。
 - **门禁**：`scripts/doc-audit.py` 18 类 + 14a 全绿（0 FAIL 0 WARN）;`deep-audit.py` 全绿。
@@ -292,7 +292,7 @@ status: draft
 - **时间粒度层级实证对照**（吸收 noah 02 TMT 五级蒸馏）：认知基础 §1.1 开放简化声明补「时间粒度层级实证对照声明」（TMT 五级离散层级与去语境化连续谱的映射关系，不闭合开放简化）；detailed-design §7 层级蒸馏管道补 TMT 形态对照。
 - **三问题正交解耦框架**（吸收 noah 01 key 身份制）：认知基础附录 C.4 新增声明（去重=身份/保护=生命周期/更新=版本三问正交，纯归纳既有机制、不做机制新增）。
 - **RSK-008 外部平台耦合与可复现性风险**（吸收 noah 04 爆炸复盘）：[risks.md](../governance/risks.md) 新增风险条目——14,737 行生产代码因硬编码路径/外部平台/远端服务耦合而不可复现、整体归档的教训，缓解建议含竖切「可独立运行」验收标准强化。
-- 债务登记 D-335~D-338；glossary 增补热度层级衰减/摄入侧情绪保护/噪音规则库三条术语（57→60 条）；配置参数正文 220→223、总计 368→371；吸收决策记录见 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md)。
+- 债务登记 D-335~D-338；glossary 增补热度层级衰减/摄入侧情绪保护/噪音规则库三条术语（57→60 条）；配置参数正文 220→223、总计 368→371；吸收决策记录。
 - **门禁**：`scripts/doc-audit.py` 18 类 + 14a 全绿（0 FAIL 0 WARN）。
 
 ---
@@ -326,7 +326,7 @@ status: draft
 
 ## 0.0.25（2026-08-05）— 第八轮全库深度审计修复批次
 
-> 依 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md) 闭环第八轮全部问题项（round8-deep-audit）。**审计统计勘误**：报告头部「2 高/13 中/8 低 = 23 项」与报告自身表格（3 高/12 中/9 低 = 24 项）不符，按实际核验数处置与登记。
+> 闭环第八轮全部问题项（round8-deep-audit）。**审计统计勘误**：报告头部「2 高/13 中/8 低 = 23 项」与报告自身表格（3 高/12 中/9 低 = 24 项）不符，按实际核验数处置与登记。
 
 - **1-1 端点计数重算与同步（P0）**：api-spec 定义行（`**METHOD /path**` 与 `### METHOD /path` 双格式）按 `(METHOD, PATH)` 去重实测 **85 个 `/v1` 业务端点 + 3 个无前缀端点（GET /health、GET /audit/compression、GET /audit/compression/summary）= 88 物理**（审计断言经脚本复核成立，差异恰为 0.0.16 新增 7 端点）；同步 api-spec 计数口径注记（80→85、81→88，注「0.0.25 勘误」）、implementation-map 已对齐注记与 REST 路由行、operation-catalog 覆盖边界（「0.0.15 定稿」表述同步修正）；**doc-audit 新增 6.12 API 端点计数校验**（堵住审计所指门禁盲区——定义行统计 ↔ 口径注记声明双向比对），STALE 清单登记旧口径 3 条防回退。
 - **2-2 0.0.16 版本记录计数勘误补登**：api-spec 0.0.16 条目补「（0.0.25 勘误补登：业务端点计数 80→85、物理总数 81→88，口径注记同步）」。
@@ -344,13 +344,13 @@ status: draft
 - **4-1 章节编号中英混用统一**：api-spec 顶层标题 18 个（一~十八→1~18）与 data-model 顶层标题 13 个（一~十三→1~13）改数字（小节 1.x/6.x/18.x 与章号对应自洽），两文档内部中文序引用 22 处同步；**全库联动 25 处**（architecture 15、detailed-design 5、blueprint 5、operation-catalog 4、adr/slice-implementation-guide/user-guide/implementation-map/troubleshooting/error-reference 各 1~2）；认知基础/acceptance-criteria/technology-stack/configuration 等中文序标题文档**保持不动**（标题与引用自洽，非混用）。
 - **4-2 速查表行首补概念名**：§0 速查表「（监督平面为独立正交面 §1.7）」注记行 →「监督平面 | 独立正交面（见 §1.7）| …」。
 - **4-3 版本记录占位惯例明确**：governance §5 明确「仅登记触及本文档批次」为全库惯例（0.0.24 过程建议已确认，不做跳号连续性检查），触及但未逐条登记的连续区间以合并占位行补注。
-- **归档（0.0.18 机制）**：第八轮（3 高/12 中/9 低 = 24 项）登记 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md) §一 汇总表，删除 `2026-08-05-round8-deep-audit.md`。
+- **归档（0.0.18 机制）**：第八轮（3 高/12 中/9 低 = 24 项）登记审计历史摘要 §一 汇总表，删除 `2026-08-05-round8-deep-audit.md`。
 
 - **门禁**：`scripts/doc-audit.py` 18 类 + 14a 全绿（0 FAIL 0 WARN）;`deep-audit.py` 全绿（exit 0）。
 
 ## 0.0.24（2026-08-05）— 第六/七轮全库深度审计修复批次
 
-> 依 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md) 闭环全部问题项：第六轮（round6）10 项此前未入任何批次（0.0.22/0.0.23 分别为外部理念吸收与内容审视批次），本轮随第七轮 9 项新发现一并闭环，共 19 项（0 高/6 中/13 低）。
+> 闭环全部问题项：第六轮（round6）10 项此前未入任何批次（0.0.22/0.0.23 分别为外部理念吸收与内容审视批次），本轮随第七轮 9 项新发现一并闭环，共 19 项（0 高/6 中/13 低）。
 
 - **1-01 认知基础 E.6a 引用修正**：pairwise 表「认知完整性 > 时间」实现约束列「架构 §4.2」→「架构 §5.2 结构性记忆守护」（is_structure 守护定义于架构 §5.2 组件节；修后 `grep "§4\.2"` cognitive-foundation 清零）。
 - **1-02 架构 §2.2 自引用修正**：叙事自洽度语义降级声明「`is_identity` 保护规则（§4.2）」→「（§5.2 身份注册表）」。
@@ -372,13 +372,13 @@ status: draft
 - **4-03 requirements-baseline 版本记录补全**：补「0.0.4~0.0.9」「0.0.11~0.0.13」合并占位、「0.0.15 补登」（M-05 同源——0.0.15 注册 archive/restore 原应同步而未同步）、「0.0.16~0.0.23 合并占位」行。
 - **4-04 RTM「arch」缩写统一**：22 行「arch [architecture-v0.1.0.md](...)」→「架构 [...]」（审计断言 17 行，实际 grep 计数 22 行，按实际全部替换），与治理 §2 交叉引用规范第 2 条对齐。
 - **过程建议 16 不做项记录**：门禁补盲区（版本记录连续性检查 + §X.Y 引用语义核验候选清单）未实施——连续性检查与「文档仅登记触及本文件的批次」惯例冲突会大面积误报（如 debt-collection 0.0.2→0.0.14 正常跳号无占位）；§X.Y 语义核验保持 governance §2.1 人工门禁。
-- **归档（0.0.18 机制）**：第六轮（10 项，0 高/2 中/8 低）与第七轮（19 项，0 高/6 中/13 低）登记 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md) §一 汇总表，删除 `2026-08-05-round6-deep-audit.md` / `2026-08-05-round7-deep-audit.md`。
+- **归档（0.0.18 机制）**：第六轮（10 项，0 高/2 中/8 低）与第七轮（19 项，0 高/6 中/13 低）登记审计历史摘要 §一 汇总表，删除 `2026-08-05-round6-deep-audit.md` / `2026-08-05-round7-deep-audit.md`。
 
 - **门禁**：`scripts/doc-audit.py` 18 类 + 14a 全绿（0 FAIL 0 WARN）;`deep-audit.py` 全绿（exit 0）。
 
 ## 0.0.26（2026-08-06）— 第九轮全库深度审计修复批次（P0+P1）
 
-> 依 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md) 闭环第九轮（round9）开工前必需项：3 高（H-01/H-02/H-03）+ 7 中（M-01/M-03/M-04/M-05/M-06/M-07/M-11）+ M-05 同源联动 2 处 + 门禁补盲区（M-13 建议 1/2 落地）。**审计断言核验**（依「先核验再改」约定）：H-01 所列 27 处引用全部属实，另发现同源残留 2 处（architecture §0.6 P6 压缩比双口径引用、debt-collection D-001 谱系）一并修正；H-02 裁定获认知基础 §1.8「编译器在注意力调度器之后运行」权威佐证（:385）；H-03 其余 14 张竖切表经脚本逐列比对无同类缺口（比对方法见门禁 6.13）。
+> 闭环第九轮（round9）开工前必需项：3 高（H-01/H-02/H-03）+ 7 中（M-01/M-03/M-04/M-05/M-06/M-07/M-11）+ M-05 同源联动 2 处 + 门禁补盲区（M-13 建议 1/2 落地）。**审计断言核验**（依「先核验再改」约定）：H-01 所列 27 处引用全部属实，另发现同源残留 2 处（architecture §0.6 P6 压缩比双口径引用、debt-collection D-001 谱系）一并修正；H-02 裁定获认知基础 §1.8「编译器在注意力调度器之后运行」权威佐证（:385）；H-03 其余 14 张竖切表经脚本逐列比对无同类缺口（比对方法见门禁 6.13）。
 
 - **H-01 §3.2→§3.3 引用系统性漂移（P0）**：grep 全量 `§3.2` 逐条判定——价值裁决子系统（辞典式裁决器/帕累托约束集/保守倾向闸门/P6 合规声明/候选生成器/使用负载计量器/结构注入器/序数压制幅度记录/排列漂移审计）引用 **29 处改 §3.3**（architecture 13 处含审计遗漏 §0.6 压缩比 1 处、cognitive-foundation 3 处、design-philosophy-relations 6 处、debt-collection 5 处含审计遗漏 D-001 谱系 1 处、cognitive-architecture-gap G-07 1 处、glossary 1 处、claim-matrix 3 处）；预测器/调节器/组合寄存器/前瞻保持/校准消解/§3.2.1 真理路由器/意图契约等真实 §3.2 职能引用保留（核验确认）；§3.2 首段补反向指引「价值裁决子系统见 §3.3」；C-23 已废弃条目加「引用为废止前口径」注记。
 - **H-02 编译器管线顺序裁定（P0）**：裁定「感知缓冲 → 注意力筛选 → 编译器 → 结构化通信单元 → 事件总线 → WM」——与 :2729 后半句「接收已通过注意力筛选的输入」、:2834 门禁路径注意力前置、认知基础 §1.8（:385 编译器在注意力调度器之后运行）及 §294 三层门禁约束一致，且避免 L2 对未筛选输入调用的成本；修订 :223/:2729/:3790「位于感知缓冲与注意力调度器之间」→「位于注意力调度器与 WM 层之间」；:2834 摄取验证门禁路径补「编译净化（L1/L2）」环节并注明降级（`degraded_L1`/`passthrough`）行为。
@@ -429,3 +429,4 @@ status: draft
 | 0.0.27 | 2026-08-06 | 第三方分析摘要分诊批次：12 项建议交叉核实——9 项已覆盖/有意设计/已登记（降维 D-016/D-103、衰减公式化、充分性不阻塞为安全权衡、学习边界 D-007、制衡叠加规则、可导航性、冷启动种子、自激防护、化石节点、事件类型注册门禁）；架构 §0.8 补「命名配置集与组合约束」（三种命名配置集为唯一测试目标 + 启动组合校验）；debt-collection 新增 D-403 架构复杂度度量（v1.1 评估）。 |
 | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（round10 P0 三项闭环）：C-01 MCP 工具计数 15 口径统一——api-spec §6.8 补关系管理 3 工具 + 指引段修正（§7.3.1→§7.1a）、operation-catalog/technology-stack 注记修正、架构 §7.1a :2920 构成重写（F-03 link/unlink 重复计数）；C-02 覆盖声明失真修复——新增 OP-054~066 共 13 项（记忆生命周期 6 + 主动功能 7）、7 个运维探针豁免声明、覆盖声明改写 49/56、sessions/evolution 占位符统一 {id}；C-03/F-01 硬行号整体废除——configuration 附录 A 136 处改「文档 §章节」语义引用（38 处权威落点修正至 detailed-design/blueprint）；门禁新增 6.15 硬行号禁令 + 6.12a MCP 工具表行数比对（M-13 建议 2 剩余一半落地）；round10 报告核验勘误（A-02 误报更正、C-02 数字订正 56/20、S-01 份数 8→7、F-01 汇总补注）；P1 五项（S-01/D-02/D-01/C-04/D-04）排期后续批次。 |
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（round10 P1 五项闭环）：S-01 标题风格统一（方案 B 拍板）——api-spec/data-model 大章「N、」→「§N」（18+13 章并入 §N 数字序形态，引用零联动）、blueprint 3 大章归位中文序、documentation-governance §2 补大章标题风格约定（§N 数字序/中文序双形态 + 引言例外）；D-02/M-13 建议 3 落地——documentation-governance §2.2 结构性变更连锁复核人工流程规则（基线扫描/五步复核清单/复核登记）；D-01/M-12 新增 [development/engineering-workflow.md](../development/engineering-workflow.md)（分支策略/PR 流程/提交规范/CI 门禁/发布衔接，README 计数 54→55）；C-04 归档衔接修正——未闭环项报告不删 + 汇总表保留未闭环项标题级清单；D-04 术语表补 7 条（编译器/结构化通信单元/编译净化/检索深度分级/命名配置集/竖切/结构性记忆，60→67，README/架构计数同步）。 |
+| 0.0.30 | 2026-08-06 | 仓库整洁化批次：审计过程材料移出仓库——删除 docs/reviews/ 目录（审计历史摘要）与 scripts/_deep_audit_out.json（纳入 .gitignore）；全库 audit-history-summary 引用清理（决策编号改指 [adr.md](adr.md)、债务谱系标注保留文字删链接、changelog 历史条目去链接）；README 移除审计历史索引、修订审计材料不随仓库分发的说明。 |

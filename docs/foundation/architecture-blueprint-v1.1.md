@@ -1348,7 +1348,7 @@ function check_permission(path, principal, requested_perm):
 | 0.0.3 | 2026-08-04 | 文档职责剥离承接（changelog 0.0.9 批次）：承接主架构剥离的 P3 系组件详细规格——P3-11 Directives、P3-12 malloc_trim、P3-13 Webhook、P3-17 TeamScope、P3-20~24 存储基础设施（SQLCipher/FTS5/PreparedStatementCache/Schema 保护/Mermaid）、P3-25 Permission ACL。 |
 | 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：P3 编号导航索引；P3-25 配置参数空表清理。 |
 | 0.0.12 | 2026-08-04 | 门禁盲区闭环批次：决策 D-05 引用标注「决策」前缀（3 处）。 |
-| 0.0.13 | 2026-08-04 | 认知×架构交叉审计修复批次（决策 D-16~D-27，见 [reviews/audit-history-summary.md](../reviews/audit-history-summary.md)）：MemCube L3/L4 工程层声明（不映射认知层记忆分类）；Playbook/Skills 程序记忆文档化声明（不改变程序记忆认知激活规则）；mental_models 准入条件正交性修正（身份标志非充要条件，宪法解释层判例可入）。 |
+| 0.0.13 | 2026-08-04 | 认知×架构交叉审计修复批次（决策 D-16~D-27）：MemCube L3/L4 工程层声明（不映射认知层记忆分类）；Playbook/Skills 程序记忆文档化声明（不改变程序记忆认知激活规则）；mental_models 准入条件正交性修正（身份标志非充要条件，宪法解释层判例可入）。 |
 | 0.0.19 | 2026-08-05 | 第四轮全库深度审计修复批次（changelog 0.0.19）：新增 P3-19 File Graph 章节（规格承接自 technology-stack §七，标注 v1.1 目标）；P3-18 预留编号墓碑说明；文件名 `v1.1+` → `v1.1`（全库链接同步，登记为命名规范约定）。 |
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：§5.7 多 Agent 校准参数占位声明过时引用修正（1-04）——否决权归属/激活开关/预留路径改指架构现存章节（§0.4 社会性校准占位段/§1 章宪法主权面/§0.4 接入层），同段激活前提条件引用同源修正。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec 中文序引用联动（§十~§十六 5 处）。 |

@@ -75,7 +75,6 @@ status: draft
 
 | 路径 | 内容 |
 |:-----|:-----|
-| [`reviews/audit-history-summary.md`](reviews/audit-history-summary.md) | **审计历史摘要** — 10 轮审计汇总（问题数/处置批次）+ 决策索引 + 归档机制（0.0.18 起替代全部审计报告） |
 
 ## 运维文档
 
@@ -125,7 +124,7 @@ status: draft
 | [`references/concept-tiers.md`](references/concept-tiers.md) | **概念分级速查表** — L1/L2/L3 三级概念归类 + 一句话类比 + 代码映射 + 依赖图（0.0.16 新增） |
 | [`references/capability_matrix.yaml`](references/capability_matrix.yaml) | **认知维度承载能力矩阵** — 各版本对认知维度的承载程度与恢复债编号（0.0.16 新增） |
 
-总计：55 份核心文档**（foundation 4 + specification 12 + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1 = 55，即 **53 份 md + 2 份 yaml**；0.0.16 新增 `concept-tiers.md` 与 `capability_matrix.yaml`；0.0.29 新增 `development/engineering-workflow.md`；`docs/reviews/` 下的审计报告为过程产物，不计入）**。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
+总计：55 份核心文档**（foundation 4 + specification 12 + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1 = 55，即 **53 份 md + 2 份 yaml**；0.0.16 新增 `concept-tiers.md` 与 `capability_matrix.yaml`；0.0.29 新增 `development/engineering-workflow.md`；审计过程材料（审计报告/审计历史摘要）不随仓库分发，处置记录见 changelog 各批次）**。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
 
 ## 阅读建议
 
@@ -158,7 +157,7 @@ status: draft
 | 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：claim-matrix 37 项计数注记；版本记录模板统一。 |
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：配置参数计数同步（210+148=358）、版本记录跳号占位。 |
 | 0.0.12 | 2026-08-04 | 门禁盲区闭环批次：决策 D-05 引用标注「决策」前缀。 |
-| 0.0.13 | 2026-08-04 | 认知×架构交叉审计修复批次（决策 D-16~D-27）：本条目为 0.0.15 补登（原缺失，见 [changelog.md](governance/changelog.md) 0.0.13 与 [reviews/audit-history-summary.md](reviews/audit-history-summary.md) P2-01）。 |
+| 0.0.13 | 2026-08-04 | 认知×架构交叉审计修复批次（决策 D-16~D-27）：本条目为 0.0.15 补登（原缺失，见 [changelog.md](governance/changelog.md) 0.0.13）。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次索引同步：术语计数 56→57（增补并行审查）；全库 31 份文档 0.0.14 条目登记（详见 [changelog.md](governance/changelog.md) 0.0.14）。 |
 | 0.0.15 | 2026-08-05 | 全面深度审计修复批次索引同步（依 comprehensive-documentation-audit）：0.0.13 版本批次补登；api-spec 注册归档/恢复端点（业务端点 78→80，物理总数 81）；端点计数口径注记；全库正文双空格清零。 |
 | 0.0.16 | 2026-08-05 | Marvis 建议落地批次索引同步：新增 [references/concept-tiers.md](references/concept-tiers.md) 与 [references/capability_matrix.yaml](references/capability_matrix.yaml)（核心文档 52→54）；决策记录入「审计与决策记录」索引（详见 [changelog.md](governance/changelog.md) 0.0.16）。 |
@@ -171,3 +170,4 @@ status: draft
 | 0.0.23 | 2026-08-05 | 内容架构全面审视批次索引同步：认知基础与系统架构结构修复（详见 [changelog.md](governance/changelog.md) 0.0.23）。 |
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次索引同步：implementation-map 索引行组件数 40+→70（3-02）；版本记录补登 0.0.19（2-04，详见 [changelog.md](governance/changelog.md) 0.0.24）。 |
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：新增 [development/engineering-workflow.md](development/engineering-workflow.md)（核心文档 54→55、53 md + 2 yaml）；glossary 60→67 条同步。 |
+| 0.0.30 | 2026-08-06 | 仓库整洁化：审计过程材料移出仓库（reviews/ 目录与 audit-history-summary 移除、scripts/_deep_audit_out.json 纳入 .gitignore）；审计历史索引行移除。 |

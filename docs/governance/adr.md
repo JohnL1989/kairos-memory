@@ -382,7 +382,7 @@ SOUL.md 不自动修改。最高行为准则的修改需人工审核。可审计
 
 ## 审计决策迁移（D-01~D-27 权威定义源，0.0.18）
 
-> **定位（0.0.18 决策）**：决策编号 D-01~D-27 的权威定义从 reviews 审计报告迁移至此——审计报告是过程产物,决策是治理资产,决策定义不应埋在审计报告里。本节为决策编号的唯一权威源(对应 [documentation-governance.md](documentation-governance.md) §5 编号注册表);审计过程与处置批次记录见 [audit-history-summary.md](../reviews/audit-history-summary.md)。
+> **定位（0.0.18 决策）**：决策编号 D-01~D-27 的权威定义从 reviews 审计报告迁移至此——审计报告是过程产物,决策是治理资产,决策定义不应埋在审计报告里。本节为决策编号的唯一权威源(对应 [documentation-governance.md](documentation-governance.md) §5 编号注册表);审计过程与处置批次记录不随仓库分发(0.0.30 决策,过程材料仅保留在 changelog 批次条目)。
 >
 > **迁移标注**：D-06→ADR-001(双模式存储)、D-11→ADR-011(迁移工具 Alembic)已由既有 ADR 承载,此处仅登记迁移关系不重复定义;其余 25 条裁决摘要如下,完整论证见对应 ADR 条目(已有者)或审计批次记录。
 
