@@ -1,12 +1,13 @@
 {
  "fm_dist_status": [
   {
-   "draft": 52
+   "draft": 53
   }
  ],
  "fm_dist_created": [
   {
    "2026-07-20": 21,
+   "2026-08-06": 1,
    "2026-07-31": 1,
    "2026-07-29": 1,
    "2026-07-18": 9,
@@ -19,15 +20,15 @@
  "fm_dist_updated": [
   {
    "2026-08-04": 7,
-   "2026-08-06": 15,
-   "2026-08-05": 30
+   "2026-08-06": 18,
+   "2026-08-05": 28
   }
  ],
  "fm_dist_last_reviewed": [
   {
    "2026-08-04": 9,
-   "2026-08-06": 15,
-   "2026-08-05": 28
+   "2026-08-06": 18,
+   "2026-08-05": 26
   }
  ],
  "indegree": [
@@ -40,7 +41,7 @@
    "quality/benchmark-plan.md": 2,
    "specification/use-cases.md": 2,
    "specification/operation-catalog.md": 2,
-   "governance/release-guide.md": 2,
+   "development/engineering-workflow.md": 2,
    "ops/runbook.md": 2,
    "references/traceability-map.md": 2,
    "references/vad-coordinate-algorithm.md": 2,
@@ -48,9 +49,10 @@
    "development/coding-conventions.md": 3,
    "specification/system-context.md": 3,
    "references/value-dimension-entropy.md": 3,
-   "governance/documentation-governance.md": 4,
+   "governance/release-guide.md": 4,
    "governance/social-calibration-roadmap.md": 4,
    "specification/requirements-baseline.md": 4,
+   "governance/documentation-governance.md": 5,
    "README.md": 5,
    "quality/test-strategy.md": 5,
    "governance/project-plan.md": 6,
@@ -64,47 +66,48 @@
    "specification/nfr-specification.md": 7,
    "security/threat-model.md": 7,
    "ops/observability.md": 8,
-   "specification/implementation-map.md": 8,
-   "development/slice-implementation-guide.md": 8,
    "references/error-reference.md": 8,
+   "development/slice-implementation-guide.md": 9,
+   "specification/implementation-map.md": 9,
    "governance/risks.md": 9,
-   "quality/test-plan.md": 10,
    "development/technology-stack.md": 10,
    "ops/reliability.md": 10,
+   "quality/test-plan.md": 11,
    "quality/acceptance-criteria.md": 12,
-   "security/security-specification.md": 14,
    "ops/deployment.md": 14,
+   "security/security-specification.md": 15,
    "specification/rl-weight-spec.md": 15,
    "governance/adr.md": 18,
-   "specification/feature-list.md": 19,
-   "specification/data-model.md": 27,
-   "reviews/audit-history-summary.md": 32,
-   "governance/changelog.md": 42,
+   "specification/feature-list.md": 20,
+   "specification/data-model.md": 28,
+   "reviews/audit-history-summary.md": 33,
+   "governance/changelog.md": 45,
    "foundation/architecture-blueprint-v1.1.md": 52,
-   "specification/api-spec.md": 55,
+   "specification/api-spec.md": 56,
    "specification/detailed-design.md": 64,
    "governance/debt-collection.md": 64,
    "foundation/cognitive-foundation.md": 81,
    "ops/configuration.md": 84,
-   "foundation/architecture-v0.1.0.md": 516
+   "foundation/architecture-v0.1.0.md": 524
   }
  ],
  "indegree_zero": [],
  "heading_style": [
   "development/coding-conventions.md: {'none': 6}",
   "development/development-setup.md: {'none': 8}",
+  "development/engineering-workflow.md: {'none': 6}",
   "development/integration-design.md: {'none': 8}",
   "development/slice-implementation-guide.md: {'none': 16}",
   "development/technology-stack.md: {'none': 8}",
   "foundation/architecture-blueprint-v1.1.md: {'none': 28, 'num': 6}",
-  "foundation/architecture-v0.1.0.md: {'num': 114, 'none': 43}",
+  "foundation/architecture-v0.1.0.md: {'num': 114, 'none': 44}",
   "foundation/cognitive-foundation.md: {'none': 12, 'num': 16, 'alpha': 38}",
   "foundation/design-philosophy-relations.md: {'none': 8}",
   "governance/adr.md: {'none': 66}",
   "governance/changelog.md: {'none': 27}",
   "governance/cognitive-architecture-gap.md: {'none': 4}",
-  "governance/debt-collection.md: {'none': 76, 'num': 5}",
-  "governance/documentation-governance.md: {'num': 8, 'none': 2}",
+  "governance/debt-collection.md: {'none': 77, 'num': 5}",
+  "governance/documentation-governance.md: {'num': 9, 'none': 2}",
   "governance/project-plan.md: {'none': 9}",
   "governance/release-guide.md: {'num': 8, 'none': 9}",
   "governance/risks.md: {'none': 19}",
@@ -129,9 +132,9 @@
   "references/value-dimension-entropy.md: {'none': 5}",
   "security/security-specification.md: {'num': 11, 'none': 2}",
   "security/threat-model.md: {'none': 8}",
-  "specification/api-spec.md: {'none': 50, 'num': 20}",
+  "specification/api-spec.md: {'num': 38, 'none': 32}",
   "specification/claim-implementation-matrix.md: {'none': 7}",
-  "specification/data-model.md: {'none': 52, 'num': 27}",
+  "specification/data-model.md: {'num': 40, 'none': 39}",
   "specification/detailed-design.md: {'none': 28, 'num': 34}",
   "specification/feature-list.md: {'none': 16}",
   "specification/implementation-map.md: {'none': 10}",
@@ -147,6 +150,8 @@
  "pending": [
   "development/coding-conventions.md:117 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "development/development-setup.md:134 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
+  "development/engineering-workflow.md:63 [占位] 2. `python scripts/deep-audit.py` —— 链接/出入度/数字声明/占位盘点无阻断项（exit 0）；",
+  "development/engineering-workflow.md:83 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "development/integration-design.md:133 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "development/slice-implementation-guide.md:215 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "development/slice-implementation-guide.md:221 [待定] | 0.0.3 | 2026-08-04 | 全库深度审计修复：竖切组件代码落点注记、AGE_DECAY_CONSTANT 待定义状态注记、CLI 计数三档口径说明。 |",
@@ -179,34 +184,34 @@
   "foundation/architecture-v0.1.0.md:281 [占位] 此占位不约束具体实现（存储结构、算法选择），仅声明上述输入维度、否决权归属和激活前提条件为未来多Agent校准信任模型的必含特征。此占位声明作为架构层准备，不推迟至\"未来设计\"。",
   "foundation/architecture-v0.1.0.md:443 [占位] 社会性校准信任模型占位（含激活前提条件——详见架构文档）",
   "foundation/architecture-v0.1.0.md:502 [占位] > > | 社会性校准 | 多 Agent 校准信任 | 远期 | 当前为空路径占位 |",
-  "foundation/architecture-v0.1.0.md:593 [占位] - **v0.1.0 占位**：延迟探头不独立运行——依附于元认知审计周期，其输出为诊断日志项（非告警），供操作者评估升级条件",
-  "foundation/architecture-v0.1.0.md:609 [占位] **v0.1.0 占位**：探索窗口关闭判据以固定时间窗口（默认 100ms，配置参数见 [ops/configuration.md](../ops/configuration.md)）实现，上述联合判据在 v0.1.0 中不激活。配置参数 `KAIROS_EXPLORATION",
-  "foundation/architecture-v0.1.0.md:1501 [待定] 状态机终态：待验证 → 验证中 → 通过（合并至LTM）/ 拒绝（返回原始层） / 超时待定（可配置周期后自动拒绝）",
-  "foundation/architecture-v0.1.0.md:1514 [占位] **元记忆可及性预判接口占位**（v0.1.0 简化实现，映射认知基础元记忆第四维度）：路径注册表的检索深度度量作为可及性预判置信度的工程代理——候选记忆在路径树中的深度越浅、关联密度越高，预判置信度越高。v0.1.0 以此简化代理替代完整元记忆第四维，确保该维度在运行时至少可观",
-  "foundation/architecture-v0.1.0.md:1680 [占位] **定位**：编译管线（§4.3）在第四阶段（组装哈希缓存）产出最终提示词后，须执行变量愈合——自动验证所有模板变量（`{name}`、`{project}`、`{date}` 等占位符）在最终提示词中是否仍然存在且可替换。变量愈合防止编译管线的分类渲染（第二阶段）或 token",
-  "foundation/architecture-v0.1.0.md:1689 [占位] - Playbook 步骤中的参数占位符",
-  "foundation/architecture-v0.1.0.md:1696 [占位] - **策略 C — 降级告警**：若以上策略均无法愈合，在最终提示词的组装元数据块中注入 `<healing_failure>` 标记（含缺失变量清单），提示 LLM 忽略残缺占位符。同时写入审计日志 `healing_failure`，供元认知层监测编译管线裁剪质量的退化趋势",
-  "foundation/architecture-v0.1.0.md:1737 [占位] > **§5 断号说明（0.0.20 合并为单一权威说明）**：§5.3/§5.4/§5.6/§5.7/§5.8 已于 0.0.9 职责剥离时迁出——价值独立性公理/见证轴内仲裁/新信息冲突解决/多 Agent 校准参数/升华管道 vs 认知层多维特征空间等详细定义位于 [arc",
-  "foundation/architecture-v0.1.0.md:1795 [待定] │   评估器调用纳入成本护栏熔断统计（§8），评估器不可用时使用配置文档定义的默认分数（待定态）",
-  "foundation/architecture-v0.1.0.md:2401 [占位] 以下组件的详细设计已移出主架构文档，归档于 `architecture-blueprint-v1.1.md`。此处仅列出 v0.1.0 的占位行为，供实现者参考：",
-  "foundation/architecture-v0.1.0.md:2403 [占位] | 蓝图组件 | v0.1.0 占位行为 | 详细设计 |",
-  "foundation/architecture-v0.1.0.md:2598 [占位] > **机制**：存储层的数据库级基础设施增强（SQLCipher 静态加密 / FTS5 contentless-external 全文索引 / PreparedStatementCache / Schema 前向版本保护 / Symbolic Memory 可视化），均为 v",
-  "foundation/architecture-v0.1.0.md:2624 [占位] > **机制**：v0.1.0 强制单租户部署占位。详细设计见 [architecture-blueprint-v1.1.md](architecture-blueprint-v1.1.md) §P3-17。",
-  "foundation/architecture-v0.1.0.md:2639 [待定] | **沙箱验证环** | 新类型/新价值轴在模拟隔离区中试运行。元审计确认未造成决策熵异常后正式合并至 LTM。状态机：待验证→验证中→通过（合并）/拒绝（返回原始层）/超时待定 |",
-  "foundation/architecture-v0.1.0.md:3345 [占位] **系统上限三维映射：** §10.5 指标的三个组织维度——(1) **校准锚定**：外部校准响应延迟、盲区探测覆盖率、语境自指合规率；(2) **承载**：验证有效率、身份记忆保留率、遗忘后悔率、潜伏复兴比、使用负载阻断率；(3) **反身性**：再巩固环无环路依赖、保守倾向",
-  "foundation/architecture-v0.1.0.md:3363 [占位] > **占位声明**：本节全部指标值为架构层理论推导，标记为设计目标。具体指标值（阈值、目标百分比）见 [quality/acceptance-criteria.md](../quality/acceptance-criteria.md)。代码启动后首个迭代执行基准测试，验证通过",
-  "foundation/architecture-v0.1.0.md:3365 [占位] > **指标映射**：各指标的定义、占位值和验证方法见 [quality/acceptance-criteria.md](../quality/acceptance-criteria.md) §一。以下为架构层摘要：",
-  "foundation/architecture-v0.1.0.md:3371 [占位] 以上三维对应认知基础 §四 的上限三维分析。完整的量化指标表（含占位值、验证方法和论据来源）见 [quality/acceptance-criteria.md](../quality/acceptance-criteria.md) §一。",
-  "foundation/architecture-v0.1.0.md:3457 [待定] 2. 宪法解释层在预设周期内评估证伪信号的严重性：评估结果分为三级——（a）**确认**（证伪成立，需修订认知层声明或调整架构承载）；（b）**边界**（证伪信号属正常波动，不构成对核心声明的挑战）；（c）**待定**（需更多数据或更长时间观察）",
-  "foundation/architecture-v0.1.0.md:3459 [待定] 4. 评估结果为「边界」或「待定」时：标记日志、持续监测、不触发架构变更",
-  "foundation/architecture-v0.1.0.md:3584 [占位] - 组块化动态形成（认知基础将其定义为 WM 容量唯一结构性缓解手段，v0.1.0 以关系索引弱层级关系标记作为概念占位，完整实现 v1.1）",
-  "foundation/architecture-v0.1.0.md:3670 [占位] - **P3-13 Webhook 事件通知框架**：外部系统事件订阅框架（三表结构、API JSON 格式与 v0.1.0 占位）——见 [architecture-blueprint-v1.1.md](architecture-blueprint-v1.1.md) §P3-1",
-  "foundation/architecture-v0.1.0.md:3810 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
-  "foundation/architecture-v0.1.0.md:3820 [占位] | 0.0.7~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.7~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
-  "foundation/architecture-v0.1.0.md:3826 [占位] | 0.0.15 | 2026-08-05 | （占位：changelog 0.0.15 批次无涉及本文的变更，见 [changelog.md](../governance/changelog.md) 全景） |",
-  "foundation/architecture-v0.1.0.md:3830 [占位] | 0.0.19 | 2026-08-05 | 第四轮全库深度审计修复批次（changelog 0.0.19）：§1.8 预提交总线模型确立为 v0.1.0 身份否决权唯一权威（§10.24 关联设计债索引补 D-001）；§2 定位/§2.2.1 p6_margin/S-12 ",
-  "foundation/architecture-v0.1.0.md:3835 [占位] | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：§2.2 叙事自洽度语义降级声明 is_identity 保护规则引用 §4.2→§5.2（1-02）；§10.24 关联设计债索引落点修正 D-005/D-017",
-  "foundation/architecture-v0.1.0.md:3836 [占位] | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：§5.12 DFA 命名统一与 v1.1 交付占位（D-401 反向对齐）；引用落点批量修正 11 处（审计 8 + grep 同源 3）；领域路由双处定义收敛（§10",
+  "foundation/architecture-v0.1.0.md:610 [占位] - **v0.1.0 占位**：延迟探头不独立运行——依附于元认知审计周期，其输出为诊断日志项（非告警），供操作者评估升级条件",
+  "foundation/architecture-v0.1.0.md:626 [占位] **v0.1.0 占位**：探索窗口关闭判据以固定时间窗口（默认 100ms，配置参数见 [ops/configuration.md](../ops/configuration.md)）实现，上述联合判据在 v0.1.0 中不激活。配置参数 `KAIROS_EXPLORATION",
+  "foundation/architecture-v0.1.0.md:1518 [待定] 状态机终态：待验证 → 验证中 → 通过（合并至LTM）/ 拒绝（返回原始层） / 超时待定（可配置周期后自动拒绝）",
+  "foundation/architecture-v0.1.0.md:1531 [占位] **元记忆可及性预判接口占位**（v0.1.0 简化实现，映射认知基础元记忆第四维度）：路径注册表的检索深度度量作为可及性预判置信度的工程代理——候选记忆在路径树中的深度越浅、关联密度越高，预判置信度越高。v0.1.0 以此简化代理替代完整元记忆第四维，确保该维度在运行时至少可观",
+  "foundation/architecture-v0.1.0.md:1697 [占位] **定位**：编译管线（§4.3）在第四阶段（组装哈希缓存）产出最终提示词后，须执行变量愈合——自动验证所有模板变量（`{name}`、`{project}`、`{date}` 等占位符）在最终提示词中是否仍然存在且可替换。变量愈合防止编译管线的分类渲染（第二阶段）或 token",
+  "foundation/architecture-v0.1.0.md:1706 [占位] - Playbook 步骤中的参数占位符",
+  "foundation/architecture-v0.1.0.md:1713 [占位] - **策略 C — 降级告警**：若以上策略均无法愈合，在最终提示词的组装元数据块中注入 `<healing_failure>` 标记（含缺失变量清单），提示 LLM 忽略残缺占位符。同时写入审计日志 `healing_failure`，供元认知层监测编译管线裁剪质量的退化趋势",
+  "foundation/architecture-v0.1.0.md:1754 [占位] > **§5 断号说明（0.0.20 合并为单一权威说明）**：§5.3/§5.4/§5.6/§5.7/§5.8 已于 0.0.9 职责剥离时迁出——价值独立性公理/见证轴内仲裁/新信息冲突解决/多 Agent 校准参数/升华管道 vs 认知层多维特征空间等详细定义位于 [arc",
+  "foundation/architecture-v0.1.0.md:1812 [待定] │   评估器调用纳入成本护栏熔断统计（§8），评估器不可用时使用配置文档定义的默认分数（待定态）",
+  "foundation/architecture-v0.1.0.md:2418 [占位] 以下组件的详细设计已移出主架构文档，归档于 `architecture-blueprint-v1.1.md`。此处仅列出 v0.1.0 的占位行为，供实现者参考：",
+  "foundation/architecture-v0.1.0.md:2420 [占位] | 蓝图组件 | v0.1.0 占位行为 | 详细设计 |",
+  "foundation/architecture-v0.1.0.md:2615 [占位] > **机制**：存储层的数据库级基础设施增强（SQLCipher 静态加密 / FTS5 contentless-external 全文索引 / PreparedStatementCache / Schema 前向版本保护 / Symbolic Memory 可视化），均为 v",
+  "foundation/architecture-v0.1.0.md:2641 [占位] > **机制**：v0.1.0 强制单租户部署占位。详细设计见 [architecture-blueprint-v1.1.md](architecture-blueprint-v1.1.md) §P3-17。",
+  "foundation/architecture-v0.1.0.md:2656 [待定] | **沙箱验证环** | 新类型/新价值轴在模拟隔离区中试运行。元审计确认未造成决策熵异常后正式合并至 LTM。状态机：待验证→验证中→通过（合并）/拒绝（返回原始层）/超时待定 |",
+  "foundation/architecture-v0.1.0.md:3362 [占位] **系统上限三维映射：** §10.5 指标的三个组织维度——(1) **校准锚定**：外部校准响应延迟、盲区探测覆盖率、语境自指合规率；(2) **承载**：验证有效率、身份记忆保留率、遗忘后悔率、潜伏复兴比、使用负载阻断率；(3) **反身性**：再巩固环无环路依赖、保守倾向",
+  "foundation/architecture-v0.1.0.md:3380 [占位] > **占位声明**：本节全部指标值为架构层理论推导，标记为设计目标。具体指标值（阈值、目标百分比）见 [quality/acceptance-criteria.md](../quality/acceptance-criteria.md)。代码启动后首个迭代执行基准测试，验证通过",
+  "foundation/architecture-v0.1.0.md:3382 [占位] > **指标映射**：各指标的定义、占位值和验证方法见 [quality/acceptance-criteria.md](../quality/acceptance-criteria.md) §一。以下为架构层摘要：",
+  "foundation/architecture-v0.1.0.md:3388 [占位] 以上三维对应认知基础 §四 的上限三维分析。完整的量化指标表（含占位值、验证方法和论据来源）见 [quality/acceptance-criteria.md](../quality/acceptance-criteria.md) §一。",
+  "foundation/architecture-v0.1.0.md:3474 [待定] 2. 宪法解释层在预设周期内评估证伪信号的严重性：评估结果分为三级——（a）**确认**（证伪成立，需修订认知层声明或调整架构承载）；（b）**边界**（证伪信号属正常波动，不构成对核心声明的挑战）；（c）**待定**（需更多数据或更长时间观察）",
+  "foundation/architecture-v0.1.0.md:3476 [待定] 4. 评估结果为「边界」或「待定」时：标记日志、持续监测、不触发架构变更",
+  "foundation/architecture-v0.1.0.md:3601 [占位] - 组块化动态形成（认知基础将其定义为 WM 容量唯一结构性缓解手段，v0.1.0 以关系索引弱层级关系标记作为概念占位，完整实现 v1.1）",
+  "foundation/architecture-v0.1.0.md:3687 [占位] - **P3-13 Webhook 事件通知框架**：外部系统事件订阅框架（三表结构、API JSON 格式与 v0.1.0 占位）——见 [architecture-blueprint-v1.1.md](architecture-blueprint-v1.1.md) §P3-1",
+  "foundation/architecture-v0.1.0.md:3827 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
+  "foundation/architecture-v0.1.0.md:3837 [占位] | 0.0.7~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.7~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
+  "foundation/architecture-v0.1.0.md:3843 [占位] | 0.0.15 | 2026-08-05 | （占位：changelog 0.0.15 批次无涉及本文的变更，见 [changelog.md](../governance/changelog.md) 全景） |",
+  "foundation/architecture-v0.1.0.md:3847 [占位] | 0.0.19 | 2026-08-05 | 第四轮全库深度审计修复批次（changelog 0.0.19）：§1.8 预提交总线模型确立为 v0.1.0 身份否决权唯一权威（§10.24 关联设计债索引补 D-001）；§2 定位/§2.2.1 p6_margin/S-12 ",
+  "foundation/architecture-v0.1.0.md:3852 [占位] | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：§2.2 叙事自洽度语义降级声明 is_identity 保护规则引用 §4.2→§5.2（1-02）；§10.24 关联设计债索引落点修正 D-005/D-017",
+  "foundation/architecture-v0.1.0.md:3853 [占位] | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：§5.12 DFA 命名统一与 v1.1 交付占位（D-401 反向对齐）；引用落点批量修正 11 处（审计 8 + grep 同源 3）；领域路由双处定义收敛（§10",
   "foundation/cognitive-foundation.md:74 [占位] **记忆的内容结构（三层模型）**：一条记忆在认知层由三层构成——**(a) 内容层**：记忆的原始语义负载（文本/结构化字段/多模态信号），是记忆被检索时返回的主体内容。内容层可原子或结构化（单一事实或嵌套关系），但承载了记忆的\"是什么\"；**(b) 签名层**：记忆在四轴度量",
   "foundation/cognitive-foundation.md:90 [占位] **四轴度量空间的性质声明**：当前认知模型定义的四轴（不含可及性轴——可及性轴为可用性维度，见本节可及性轴定义；此处「四轴」对应架构 v0.1.0 实际承载）在度量意义上是“价值—结构混合空间”而非纯价值空间。前三轴（使用价值、见证价值、时间）是价值/度量维度——它们评估的是记",
   "foundation/cognitive-foundation.md:118 [占位] - **认知完整性轴**（Cognitive Integrity Axis）：潜伏势能的盲区触发机制覆盖的是\"系统不知道哪些记忆可能有用的盲区\"。但存在一类记忆，其价值不来自\"被使用\"而来自\"结构性占位\"——反例锚点、死胡同路径、组合约束。这些记忆的数据内容可能永不产生工具性使用",
@@ -252,6 +257,7 @@
   "governance/changelog.md:421 [占位] | 0.0.19 | 2026-08-05 | 第四轮全库深度审计修复批次（依 master-documentation-audit 闭环）：身份否决权实现形态裁决（1-01，架构 §1.8 权威，D-001/D-101 已实施）;章节引用错位三连与成本护栏引用修正;监督平面口径",
   "governance/changelog.md:426 [占位] | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（round6 10 项 + round7 9 项新发现 = 19 项闭环）：中风险 6 项（E.6a/is_identity/RTM R-01 R-02/blueprint §5.7/M-05 标注/",
   "governance/changelog.md:427 [占位] | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（round8 3 高/12 中/9 低 = 24 项闭环）：端点计数 85/88 重算与同步 + doc-audit 6.12 门禁补盲区（1-1/2-2）、DFA/DAP 命名与交付状态裁决（统一 DF",
+  "governance/changelog.md:430 [占位] | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（round10 P0 三项闭环）：C-01 MCP 工具计数 15 口径统一——api-spec §6.8 补关系管理 3 工具 + 指引段修正（§7.3.1→§7.1a）、operation-catal",
   "governance/cognitive-architecture-gap.md:29 [占位] | G-06 | **外部校准源充分性建模**——四维判定 | §三 | 占位框架（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2），默认假设校准范围有限 | 占位框架 | v1.1+ | p",
   "governance/cognitive-architecture-gap.md:32 [占位] | G-09 | **元记忆可及性预判维度** | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.4（本轮新增） | 接口占位（预判信号总为 1.0），v0.1.0 默认关闭 | 接口占位 | ",
   "governance/cognitive-architecture-gap.md:48 [占位] | 占位框架 | 1 | G-06 |",
@@ -279,34 +285,34 @@
   "governance/debt-collection.md:466 [占位] > 同上，D-318 从未分配，编号连续性占位。",
   "governance/debt-collection.md:468 [占位] ### D-319 [墓碑] 预留编号（RC-15 债务编号连续性占位）",
   "governance/debt-collection.md:470 [占位] > 同上，D-319 从未分配，编号连续性占位。",
-  "governance/debt-collection.md:692 [待定] | D-005 | 图式的双重性（组织原理vs偏差来源） | 待定 | 📋 新登记 |",
-  "governance/debt-collection.md:693 [待定] | D-006 | 时序优先与值优先混用 | 待定 | 📋 新登记 |",
-  "governance/debt-collection.md:694 [待定] | D-007 | 记忆与学习的工程边界崩塌 | 待定 | 📋 新登记 |",
-  "governance/debt-collection.md:695 [待定] | D-008 | 编码特异性原则→路径映射丢失维度 | 待定 | 📋 新登记 |",
-  "governance/debt-collection.md:696 [待定] | D-009 | 身份面否决面自身崩溃无容错 | 待定 | 📋 新登记 |",
-  "governance/debt-collection.md:697 [待定] | D-010 | 自主性组件削弱他律性设计目标 | 待定 | 📋 新登记 |",
-  "governance/debt-collection.md:723 [XXX] ## 五、已归档：历史追缴记录（编号 ARC-D-XXX）",
-  "governance/debt-collection.md:725 [TODO] > 以下为 v2026-07-19 ~ v2026-07-22 以 TODO 清单格式记录的已完成项和已闭环项。",
-  "governance/debt-collection.md:728 [XXX] > **⚠ 编号约定**：归档区条目使用 `ARC-D-XXX` 前缀（如 `ARC-D-001`），以区别于活跃区的 `D-XXX` 编号。",
-  "governance/debt-collection.md:822 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
-  "governance/documentation-governance.md:105 [XXX] | 闭环编号（DC-XXX） | [governance/debt-collection.md](debt-collection.md) | DC-三位数 |",
-  "governance/documentation-governance.md:106 [XXX] | Mnemosyne 闭环编号（MNM-XXX） | [governance/debt-collection.md](debt-collection.md) | MNM-三位数 |",
-  "governance/documentation-governance.md:107 [XXX] | 差距编号（G-XXX） | [governance/cognitive-architecture-gap.md](cognitive-architecture-gap.md) | G-两位数（允许子编号 G-09a） |",
-  "governance/documentation-governance.md:108 [XXX] | 校准测试编号（CAL-XXX） | [quality/test-plan.md](../quality/test-plan.md) | CAL-三位数 |",
-  "governance/documentation-governance.md:109 [XXX] | 债务溯源编号（ARC-D-XXX） | [governance/debt-collection.md](debt-collection.md) | ARC-D-三位数 |",
-  "governance/documentation-governance.md:110 [XXX] | 社会性校准里程碑编号（SCR-XXX） | [governance/social-calibration-roadmap.md](social-calibration-roadmap.md) | SCR-两位数 |",
-  "governance/documentation-governance.md:111 [XXX] | 测试用例编号（TC-XXX） | [quality/test-plan.md](../quality/test-plan.md) | TC-前缀 + 两位数 |",
-  "governance/documentation-governance.md:112 [XXX] | 错误码（ERR-XXX-NNN） | [references/error-reference.md](../references/error-reference.md) | ERR-XXX-NNN |",
-  "governance/documentation-governance.md:116 [XXX] | 张力编号（T-XXX） | [governance/risks.md](risks.md) | T-三位数 |",
-  "governance/documentation-governance.md:117 [XXX] | 方法论风险编号（MRK-XXX） | [governance/risks.md](risks.md) | MRK-三位数 |",
-  "governance/documentation-governance.md:123 [占位] **债务编号分段语义（RC-16）**：`D-` 三位数按百位分段，段内不得断号（断号须保留墓碑条目占位，见 doc-audit.py §14）：",
-  "governance/documentation-governance.md:135 [占位] > **版本记录占位惯例（0.0.25 批次明确，第八轮审计 4-3）**：各文档版本记录**仅登记触及本文档的 changelog 批次**（doc-audit §12 校验单调递增与日期不倒退，不做跳号连续性检查——0.0.24 过程建议确认「仅登记触及批次」为全库惯例，未触",
-  "governance/documentation-governance.md:175 [待定] > 草稿阶段初始版本号为 0.0.1。发生实质性内容变更（数值核定、结构调整、决策落地、新增章节）时，按 0.0.2 → 0.0.3 … 递增修订号，并在版本记录中说明变更原因；待定稿后升级至 1.0.0。门禁（doc-audit.py §12）校验版本记录单调递增且日期不倒退。",
-  "governance/documentation-governance.md:181 [占位] | 0.0.3~0.0.10 | 2026-08-04 | （合并占位：changelog 0.0.3~0.0.10 批次的变更未逐条登记于本文档，见 [changelog.md](changelog.md) 全景） |",
-  "governance/documentation-governance.md:184 [占位] | 0.0.13 | 2026-08-04 | （占位：changelog 0.0.13 批次无涉及本文的变更，见 [changelog.md](changelog.md) 全景） |",
-  "governance/documentation-governance.md:186 [占位] | 0.0.15~0.0.16 | 2026-08-05 | （合并占位：changelog 0.0.15/0.0.16 批次的变更未逐条登记于本文档，见 [changelog.md](changelog.md) 全景） |",
-  "governance/documentation-governance.md:189 [占位] | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：§3 执行记录补 08-05 批次审计记录（2-05）；版本记录补 0.0.3~0.0.10/0.0.13/0.0.15~0.0.16 占位行（4-01）。 |",
-  "governance/documentation-governance.md:190 [占位] | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：§5 补版本记录占位惯例（仅登记触及批次 + 合并占位格式，4-3）；D-4xx 类别示例 DAP→DFA。 |",
+  "governance/debt-collection.md:702 [待定] | D-005 | 图式的双重性（组织原理vs偏差来源） | 待定 | 📋 新登记 |",
+  "governance/debt-collection.md:703 [待定] | D-006 | 时序优先与值优先混用 | 待定 | 📋 新登记 |",
+  "governance/debt-collection.md:704 [待定] | D-007 | 记忆与学习的工程边界崩塌 | 待定 | 📋 新登记 |",
+  "governance/debt-collection.md:705 [待定] | D-008 | 编码特异性原则→路径映射丢失维度 | 待定 | 📋 新登记 |",
+  "governance/debt-collection.md:706 [待定] | D-009 | 身份面否决面自身崩溃无容错 | 待定 | 📋 新登记 |",
+  "governance/debt-collection.md:707 [待定] | D-010 | 自主性组件削弱他律性设计目标 | 待定 | 📋 新登记 |",
+  "governance/debt-collection.md:734 [XXX] ## 五、已归档：历史追缴记录（编号 ARC-D-XXX）",
+  "governance/debt-collection.md:736 [TODO] > 以下为 v2026-07-19 ~ v2026-07-22 以 TODO 清单格式记录的已完成项和已闭环项。",
+  "governance/debt-collection.md:739 [XXX] > **⚠ 编号约定**：归档区条目使用 `ARC-D-XXX` 前缀（如 `ARC-D-001`），以区别于活跃区的 `D-XXX` 编号。",
+  "governance/debt-collection.md:833 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
+  "governance/documentation-governance.md:132 [XXX] | 闭环编号（DC-XXX） | [governance/debt-collection.md](debt-collection.md) | DC-三位数 |",
+  "governance/documentation-governance.md:133 [XXX] | Mnemosyne 闭环编号（MNM-XXX） | [governance/debt-collection.md](debt-collection.md) | MNM-三位数 |",
+  "governance/documentation-governance.md:134 [XXX] | 差距编号（G-XXX） | [governance/cognitive-architecture-gap.md](cognitive-architecture-gap.md) | G-两位数（允许子编号 G-09a） |",
+  "governance/documentation-governance.md:135 [XXX] | 校准测试编号（CAL-XXX） | [quality/test-plan.md](../quality/test-plan.md) | CAL-三位数 |",
+  "governance/documentation-governance.md:136 [XXX] | 债务溯源编号（ARC-D-XXX） | [governance/debt-collection.md](debt-collection.md) | ARC-D-三位数 |",
+  "governance/documentation-governance.md:137 [XXX] | 社会性校准里程碑编号（SCR-XXX） | [governance/social-calibration-roadmap.md](social-calibration-roadmap.md) | SCR-两位数 |",
+  "governance/documentation-governance.md:138 [XXX] | 测试用例编号（TC-XXX） | [quality/test-plan.md](../quality/test-plan.md) | TC-前缀 + 两位数 |",
+  "governance/documentation-governance.md:139 [XXX] | 错误码（ERR-XXX-NNN） | [references/error-reference.md](../references/error-reference.md) | ERR-XXX-NNN |",
+  "governance/documentation-governance.md:143 [XXX] | 张力编号（T-XXX） | [governance/risks.md](risks.md) | T-三位数 |",
+  "governance/documentation-governance.md:144 [XXX] | 方法论风险编号（MRK-XXX） | [governance/risks.md](risks.md) | MRK-三位数 |",
+  "governance/documentation-governance.md:150 [占位] **债务编号分段语义（RC-16）**：`D-` 三位数按百位分段，段内不得断号（断号须保留墓碑条目占位，见 doc-audit.py §14）：",
+  "governance/documentation-governance.md:162 [占位] > **版本记录占位惯例（0.0.25 批次明确，第八轮审计 4-3）**：各文档版本记录**仅登记触及本文档的 changelog 批次**（doc-audit §12 校验单调递增与日期不倒退，不做跳号连续性检查——0.0.24 过程建议确认「仅登记触及批次」为全库惯例，未触",
+  "governance/documentation-governance.md:202 [待定] > 草稿阶段初始版本号为 0.0.1。发生实质性内容变更（数值核定、结构调整、决策落地、新增章节）时，按 0.0.2 → 0.0.3 … 递增修订号，并在版本记录中说明变更原因；待定稿后升级至 1.0.0。门禁（doc-audit.py §12）校验版本记录单调递增且日期不倒退。",
+  "governance/documentation-governance.md:208 [占位] | 0.0.3~0.0.10 | 2026-08-04 | （合并占位：changelog 0.0.3~0.0.10 批次的变更未逐条登记于本文档，见 [changelog.md](changelog.md) 全景） |",
+  "governance/documentation-governance.md:211 [占位] | 0.0.13 | 2026-08-04 | （占位：changelog 0.0.13 批次无涉及本文的变更，见 [changelog.md](changelog.md) 全景） |",
+  "governance/documentation-governance.md:213 [占位] | 0.0.15~0.0.16 | 2026-08-05 | （合并占位：changelog 0.0.15/0.0.16 批次的变更未逐条登记于本文档，见 [changelog.md](changelog.md) 全景） |",
+  "governance/documentation-governance.md:216 [占位] | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：§3 执行记录补 08-05 批次审计记录（2-05）；版本记录补 0.0.3~0.0.10/0.0.13/0.0.15~0.0.16 占位行（4-01）。 |",
+  "governance/documentation-governance.md:217 [占位] | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：§5 补版本记录占位惯例（仅登记触及批次 + 合并占位格式，4-3）；D-4xx 类别示例 DAP→DFA。 |",
   "governance/project-plan.md:96 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "governance/release-guide.md:165 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "governance/risks.md:86 [占位] | **描述** | 架构设跨层协调协议绝对上限 10 条 + 相对 120%，v0.1.0 已有 7 条，仅余 3 条增量扩展空间。社会性/具身扩展（_social/_embodied 占位）一旦激活，可能快速耗尽余量。且「新增协议须经审计庭审批」是软门禁（非强制拦截）。 |",
@@ -321,21 +327,22 @@
   "governance/social-calibration-roadmap.md:179 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "ops/configuration.md:91 [待定] | `KAIROS_SANDBOX_TIMEOUT_PERIODS` | 90 | ≥1 周期 | 重启生效 | 沙箱验证环超时待定状态自动拒绝的周期数 |",
   "ops/configuration.md:470 [待定] > **权威性**：默认值一栏自各参数的**定义出处**抄录，语义以出处文档为准；出处未给出默认值的标注 `—（待定义）`（共 12 项），编码启动前须补齐。",
-  "ops/configuration.md:476 [待定] | `KAIROS_ADMIN_IPS` | —（待定义） | `ops/deployment.md:76` |",
-  "ops/configuration.md:479 [待定] | `KAIROS_API_KEY_HASH` | —（待定义） | `security/security-specification.md:58` |",
-  "ops/configuration.md:516 [待定] | `KAIROS_DB_PASSWORD` | —（待定义） | `ops/deployment.md:69` |",
-  "ops/configuration.md:520 [待定] | `KAIROS_DERIVED_FROM_MIN_STRENGTH` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:316` |",
-  "ops/configuration.md:565 [待定] | `KAIROS_PATH` | —（待定义） | `foundation/architecture-v0.1.0.md:3647` |",
-  "ops/configuration.md:566 [待定] | `KAIROS_PLAYBOOK_NEGATIVE_THRESHOLD` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:155` |",
-  "ops/configuration.md:567 [待定] | `KAIROS_PLAYBOOK_PROMOTION_THRESHOLD` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:154` |",
-  "ops/configuration.md:572 [待定] | `KAIROS_PROMPT_DEPENDENCY_STRATEGY` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:628` |",
-  "ops/configuration.md:575 [待定] | `KAIROS_RETRIEVAL_LINK_WEIGHTS` | —（待定义） | `foundation/architecture-v0.1.0.md:2232` |",
-  "ops/configuration.md:585 [待定] | `KAIROS_SKILL_EXPERIMENTAL_MAX_AGE` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:217` |",
-  "ops/configuration.md:597 [待定] | `KAIROS_SUBLIMATION_ENCRYPTION_KEY` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:561` |",
-  "ops/configuration.md:610 [待定] | `KAIROS_TEMPORAL_EXTRA_BUFFER_DAYS` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:404` |",
+  "ops/configuration.md:476 [待定] | `KAIROS_ADMIN_IPS` | —（待定义） | `ops/deployment.md §三 环境变量` |",
+  "ops/configuration.md:479 [待定] | `KAIROS_API_KEY_HASH` | —（待定义） | `security-specification.md §2.1 API Key 生命周期` |",
+  "ops/configuration.md:516 [待定] | `KAIROS_DB_PASSWORD` | —（待定义） | `ops/deployment.md §三 环境变量` |",
+  "ops/configuration.md:520 [待定] | `KAIROS_DERIVED_FROM_MIN_STRENGTH` | —（待定义） | `architecture-blueprint-v1.1.md §四层记忆质量层次（Four-Tier Memory Quality Hierarchy）` |",
+  "ops/configuration.md:565 [待定] | `KAIROS_PATH` | —（待定义） | `ops/configuration.md 参数总表（待定义）` |",
+  "ops/configuration.md:566 [待定] | `KAIROS_PLAYBOOK_NEGATIVE_THRESHOLD` | —（待定义） | `architecture-blueprint-v1.1.md §过程知识 Playbook 系统（Procedural Playbook System）` |",
+  "ops/configuration.md:567 [待定] | `KAIROS_PLAYBOOK_PROMOTION_THRESHOLD` | —（待定义） | `architecture-blueprint-v1.1.md §过程知识 Playbook 系统（Procedural Playbook System）` |",
+  "ops/configuration.md:572 [待定] | `KAIROS_PROMPT_DEPENDENCY_STRATEGY` | —（待定义） | `architecture-blueprint-v1.1.md §P3-15 Prompt 依赖关系图` |",
+  "ops/configuration.md:575 [待定] | `KAIROS_RETRIEVAL_LINK_WEIGHTS` | —（待定义） | `architecture-v0.1.0.md §5.2 组件` |",
+  "ops/configuration.md:585 [待定] | `KAIROS_SKILL_EXPERIMENTAL_MAX_AGE` | —（待定义） | `architecture-blueprint-v1.1.md §技能管理系统（Skill Management System）` |",
+  "ops/configuration.md:597 [待定] | `KAIROS_SUBLIMATION_ENCRYPTION_KEY` | —（待定义） | `architecture-blueprint-v1.1.md §P3-14 远程/本地双模式升华` |",
+  "ops/configuration.md:610 [待定] | `KAIROS_TEMPORAL_EXTRA_BUFFER_DAYS` | —（待定义） | `architecture-blueprint-v1.1.md §事实新鲜度元数据（Fact Freshness Metadata）` |",
   "ops/configuration.md:627 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "ops/configuration.md:638 [待定] | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：附录去重（正文 210+附录 148=358）、新增 14 项参数（LLM 超时/限流容量/磁盘阈值/运维/告警投递）、待定义回填 12 项、特征标志 NARRATIVE_IDENTITY 默认 ON（宪法核）、",
   "ops/configuration.md:644 [待定] | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：附录 A 引言正文参数计数 210→223（2-02，口径补注 0.0.16/0.0.22 增长链）；「12 项待定义」核验仍准确。 |",
+  "ops/configuration.md:646 [待定] | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：附录 A「来源」列 136 处硬行号引用整体废除（C-03/F-01）——改为「文档 §章节」语义引用（含权威落点核查：38 处原引用文档无定义、落点修正至 detai",
   "ops/deployment.md:262 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "ops/deployment.md:268 [占位] | 0.0.4~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.4~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
   "ops/observability.md:138 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
@@ -358,13 +365,13 @@
   "quality/test-plan.md:192 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "quality/test-plan.md:198 [占位] | 0.0.4~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.4~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
   "quality/test-strategy.md:174 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
-  "README.md:146 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
-  "README.md:156 [占位] | 0.0.7~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.7~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](governance/changelog.md) 全景） |",
-  "README.md:158 [占位] | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：配置参数计数同步（210+148=358）、版本记录跳号占位。 |",
+  "README.md:147 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
+  "README.md:157 [占位] | 0.0.7~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.7~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](governance/changelog.md) 全景） |",
+  "README.md:159 [占位] | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：配置参数计数同步（210+148=358）、版本记录跳号占位。 |",
   "references/error-reference.md:133 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
-  "references/glossary.md:71 [占位] | 认知完整性轴 | Cognitive Integrity Axis | 反例锚点/死胡同路径/组合约束的结构性占位价值，`is_structure=true` 的记忆不参与遗忘 | 认知基础 [cognitive-foundation.md](../foundation/co",
-  "references/glossary.md:122 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
-  "references/glossary.md:129 [占位] | 0.0.4~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.4~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
+  "references/glossary.md:73 [占位] | 认知完整性轴 | Cognitive Integrity Axis | 反例锚点/死胡同路径/组合约束的结构性占位价值，`is_structure=true` 的记忆不参与遗忘 | 认知基础 [cognitive-foundation.md](../foundation/co",
+  "references/glossary.md:129 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
+  "references/glossary.md:136 [占位] | 0.0.4~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.4~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
   "references/traceability-map.md:108 [占位] | C-21 价值独立性公理 | G-06 外部校准源充分性建模 | 占位框架 | v1.1+ |",
   "references/traceability-map.md:111 [占位] | C-14 元记忆 | G-09 元记忆可及性预判维度 | 接口占位 | v1.1 |",
   "references/traceability-map.md:125 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
@@ -378,8 +385,10 @@
   "security/security-specification.md:180 [占位] | 0.0.4~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.4~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
   "security/threat-model.md:110 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "security/threat-model.md:115 [待补] | 0.0.2 | 2026-08-04 | 全库深度审计修复——S-07 防护子项修正、成本上限与熔断参数引用、黄金集待补充注记。 |",
-  "specification/api-spec.md:1603 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
-  "specification/api-spec.md:1612 [占位] | 0.0.6~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.6~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
+  "specification/api-spec.md:1606 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
+  "specification/api-spec.md:1615 [占位] | 0.0.6~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.6~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
+  "specification/api-spec.md:1623 [占位] | 0.0.26~0.0.27 | 2026-08-06 | (合并占位：changelog 0.0.26/0.0.27 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景) |",
+  "specification/api-spec.md:1624 [占位] | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：§6.8 MCP Bridge 工具表补关系管理 3 工具（kairos_link/kairos_unlink/kairos_relations，15 口径统一）；指引",
   "specification/claim-implementation-matrix.md:66 [占位] | C-35 | 社会性校准信任（三前置条件） | C.3 | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.4 `kairos://_social/` 占位 | 三前置条件不",
   "specification/claim-implementation-matrix.md:76 [占位] C-02 潜伏势能、C-03 多重记忆、C-04 关系索引、C-05 编码门控、C-07 巩固、C-09 更新、C-10 检索、C-12 想象膨胀效应、C-17 心境一致性、C-18 辞典式排序、C-19 排序弹性、C-21 价值独立性公理、C-22 分域真理观、C-24 保守倾",
   "specification/claim-implementation-matrix.md:107 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
@@ -393,8 +402,9 @@
   "specification/implementation-map.md:159 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "specification/implementation-map.md:166 [占位] | 0.0.4~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.4~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
   "specification/nfr-specification.md:85 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
-  "specification/operation-catalog.md:118 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
-  "specification/operation-catalog.md:125 [占位] | 0.0.4~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.4~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
+  "specification/operation-catalog.md:131 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
+  "specification/operation-catalog.md:138 [占位] | 0.0.4~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.4~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
+  "specification/operation-catalog.md:144 [占位] | 0.0.26~0.0.27 | 2026-08-06 | (合并占位：changelog 0.0.26/0.0.27 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景) |",
   "specification/requirements-baseline.md:228 [待定] > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。",
   "specification/requirements-baseline.md:235 [占位] | 0.0.4~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.4~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
   "specification/requirements-baseline.md:237 [占位] | 0.0.11~0.0.13 | 2026-08-04 | （合并占位：changelog 0.0.11~0.0.13 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |",
@@ -413,10 +423,10 @@
     "development/technology-stack.md:40",
     "development/technology-stack.md:50",
     "development/technology-stack.md:51",
-    "foundation/architecture-v0.1.0.md:1452",
-    "foundation/architecture-v0.1.0.md:2506",
-    "foundation/architecture-v0.1.0.md:2506",
-    "foundation/architecture-v0.1.0.md:2936",
+    "foundation/architecture-v0.1.0.md:1469",
+    "foundation/architecture-v0.1.0.md:2523",
+    "foundation/architecture-v0.1.0.md:2523",
+    "foundation/architecture-v0.1.0.md:2953",
     "governance/adr.md:354",
     "governance/adr.md:354",
     "governance/adr.md:362",
@@ -447,8 +457,9 @@
     "foundation/architecture-blueprint-v1.1.md:862",
     "foundation/architecture-blueprint-v1.1.md:996",
     "foundation/architecture-v0.1.0.md:52",
-    "foundation/architecture-v0.1.0.md:1149",
-    "foundation/architecture-v0.1.0.md:2543",
+    "foundation/architecture-v0.1.0.md:1166",
+    "foundation/architecture-v0.1.0.md:2560",
+    "foundation/architecture-v0.1.0.md:2920",
     "foundation/cognitive-foundation.md:84",
     "foundation/cognitive-foundation.md:84",
     "foundation/cognitive-foundation.md:1051",
@@ -461,7 +472,7 @@
     "ops/configuration.md:256",
     "quality/test-plan.md:155",
     "specification/api-spec.md:738",
-    "specification/api-spec.md:1621",
+    "specification/api-spec.md:1627",
     "specification/data-model.md:1281",
     "specification/detailed-design.md:334",
     "specification/detailed-design.md:477",
@@ -469,7 +480,7 @@
     "specification/detailed-design.md:1040",
     "specification/implementation-map.md:18",
     "specification/implementation-map.md:115",
-    "specification/operation-catalog.md:113"
+    "specification/operation-catalog.md:126"
    ],
    "4类": [
     "development/slice-implementation-guide.md:20",
@@ -478,14 +489,14 @@
     "development/slice-implementation-guide.md:158",
     "development/slice-implementation-guide.md:160",
     "development/slice-implementation-guide.md:164",
-    "foundation/architecture-v0.1.0.md:1338",
-    "foundation/architecture-v0.1.0.md:1340",
-    "foundation/architecture-v0.1.0.md:3494",
+    "foundation/architecture-v0.1.0.md:1355",
+    "foundation/architecture-v0.1.0.md:1357",
+    "foundation/architecture-v0.1.0.md:3511",
     "governance/project-plan.md:31",
     "governance/project-plan.md:51",
     "governance/project-plan.md:90",
     "quality/acceptance-criteria.md:32",
-    "references/glossary.md:101",
+    "references/glossary.md:103",
     "specification/feature-list.md:26",
     "specification/feature-list.md:36",
     "specification/implementation-map.md:86",
@@ -493,8 +504,8 @@
     "specification/requirements-baseline.md:223"
    ],
    "3条": [
-    "foundation/architecture-v0.1.0.md:905",
-    "foundation/architecture-v0.1.0.md:2859",
+    "foundation/architecture-v0.1.0.md:922",
+    "foundation/architecture-v0.1.0.md:2876",
     "governance/changelog.md:195",
     "governance/changelog.md:331",
     "governance/debt-collection.md:331",
@@ -512,12 +523,49 @@
     "specification/feature-list.md:145",
     "specification/feature-list.md:149"
    ],
+   "12项": [
+    "governance/adr.md:435",
+    "governance/changelog.md:78",
+    "governance/changelog.md:139",
+    "governance/changelog.md:160",
+    "governance/changelog.md:221",
+    "governance/changelog.md:221",
+    "governance/changelog.md:360",
+    "governance/changelog.md:413",
+    "governance/changelog.md:429",
+    "governance/debt-collection.md:847",
+    "ops/configuration.md:470",
+    "ops/configuration.md:638",
+    "ops/configuration.md:644",
+    "README.md:64",
+    "README.md:155",
+    "references/concept-tiers.md:110",
+    "references/concept-tiers.md:110"
+   ],
+   "18类": [
+    "development/engineering-workflow.md:62",
+    "governance/changelog.md:144",
+    "governance/changelog.md:156",
+    "governance/changelog.md:197",
+    "governance/changelog.md:210",
+    "governance/changelog.md:224",
+    "governance/changelog.md:236",
+    "governance/changelog.md:246",
+    "governance/changelog.md:259",
+    "governance/changelog.md:272",
+    "governance/changelog.md:281",
+    "governance/changelog.md:296",
+    "governance/changelog.md:323",
+    "governance/changelog.md:349",
+    "governance/changelog.md:377",
+    "governance/changelog.md:395"
+   ],
    "3项": [
     "governance/changelog.md:139",
     "governance/changelog.md:216",
     "governance/changelog.md:217",
     "governance/changelog.md:413",
-    "governance/debt-collection.md:754",
+    "governance/debt-collection.md:765",
     "ops/configuration.md:20",
     "ops/configuration.md:20",
     "ops/configuration.md:20",
@@ -535,10 +583,10 @@
     "foundation/architecture-blueprint-v1.1.md:496",
     "foundation/architecture-v0.1.0.md:323",
     "foundation/architecture-v0.1.0.md:533",
-    "foundation/architecture-v0.1.0.md:704",
-    "foundation/architecture-v0.1.0.md:1158",
-    "foundation/architecture-v0.1.0.md:2434",
-    "foundation/architecture-v0.1.0.md:3033",
+    "foundation/architecture-v0.1.0.md:721",
+    "foundation/architecture-v0.1.0.md:1175",
+    "foundation/architecture-v0.1.0.md:2451",
+    "foundation/architecture-v0.1.0.md:3050",
     "foundation/cognitive-foundation.md:505",
     "foundation/cognitive-foundation.md:1045",
     "governance/debt-collection.md:613",
@@ -550,53 +598,19 @@
    "6维": [
     "foundation/architecture-v0.1.0.md:32",
     "foundation/architecture-v0.1.0.md:400",
-    "foundation/architecture-v0.1.0.md:1341",
-    "foundation/architecture-v0.1.0.md:1365",
-    "foundation/architecture-v0.1.0.md:3536",
-    "foundation/architecture-v0.1.0.md:3595",
-    "foundation/architecture-v0.1.0.md:3713",
+    "foundation/architecture-v0.1.0.md:1358",
+    "foundation/architecture-v0.1.0.md:1382",
+    "foundation/architecture-v0.1.0.md:3553",
+    "foundation/architecture-v0.1.0.md:3612",
+    "foundation/architecture-v0.1.0.md:3730",
     "governance/debt-collection.md:668",
-    "governance/debt-collection.md:715",
+    "governance/debt-collection.md:725",
     "ops/configuration.md:300",
     "ops/runbook.md:193",
     "references/usage-load-algorithm.md:17",
     "specification/feature-list.md:201",
     "specification/system-context.md:86",
     "specification/system-context.md:106"
-   ],
-   "12项": [
-    "governance/adr.md:435",
-    "governance/changelog.md:78",
-    "governance/changelog.md:139",
-    "governance/changelog.md:160",
-    "governance/changelog.md:221",
-    "governance/changelog.md:221",
-    "governance/changelog.md:360",
-    "governance/changelog.md:413",
-    "ops/configuration.md:470",
-    "ops/configuration.md:638",
-    "ops/configuration.md:644",
-    "README.md:63",
-    "README.md:154",
-    "references/concept-tiers.md:110",
-    "references/concept-tiers.md:110"
-   ],
-   "18类": [
-    "governance/changelog.md:144",
-    "governance/changelog.md:156",
-    "governance/changelog.md:197",
-    "governance/changelog.md:210",
-    "governance/changelog.md:224",
-    "governance/changelog.md:236",
-    "governance/changelog.md:246",
-    "governance/changelog.md:259",
-    "governance/changelog.md:272",
-    "governance/changelog.md:281",
-    "governance/changelog.md:296",
-    "governance/changelog.md:323",
-    "governance/changelog.md:349",
-    "governance/changelog.md:377",
-    "governance/changelog.md:395"
    ],
    "19条": [
     "governance/release-guide.md:48",
@@ -606,7 +620,7 @@
     "quality/test-plan.md:138",
     "quality/test-plan.md:196",
     "quality/test-strategy.md:58",
-    "references/glossary.md:114",
+    "references/glossary.md:121",
     "security/security-specification.md:178",
     "specification/feature-list.md:36",
     "specification/implementation-map.md:152",
@@ -632,12 +646,12 @@
     "specification/data-model.md:1354"
    ],
    "1条": [
-    "foundation/architecture-v0.1.0.md:1159",
-    "foundation/architecture-v0.1.0.md:1161",
-    "foundation/architecture-v0.1.0.md:1267",
-    "foundation/architecture-v0.1.0.md:1835",
-    "foundation/architecture-v0.1.0.md:1836",
-    "foundation/architecture-v0.1.0.md:2977",
+    "foundation/architecture-v0.1.0.md:1176",
+    "foundation/architecture-v0.1.0.md:1178",
+    "foundation/architecture-v0.1.0.md:1284",
+    "foundation/architecture-v0.1.0.md:1852",
+    "foundation/architecture-v0.1.0.md:1853",
+    "foundation/architecture-v0.1.0.md:2994",
     "governance/adr.md:436",
     "quality/test-plan.md:30",
     "quality/test-plan.md:31",
@@ -649,11 +663,11 @@
    ],
    "2条": [
     "foundation/architecture-blueprint-v1.1.md:273",
-    "foundation/architecture-v0.1.0.md:906",
-    "foundation/architecture-v0.1.0.md:1512",
-    "foundation/architecture-v0.1.0.md:1835",
-    "foundation/architecture-v0.1.0.md:2641",
-    "foundation/architecture-v0.1.0.md:2694",
+    "foundation/architecture-v0.1.0.md:923",
+    "foundation/architecture-v0.1.0.md:1529",
+    "foundation/architecture-v0.1.0.md:1852",
+    "foundation/architecture-v0.1.0.md:2658",
+    "foundation/architecture-v0.1.0.md:2711",
     "foundation/cognitive-foundation.md:664",
     "governance/adr.md:418",
     "governance/changelog.md:373",
@@ -681,17 +695,17 @@
     "foundation/architecture-v0.1.0.md:207",
     "foundation/architecture-v0.1.0.md:289",
     "foundation/architecture-v0.1.0.md:289",
-    "foundation/architecture-v0.1.0.md:1140",
-    "foundation/architecture-v0.1.0.md:1156",
-    "foundation/architecture-v0.1.0.md:1158",
-    "foundation/architecture-v0.1.0.md:1158",
+    "foundation/architecture-v0.1.0.md:1157",
+    "foundation/architecture-v0.1.0.md:1173",
+    "foundation/architecture-v0.1.0.md:1175",
+    "foundation/architecture-v0.1.0.md:1175",
     "README.md:45",
     "specification/use-cases.md:20",
     "specification/use-cases.md:135",
     "specification/use-cases.md:144"
    ],
    "4项": [
-    "foundation/architecture-v0.1.0.md:3831",
+    "foundation/architecture-v0.1.0.md:3848",
     "governance/adr.md:400",
     "governance/changelog.md:139",
     "governance/changelog.md:219",
@@ -703,12 +717,24 @@
     "specification/data-model.md:1374",
     "specification/implementation-map.md:140"
    ],
+   "96条": [
+    "foundation/architecture-blueprint-v1.1.md:1196",
+    "foundation/architecture-blueprint-v1.1.md:1202",
+    "foundation/architecture-blueprint-v1.1.md:1202",
+    "foundation/architecture-blueprint-v1.1.md:1205",
+    "foundation/architecture-v0.1.0.md:2627",
+    "foundation/architecture-v0.1.0.md:2629",
+    "ops/configuration.md:594",
+    "ops/configuration.md:595",
+    "ops/configuration.md:596",
+    "specification/feature-list.md:323"
+   ],
    "10条": [
     "foundation/architecture-v0.1.0.md:283",
     "foundation/architecture-v0.1.0.md:283",
     "foundation/architecture-v0.1.0.md:285",
     "foundation/architecture-v0.1.0.md:303",
-    "foundation/architecture-v0.1.0.md:3379",
+    "foundation/architecture-v0.1.0.md:3396",
     "governance/changelog.md:369",
     "governance/project-plan.md:89",
     "governance/risks.md:86",
@@ -716,7 +742,7 @@
     "quality/test-plan.md:80"
    ],
    "5个": [
-    "foundation/architecture-v0.1.0.md:1234",
+    "foundation/architecture-v0.1.0.md:1251",
     "governance/changelog.md:49",
     "governance/debt-collection.md:66",
     "ops/configuration.md:53",
@@ -725,7 +751,7 @@
     "references/usage-load-algorithm.md:17",
     "references/usage-load-algorithm.md:17",
     "specification/implementation-map.md:119",
-    "specification/operation-catalog.md:109"
+    "specification/operation-catalog.md:122"
    ],
    "10项": [
     "governance/adr.md:434",
@@ -751,22 +777,33 @@
     "quality/test-plan.md:196",
     "specification/implementation-map.md:154"
    ],
+   "15个": [
+    "development/integration-design.md:124",
+    "development/integration-design.md:139",
+    "development/technology-stack.md:98",
+    "development/technology-stack.md:138",
+    "foundation/architecture-v0.1.0.md:2920",
+    "governance/changelog.md:188",
+    "specification/api-spec.md:918",
+    "specification/api-spec.md:1618",
+    "specification/operation-catalog.md:122"
+   ],
    "1个": [
     "foundation/architecture-blueprint-v1.1.md:496",
-    "foundation/architecture-v0.1.0.md:1148",
-    "foundation/architecture-v0.1.0.md:1267",
-    "foundation/architecture-v0.1.0.md:1423",
-    "foundation/architecture-v0.1.0.md:2119",
-    "foundation/architecture-v0.1.0.md:2434",
-    "foundation/architecture-v0.1.0.md:3300",
+    "foundation/architecture-v0.1.0.md:1165",
+    "foundation/architecture-v0.1.0.md:1284",
+    "foundation/architecture-v0.1.0.md:1440",
+    "foundation/architecture-v0.1.0.md:2136",
+    "foundation/architecture-v0.1.0.md:2451",
+    "foundation/architecture-v0.1.0.md:3317",
     "foundation/cognitive-foundation.md:309",
     "specification/detailed-design.md:973"
    ],
    "12维": [
     "foundation/architecture-v0.1.0.md:48",
     "foundation/architecture-v0.1.0.md:400",
-    "foundation/architecture-v0.1.0.md:1341",
-    "foundation/architecture-v0.1.0.md:3536",
+    "foundation/architecture-v0.1.0.md:1358",
+    "foundation/architecture-v0.1.0.md:3553",
     "foundation/cognitive-foundation.md:1072",
     "governance/cognitive-architecture-gap.md:30",
     "governance/debt-collection.md:612",
@@ -774,22 +811,22 @@
     "references/usage-load-algorithm.md:17"
    ],
    "10类": [
-    "foundation/architecture-v0.1.0.md:3496",
-    "foundation/architecture-v0.1.0.md:3827",
+    "foundation/architecture-v0.1.0.md:3513",
+    "foundation/architecture-v0.1.0.md:3844",
     "governance/changelog.md:137",
     "governance/changelog.md:222",
     "references/concept-tiers.md:57",
-    "references/glossary.md:101",
+    "references/glossary.md:103",
     "specification/detailed-design.md:340",
     "specification/implementation-map.md:139"
    ],
    "5项": [
     "governance/changelog.md:186",
     "governance/changelog.md:201",
-    "references/glossary.md:116",
-    "references/glossary.md:133",
+    "references/glossary.md:123",
+    "references/glossary.md:140",
     "specification/api-spec.md:513",
-    "specification/api-spec.md:1615",
+    "specification/api-spec.md:1618",
     "specification/data-model.md:336",
     "specification/data-model.md:1384"
    ],
@@ -801,31 +838,22 @@
     "specification/feature-list.md:24",
     "specification/feature-list.md:143",
     "specification/feature-list.md:295",
-    "specification/operation-catalog.md:107"
+    "specification/operation-catalog.md:120"
    ],
-   "15个": [
-    "development/integration-design.md:124",
-    "development/integration-design.md:139",
-    "development/technology-stack.md:98",
-    "development/technology-stack.md:138",
-    "foundation/architecture-v0.1.0.md:2903",
-    "governance/changelog.md:188",
-    "specification/api-spec.md:1615"
-   ],
-   "96条": [
-    "foundation/architecture-blueprint-v1.1.md:1196",
-    "foundation/architecture-blueprint-v1.1.md:1202",
-    "foundation/architecture-blueprint-v1.1.md:1202",
-    "foundation/architecture-blueprint-v1.1.md:1205",
-    "foundation/architecture-v0.1.0.md:2610",
-    "foundation/architecture-v0.1.0.md:2612",
-    "specification/feature-list.md:323"
+   "9项": [
+    "development/slice-implementation-guide.md:40",
+    "governance/changelog.md:86",
+    "governance/changelog.md:353",
+    "governance/changelog.md:409",
+    "governance/changelog.md:426",
+    "governance/changelog.md:429",
+    "governance/debt-collection.md:847"
    ],
    "14维": [
     "foundation/architecture-v0.1.0.md:48",
     "foundation/architecture-v0.1.0.md:400",
-    "foundation/architecture-v0.1.0.md:1341",
-    "foundation/architecture-v0.1.0.md:3536",
+    "foundation/architecture-v0.1.0.md:1358",
+    "foundation/architecture-v0.1.0.md:3553",
     "governance/cognitive-architecture-gap.md:30",
     "governance/debt-collection.md:612",
     "governance/risks.md:164"
@@ -836,8 +864,8 @@
     "ops/configuration.md:632",
     "ops/configuration.md:641",
     "ops/configuration.md:643",
-    "README.md:84",
-    "README.md:169"
+    "README.md:85",
+    "README.md:170"
    ],
    "57张": [
     "development/slice-implementation-guide.md:46",
@@ -847,29 +875,37 @@
     "specification/data-model.md:1354",
     "specification/implementation-map.md:65"
    ],
+   "12个": [
+    "foundation/architecture-v0.1.0.md:560",
+    "foundation/architecture-v0.1.0.md:2886",
+    "foundation/architecture-v0.1.0.md:2920",
+    "references/glossary.md:114",
+    "specification/feature-list.md:177",
+    "specification/implementation-map.md:117"
+   ],
    "10个": [
-    "foundation/architecture-v0.1.0.md:1140",
-    "foundation/architecture-v0.1.0.md:1162",
+    "foundation/architecture-v0.1.0.md:1157",
+    "foundation/architecture-v0.1.0.md:1179",
     "ops/configuration.md:52",
     "ops/configuration.md:80",
     "ops/configuration.md:252",
     "references/value-dimension-entropy.md:53"
    ],
    "6个": [
-    "foundation/architecture-v0.1.0.md:1150",
-    "foundation/architecture-v0.1.0.md:1151",
+    "foundation/architecture-v0.1.0.md:1167",
+    "foundation/architecture-v0.1.0.md:1168",
     "foundation/cognitive-foundation.md:1045",
     "governance/social-calibration-roadmap.md:74",
     "specification/data-model.md:855",
     "specification/feature-list.md:178"
    ],
    "15项": [
-    "foundation/architecture-v0.1.0.md:3815",
+    "foundation/architecture-v0.1.0.md:3832",
     "foundation/cognitive-foundation.md:1120",
     "governance/adr.md:395",
     "governance/adr.md:396",
-    "governance/documentation-governance.md:79",
-    "README.md:151"
+    "governance/documentation-governance.md:106",
+    "README.md:152"
    ],
    "223项": [
     "governance/changelog.md:360",
@@ -877,138 +913,138 @@
     "ops/configuration.md:468",
     "ops/configuration.md:468",
     "ops/configuration.md:643",
-    "README.md:84"
+    "README.md:85"
    ],
    "10层": [
     "ops/troubleshooting.md:73",
     "references/error-reference.md:52",
-    "specification/api-spec.md:1038",
+    "specification/api-spec.md:1041",
     "specification/nfr-specification.md:47",
     "specification/nfr-specification.md:47",
     "user/user-guide.md:203"
-   ],
-   "9项": [
-    "development/slice-implementation-guide.md:40",
-    "governance/changelog.md:86",
-    "governance/changelog.md:353",
-    "governance/changelog.md:409",
-    "governance/changelog.md:426"
    ],
    "6项": [
     "development/slice-implementation-guide.md:40",
     "governance/changelog.md:214",
     "governance/changelog.md:426",
     "ops/configuration.md:633",
-    "README.md:95"
+    "README.md:96"
    ],
    "2阶段": [
     "foundation/architecture-blueprint-v1.1.md:552",
-    "foundation/architecture-v0.1.0.md:1951",
-    "foundation/architecture-v0.1.0.md:2013",
-    "foundation/architecture-v0.1.0.md:2114",
-    "foundation/architecture-v0.1.0.md:2381"
+    "foundation/architecture-v0.1.0.md:1968",
+    "foundation/architecture-v0.1.0.md:2030",
+    "foundation/architecture-v0.1.0.md:2131",
+    "foundation/architecture-v0.1.0.md:2398"
+   ],
+   "7条": [
+    "foundation/architecture-v0.1.0.md:283",
+    "governance/changelog.md:214",
+    "governance/changelog.md:431",
+    "governance/risks.md:86",
+    "references/glossary.md:144"
    ],
    "1000条": [
-    "foundation/architecture-v0.1.0.md:1009",
+    "foundation/architecture-v0.1.0.md:1026",
     "quality/benchmark-plan.md:49",
     "quality/benchmark-plan.md:61",
     "quality/benchmark-plan.md:62",
     "specification/requirements-baseline.md:46"
    ],
-   "60条": [
-    "foundation/architecture-v0.1.0.md:3726",
-    "governance/changelog.md:295",
-    "README.md:117",
-    "README.md:169",
-    "references/glossary.md:134"
-   ],
    "14项": [
     "governance/changelog.md:139",
     "governance/changelog.md:413",
-    "governance/debt-collection.md:753",
+    "governance/debt-collection.md:764",
     "ops/configuration.md:20",
     "ops/configuration.md:638"
    ],
-   "53项": [
-    "governance/changelog.md:365",
-    "README.md:47",
-    "specification/operation-catalog.md:107",
-    "specification/operation-catalog.md:113",
-    "specification/operation-catalog.md:122"
+   "13项": [
+    "governance/changelog.md:315",
+    "governance/changelog.md:426",
+    "governance/changelog.md:430",
+    "governance/documentation-governance.md:43",
+    "specification/operation-catalog.md:145"
+   ],
+   "7个": [
+    "governance/changelog.md:430",
+    "README.md:118",
+    "references/domain_keywords.yaml:4",
+    "specification/operation-catalog.md:126",
+    "specification/operation-catalog.md:145"
    ],
    "38个": [
     "ops/troubleshooting.md:57",
-    "README.md:118",
+    "README.md:119",
     "references/error-reference.md:22",
     "references/error-reference.md:137",
-    "specification/api-spec.md:1025"
+    "specification/api-spec.md:1028"
    ],
    "43项": [
     "README.md:17",
     "references/traceability-map.md:20",
     "specification/feature-list.md:123",
     "specification/feature-list.md:159",
-    "specification/operation-catalog.md:107"
+    "specification/operation-catalog.md:120"
    ],
    "1阶段": [
     "foundation/architecture-blueprint-v1.1.md:180",
-    "foundation/architecture-v0.1.0.md:1955",
+    "foundation/architecture-v0.1.0.md:1972",
     "governance/social-calibration-roadmap.md:157",
     "specification/detailed-design.md:521"
    ],
    "50条": [
     "foundation/architecture-blueprint-v1.1.md:593",
-    "foundation/architecture-v0.1.0.md:3601",
+    "foundation/architecture-v0.1.0.md:3618",
     "specification/detailed-design.md:985",
     "specification/detailed-design.md:998"
    ],
    "4层": [
     "foundation/architecture-v0.1.0.md:205",
     "foundation/architecture-v0.1.0.md:294",
-    "foundation/architecture-v0.1.0.md:713",
+    "foundation/architecture-v0.1.0.md:730",
     "specification/implementation-map.md:73"
    ],
    "4维": [
     "foundation/architecture-v0.1.0.md:400",
-    "foundation/architecture-v0.1.0.md:1341",
-    "foundation/architecture-v0.1.0.md:3536",
+    "foundation/architecture-v0.1.0.md:1358",
+    "foundation/architecture-v0.1.0.md:3553",
     "foundation/cognitive-foundation.md:1072"
    ],
    "0阶段": [
-    "foundation/architecture-v0.1.0.md:688",
+    "foundation/architecture-v0.1.0.md:705",
     "foundation/cognitive-foundation.md:71",
     "governance/debt-collection.md:479",
     "governance/risks.md:89"
    ],
    "30个": [
-    "foundation/architecture-v0.1.0.md:2306",
+    "foundation/architecture-v0.1.0.md:2323",
     "governance/adr.md:396",
     "ops/configuration.md:55",
     "ops/configuration.md:254"
    ],
-   "12个": [
-    "foundation/architecture-v0.1.0.md:2869",
-    "specification/feature-list.md:177",
-    "specification/implementation-map.md:117",
-    "specification/operation-catalog.md:109"
+   "67条": [
+    "foundation/architecture-v0.1.0.md:3743",
+    "README.md:118",
+    "README.md:173",
+    "references/glossary.md:144"
    ],
    "135项": [
-    "foundation/architecture-v0.1.0.md:3815",
+    "foundation/architecture-v0.1.0.md:3832",
     "foundation/cognitive-foundation.md:1120",
-    "governance/documentation-governance.md:79",
-    "README.md:151"
+    "governance/documentation-governance.md:106",
+    "README.md:152"
    ],
    "5条": [
     "governance/changelog.md:97",
     "ops/troubleshooting.md:36",
     "quality/test-plan.md:73",
-    "references/glossary.md:128"
+    "references/glossary.md:135"
    ],
    "57条": [
     "governance/changelog.md:196",
     "governance/changelog.md:268",
     "references/concept-tiers.md:17",
-    "references/glossary.md:133"
+    "references/glossary.md:140"
    ],
    "24项": [
     "governance/changelog.md:329",
@@ -1016,10 +1052,22 @@
     "governance/changelog.md:427",
     "specification/feature-list.md:295"
    ],
+   "13个": [
+    "governance/changelog.md:344",
+    "governance/documentation-governance.md:175",
+    "specification/data-model.md:1387",
+    "specification/operation-catalog.md:126"
+   ],
+   "53项": [
+    "governance/changelog.md:365",
+    "README.md:47",
+    "specification/operation-catalog.md:120",
+    "specification/operation-catalog.md:135"
+   ],
    "371项": [
     "ops/configuration.md:20",
     "ops/configuration.md:643",
-    "README.md:84",
+    "README.md:85",
     "specification/implementation-map.md:140"
    ],
    "10000条": [
@@ -1036,7 +1084,7 @@
    ],
    "37项": [
     "README.md:36",
-    "README.md:157",
+    "README.md:158",
     "specification/claim-implementation-matrix.md:20",
     "specification/claim-implementation-matrix.md:111"
    ],
@@ -1052,7 +1100,7 @@
    ],
    "6步": [
     "foundation/architecture-blueprint-v1.1.md:492",
-    "foundation/architecture-v0.1.0.md:2430",
+    "foundation/architecture-v0.1.0.md:2447",
     "specification/use-cases.md:147"
    ],
    "4个": [
@@ -1062,38 +1110,38 @@
    ],
    "5层": [
     "foundation/architecture-v0.1.0.md:188",
-    "foundation/architecture-v0.1.0.md:686",
-    "foundation/architecture-v0.1.0.md:3731"
-   ],
-   "7条": [
-    "foundation/architecture-v0.1.0.md:283",
-    "governance/changelog.md:214",
-    "governance/risks.md:86"
+    "foundation/architecture-v0.1.0.md:703",
+    "foundation/architecture-v0.1.0.md:3748"
    ],
    "1级": [
-    "foundation/architecture-v0.1.0.md:879",
+    "foundation/architecture-v0.1.0.md:896",
     "foundation/cognitive-foundation.md:389",
     "governance/social-calibration-roadmap.md:83"
    ],
    "6类": [
-    "foundation/architecture-v0.1.0.md:3494",
+    "foundation/architecture-v0.1.0.md:3511",
     "governance/changelog.md:69",
     "governance/changelog.md:79"
+   ],
+   "18个": [
+    "foundation/cognitive-foundation.md:1028",
+    "governance/changelog.md:344",
+    "specification/api-spec.md:1625"
    ],
    "25个": [
     "governance/changelog.md:138",
     "specification/claim-implementation-matrix.md:24",
     "specification/claim-implementation-matrix.md:24"
    ],
-   "13项": [
-    "governance/changelog.md:315",
-    "governance/changelog.md:426",
-    "governance/documentation-governance.md:43"
+   "60条": [
+    "governance/changelog.md:295",
+    "README.md:170",
+    "references/glossary.md:141"
    ],
    "85个": [
     "governance/changelog.md:331",
     "specification/implementation-map.md:115",
-    "specification/operation-catalog.md:113"
+    "specification/operation-catalog.md:126"
    ],
    "19项": [
     "governance/changelog.md:353",
@@ -1102,7 +1150,7 @@
    ],
    "16项": [
     "governance/cognitive-architecture-gap.md:65",
-    "README.md:69",
+    "README.md:70",
     "references/traceability-map.md:120"
    ],
    "100个": [
@@ -1113,7 +1161,7 @@
    "125项": [
     "references/traceability-map.md:20",
     "specification/feature-list.md:159",
-    "specification/operation-catalog.md:107"
+    "specification/operation-catalog.md:120"
    ],
    "15条": [
     "development/slice-implementation-guide.md:72",
@@ -1127,9 +1175,13 @@
     "development/slice-implementation-guide.md:128",
     "foundation/cognitive-foundation.md:848"
    ],
+   "9个": [
+    "development/technology-stack.md:98",
+    "foundation/architecture-v0.1.0.md:2920"
+   ],
    "4步": [
     "foundation/architecture-blueprint-v1.1.md:492",
-    "foundation/architecture-v0.1.0.md:2430"
+    "foundation/architecture-v0.1.0.md:2447"
    ],
    "80条": [
     "foundation/architecture-blueprint-v1.1.md:1202",
@@ -1140,19 +1192,19 @@
     "quality/test-strategy.md:133"
    ],
    "2级": [
-    "foundation/architecture-v0.1.0.md:1276",
+    "foundation/architecture-v0.1.0.md:1293",
     "foundation/cognitive-foundation.md:389"
    ],
    "128维": [
-    "foundation/architecture-v0.1.0.md:1451",
+    "foundation/architecture-v0.1.0.md:1468",
     "specification/data-model.md:41"
    ],
    "128条": [
-    "foundation/architecture-v0.1.0.md:3499",
+    "foundation/architecture-v0.1.0.md:3516",
     "specification/nfr-specification.md:50"
    ],
    "24个": [
-    "foundation/architecture-v0.1.0.md:3819",
+    "foundation/architecture-v0.1.0.md:3836",
     "governance/changelog.md:109"
    ],
    "0表": [
@@ -1163,17 +1215,13 @@
     "foundation/cognitive-foundation.md:413",
     "ops/configuration.md:246"
    ],
-   "18个": [
-    "foundation/cognitive-foundation.md:1028",
-    "governance/changelog.md:344"
-   ],
    "56条": [
     "governance/changelog.md:70",
-    "README.md:153"
+    "README.md:154"
    ],
    "13端点": [
     "governance/changelog.md:71",
-    "specification/api-spec.md:1608"
+    "specification/api-spec.md:1611"
    ],
    "15类": [
     "governance/changelog.md:102",
@@ -1185,7 +1233,7 @@
    ],
    "14条": [
     "governance/changelog.md:209",
-    "README.md:161"
+    "README.md:162"
    ],
    "7层": [
     "governance/changelog.md:292",
@@ -1201,11 +1249,7 @@
    ],
    "16条": [
     "governance/changelog.md:332",
-    "specification/api-spec.md:1619"
-   ],
-   "13个": [
-    "governance/changelog.md:344",
-    "governance/documentation-governance.md:148"
+    "specification/api-spec.md:1622"
    ],
    "05端点": [
     "governance/changelog.md:359",
@@ -1220,8 +1264,12 @@
     "governance/changelog.md:385"
    ],
    "19轴": [
-    "governance/debt-collection.md:831",
+    "governance/debt-collection.md:842",
     "references/traceability-map.md:133"
+   ],
+   "01类": [
+    "governance/documentation-governance.md:77",
+    "governance/documentation-governance.md:87"
    ],
    "50个": [
     "ops/configuration.md:87",
@@ -1233,11 +1281,11 @@
    ],
    "193项": [
     "ops/configuration.md:635",
-    "README.md:152"
+    "README.md:153"
    ],
    "341项": [
     "ops/configuration.md:635",
-    "README.md:152"
+    "README.md:153"
    ],
    "38项": [
     "ops/troubleshooting.md:55",
@@ -1255,13 +1303,13 @@
     "README.md:37",
     "specification/feature-list.md:143"
    ],
-   "7个": [
-    "README.md:117",
-    "references/domain_keywords.yaml:4"
-   ],
    "11类": [
-    "README.md:118",
+    "README.md:119",
     "references/error-reference.md:137"
+   ],
+   "56个": [
+    "specification/data-model.md:1373",
+    "specification/operation-catalog.md:126"
    ],
    "56张": [
     "specification/data-model.md:1374",
@@ -1295,22 +1343,22 @@
     "foundation/architecture-v0.1.0.md:266"
    ],
    "2项": [
-    "foundation/architecture-v0.1.0.md:586"
+    "foundation/architecture-v0.1.0.md:603"
    ],
    "2类": [
-    "foundation/architecture-v0.1.0.md:1340"
+    "foundation/architecture-v0.1.0.md:1357"
    ],
    "6级": [
-    "foundation/architecture-v0.1.0.md:1362"
+    "foundation/architecture-v0.1.0.md:1379"
    ],
    "000条": [
-    "foundation/architecture-v0.1.0.md:2546"
+    "foundation/architecture-v0.1.0.md:2563"
    ],
    "3类": [
-    "foundation/architecture-v0.1.0.md:3410"
+    "foundation/architecture-v0.1.0.md:3427"
    ],
    "08轴": [
-    "foundation/architecture-v0.1.0.md:3815"
+    "foundation/architecture-v0.1.0.md:3832"
    ],
    "8条": [
     "foundation/cognitive-foundation.md:615"
@@ -1388,10 +1436,10 @@
     "governance/debt-collection.md:600"
    ],
    "62项": [
-    "governance/debt-collection.md:756"
+    "governance/debt-collection.md:767"
    ],
    "51个": [
-    "governance/documentation-governance.md:148"
+    "governance/documentation-governance.md:175"
    ],
    "1000个": [
     "ops/configuration.md:68"
@@ -1442,7 +1490,7 @@
     "quality/test-plan.md:30"
    ],
    "78端点": [
-    "specification/api-spec.md:1607"
+    "specification/api-spec.md:1610"
    ],
    "27个": [
     "specification/claim-implementation-matrix.md:24"
@@ -1450,13 +1498,13 @@
    "2048维": [
     "specification/data-model.md:41"
    ],
+   "13类": [
+    "specification/data-model.md:1304"
+   ],
    "42张": [
     "specification/data-model.md:1354"
    ],
    "55张": [
-    "specification/data-model.md:1373"
-   ],
-   "56个": [
     "specification/data-model.md:1373"
    ],
    "57个": [
@@ -1477,8 +1525,11 @@
    "64条": [
     "specification/nfr-specification.md:50"
    ],
+   "66项": [
+    "specification/operation-catalog.md:126"
+   ],
    "88端点": [
-    "specification/operation-catalog.md:113"
+    "specification/operation-catalog.md:126"
    ],
    "0项": [
     "specification/requirements-baseline.md:25"
@@ -1493,20 +1544,20 @@
  ],
  "versions": [
   {
-   "v0.1.0": 1821,
-   "0.0.1": 117,
+   "v0.1.0": 1806,
+   "0.0.1": 119,
    "0.0.14": 117,
-   "0.0.2": 106,
-   "0.0.3": 85,
+   "0.0.2": 107,
+   "0.0.3": 86,
    "0.0.16": 84,
    "0.0.11": 71,
    "0.0.10": 62,
    "0.0.9": 56,
    "0.0.25": 49,
-   "0.0.15": 46,
+   "0.0.15": 47,
    "0.0.4": 42,
-   "0.0.26": 31,
-   "0.0.22": 31,
+   "0.0.26": 35,
+   "0.0.22": 32,
    "0.0.18": 29,
    "0.0.24": 27,
    "0.0.17": 23,
@@ -1514,34 +1565,37 @@
    "0.0.19": 22,
    "0.0.13": 22,
    "0.0.23": 21,
+   "0.0.29": 17,
    "3.2.1": 15,
+   "7.3.1": 14,
+   "0.0.28": 12,
    "0.0.12": 12,
    "1.3.2": 12,
    "0.0.21": 11,
+   "2.6.1": 10,
    "0.0.6": 10,
    "0.0.7": 10,
-   "7.3.1": 9,
+   "0.0.27": 10,
    "1.3.1": 9,
    "0.0.5": 8,
    "0.4.1": 7,
-   "2.6.1": 6,
    "0.0.8": 6,
+   "2.6.2": 5,
+   "2.6.3": 5,
    "0.1.0": 5,
    "2.2.1": 4,
    "127.0.0": 4,
    "5.20.1": 3,
    "5.20.6": 3,
    "v1.1.0": 3,
-   "2.6.3": 2,
+   "0.0.30": 2,
    "1.0.0": 2,
    "v1.0.0": 2,
-   "2.6.2": 1,
    "5.20.2": 1,
    "5.20.3": 1,
    "5.20.4": 1,
    "5.20.5": 1,
    "v0.0.25": 1,
-   "0.0.27": 1,
    "v0.2.0": 1,
    "v0.1.1": 1,
    "0.0.0": 1,
@@ -1552,9 +1606,9 @@
  "dates": [
   {
    "2026-08-04": 232,
-   "2026-08-05": 228,
+   "2026-08-05": 224,
+   "2026-08-06": 73,
    "2026-07-31": 68,
-   "2026-08-06": 46,
    "2026-07-20": 38,
    "2026-08-03": 27,
    "2026-07-19": 22,
@@ -1574,14 +1628,14 @@
   }
  ],
  "crlf": [
-  "foundation/architecture-blueprint-v1.1.md",
+  "development/technology-stack.md",
+  "foundation/architecture-v0.1.0.md",
   "governance/adr.md",
-  "governance/documentation-governance.md",
+  "governance/changelog.md",
   "ops/troubleshooting.md",
   "references/error-reference.md",
+  "references/glossary.md",
   "security/threat-model.md",
-  "specification/api-spec.md",
-  "specification/data-model.md",
   "specification/detailed-design.md",
   "specification/implementation-map.md",
   "specification/operation-catalog.md",

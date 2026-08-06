@@ -7,8 +7,8 @@ tags:
   - kairos
   - documentation
 created: 2026-07-18
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
@@ -55,6 +55,7 @@ status: draft
 | [`development/coding-conventions.md`](development/coding-conventions.md) | **开发规范** — 命名/结构/错误处理/日志 |
 | [`development/integration-design.md`](development/integration-design.md) | **集成设计** — Agent 全生命周期 + 并发/超时/错误传播 |
 | [`development/slice-implementation-guide.md`](development/slice-implementation-guide.md) | **竖切实现指南** — 竖切组件/15 张表/REST+CLI 端点/逐组件实现规格 |
+| [`development/engineering-workflow.md`](development/engineering-workflow.md) | **工程流程** — 分支策略/PR 流程/提交规范/CI 门禁/发布流程 |
 
 ## 治理文档
 
@@ -114,7 +115,7 @@ status: draft
 
 | 路径 | 内容 |
 |:-----|:-----|
-| [`references/glossary.md`](references/glossary.md) | **术语表** — 60 条中英文术语对照（7 个分类表，不含版本记录；0.0.22 增补「热度层级衰减」「摄入侧情绪保护」「噪音规则库」） |
+| [`references/glossary.md`](references/glossary.md) | **术语表** — 67 条中英文术语对照（7 个分类表，不含版本记录；0.0.22 增补「热度层级衰减」「摄入侧情绪保护」「噪音规则库」；0.0.29 增补「编译器」「结构化通信单元」「编译净化」「检索深度分级」「命名配置集」「竖切」「结构性记忆」） |
 | [`references/error-reference.md`](references/error-reference.md) | **错误参考** — 11 类 38 个错误码 |
 | [`references/traceability-map.md`](references/traceability-map.md) | **需求可追溯性映射表** — 43 能力↔37 声明↔100 追踪项↔16 差距交叉映射 |
 | [`references/domain_keywords.yaml`](references/domain_keywords.yaml) | **领域关键词表** — 领域专有词频配置 |
@@ -124,7 +125,7 @@ status: draft
 | [`references/concept-tiers.md`](references/concept-tiers.md) | **概念分级速查表** — L1/L2/L3 三级概念归类 + 一句话类比 + 代码映射 + 依赖图（0.0.16 新增） |
 | [`references/capability_matrix.yaml`](references/capability_matrix.yaml) | **认知维度承载能力矩阵** — 各版本对认知维度的承载程度与恢复债编号（0.0.16 新增） |
 
-总计：54 份核心文档**（foundation 4 + specification 12 + development 5 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1 = 54，即 **52 份 md + 2 份 yaml**；0.0.16 新增 `concept-tiers.md` 与 `capability_matrix.yaml`；`docs/reviews/` 下的审计报告为过程产物，不计入）**。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
+总计：55 份核心文档**（foundation 4 + specification 12 + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1 = 55，即 **53 份 md + 2 份 yaml**；0.0.16 新增 `concept-tiers.md` 与 `capability_matrix.yaml`；0.0.29 新增 `development/engineering-workflow.md`；`docs/reviews/` 下的审计报告为过程产物，不计入）**。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
 
 ## 阅读建议
 
@@ -169,3 +170,4 @@ status: draft
 | 0.0.22 | 2026-08-05 | 外部项目理念吸收批次索引同步（noah-gen3-type2）：配置参数计数同步（正文 220→223、附录 A 148 项不变、总计 368→371）；术语计数同步（glossary 57→60 条，增补热度层级衰减、摄入侧情绪保护、噪音规则库）；详见 [changelog.md](governance/changelog.md) 0.0.22。 |
 | 0.0.23 | 2026-08-05 | 内容架构全面审视批次索引同步：认知基础与系统架构结构修复（详见 [changelog.md](governance/changelog.md) 0.0.23）。 |
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次索引同步：implementation-map 索引行组件数 40+→70（3-02）；版本记录补登 0.0.19（2-04，详见 [changelog.md](governance/changelog.md) 0.0.24）。 |
+| 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：新增 [development/engineering-workflow.md](development/engineering-workflow.md)（核心文档 54→55、53 md + 2 yaml）；glossary 60→67 条同步。 |

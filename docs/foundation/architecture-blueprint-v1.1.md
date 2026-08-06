@@ -8,15 +8,15 @@ tags:
   - future
 created: 2026-07-29
 status: draft
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 ---
 
 > 本文为 Kairos 架构的未来版本规划蓝图，描述 v1.1+ 目标的详细设计。本文内容**不属 v0.1.0 交付范围**（§5.5 见证→使用仲裁除外——决策 D-05 已迁入 v0.1.0 作为正式交付能力，主架构 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5 为权威定义，本文 §5.5 不再单独演进），主架构文档 [architecture-v0.1.0.md](architecture-v0.1.0.md) 中的 **§0.1 交付范围**和 **§0.9 差距追踪表**是其与当前版本的映射桥梁。实现者应优先阅读主架构文档，本文仅作为未来版本的参考。
 
 > **与 v0.1.0 的关系**：本文 §5.3–§5.8（价值独立性公理 / 见证轴内仲裁 / 见证→使用仲裁 / 冲突解决 / 多 Agent 校准 / 升华管道 vs 认知层特征空间）被 [architecture-v0.1.0.md](architecture-v0.1.0.md) 作为结论性规范引用（v0.1.0 正文不重复展开，仅在其 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5 顶部加范围说明；**§5.5 见证→使用仲裁除外**——决策 D-05 已迁入 v0.1.0 作为正式交付能力，该处为权威定义）。读者追溯这些机制细节请以本文为准。另：P3-11 Directives / P3-12 malloc_trim / P3-13 Webhook 的逐项功能规格见 [specification/feature-list.md](../specification/feature-list.md) §九（Phase 3 新增）。
 
-## P3 前瞻组件（v1.1+ 目标，非 v0.1.0 交付）
+## 一、P3 前瞻组件（v1.1+ 目标，非 v0.1.0 交付）
 
 > **P3 编号导航**：本文按主题分组组织 P3 组件，**编号并非严格升序**（P3-11/12/13 位于 P3-14/15/16 之后）。P3-01~07、P3-18、P3-19 不在本文定义（分别见 [detailed-design.md](../specification/detailed-design.md)、[api-spec.md](../specification/api-spec.md)、[technology-stack.md](../development/technology-stack.md)，P3-18 为未使用编号）。完整编号→位置索引以 [feature-list.md](../specification/feature-list.md) §九（Phase 3 新增）为准。
 
@@ -453,7 +453,7 @@ GLiNER2 本地 NER 管线：
   │   - Deep 模式每次执行重新检测，增量更新已有社区
   │   配置：KAIROS_COMMUNITY_DETECTION_ENABLED（默认 true），KAIROS_COMMUNITY_DETECTION_ALGORITHM（默认 label_propagation），KAIROS_COMMUNITY_MIN_SIZE（默认 3）
 
-## 核心机制规格（§5.3~§5.8，被 v0.1.0 结论性引用）
+## 二、核心机制规格（§5.3~§5.8，被 v0.1.0 结论性引用）
 
 ### 5.3 价值独立性公理
 
@@ -541,7 +541,7 @@ GLiNER2 本地 NER 管线：
 
 > **当前注册的事件处理**：使用事件提交、前瞻保持请求、模拟结果返回。
 
-## P3 前瞻组件（续，v1.1+ 目标）
+## 三、P3 前瞻组件（续，v1.1+ 目标）
 
 #### P3-14 远程/本地双模式升华
 
@@ -1352,3 +1352,4 @@ function check_permission(path, principal, requested_perm):
 | 0.0.19 | 2026-08-05 | 第四轮全库深度审计修复批次（changelog 0.0.19）：新增 P3-19 File Graph 章节（规格承接自 technology-stack §七，标注 v1.1 目标）；P3-18 预留编号墓碑说明；文件名 `v1.1+` → `v1.1`（全库链接同步，登记为命名规范约定）。 |
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：§5.7 多 Agent 校准参数占位声明过时引用修正（1-04）——否决权归属/激活开关/预留路径改指架构现存章节（§0.4 社会性校准占位段/§1 章宪法主权面/§0.4 接入层），同段激活前提条件引用同源修正。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec 中文序引用联动（§十~§十六 5 处）。 |
+| 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题归位中文序（一、P3 前瞻组件 / 二、核心机制规格 / 三、P3 前瞻组件续）。 |

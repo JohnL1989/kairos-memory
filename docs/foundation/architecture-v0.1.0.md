@@ -3740,7 +3740,7 @@ P6 全局闸门规定累计压缩比上限为 30%。v0.1.0 因从五维规范目
 
 ## §11 术语表
 
-> **权威术语源**：全库术语权威为 [references/glossary.md](../references/glossary.md)（60 条中英文对照）；本节为**架构语境下的术语索引**，仅收录架构正文使用的术语。两条术语体系须同步维护——新增术语须同时登记两处（见 documentation-governance 术语注册规则）。
+> **权威术语源**：全库术语权威为 [references/glossary.md](../references/glossary.md)（67 条中英文对照）；本节为**架构语境下的术语索引**，仅收录架构正文使用的术语。两条术语体系须同步维护——新增术语须同时登记两处（见 documentation-governance 术语注册规则）。
 
 | 术语 | 定义 |
 |:----|:-----|

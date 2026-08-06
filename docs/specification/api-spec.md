@@ -22,7 +22,7 @@ status: draft
 
 ---
 
-## 1、REST API
+## §1 REST API
 
 ### 1.1 记忆写入
 
@@ -404,7 +404,7 @@ status: draft
 
 ---
 
-## 2、Agent Tool
+## §2 Agent Tool
 
 ### Tool: memories_write
 
@@ -492,7 +492,7 @@ status: draft
 
 ---
 
-## 3、CLI 命令
+## §3 CLI 命令
 
 | 命令 | 说明 | 示例 |
 |:----|:-----|:-----|
@@ -523,7 +523,7 @@ status: draft
 
 ---
 
-## 4、事件总线消息格式
+## §4 事件总线消息格式
 
 ### 消息结构
 
@@ -561,7 +561,7 @@ status: draft
 
 ---
 
-## 5、记忆读取
+## §5 记忆读取
 
 ### GET /v1/memories/{id}?level=summary|overview|full — 多级读取
 
@@ -637,7 +637,7 @@ status: draft
 
 ---
 
-## 6、扩展端点
+## §6 扩展端点
 
 ### 6.1 会话消息 API
 
@@ -1023,7 +1023,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ---
 
-## 7、错误码体系
+## §7 错误码体系
 
 > **声明**：本表为 HTTP 级错误码常用子集；全量 38 个错误码及其分类（API 返回/内部日志）以 [error-reference.md](../references/error-reference.md) 为权威来源。
 
@@ -1046,7 +1046,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ---
 
-## 8、叙事线 API
+## §8 叙事线 API
 
 > **定位**：架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2「Saga 命名叙事线」的外部接口。
 > **被架构引用**：[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2（叙事线端点）——本章节号变更须同步回改。
@@ -1112,7 +1112,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ---
 
-## 9、压缩管理 API
+## §9 压缩管理 API
 
 > **定位**：架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2「双模式 Compaction」的管理接口。
 > **被架构引用**：[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2（压缩端点）——本章节号变更须同步回改。
@@ -1135,7 +1135,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ---
 
-## 10、因果链路 API
+## §10 因果链路 API
 
 > **被架构引用**：[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2（因果链路手动标注端点）——本章节号变更须同步回改。
 
@@ -1157,7 +1157,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ---
 
-## 11、事实三元组直接注入 API（P3，v1.1+）
+## §11 事实三元组直接注入 API（P3，v1.1+）
 
 > **P3 前瞻**：架构 P3-09「事实三元组直接注入」。v0.1.0 不交付，端点预留。
 
@@ -1192,7 +1192,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ---
 
-## 12、边类型管理 API（P3，v1.1+）
+## §12 边类型管理 API（P3，v1.1+）
 
 > **P3 前瞻**：架构 P3-10「自定义边类型签名验证」。v0.1.0 不交付。
 
@@ -1240,7 +1240,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ---
 
-## 13、技能管理 API
+## §13 技能管理 API
 
 > **定位**：架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2「技能管理系统」的外部接口。
 
@@ -1278,7 +1278,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ---
 
-## 14、Connector 管理 API
+## §14 Connector 管理 API
 
 > **定位**：架构 [detailed-design.md](detailed-design.md) §11.2「Connectors 同步模式」的外部接口。
 
@@ -1307,7 +1307,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ---
 
-## 15、Profile Schema 管理 API
+## §15 Profile Schema 管理 API
 
 ### PUT /v1/profile/schema — 注册/更新自定义 Profile Schema
 
@@ -1321,7 +1321,7 @@ Schema 版本化——修改后自动递增 `schema_id` 后缀，旧 Schema 保�
 
 ---
 
-## 16、管理导入导出 API
+## §16 管理导入导出 API
 
 ### POST /v1/admin/export — 导出 .kairos 备份包
 
@@ -1362,7 +1362,7 @@ Content-Type: multipart/form-data。`conflict_resolution`：fail / overwrite / s
 
 ---
 
-## 17、图谱可视化 API
+## §17 图谱可视化 API
 
 ### GET /v1/graph/render — 导出知识图谱可视化
 
@@ -1375,7 +1375,7 @@ Content-Type: multipart/form-data。`conflict_resolution`：fail / overwrite / s
 **响应** `200`：SVG 或 PNG 二进制数据（Content-Type: image/svg+xml 或 image/png）
 
 ---
-## 18、资源摄取与多模态
+## §18 资源摄取与多模态
 
 ### 18.1 资源摄取 API
 
@@ -1622,5 +1622,6 @@ v1.1 规划：
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：端点计数重算 80→85、物理总数 81→88（口径注记同步 + 0.0.16 条目勘误补登）；顶层章节标题统一数字（一~十八→1~18）与中文序引用同步；前瞻记忆引用 §8→§3.2。 |
 | 0.0.26~0.0.27 | 2026-08-06 | (合并占位：changelog 0.0.26/0.0.27 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景) |
 | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：§6.8 MCP Bridge 工具表补关系管理 3 工具（kairos_link/kairos_unlink/kairos_relations，15 口径统一）；指引段 §7.3.1→§7.1a 并注明 15 构成；§1.4 archive 引用 §7.3→§7.3.1；sessions/evolution 路径占位符统一为 {id}。 |
+| 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题风格统一——「N、」改「§N」（18 个大章并入 §N 数字序形态，引用零联动）。 |
 
 > **端点计数口径（2026-08-03 决策 D-13；0.0.15 更新；0.0.25 勘误）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（0.0.15 注册 `archive`/`restore` 两个竖切端点后 78→80；0.0.16 新增 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §健康检查）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §9），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。

@@ -8,8 +8,8 @@ tags:
   - design
   - data-model
 created: 2026-07-20
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
@@ -28,7 +28,7 @@ status: draft
 
 ---
 
-## 1、核心记忆表
+## §1 核心记忆表
 
 ### memories（主记忆表）
 
@@ -167,7 +167,7 @@ Flag 系统为记忆提供临时标记机制——对满足特定条件的记忆
 
 ---
 
-## 2、记忆版本快照表
+## §2 记忆版本快照表
 
 ### memory_versions（版本快照表，用于显式回滚）
 
@@ -186,7 +186,7 @@ Flag 系统为记忆提供临时标记机制——对满足特定条件的记忆
 
 ---
 
-## 3、双副本存储
+## §3 双副本存储
 
 ### witness_anchor（见证锚定主副本）
 
@@ -265,7 +265,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 
 ---
 
-## 4、使用事件表
+## §4 使用事件表
 
 ### usage_events（使用事件总线持久化）
 
@@ -286,7 +286,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 
 ---
 
-## 5、调度与状态表
+## §5 调度与状态表
 
 ### sublimation_queue（升华队列）
 
@@ -315,7 +315,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 
 ---
 
-## 6、审计表
+## §6 审计表
 
 ### audit_log（审计日志）
 
@@ -337,7 +337,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 
 ---
 
-## 7、配置表
+## §7 配置表
 
 ### config（运行时配置）
 
@@ -506,7 +506,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 
 **约束**：(a) `hybrid.semantic_weight + hybrid.bm25_weight + hybrid.entity_weight` 必须等于 1.0——系统启动时校验，不满足则拒绝启动并记录告警；(b) `gspo.similarity_threshold` 必须大于 `mmr.lambda` 中隐含的语义判定阈值（即聚类判同应比 MMR 的去重更严格，否则聚类过度合并），校验为：若 `gspo.similarity_threshold < 0.7` 且 `mmr.enabled = true`，系统在启动时输出警告日志提示「GSPO 阈值过低可能导致过度聚类」；(c) `cross_encoder.top_k` 应当 ≤ `hybrid.candidate_pool_size - gspo 预期压缩后规模`的 2 倍——若 `cross_encoder.enabled = true` 且 `cross_encoder.top_k > hybrid.candidate_pool_size`，系统启动时自动将 `cross_encoder.top_k` 截断至 `hybrid.candidate_pool_size`，并输出调整日志。
 
-## 8、扩展表
+## §8 扩展表
 
 ### 8.1 conversation_messages（对话消息持久化）
 
@@ -972,7 +972,7 @@ HAVING SUM(CASE WHEN is_false_positive THEN 1 ELSE 0 END) * 1.0 / COUNT(*) > 0.1
 
 ---
 
-## 9、解决方案谱系与知识灭绝
+## §9 解决方案谱系与知识灭绝
 
 ### solution_branches（解决方案分支表）
 
@@ -1007,7 +1007,7 @@ HAVING SUM(CASE WHEN is_false_positive THEN 1 ELSE 0 END) * 1.0 / COUNT(*) > 0.1
 
 **索引**：`idx_extinction_fossils_original` ON `original_memory_id`（恢复路径按原记忆反向定位）
 
-## 10、注册表结构
+## §10 注册表结构
 
 注册表不是 SQL 表，而是由编译器维护的树形键值对空间。其逻辑结构如下：
 
@@ -1024,7 +1024,7 @@ HAVING SUM(CASE WHEN is_false_positive THEN 1 ELSE 0 END) * 1.0 / COUNT(*) > 0.1
 | HKCS | current_task/phase | TEXT | 编译器 | 当前任务阶段 |
 ---
 
-## 11、P3 基础设施表（v0.1.0 新增）
+## §11 P3 基础设施表（v0.1.0 新增）
 
 > **定位**：以下七张表为架构文档 P3-20 ~ P3-25 与 P3-05 的数据承载——覆盖 Schema 版本管理、断点续训检查点、PreparedStatementCache 命中率监测、FTS5 全文索引（memories_fts / skills_fts）、Permission ACL 权限控制、内部密钥表（api_keys，对应安全规格 [security-specification.md](../security/security-specification.md) §2.1）。所有表以 SQLite（轻量模式）为设计基准，PostgreSQL（标准模式）等价替换对应类型（**例外：FTS5 全文索引为 SQLite 独有虚拟表，PostgreSQL 无等价物，标准模式改用 pg_bigm / zhparser，见 `memories_fts` / `skills_fts` 节说明**）。
 
@@ -1204,7 +1204,7 @@ CREATE VIRTUAL TABLE skills_fts USING fts5(
 
 ---
 
-## 12、叙事线与压缩表（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 对应）
+## §12 叙事线与压缩表（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 对应）
 
 > **定位**：以下四张表为架构文档 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 中 Saga 叙事线、双模式 Compaction、三级技能进化（world_model_rules）、及 P3-15 Prompt 依赖关系图的数据承载。
 
@@ -1301,7 +1301,7 @@ CREATE VIRTUAL TABLE skills_fts USING fts5(
 
 ---
 
-## 13、类型映射与 DDL 基准（RC-04）
+## §13 类型映射与 DDL 基准（RC-04）
 
 > **背景**：本文全部表定义使用 PostgreSQL 方言类型（UUID / JSONB / TIMESTAMPTZ / VECTOR / BIGSERIAL），但 v0.1.0 落地后端为 **SQLite + sqlite-vec**（[ADR-001](../governance/adr.md)、[slice-implementation-guide.md](../development/slice-implementation-guide.md) §实现基线）。此前无任何映射说明，实现者需自行猜测——本节消除该歧义，并给出可执行 DDL 的落地位置。
 
@@ -1384,3 +1384,4 @@ SQLite 无时区类型，故：
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：memory_relations.relation_type 补语义标记扩展说明（supplement/refutation/reference/contextual/temporal）；memories.contract 补写时默认建议值+运行时覆盖注记；proactive_topics.priority 改 FLOAT [0,1]（对齐架构 ≥0.7 判据）；quality_tier 引用改指 blueprint；HMAC 审计链公式统一为 threat-model 权威 5 项输入。 |
 | 0.0.16 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.16，建议二/七落地）：memories 表新增 structural_value（0/1/2 半定量）/structural_value_reasons/structural_value_updated_at 三字段与 is_structure 双向同步注记；新增 compression_trail JSONB 逐记忆压缩审计字段。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：顶层章节标题统一数字（一~十三→1~13）与中文序引用同步；前瞻记忆引用 §8→§3.2。 |
+| 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题风格统一——「N、」改「§N」（13 个大章并入 §N 数字序形态，引用零联动）。 |

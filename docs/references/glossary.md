@@ -46,6 +46,8 @@ status: draft
 | 关系索引 | Relation Index | 四类记忆关系（因果/部分独立/弱层级/竞争）+ 粒度关系（部分-整体）+ 派生关系（derived_from）的独立索引空间 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | 双时态 | Bitemporal | 记忆记录区分事件时间（occurred_at——事实实际发生时间）与事务时间（created_at——记录写入系统时间）双轨；「纠正而不遗忘」由 superseded_by + 版本链 + 知识演化承载；`as_of(ts)` 时间点查询回答「该时点系统已知的事实状态」 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 双时态声明 |
 | 构造性生成 | Constructive Generation | 检索即重建的机制延伸——检索线索的表征痕迹不足/缺失/需跨模式组合时，以痕迹为约束、以当前上下文为目标构造缺失表征；产物入模拟隔离区（S-13），转正走沙箱验证环，永不直接注入见证锚定主副本 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.3 构造性生成声明 |
+| 结构性记忆 | Structural Memory | 持有结构性内容与压缩轨迹的记忆（`structural_value`/`structural_value_reasons`/`structural_value_updated_at`/`compression_trail` 字段族）——与普通语义记忆区分，受 `is_structure ↔ structural_value` 双向 CHECK 约束 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 结构性记忆 / schema-slice.sql |
+| 检索深度分级 | Retrieval Depth Grading | 按任务复杂度与运行时 CRI 状态分级的检索深度——R0 浅层 / R1 中层 / R2 深层；策略层依据当前 CRI 值主动降级（CRI>0.4 降 R1、CRI>0.6 降 R0） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.9 |
 
 ## 三、契约与激活 Contracts & Activation
 
@@ -106,6 +108,11 @@ status: draft
 | 注意力调度器 | Attention Scheduler | 横切组件——统一管理全系统注意力资源分配、容量限制、动态调权 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §9 |
 | 噪音规则库 | Noise Rule Library | 摄取门禁的纯正则规则集（单字/短确认、语气词、元命令、分隔符与纯标点行，零 LLM 成本），命中不计轮数、不触发使用权重升温；重要性加分表（未完成 5/纠正 4/决策 3/情绪 3/路径变更 2/工具结果 1/寒喧 0/保护 ∞）作编码深度分配参考 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 噪音规则库层 |
 | SOUL.md | Agent Persona File | 宿主 Agent 的人格声明文件——承载「我是谁/我偏好什么」的身份与最高行为准则。Kairos 作为 Agent 记忆系统经编译管线读取并注入 LLM 上下文，但不拥有、不自动修改该文件（SOUL 是人与 Agent 的契约，不是系统的产物） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4.3 / [adr.md](../governance/adr.md) ADR-008 |
+| 编译器 | Compiler | 编译管线的架构层实现组件——将感知缓冲区原始信息编译为结构化通信单元（L1/L2 净化 + 组装），位于注意力调度器与 WM 层之间；L1 失效可降级（`degraded_L1`/`passthrough`） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 |
+| 结构化通信单元 | Structured Communication Unit | 编译管线的产出单元——结构化后的通信/记忆内容载体，携带净化标记与组装元数据 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 |
+| 编译净化 | Compilation Purification | 摄取验证门禁的编译环节——L1（原始层净化）与 L2（解析严格度）两级，L1 失效降级路径 `degraded_L1`/`passthrough` | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 摄取验证门禁 |
+| 命名配置集 | Named Configuration Set | 12 个特征标志组合空间中唯一受支持的三种配置集（`kairos-minimal`/`kairos-slice`/`kairos-full`）——未命名组合不是合法系统形态，启动时校验并拒绝启动（`invalid_flag_composition` 审计事件） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 命名配置集与组合约束 |
+| 竖切 | Vertical Slice（v0.1.0-slice） | v0.1.0 的首交付范围——统一 LTM + 路径空间 + 三信号混合检索 + 单曲线指数衰减遗忘 + 身份注册表 + 基础审计日志；分层关系「竖切 ⊂ v0.1.0 完整交付目标 ⊂ 认知基础完整愿景」 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 / [feature-list.md](../specification/feature-list.md) 竖切标注 |
 
 ## 七、安全红线 Security Redlines
 
@@ -134,3 +141,4 @@ status: draft
 | 0.0.22 | 2026-08-05 | 外部项目理念吸收批次（changelog 0.0.22）：增补热度层级衰减（§四）、摄入侧情绪保护（§四）、噪音规则库（§六）三条术语（57→60 条）。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：关系索引补派生关系 derived_from；意图契约引用 §8→§3.2。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：辞典式排序落点 §3.2→§3.3（H-01）。 |
+| 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：D-04 术语表补 7 条（编译器/结构化通信单元/编译净化/检索深度分级/命名配置集/竖切/结构性记忆），60→67 条。 |
