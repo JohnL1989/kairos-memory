@@ -74,9 +74,9 @@ CREATE TABLE memories (
   identity_reviewed_at      TEXT,
   identity_review_count     INTEGER NOT NULL DEFAULT 0,
   is_structure              INTEGER NOT NULL DEFAULT 0 CHECK (is_structure IN (0,1)),
-  structural_value          INTEGER NOT NULL DEFAULT 0   CHECK (structural_value IN (0,1,2)),  -- 半定量结构标记：0 非结构 / 1 疑似 / 2 确认（0.0.16 新增）
-  structural_value_reasons  TEXT    NOT NULL DEFAULT '[]',   -- JSON 数组：升档原因列表（0.0.16 新增）
-  structural_value_updated_at TEXT,                           -- 最近一次升/降档时间 ISO-8601（0.0.16 新增）
+  structural_value          INTEGER NOT NULL DEFAULT 0   CHECK (structural_value IN (0,1,2)),  -- 半定量结构标记：0 非结构 / 1 疑似 / 2 确认（新增）
+  structural_value_reasons  TEXT    NOT NULL DEFAULT '[]',   -- JSON 数组：升档原因列表（新增）
+  structural_value_updated_at TEXT,                           -- 最近一次升/降档时间 ISO-8601（新增）
   is_deleted                INTEGER NOT NULL DEFAULT 0 CHECK (is_deleted IN (0,1)),
   calibration_confidence    REAL    NOT NULL DEFAULT 0.5 CHECK (calibration_confidence BETWEEN 0 AND 1),
   vad_v                     REAL    NOT NULL DEFAULT 0   CHECK (vad_v BETWEEN -1 AND 1),
@@ -101,7 +101,7 @@ CREATE TABLE memories (
                                     CHECK (quality_tier IN ('mental_models','observation','experience','world')),
   compacted                INTEGER NOT NULL DEFAULT 0 CHECK (compacted IN (0,1)),   -- 压缩标记（RC-07）
   compacted_at             TEXT,                                                     -- 压缩时间 ISO8601；30 天回滚窗口判定
-  compression_trail        TEXT    NOT NULL DEFAULT '{}',   -- JSON 对象：逐记忆压缩审计日志（0.0.16 新增，P6 逐记忆粒度）
+  compression_trail        TEXT    NOT NULL DEFAULT '{}',   -- JSON 对象：逐记忆压缩审计日志（新增，P6 逐记忆粒度）
   -- is_structure ↔ structural_value 双向同步（data-model 0.0.16）：is_structure=1 ↔ structural_value=2
   CHECK ((is_structure = 0 AND structural_value != 2) OR (is_structure = 1 AND structural_value = 2)),
   UNIQUE (path, version)

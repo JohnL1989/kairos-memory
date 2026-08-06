@@ -17,6 +17,14 @@ Kairos 文档一致性审计脚本 —— documentation-governance §2/§3 的�
     「仅版本记录可见」与「完全不可见」两档
   - 陈旧数值（6.6）集中为显式清单 + 权威数值历史值邻近检查（负向后瞻排除
     「原」「「」引述与勘误语境）
+
+0.0.34 门禁扩展（round14 审计防复发建议落地）:
+  - 新增治理面计数一致性（6.17）：架构 §0 图题/统一口径/结构原则三处
+    治理面计数必须同为「两个」+ 身份面不入计数声明（R14-01 防复发）
+  - 新增检索权重公式唯一性（6.18）：§5.2 三链路历史配比必须带
+    「历史配比」注记，四链路配比必须存在（R14-03 防复发）
+  - 新增 §10.24 关联债索引完整性（6.19）：debt-collection §四 摘要表
+    D-0xx 活跃债编号 ⊆ §10.24 第一组收录集合（R14-06 防复发）
 """
 from __future__ import annotations
 
@@ -581,6 +589,89 @@ def check_line_endings() -> None:
     print(f"[6.16] 行尾一致性检查: {bad} 份 CRLF 残留")
 
 
+def check_governance_count() -> None:
+    """6.17 治理面计数一致性（0.0.34 补盲区，闭环 round14 R14-01）。
+
+    §0 三处治理面计数必须同为「两个」：① §0.4.1 图题（骨架视图行）
+    ② §0.4 统一口径行 ③ 结构原则对应行（须声明「身份面不入治理面计数」）。
+    三处任一处漂移即 fail——防「三个/两个正交治理面」新旧口径并存复发。
+    """
+    p = DOCS / "foundation" / "architecture-v0.1.0.md"
+    text = p.read_text(encoding="utf-8")
+    bad = 0
+
+    m = re.search(r"骨架视图[^\n]*?六层功能栈 \+ (两个|2 ?个)正交治理面", text)
+    if not m:
+        fail("§0.4.1 图题治理面计数非「两个」（6.17）")
+        bad += 1
+
+    m = re.search(r"\*\*统一口径\*\*[^\n]*?(两个|2 ?个)正交治理面", text)
+    if not m:
+        fail("§0.4 统一口径治理面计数非「两个」（6.17）")
+        bad += 1
+
+    m = re.search(r"\*\*结构原则对应\*\*[^\n]*", text)
+    if not m or "不入治理面计数" not in m.group(0):
+        fail("§0.4 结构原则未声明「身份面不入治理面计数」（6.17）")
+        bad += 1
+
+    print(f"[6.17] 治理面计数一致性: §0 三处口径，{bad} 项漂移")
+
+
+def check_retrieval_weights() -> None:
+    """6.18 检索权重公式唯一性（0.0.34 补盲区，闭环 round14 R14-03）。
+
+    §5.2 检索得分默认权重以四链路配比（0.50/0.20/0.10/0.20）为唯一权威；
+    三链路历史配比（0.55/0.30/0.15）出现时必须带「历史配比」注记——
+    防两套权重数字并存未标注（实现者无从确认现行默认值）。
+    """
+    p = DOCS / "foundation" / "architecture-v0.1.0.md"
+    text = p.read_text(encoding="utf-8")
+    start = text.find("### 5.2 组件")
+    end = text.find("#### v1.1+ 蓝图组件摘要")
+    seg = text[start:end] if start != -1 and end > start else text
+    bad = 0
+
+    m = re.search(r"最终检索得分 = 语义相似度", seg)
+    if m:
+        ctx = seg[m.start() : m.start() + 300]
+        if "历史配比" not in ctx:
+            fail("§5.2 三链路配比（0.55/0.30/0.15）未标注「历史配比」（6.18）")
+            bad += 1
+    else:
+        fail("§5.2 三链路历史配比公式未找到（检查口径失配，6.18）")
+        bad += 1
+
+    # 四链路公式跨两行（「语义 0.50 +」行尾换行续「实体共现 0.20 …」）
+    m = re.search(r"最终得分 = 语义 0\.50 [\s\S]{0,80}?因果 0\.20", seg)
+    if not m:
+        fail("§5.2 四链路配比公式（0.50/0.20/0.10/0.20）未找到（6.18）")
+        bad += 1
+
+    print(f"[6.18] 检索权重公式唯一性: 三/四链路配比，{bad} 项问题")
+
+
+def check_debt_index() -> None:
+    """6.19 §10.24 关联债索引完整性（0.0.34 补盲区，闭环 round14 R14-06）。
+
+    debt-collection §四 摘要表 D-0xx 活跃债编号 ⊆ 架构 §10.24 第一组
+    「架构设计间隙」收录集合——防「债已有架构落点但 §10.24 无索引」的
+    跨文档追溯链断裂复发（round14 缺 D-006/008/016/019 四条教训）。
+    口径注记：仅比对 D-0xx 段——§10.24 第二/三组与摘要表非一一映射
+    （D-201~204 等仅收录于 §10.24 侧；D-1xx+ 债以蓝图/debt 正文为落点）。
+    """
+    debt = (DOCS / "governance" / "debt-collection.md").read_text(encoding="utf-8")
+    arch = (DOCS / "foundation" / "architecture-v0.1.0.md").read_text(encoding="utf-8")
+    m = re.search(r"## 四、已归档：认知-工程差距摘要[\s\S]*?(?=\n## 五、)", debt)
+    active = set(re.findall(r"^\| (D-0\d{2}) \|", m.group(0), re.M)) if m else set()
+    m = re.search(r"#### 一、架构设计间隙[\s\S]*?(?=\n#### 二、)", arch)
+    indexed = set(re.findall(r"\[(D-0\d{2})\]", m.group(0))) if m else set()
+    missing = sorted(active - indexed)
+    for d in missing:
+        fail(f"§10.24 关联债索引缺 {d}（摘要表活跃债无架构落点，6.19）")
+    print(f"[6.19] §10.24 关联债索引完整性: 活跃 D-0xx {len(active)} 条，缺失 {len(missing)} 条")
+
+
 def check_mcp_tool_rows() -> None:
     """6.12a MCP 工具表行数比对（0.0.28 补盲区，闭环第十轮审计 C-01）。
 
@@ -1053,6 +1144,9 @@ def main() -> int:
     check_hard_line_refs()
     check_mcp_tool_rows()
     check_line_endings()
+    check_governance_count()
+    check_retrieval_weights()
+    check_debt_index()
     check_config_index()
     check_fences()
     check_table_render()

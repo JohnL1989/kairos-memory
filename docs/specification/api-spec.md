@@ -139,7 +139,7 @@ status: draft
 }
 ```
 
-> **校准状态与 nudge 字段（0.0.16 新增，建议一）**：`meta.calibration_status` 与 `nudge` 为检索响应的可选元数据——`calibration_status.level` 枚举（healthy/degraded/virtual/dormant）为运营可视化粗粒度映射（见 GET /v1/health/calibration）；`nudge` 为退化态主动校准提示（subtle=7-14 天 / noticeable=14-30 天 / prominent=>30 天无校准），**非阻塞**——作为元数据返回由前端决定呈现，不引入 ask_user 式阻塞交互；用户完成一次校准后 nudge 清除。两字段仅在外部校准静默超过 7 天时出现，正常态省略。
+> **校准状态与 nudge 字段（建议一）**：`meta.calibration_status` 与 `nudge` 为检索响应的可选元数据——`calibration_status.level` 枚举（healthy/degraded/virtual/dormant）为运营可视化粗粒度映射（见 GET /v1/health/calibration）；`nudge` 为退化态主动校准提示（subtle=7-14 天 / noticeable=14-30 天 / prominent=>30 天无校准），**非阻塞**——作为元数据返回由前端决定呈现，不引入 ask_user 式阻塞交互；用户完成一次校准后 nudge 清除。两字段仅在外部校准静默超过 7 天时出现，正常态省略。
 
 ### 1.3 记忆更新
 
@@ -514,6 +514,7 @@ status: draft
 | `kairos sublimation trigger` | 手动触发升华 | `kairos sublimation trigger --path kairos://projects/x/` |
 | `kairos sublimation progress` | 查询升华进度 | `kairos sublimation progress` |
 | `kairos calibrate` | 外部校准 | `kairos calibrate --memory-id uuid --score 0.85` |
+| `kairos degradation switch` | 降级模式切换（CAL-04） | `kairos degradation switch --mode safe_hibernation` |
 | `kairos freeze` | 强制冻结 | `kairos freeze --duration 300` |
 | `kairos status` | 系统状态 | `kairos status` 显示各层运行状态 |
 | `kairos update <id>` | 更新记忆 | `kairos update uuid --content "new content"` |
@@ -540,7 +541,7 @@ status: draft
 }
 ```
 
-> **v0.1.0 简化**：`target` 默认为 `broadcast` 时表示全层广播（事件类型隐式决定接收层），`trace_id` 在同步事件中为空。`priority` 范围为 0–9（**0=最高**，校准信号使用 0；v0.1.0 仅使用 0/1/2），事件时效由接收方按 event_type 的预设 TTL 处理（参见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 事件类型原语表）。`timestamp` 为 int64 纳秒（从架构规范，非 ISO8601 字符串）。
+> **v0.1.0 简化**：`target` 默认为 `broadcast` 时表示全层广播（事件类型隐式决定接收层），`trace_id` 在同步事件中为空。`priority` 范围为 0–9（**0=最高**，校准信号使用 0；当前已使用优先级：0（校准/降级）、3（use_event）、6（latent_trigger）），事件时效由接收方按 event_type 的预设 TTL 处理（参见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 事件类型原语表）。优先级 0-2 不被背压阻塞（架构 §10.10 流控与背压）。`timestamp` 为 int64 纳秒（从架构规范，非 ISO8601 字符串）。
 
 > **临时契约声明**：临时契约记忆过期清除时写入审计日志（标记 `expiry_cascade_delete`，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 forgetAfter）——**不留审计痕迹的场景仅限捕获阶段**：入区闸机/摄取门禁拒绝的输入未入库，不产生审计事件。已入库临时记忆的清除必留痕（与架构 §8 外部来源铁律一致）。此行为与 S-15（来源可鉴别）不冲突：临时契约在写入时仍记录 provenance。
 
@@ -765,7 +766,7 @@ status: draft
 }
 ```
 
-**GET /v1/health/calibration** — 校准状态报告（0.0.16 新增，建议一）
+**GET /v1/health/calibration** — 校准状态报告（建议一）
 
 **权限**：read
 
@@ -784,7 +785,7 @@ status: draft
 ```
 `virtual_calibration_confidence_ceiling` 按衰减公式计算（`0.3 × exp(-λ × days)`，λ=0.02，见架构 §1.2 虚拟校准生成器）。
 
-**GET /v1/health/memory-pressure** — 记忆压力状态（0.0.16 新增，建议四）
+**GET /v1/health/memory-pressure** — 记忆压力状态（建议四）
 
 **权限**：read
 
@@ -807,7 +808,7 @@ status: draft
 }
 ```
 
-**GET /audit/compression** — 逐记忆压缩审计查询（0.0.16 新增，建议七）
+**GET /audit/compression** — 逐记忆压缩审计查询（建议七）
 
 **权限**：admin
 
@@ -824,7 +825,7 @@ status: draft
 }
 ```
 
-**GET /audit/compression/summary** — 压缩审计全局摘要（0.0.16 新增，建议七）
+**GET /audit/compression/summary** — 压缩审计全局摘要（建议七）
 
 **权限**：admin
 
@@ -1076,7 +1077,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 {"memory_id": "uuid", "context_note": "这是引入消息队列的关键会议记录"}
 ```
 
-- 已完结叙事线拒绝新成员（400 `ERR-INPUT-004`）；同一记忆重复添加（已存在于 memory_ids）返回 200 幂等成功。
+- 已完结叙事线拒绝新成员（409 Conflict——已完结叙事线为终态，拒绝添加新成员属状态冲突，非语义校验失败，无专有错误码）；同一记忆重复添加（已存在于 memory_ids）返回 200 幂等成功。
 - **响应** `201`：`{"id": "uuid", "thread_id": "uuid", "memory_id": "uuid", "position": 3, "added_at": "ISO8601"}`（position 为追加顺序序号）
 
 ### GET /v1/narrative/threads/{id}/memories — 按叙事线检索记忆（v0.1.0 子集）
@@ -1623,5 +1624,6 @@ v1.1 规划：
 | 0.0.26~0.0.27 | 2026-08-06 | (合并占位：changelog 0.0.26/0.0.27 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景) |
 | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：§6.8 MCP Bridge 工具表补关系管理 3 工具（kairos_link/kairos_unlink/kairos_relations，15 口径统一）；指引段 §7.3.1→§7.1a 并注明 15 构成；§1.4 archive 引用 §7.3→§7.3.1；sessions/evolution 路径占位符统一为 {id}。 |
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题风格统一——「N、」改「§N」（18 个大章并入 §N 数字序形态，引用零联动）。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：§4 事件优先级口径改写（当前已使用 0（校准/降级）/3（use_event）/6（latent_trigger），0-2 不被背压阻塞）；§3 CLI 表补注册 `kairos degradation switch`（CLI 24→25，对齐竖切实现指南与 test-plan 使用）；§8 叙事线已完结拒新成员错误 400→409（状态冲突，无新错误码）。 |
 
 > **端点计数口径（2026-08-03 决策 D-13；0.0.15 更新；0.0.25 勘误）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（0.0.15 注册 `archive`/`restore` 两个竖切端点后 78→80；0.0.16 新增 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §健康检查）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §9），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。

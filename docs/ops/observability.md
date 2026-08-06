@@ -8,8 +8,8 @@ tags:
   - ops
   - monitoring
 created: 2026-07-20
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
@@ -19,7 +19,7 @@ status: draft
 
 > **定位**：定义 Kairos 系统的指标体系、结构化日志 schema、告警规则。架构文档定义了「做什么」，本文定义「如何看见做了什么」。
 >
-> **暴露协议**：指标通过 `/metrics` 端点以 Prometheus 文本格式暴露（端口 8010/metrics）。日志通过异步 I/O 写入 `~/.kairos/logs/`（本地模式）或 stdout（容器模式），按日轮转，保留 30 天。
+> **暴露协议**：指标通过 `/metrics` 端点以 Prometheus 文本格式暴露（端口 8010/metrics）——**端点待定义**：在 [api-spec.md](../specification/api-spec.md) §1.8 登记前为设计目标。日志通过异步 I/O 写入 `~/.kairos/logs/`（本地模式）或 stdout（容器模式），按日轮转，保留 30 天。
 
 ---
 
@@ -116,7 +116,7 @@ status: draft
 
 ### §4a 告警投递
 
-> **告警投递渠道（0.0.14 勘误）**：告警投递渠道（webhook URL / 邮件 / 监督平面信道）与重试策略已参数化——`KAIROS_ALERT_WEBHOOK_URL`（空=不启用）、`KAIROS_ALERT_EMAIL_ENABLED`、`KAIROS_ALERT_RETRY_MAX`、`KAIROS_ALERT_RETRY_BACKOFF_S` 四项登记于 [configuration.md](../ops/configuration.md) §8.9（0.0.11 批次）。默认仅日志 + 审计事件，配置后启用对应渠道。
+> **告警投递渠道（勘误）**：告警投递渠道（webhook URL / 邮件 / 监督平面信道）与重试策略已参数化——`KAIROS_ALERT_WEBHOOK_URL`（空=不启用）、`KAIROS_ALERT_EMAIL_ENABLED`、`KAIROS_ALERT_RETRY_MAX`、`KAIROS_ALERT_RETRY_BACKOFF_S` 四项登记于 [configuration.md](../ops/configuration.md) §8.9。默认仅日志 + 审计事件，配置后启用对应渠道。
 
 ## 五、元认知层检测器输出可见性
 
@@ -143,3 +143,4 @@ status: draft
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：/health 示例对齐 deployment 契约（deployment_mode 字段、标准模式 embedding）、告警投递渠道声明（§4a）、校准中断告警关联 TIMEOUT 参数。 |
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：可观测性四支柱、补拟真校准失稳告警行。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：校准中断严重告警改「触发降级告警」并注明 N/M 契约为准；§4a 告警投递渠道勘误（KAIROS_ALERT_* 已参数化）；硬编码阈值加基线注记（健康检查 3 次/预算 10%）。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：/metrics 端点断言式陈述弱化为设计目标（标注「端点待定义，api-spec §1.8 登记前为设计目标」）。 |

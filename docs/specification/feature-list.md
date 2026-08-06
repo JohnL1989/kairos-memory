@@ -88,14 +88,14 @@ status: draft
 |:----|:-----|:-----|:------------|
 | F-01 | 自动遗忘调度 | 按遗忘得分定时扫描并处理候选遗忘对象 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 遗忘调度器 |
 | F-02 | 潜伏势能重估 | 空闲时重估零使用价值记忆的保留价值 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 潜伏势能重估 |
-| F-03 | 遗忘后悔补偿 | 被遗忘记忆经潜伏势能重估端口（盲区/前向关联命中）或外部校准触发复兴（复兴加速通道）——显式检索仅更新 last_access_at，不直接触发复兴（0.0.14 勘误，对齐架构 §5.2 状态转换表） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 潜伏复兴加速 |
+| F-03 | 遗忘后悔补偿 | 被遗忘记忆经潜伏势能重估端口（盲区/前向关联命中）或外部校准触发复兴（复兴加速通道）——显式检索仅更新 last_access_at，不直接触发复兴（勘误，对齐架构 §5.2 状态转换表） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 潜伏复兴加速 |
 
 ## 六、前瞻记忆
 
 | 编号 | 功能 | 说明 | 对应架构组件 |
 |:----|:-----|:-----|:------------|
 | PM-01 | 前瞻意图创建 ⏳ v1.1+ | 写入未来意图记忆至 `kairos://_system/intentions/`，使用**意图契约**（intention——独立契约类型，激活优先级低于常驻但高于按需，不受遗忘调度器评估；完成/取消后降级为按需，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆段与 [data-model.md](data-model.md) `memories.contract`）。v0.1.0 架构就绪（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻保持协议），数据模型和 API 未落地 | §4 WM调度预处理器 + [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻保持跨层协调协议 |
-| PM-02 | 前瞻意图完成/取消 ⏳ v1.1+ | 意图完成或取消时标记为 `resolved`，降级为普通按需记忆。v0.1.0 仅事件总线支持（intention_activate/intention_resolve），完整生命周期管理延至 v1.1 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4 WM调度预处理器生命周期管理 |
+| PM-02 | 前瞻意图完成/取消 ⏳ v1.1+ | 意图完成或取消时标记为 `resolved`，降级为普通按需记忆。v0.1.0 首迭代（竖切）仅实现 4 类事件（use_event/calibration_signal/degradation_switch/latent_trigger）；intention_activate/intention_resolve 待对应组件启用时按架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.6 事件类型注册门禁实现；完整生命周期管理延至 v1.1 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4 WM调度预处理器生命周期管理 |
 
 ## 七、校准与治理
 
@@ -151,6 +151,7 @@ status: draft
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：PM-01 前瞻记忆段引用 §8→§3.2（1-08 联动）。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：M-21 引用 api-spec §八→§8（4-1 章节编号统一联动）。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-05 同源联动（审计未列）——H-01 MCP Bridge 落点 §7.3→§7.1a。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：H-01 MCP 工具计数 12→15（基础工具集 12 + 关系管理 3，对齐 api-spec §6.8）；PM-02 事件总线口径与架构 §10.10 竖切统一（4 类事件，intention 事件按 §10.6 注册门禁）。 |
 
 ---
 
@@ -174,7 +175,7 @@ status: draft
 | SF-06 | 加工区→验证区推进 | 蒸馏完成后自动推进记忆至验证区 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.10 加工→验证闸机 |
 | SF-07 | 验证区退回加工区 | 差异检验不通过时退回加工区重新蒸馏 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.10 退回回流 |
 | SF-08 | 自适应蒸馏调度 | 基于周活跃度动态调整蒸馏批次和触发阈值 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 升华管道·自适应调度 |
-| H-01 | MCP Bridge 接入 | 12 个 MCP 工具供 Hermes Agent 直接调用（见 [api-spec.md](api-spec.md) §6.8） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1a MCP Bridge |
+| H-01 | MCP Bridge 接入 | 15 个 MCP 工具供 Hermes Agent 直接调用（基础工具集 12 + 关系管理 3，见 [api-spec.md](api-spec.md) §6.8） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1a MCP Bridge |
 | H-02 | Memory Provider | 6 个生命周期钩子自动监听代理事件 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 Hermes Memory Provider |
 | H-03 | 热度预取 | on_turn_start 预取高热度记忆注入 WM | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 Memory Provider hook |
 | A-08 | 后台维护触发 | 手动触发 Light/Deep 维护模式 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 后台维护引擎 |

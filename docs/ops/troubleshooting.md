@@ -8,8 +8,8 @@ tags:
   - ops
   - troubleshooting
 created: 2026-07-18
-updated: 2026-08-05
-last_reviewed: 2026-08-04
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
@@ -27,13 +27,13 @@ status: draft
 
 | 命令 | 定义来源 | 状态 |
 |:-----|:---------|:-----|
-| `kairos db verify` | 无 | ⚠ 待定义 |
+| `kairos db verify` | [api-spec.md](../specification/api-spec.md) §3 | 已定义 |
 | `kairos db repair` | 无 | ⚠ 待定义（灾难恢复主命令） |
 | `kairos db restore <backup_path>` | 无 | ⚠ 待定义（灾难恢复主命令） |
 | `kairos db migrate rollback` | 无 | ⚠ 待定义（灾难恢复主命令） |
-| `kairos admin key rotate` | 无 | ⚠ 待定义 |
+| `kairos admin key rotate` | [api-spec.md](../specification/api-spec.md) §3 | 已定义 |
 
-> 上述 5 条命令在 [slice-implementation-guide.md](../development/slice-implementation-guide.md)、[api-spec.md](../specification/api-spec.md)、[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) 三处检索均为 0 命中。此缺口已在 [governance/cognitive-architecture-gap.md](../governance/cognitive-architecture-gap.md) 之外单列，须在 v0.1.0 编码启动前补齐 CLI 契约规格。
+> 上述 3 条命令（db repair / db restore / db migrate rollback）在 [api-spec.md](../specification/api-spec.md) §3 中无定义，此缺口已在 [governance/cognitive-architecture-gap.md](../governance/cognitive-architecture-gap.md) 之外单列，须在 v0.1.0 编码启动前补齐 CLI 契约规格。
 
 ---
 
@@ -105,7 +105,7 @@ status: draft
 
 | 事件 | 排查步骤 | 恢复命令 |
 |:----|:--------|:--------|
-| **API Key 疑似泄露** | (1) 立即吊销泄露 Key (2) 生成新 Key 并更新 `KAIROS_API_KEY` (3) 检查审计日志中该 Key 在泄露时间窗口内的所有操作 | `kairos admin key rotate`（⚠ 待定义，见 §一） |
+| **API Key 疑似泄露** | (1) 立即吊销泄露 Key (2) 生成新 Key 并更新 `KAIROS_API_KEY` (3) 检查审计日志中该 Key 在泄露时间窗口内的所有操作 | `kairos admin key rotate`（已定义，见 api-spec §3） |
 | **数据库文件损坏** | (1) 停止服务 (2) 从最近备份恢复 (3) 运行 `kairos db verify` (4) 如备份不可用，尝试 `kairos db repair` | `kairos db restore <backup_path>`（⚠ 待定义，见 §一） |
 | **升级失败回滚** | (1) 停止服务 (2) 恢复旧版本二进制/镜像 (3) 执行 `kairos db migrate rollback` 回滚数据库迁移 | 旧镜像版本 + `docker compose up -d`（⚠ 命令待定义，见 §一） |
 
@@ -119,3 +119,4 @@ status: draft
 | 0.0.2 | 2026-08-03 | 补加草稿完善声明；新增 CLI 命令定义状态表；修正 `sublimation_events` -> `sublimation_queue`；错误码速查由 17 项补全至 38 项。 |
 | 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：frontmatter 与版本记录同步（第二轮全库深度审计修复批次）。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §四→§4 引用联动。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：CLI 命令定义状态表修正——`kairos db verify` / `kairos admin key rotate` 改为「已定义（api-spec §3）」，0 命中声明改「3 条命令（db repair/db restore/db migrate rollback）无定义」；安全事件排查表 key rotate 行引用同步。 |

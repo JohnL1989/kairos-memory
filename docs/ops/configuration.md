@@ -30,13 +30,13 @@ status: draft
 | 参数 | 默认值 | 取值范围 | 生效时机 | 说明 |
 | --- | --- | --- | --- | --- |
 | `KAIROS_EXPLANATION_EXHAUSTION_ALERT_THRESHOLD` | 3 次 | 见说明约束 | 重启生效 | 解释枯竭告警连续触发此次数后申请推理悬挂 |
-| `KAIROS_VIRTUAL_CALIBRATION_CONFIDENCE_CAP` | 0.3 | [0,1] | 重启生效 | 虚拟校准信号的置信度上限（架构定义：预设上限 0.3 且不可用于修宪）。**0.0.16 动态衰减**：生效置信度 = `0.3 × exp(-λ × 静默天数)`，见 `KAIROS_CALIBRATION_DECAY_LAMBDA` |
-| `KAIROS_CALIBRATION_DECAY_LAMBDA` | 0.02 | >0 浮点 | 重启生效 | 虚拟校准置信度时间衰减速率常数（0.0.16 新增，建议一）——`virtual_confidence = 0.3 × exp(-λ × days)`，λ=0.02 约每 35 天减半（架构 §1.2 虚拟校准生成器） |
-| `KAIROS_CALIBRATION_DECAY_FLOOR` | 0.05 | [0,0.3] | 重启生效 | 虚拟校准置信度下限（0.0.16 新增，建议一），衰减不低于此值 |
-| `KAIROS_CALIBRATION_AUTO_DORMANT_DAYS` | 60 | ≥1 整数 | 重启生效 | 外部校准静默达此天数时自动切换休眠态（0.0.16 新增，建议一）——运营可视化 dorman 态阈值，实际休眠切换仍由 §10.9 降级状态机周期阈值驱动 |
-| `KAIROS_VIRTUAL_CALIBRATION_TIMEOUT` | 900 | ≥0 整数 | 重启生效 | 外部校准端口静默超过此时长（秒）后生成虚拟校准信号。**触发口径（0.0.14 勘误）**：实际触发由校准调度器联动逻辑承载（[detailed-design.md](../specification/detailed-design.md) §5）——`KAIROS_CALIBRATION_TIMEOUT`（默认 300s）每次超时静默计数 +1，计数 > `KAIROS_CALIBRATION_SILENT_COUNT`（默认 6 次）即 6×300=1800s 触发生成。本参数 900s 为架构 §11 术语表的简化表述（对应 3 次静默），不作为独立生效参数——实现与配置核对以校准调度器联动逻辑与 `KAIROS_CALIBRATION_*` 三参数为准 |
+| `KAIROS_VIRTUAL_CALIBRATION_CONFIDENCE_CAP` | 0.3 | [0,1] | 重启生效 | 虚拟校准信号的置信度上限（架构定义：预设上限 0.3 且不可用于修宪）。**动态衰减**：生效置信度 = `0.3 × exp(-λ × 静默天数)`，见 `KAIROS_CALIBRATION_DECAY_LAMBDA` |
+| `KAIROS_CALIBRATION_DECAY_LAMBDA` | 0.02 | >0 浮点 | 重启生效 | 虚拟校准置信度时间衰减速率常数（建议一）——`virtual_confidence = 0.3 × exp(-λ × days)`，λ=0.02 约每 35 天减半（架构 §1.2 虚拟校准生成器） |
+| `KAIROS_CALIBRATION_DECAY_FLOOR` | 0.05 | [0,0.3] | 重启生效 | 虚拟校准置信度下限（建议一），衰减不低于此值 |
+| `KAIROS_CALIBRATION_AUTO_DORMANT_DAYS` | 60 | ≥1 整数 | 重启生效 | 外部校准静默达此天数时自动切换休眠态（建议一）——运营可视化 dorman 态阈值，实际休眠切换仍由 §10.9 降级状态机周期阈值驱动 |
+| `KAIROS_VIRTUAL_CALIBRATION_TIMEOUT` | 900 | ≥0 整数 | 重启生效 | 外部校准端口静默超过此时长（秒）后生成虚拟校准信号。**触发口径（勘误）**：实际触发由校准调度器联动逻辑承载（[detailed-design.md](../specification/detailed-design.md) §5）——`KAIROS_CALIBRATION_TIMEOUT`（默认 300s）每次超时静默计数 +1，计数 > `KAIROS_CALIBRATION_SILENT_COUNT`（默认 6 次）即 6×300=1800s 触发生成。本参数 900s 为架构 §11 术语表的简化表述（对应 3 次静默），不作为独立生效参数——实现与配置核对以校准调度器联动逻辑与 `KAIROS_CALIBRATION_*` 三参数为准 |
 | `KAIROS_VIRTUAL_CALIBRATION_SIMILARITY_THRESHOLD` | 0.7 | [0,1] | 重启生效 | 虚拟校准与见证锚定比对的相似度阈值 |
-| `KAIROS_VIRTUAL_CALIBRATION_CONFLICT_THRESHOLD` | 3 次 | 见说明约束 | 重启生效 | 连续冲突次数超过此值触发拟真校准失稳告警（对应 observability 拟真校准失稳告警）。**与 `KAIROS_CALIBRATION_CONFLICT_THRESHOLD` 的区分（0.0.14 注记）**：本参数为**次数阈值**（连续冲突 N 次 → 告警，架构 §1.2 虚拟校准生成器）；后者为**单次冲突判定的相似度阈值**（cosine 距离 ≥0.35 判定为冲突，[detailed-design.md](../specification/detailed-design.md) §5 校准调度器）——两者是同一冲突检测链的两个环节（单次判定 + 连续计数），非同一参数 |
+| `KAIROS_VIRTUAL_CALIBRATION_CONFLICT_THRESHOLD` | 3 次 | 见说明约束 | 重启生效 | 连续冲突次数超过此值触发拟真校准失稳告警（对应 observability 拟真校准失稳告警）。**与 `KAIROS_CALIBRATION_CONFLICT_THRESHOLD` 的区分（注记）**：本参数为**次数阈值**（连续冲突 N 次 → 告警，架构 §1.2 虚拟校准生成器）；后者为**单次冲突判定的相似度阈值**（cosine 距离 ≥0.35 判定为冲突，[detailed-design.md](../specification/detailed-design.md) §5 校准调度器）——两者是同一冲突检测链的两个环节（单次判定 + 连续计数），非同一参数 |
 | `KAIROS_CALIBRATION_DEGRADE_THRESHOLD` | 6 周期 | ≥1 周期 | 重启生效 | 距上次校准超过此周期数触发降级告警（对应 observability 校准中断严重。1 周期 = KAIROS_SCHEDULER_INTERVAL 默认 300s） |
 | `KAIROS_SAFETY_HIBERNATION_COOLDOWN` | 30 周期 | ≥1 周期 | 重启生效 | 安全休眠态自动恢复前的冷却周期数（对应 observability degradation_mode=3） |
 
@@ -73,7 +73,7 @@ status: draft
 | --- | --- | --- | --- | --- |
 | `KAIROS_LATENT_REVIVAL_MATCH_THRESHOLD` | 0.65（余弦相似度） | [0,1] | 重启生效 | 潜伏记忆二级匹配的相似度阈值 |
 | `KAIROS_LATENT_REVIVAL_INITIAL_CONFIDENCE` | 80% | [0,1] | 重启生效 | 复兴加速通道的影子副本置信度初始值（占积累阈值比例） |
-| `KAIROS_FORGETTING_SCORE_THRESHOLD` | 0.75 | ≥0（按语义标定） | 重启生效 | 遗忘调度器触发压缩/归档的遗忘得分阈值。**0.0.14 归属勘误**：v0.1.0 遗忘判定为 freshness 三阈值（`KAIROS_FRESHNESS_ACTIVE_THRESHOLD`/`KAIROS_FRESHNESS_STALE_THRESHOLD`），本参数属于 v1.1 二维遗忘曲面得分口径（[detailed-design.md](../specification/detailed-design.md) §3 v1.1 目标段），v0.1.0 不使用 |
+| `KAIROS_FORGETTING_SCORE_THRESHOLD` | 0.75 | ≥0（按语义标定） | 重启生效 | 遗忘调度器触发压缩/归档的遗忘得分阈值。**归属勘误**：v0.1.0 遗忘判定为 freshness 三阈值（`KAIROS_FRESHNESS_ACTIVE_THRESHOLD`/`KAIROS_FRESHNESS_STALE_THRESHOLD`），本参数属于 v1.1 二维遗忘曲面得分口径（[detailed-design.md](../specification/detailed-design.md) §3 v1.1 目标段），v0.1.0 不使用 |
 | `KAIROS_WITNESS_UPDATE_BARRIER_N_DEFAULT` | 3 | ≥0 整数 | 重启生效 | 更新势垒 N 的默认值（外部校准可上调） |
 | `KAIROS_NARRATIVE_COHERENCE_FALLBACK_SCORE` | 0.5 | 见说明约束 | 重启生效 | 叙事自洽度评估器不可用时的默认分 |
 | `KAIROS_INTEGRATION_CONSISTENCY_PERIOD` | 5 个调度周期 | ≥1 周期 | 重启生效 | 反向调整方向一致判定周期数 |
@@ -259,7 +259,7 @@ status: draft
 
 ### §8.3 检索与蒸馏参数（v0.1.0 新增）
 
-> ⚠️ **废弃声明**：以下 `KAIROS_SEARCH_WEIGHT_*` 变量组出自 v0.1.0 之前的 5D 混合排序**权重框架**（语义+BM25+时序+信任+热度），已被 v0.1.0 的三信号混合检索（§6.1 `KAIROS_HYBRID_*`）替代。时序/信任/热度作为排序调制因子而非独立基础维度，权重由 RL 重排序层（[rl-weight-spec.md](../specification/rl-weight-spec.md)）管理。**新部署请勿引用本节变量，迁移说明见 §6.1。**（0.0.14 口径注记：此处废弃的是 5D **权重参数框架**；「5D 混合排序」作为检索管线排序调制层的沿用名仍保留，见架构 §7.3a 检索管线术语口径——两者不矛盾）
+> ⚠️ **废弃声明**：以下 `KAIROS_SEARCH_WEIGHT_*` 变量组出自 v0.1.0 之前的 5D 混合排序**权重框架**（语义+BM25+时序+信任+热度），已被 v0.1.0 的三信号混合检索（§6.1 `KAIROS_HYBRID_*`）替代。时序/信任/热度作为排序调制因子而非独立基础维度，权重由 RL 重排序层（[rl-weight-spec.md](../specification/rl-weight-spec.md)）管理。**新部署请勿引用本节变量，迁移说明见 §6.1。**（口径注记：此处废弃的是 5D **权重参数框架**；「5D 混合排序」作为检索管线排序调制层的沿用名仍保留，见架构 §7.3a 检索管线术语口径——两者不矛盾）
 
 | 参数 | 默认值 | 取值范围 | 生效时机 | 说明 |
 | --- | --- | --- | --- | --- |
@@ -375,7 +375,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 参数 | 默认值 | 取值范围 | 生效时机 | 说明 |
 | --- | --- | --- | --- | --- |
 | `KAIROS_FORGETTING_HALF_LIFE` | 69 | ≥0 整数 | 重启生效 | 遗忘半衰期（天） |
-| `KAIROS_HIGH_FORK_THRESHOLD` | 5 | ≥1 整数 | 重启生效 | structural_value L1 判定——路径高分叉节点子节点数阈值（0.0.16 新增，建议二，架构 §5.2 结构性记忆守护） |
+| `KAIROS_HIGH_FORK_THRESHOLD` | 5 | ≥1 整数 | 重启生效 | structural_value L1 判定——路径高分叉节点子节点数阈值（建议二，架构 §5.2 结构性记忆守护） |
 | `KAIROS_STRUCTURAL_CONFIRMED_THRESHOLD` | 5 | ≥1 整数 | 重启生效 | structural_value L1→L2 升级的 causal 引用计数阈值（0.0.16 新增，建议二） |
 | `KAIROS_STRUCTURAL_REVIEW_INTERVAL` | 86400 | ≥3600 整数 | 重启生效 | L1→L2 周期审查间隔（秒，后台维护引擎 Deep 模式执行）（0.0.16 新增，建议二） |
 | `KAIROS_PRESSURE_WM_OCCUPANCY_THRESHOLD` | 0.8 | [0,1] | 重启生效 | 记忆压力·上下文预算压力——WM 槽位占用率阈值（0.0.16 新增，建议四，架构 §5.2 压力信号族） |
@@ -414,7 +414,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_FEATURE_FORGETTING_ENGINE` | OFF | — | 遗忘调度器不启动；仅依赖基础 TTL 清理（**竖切内 ON**——单曲线指数衰减遗忘与潜伏势能重估为竖切组件，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 竖切与特征标志） |
 | `KAIROS_FEATURE_NARRATIVE_IDENTITY` | ON | ✅ 宪法核 | **此标志为宪法核**——身份面否决权在认知层被定位为不可关闭的宪法级治理面。OFF 仅在最小系统原型阶段合法，正式部署中须为 ON（见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8）。OFF 时身份注册表降级为普通表（写入即固定，永不重评）；身份总线监听器和叙事连贯性检测器不启动 |
 | `KAIROS_FEATURE_META_COGNITION` | OFF | — | 元认知检测器族、治理器族不启动 |
-| `KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` | OFF | — | 宪法主权面仅保留外部校准端口；监督平面不启动 |
+| `KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` | OFF | — | 宪法主权面仅保留外部校准端口；监督平面不启动（**竖切例外**：竖切内监督平面部分启用——审计庭快照校验/审计日志比对，见 [slice-implementation-guide.md](../development/slice-implementation-guide.md) 组件 6；完整监督平面随本标志启用） |
 | `KAIROS_FEATURE_WM_PREPROCESSOR` | OFF | — | 候选排序退化为直接权重排列；触发条件匹配和上下文裁剪由 WM 域内联处理 |
 | `KAIROS_FEATURE_ATTENTION_SCHEDULER` | OFF | — | 全局注意力调度器不启动；存储域内建固定槽位轮询（每域每周期 N 槽，FIFO，无制衡注入）仍运行 |
 | `KAIROS_FEATURE_SUBLIMATION_PIPELINE` | OFF | — | 升华管道不启动；所有记忆保持 raw 状态 |
@@ -467,7 +467,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 > **用途**：本文正文各节收录 223 项核心参数；全库另有 **148 项** `KAIROS_*` 参数散落在架构、规格、部署、质量等文档中定义，此前无任何集中索引。本附录建立完整映射，使「配置参数入口」名副其实。（0.0.11 勘误：原 151 项含 3 项 LLM 参数与正文 §7 重复登记，已去重；附录仅收录正文未定义的参数。计数口径：0.0.16 正文增至 220 项、0.0.22 增至 223 项。）
 >
-> **权威性**：默认值一栏自各参数的**定义出处**抄录，语义以出处文档为准；出处未给出默认值的标注 `—（待定义）`（共 12 项），编码启动前须补齐。
+> **权威性**：默认值一栏自各参数的**定义出处**抄录，语义以出处文档为准；出处未给出默认值的标注 `—（待定义）`（共 11 项），编码启动前须补齐。
 >
 > **维护约定**：新增 `KAIROS_*` 参数须同时登记至本文正文对应章节或本附录，二者取其一，不得只在架构文档中出现。
 
@@ -572,7 +572,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_PROMPT_DEPENDENCY_STRATEGY` | —（待定义） | `architecture-blueprint-v1.1.md §P3-15 Prompt 依赖关系图` |
 | `KAIROS_QUERY_ANALYSIS_CACHE_TTL` | `300 秒` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
 | `KAIROS_QUERY_ANALYZER_ENABLED` | `true` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
-| `KAIROS_RETRIEVAL_LINK_WEIGHTS` | —（待定义） | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_RETRIEVAL_LINK_WEIGHTS` | `{"semantic": 0.50, "cooc": 0.20, "knn": 0.10, "causal": 0.20}` | `architecture-v0.1.0.md §5.2 三链路融合与检索扩展（唯一权威）` |
 | `KAIROS_SALT` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_SCHEDULER_INTERVAL` | `300s` | `ops/deployment.md §三 环境变量` |
 | `KAIROS_SCHEMA_STRICT_MODE` | `true` | `foundation/architecture-blueprint-v1.1.md §P3-23 Schema 前向版本保护` |
@@ -644,3 +644,5 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：附录 A 引言正文参数计数 210→223（2-02，口径补注 0.0.16/0.0.22 增长链）；「12 项待定义」核验仍准确。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-01 三环不变量引用 §6/§10.3→§10.3；M-11 附录 A KAIROS_SEED_PATH 来源行号 189→192。 |
 | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：附录 A「来源」列 136 处硬行号引用整体废除（C-03/F-01）——改为「文档 §章节」语义引用（含权威落点核查：38 处原引用文档无定义、落点修正至 detailed-design/blueprint 等权威段；KAIROS_PATH 标注待定义）。 |
+| 0.0.34 | 2026-08-06 | 第十四轮全库深度审计修复批次（changelog 0.0.34）：`KAIROS_RETRIEVAL_LINK_WEIGHTS` 由「—（待定义）」补填默认值 `{"semantic": 0.50, "cooc": 0.20, "knn": 0.10, "causal": 0.20}`，来源列指向架构 §5.2 三链路融合与检索扩展（唯一权威）。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：附录 A「待定义」计数 12→11（0.0.34 已回填 `KAIROS_RETRIEVAL_LINK_WEIGHTS`）；`KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` OFF 行为补竖切例外注记（竖切内监督平面部分启用——审计庭快照校验/审计日志比对，见 slice-implementation-guide 组件 6）。 |

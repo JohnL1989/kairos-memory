@@ -31,7 +31,7 @@ status: draft
 | OP-002 | 批量写入 | POST /v1/memories/batch | — | S-03/S-09 | 逐条独立 | ✅ |
 | OP-003 | 三区写入 | POST /v1/memories + hall | — | S-03/S-09/S-17（结构反例） | 默认 ondemand | ✅ |
 | OP-004 | 实体自动提取 | 写入时自动触发 | kairos_extract_entities | S-15 | — | ✅ |
-| OP-005 | 冲突检测写入 | 写入时自动触发 | — | S-14（语境自指禁令） | — | ⚠️ 压缩~33–43%（v0.1.0 已知超限、非受控偏离——0.0.14 归属注记：此超限为**维度降维**（认知完整性/可及性轴降维）的系统级性质，非冲突检测操作自身所致，见 [system-context.md](system-context.md) §二 假设表与架构 §0.6/§10.11） |
+| OP-005 | 冲突检测写入 | 写入时自动触发 | — | S-14（语境自指禁令） | — | ⚠️ 压缩~33–43%（v0.1.0 已知超限、非受控偏离——归属注记：此超限为**维度降维**（认知完整性/可及性轴降维）的系统级性质，非冲突检测操作自身所致，见 [system-context.md](system-context.md) §二 假设表与架构 §0.6/§10.11） |
 | OP-006 | 会话消息同步 | POST /v1/sessions/{id}/messages | — | S-15 | — | ✅ |
 | OP-007 | 校准信号注入 | POST /v1/calibrate | kairos_calibrate | S-11（唯一入口） | — | ✅ |
 
@@ -117,13 +117,13 @@ status: draft
 | STR | 44 | 更新/治理/运维/自动 |
 | **总计** | **66** | |
 
-> **对应关系**：本目录的 53 项操作与 [feature-list.md](feature-list.md) 的 **168 项能力（43 核心 + 125 扩展）** 之间存在多对多映射（0.0.11 勘误：原表述仅含 125 项扩展功能，遗漏 43 项核心功能——如 OP-001 按路径写入对应核心 W-01）——一项功能可对应多种调用方式，一项操作也可服务于多项功能。操作目录回答"系统能执行什么指令"，功能清单回答"系统对外提供什么能力"。
+> **对应关系**：本目录的 66 项操作与 [feature-list.md](feature-list.md) 的 **168 项能力（43 核心 + 125 扩展）** 之间存在多对多映射（0.0.11 勘误：原表述仅含 125 项扩展功能，遗漏 43 项核心功能——如 OP-001 按路径写入对应核心 W-01；0.0.37 补正：操作总数 53→66 同步 §四 统计表）——一项功能可对应多种调用方式，一项操作也可服务于多项功能。操作目录回答"系统能执行什么指令"，功能清单回答"系统对外提供什么能力"。
 >
 > **调用方式注记**：操作支持 API + Tool + CLI 三种调用方式，但 CLI 映射为 api-spec §3 CLI 命令集的**子集**（本目录未逐项登记 CLI 列——CLI 覆盖的高频运维操作见 api-spec §3，其余经 REST/MCP 调用）；工具列混排 MCP Bridge 工具（`kairos_*`，15 个——本列仅列示高频操作对应项，完整注册清单以 [api-spec.md](api-spec.md) §6.8 为准）与 Agent Tool（`memories_*`，5 个），来源区分见 api-spec §6.8/§2。OP-046/047 为内部操作（无对外端点），不视为缺口。 工具列「—」有两种语义：**无映射端点**（自动触发类，如 OP-004 实体自动提取——随写入/维护自动执行，无独立公开端点）与**无独立工具**（仅 REST/CLI 类，如 OP-002 批量写入——经 REST API 调用，无对应 AgentTool/MCP 工具）。
 
 ## 五、与 api-spec 的覆盖边界声明
 
-> **覆盖边界**：本目录 66 项操作覆盖 api-spec §1~§7 的 **49/56 个 `/v1` 端点**（功能类端点全覆盖——0.0.28 补登记忆生命周期 6 + 主动功能 7 共 13 个 OP-054~066）；**7 个运维探针/内部维护端点不建 OP**：`/v1/config`（GET/PATCH）、`/v1/health/calibration`、`/v1/health/memory-pressure`、`/v1/scheduler/status`、`/v1/seeds`、`/v1/webhooks`（v1.1 预留）、`/v1/path/rebuild-index`——无操作语义或仅内部维护触发，端点定义以 api-spec §1~§7 为权威；§8~§18 的扩展端点（叙事线 summarize/complete、压缩 run/rollback、POST /v1/causal、技能 GET/POST /v1/skills、Connector register、Profile schema、/v1/admin/export|import、GET /v1/graph/render、§18 资源摄取与多模态等）属 v0.1.0 全量或 v1.1+ 扩展，端点定义以 [api-spec.md](api-spec.md) §8~§18 为权威（api-spec 已定稿，共 88 端点 = 85 个 `/v1` 业务端点 + 3 个无前缀端点），本目录不逐项登记 OP-067+ 条目。
+> **覆盖边界**：本目录 66 项操作覆盖 api-spec §1~§7 的 **52/64 项 `/v1` 端点**（功能类端点全覆盖——补登记记忆生命周期 6 + 主动功能 7 共 13 个 OP-054~066；复核：§1~§7 实点 64 项端点，豁免按端点计 12 个）；**10 个端点不建 OP（按端点计 12 个）**：`/v1/config`（GET/PATCH）、`/v1/health/calibration`、`/v1/health/memory-pressure`、`/v1/scheduler/status`、`/v1/seeds`（POST/GET）、`/v1/webhooks`（v1.1 预留）、`/v1/path/rebuild-index`——无操作语义或仅内部维护触发；`GET /v1/memories/{id}`（单条读取——已知 ID 定向读取为检索退化情形，读取语义由检索类 OP（OP-008/OP-009）覆盖）、`POST /v1/sublimation/prompt` 与 `POST /v1/sublimation/process`（升华两阶段蒸馏实现端点——prompt 构建与结果处理由升华触发链路 OP-064 承接）——不建独立 OP，端点定义以 api-spec §1~§7 为权威；§8~§18 的扩展端点（叙事线 summarize/complete、压缩 run/rollback、POST /v1/causal、技能 GET/POST /v1/skills、Connector register、Profile schema、/v1/admin/export|import、GET /v1/graph/render、§18 资源摄取与多模态等）属 v0.1.0 全量或 v1.1+ 扩展，端点定义以 [api-spec.md](api-spec.md) §8~§18 为权威（api-spec 已定稿，共 88 端点 = 85 个 `/v1` 业务端点 + 3 个无前缀端点），本目录不逐项登记 OP-067+ 条目。
 
 ---
 ## 版本记录
@@ -144,3 +144,4 @@ status: draft
 | 0.0.26~0.0.27 | 2026-08-06 | (合并占位：changelog 0.0.26/0.0.27 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景) |
 | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：覆盖声明失真修复（C-02）——补 OP-054~066 共 13 项（记忆生命周期 6 + 主动功能 7），工具列注记 12→15 与枚举说明，覆盖声明改写为 49/56 + 7 个运维探针豁免清单；统计表 STR 31→44、总计 53→66。 |
 | 0.0.31 | 2026-08-06 | 第十一轮全库深度审计修复批次（changelog 0.0.31）：工具列注记补「—」双语义说明（无映射端点/无独立工具）。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：§四 对应关系操作总数 53→66 补正；覆盖边界声明重算（api-spec §1~§7 实点 64 端点，豁免 10 项按端点计 12 个，覆盖 52/64——单条读取与升华两阶段蒸馏三端点补豁免说明，不新增 OP，总数维持 66）。 |

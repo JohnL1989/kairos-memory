@@ -8,7 +8,7 @@ tags: [行为规范, Kairos, Hermes, AGENTS-v2]
 
 # Kairos-Memory · Agent 行为规范（v2 分层治理）
 
-> 本文件由 Hermes / Claude Code / Codex 自动读取（AGENTS.md 仅当前目录生效；本目录无 git，不使用 .hermes.md）。
+> 本文件由 Hermes / Claude Code / Codex 自动读取（AGENTS.md 仅当前目录生效；本目录已初始化 git（2026-08-06），不使用 .hermes.md）。
 > 结构：0 优先级 → 1 元规则 → 2 项目配置 → 3 红线（S/A）→ 4 项目规范 → 5 闭环
 > 项目性质：**文档草稿阶段，无运行代码**。Kairos 为全面重新设计的记忆系统，168 项能力（43 核心 + 125 扩展）处于架构就绪状态，核心引擎未启动。
 
@@ -32,7 +32,7 @@ tags: [行为规范, Kairos, Hermes, AGENTS-v2]
 | 审计/评审 | 上传审计报告、多轮评审 | delivery-output + testing-validation |
 | 脚本开发 | 写/改 scripts/ 审计脚本 | code-modification |
 | 外部对接 | API/SDK/云服务（docs 研究） | external-service |
-| Git 操作 | 提交/分支（若初始化 git） | git-operation |
+| Git 操作 | 提交/分支（git 已初始化，以 git 状态为准） | git-operation |
 | 数据操作 | 数据库/批量文件 | data-security |
 | 多 Agent | 拆任务/并行 | multi-agent-collab |
 | 所有任务 | 交付 | delivery-output |
@@ -155,3 +155,4 @@ kairos-memory/
 
 ### 5.2 规则变更记录
 - 2026-08-06：初版（v2 分层治理，文档治理场景）
+- 2026-08-06：Git 状态声明更新——工作区已初始化 git（原「本目录无 git」声明过时，round14 审计修正）

@@ -94,7 +94,7 @@ Kairos 作为记忆基础设施，通过标准化协议和官方 SDK 降低集�
 
 Kairos 对外暴露符合 MCP 规范的 Tool 接口，将 12 规范操作集（[架构 §7.3.1](../foundation/architecture-v0.1.0.md)）映射为 MCP Tool。Agent 通过 MCP Client 发现并调用 Kairos 的记忆工具，无需理解内部存储模型。
 
-- **MCP Server 实现（0.0.14 勘误）**：MCP Server 作为**独立子进程**运行（stdio 传输），由 Agent 的 MCP Client 启动，与 Kairos 主进程通过 localhost HTTP 通信（进程模型与 [integration-design.md](../development/integration-design.md) §七、api-spec §6.8 一致——非主进程内嵌）。Server 端实现完整治理门禁（L1 权限 + L2 宪法约束 + L3 身份否决）
+- **MCP Server 实现（勘误）**：MCP Server 作为**独立子进程**运行（stdio 传输），由 Agent 的 MCP Client 启动，与 Kairos 主进程通过 localhost HTTP 通信（进程模型与 [integration-design.md](../development/integration-design.md) §七、api-spec §6.8 一致——非主进程内嵌）。Server 端实现完整治理门禁（L1 权限 + L2 宪法约束 + L3 身份否决）
 - **Tool 命名规范**：`kairos_<operation>`（如 `kairos_store_memory`、`kairos_search_memories`），完整工具清单（15 个：基础工具集 12——含 create/search/delete 三个规范操作直接映射与检索/维护/治理类 9 个——另加关系管理 3 工具，构成口径见架构 §7.1a）见 [架构 §7.1a MCP Bridge 实现](../foundation/architecture-v0.1.0.md) 与 [api-spec §6.8](../specification/api-spec.md)
 - **Clarify 消歧**：MCP Tool 的 `on_pre_execute` hook 在参数不完整时触发 Clarify 步骤，反问补全后执行，保证工具调用的健壮性
 - **渐进增强**：MCP 为基线协议，后续版本可扩展为支持 Resources（记忆目录浏览）和 Prompts（检索模板），丰富交互模式
@@ -107,7 +107,7 @@ Kairos 对外暴露符合 MCP 规范的 Tool 接口，将 12 规范操作集（[
 | **TypeScript** | Web/Node.js 生态 | 完整的 12 规范操作客户端、Edge Runtime 兼容（Vercel/Cloudflare Workers）、Zod schema 校验、与 Vercel AI SDK 的 Memory Provider 集成 | Node.js ≥ 18 / TypeScript ≥ 5.0 |
 | **Go** | 基础设施/CLI 工具生态 | 完整的 12 规范操作客户端、低内存占用（< 10MB 运行时）、静态链接单二进制分发、gRPC streaming 支持（v1.1） | Go ≥ 1.21 |
 
-> **版本对齐策略（0.0.20 补充）**：Python SDK 最低版本要求 ≥ 3.10——SDK 为独立交付物，其版本要求与后端运行时（§一，目标兼容 3.11–3.13）互不约束；后端运行仍以 3.11–3.13 为基线。
+> **版本对齐策略（补充）**：Python SDK 最低版本要求 ≥ 3.10——SDK 为独立交付物，其版本要求与后端运行时（§一，目标兼容 3.11–3.13）互不约束；后端运行仍以 3.11–3.13 为基线。
 
 **SDK 设计原则**：
 

@@ -26,7 +26,7 @@ status: draft
 | 术语 | 英文 | 定义 | 来源 |
 |:----|:-----|:-----|:-----|
 | 外部治理接口 | External Governance Interface | 宪法主权面的同义别名（全库两称并存，非更名完成态）——接收外部校准信号、执行宪法修订与强制冻结，对内部环行使单向旁观 + 至高否决权。与监督平面（审计庭所在面）为**两个正交治理面，并未合并**。全库正文仍以「宪法主权面」为主要表述，两称指同一治理面（见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.4 治理面命名对照与 §1.7） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.7 |
-| 身份面 | Identity Plane | 独立正交治理面，以否决权而非排名介入辞典式排序。身份不在此链中（否决查询而非排序），与宪法主权面并列（外部安全高于内部同一性） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 / 架构 §1 |
+| 身份面 | Identity Plane | 独立正交治理面，以否决权而非排名介入辞典式排序。身份不在此链中（否决查询而非排序），与宪法主权面并列（宪法否决为默认优先级；身份危机例外经宪法解释层判例可临时覆盖，见认知基础附录 C.6） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 / 架构 §1 |
 | 元认知层 | Metacognition Layer | 监控、评估、调节下层行为。含检测器族（耦合计监测器、VAD 独立性测试器）、治理器族、自观察记忆 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2 |
 | 策略层 | Strategy Layer (PM) | 记忆路由与协调层——预测器、调节器、价值上下文管理器、路径注册表 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3 |
 | 存储层 | Storage Layer | 统一长期记忆（LTM），含双副本、路径空间、升华管道、遗忘调度器、关系索引 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 |
@@ -79,8 +79,9 @@ status: draft
 | 见证锚定 | Witness Anchor | 存储层主副本——强一致性，不可篡改，含叙事自洽度字段 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1-5.2（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
 | 使用权重 | Usage Weight | 存储层影子副本——最终一致性，可演化，异步合并 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1-5.2（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
 | 差异检验 | Differential Check | 使用权重陡升时触发，判断是否需要更新见证锚定 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.5（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.5 补充） |
+| 准见证锚定 | Quasi-Anchoring | 外部校准中断（受限交叉验证模式）期间，经 ≥3 种记忆类型互证赋予的降级期可信度标记（`quasi_anchored`）；外部校准恢复后经差异检验升级为正式见证锚定或降级（`quasi_revoked`） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.9 / 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §三 |
 | 分域真理观 | Situational Truth Routing | 常规操作→实用论，更新合并→融贯论，冲突校准→符合论；跨域冲突→辞典式排序在不可支配集上标记默认项（决策 D-01） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 |
-| 并行审查 | Parallel Review | 探索→宪法的执行时序模型（0.0.14 收录，替代原「时序优先」术语）：探索候选产生后进入宪法审查窗口（可配置，默认 100ms），通过后执行；窗口超时未获审查结果默认拒绝执行（fail-close）——探索不被事前审批阻塞，产物的采纳受宪法否决权约束 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 / 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.3 |
+| 并行审查 | Parallel Review | 探索→宪法的执行时序模型（收录，替代原「时序优先」术语）：探索候选产生后进入宪法审查窗口（可配置，默认 100ms），通过后执行；窗口超时未获审查结果默认拒绝执行（fail-close）——探索不被事前审批阻塞，产物的采纳受宪法否决权约束 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 / 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.3 |
 | 保守倾向 | Conservative Bias | 平局→NO-OP，不确定→默认保守，跨域回退→规范真理 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 |
 
 ## 五、认知与演进 Cognitive & Evolution
@@ -143,3 +144,4 @@ status: draft
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：辞典式排序落点 §3.2→§3.3（H-01）。 |
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：D-04 术语表补 7 条（编译器/结构化通信单元/编译净化/检索深度分级/命名配置集/竖切/结构性记忆），60→67 条。 |
 | 0.0.31 | 2026-08-06 | 第十一轮全库深度审计修复批次（changelog 0.0.31）：WM调度预处理器条目补「推理皮层」中文别名与架构 §4 定位（计数不变 67）。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：身份面词条补宪法否决默认优先级口径（附录 C.6）；新增「准见证锚定」术语条目（67→68 条）。 |

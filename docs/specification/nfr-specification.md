@@ -8,8 +8,8 @@ tags:
   - design
   - requirements
 created: 2026-07-20
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
@@ -53,7 +53,7 @@ status: draft
 
 | 指标 | 目标 | 测量方法 | 说明 |
 | --- | --- | --- | --- |
-| 系统可用性 | ≥ 99.9%（v0.1.0 设计目标，适用于有进程级恢复的部署。单进程无守护模式不承诺此指标——见 [deployment.md](../ops/deployment.md) 三级部署梯度） | 运行期可用性监控（滚动窗口 SLO 统计） | 计划内维护除外。已由 [requirements-baseline.md](../specification/requirements-baseline.md) N-11 承接（0.0.14 勘误：原「未在 requirements-baseline 中定义」注记在 0.0.10 补 N-11 后已过时） |
+| 系统可用性 | ≥ 99.9%（v0.1.0 设计目标，适用于有进程级恢复的部署。单进程无守护模式不承诺此指标——见 [deployment.md](../ops/deployment.md) 三级部署梯度） | 运行期可用性监控（滚动窗口 SLO 统计） | 计划内维护除外。已由 [requirements-baseline.md](../specification/requirements-baseline.md) N-11 承接（勘误：原「未在 requirements-baseline 中定义」注记在 N-11 补登后已过时） |
 | 启动时间 | ≤ 10s | 运行期可用性监控（滚动窗口 SLO 统计） | 标准模式 |
 | 故障恢复 | ≤ 30s | 运行期可用性监控（滚动窗口 SLO 统计） | 自动恢复，不丢已持久化数据 |
 | RPO（数据丢失窗口） | ≤5 分钟 | 写入→崩溃→恢复→验证（requirements-baseline N-10 引用） | 与 RTO 互补——RTO 管恢复时长，RPO 管可容忍的数据丢失窗口 |
@@ -89,3 +89,4 @@ status: draft
 | 0.0.1 | 2026-07-31 | NFR 规格：性能/容量/可用性/资源/安全量化指标。 |
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：可用性表补 RPO 指标条目（与 RTO 相邻，对齐 requirements-baseline N-10）。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：敏感信息脱敏「可逆」改「不可逆（掩码/替换）」；系统可用性注记勘误（已由 requirements-baseline N-11 承接）。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：系统可用性行版本注记清理（「0.0.14 勘误」→「勘误」，N-11 承接注记去版本号）。 |

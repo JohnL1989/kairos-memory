@@ -8,8 +8,8 @@ tags:
   - design
   - implementation
 created: 2026-07-20
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
@@ -113,8 +113,8 @@ status: draft
 | 架构组件 | 代码路径 | 说明 |
 |:--------|:---------|:-----|
 | REST API 路由 | `src/access/api/` | Litestar handler（设计目标 85 个 `/v1` 业务端点 + 3 个无 `/v1` 前缀端点：`GET /health` 探针、`GET /audit/compression`、`GET /audit/compression/summary`，详见 [api-spec.md](api-spec.md) §版本记录） |
-| CLI 命令 | `src/access/cli.py` | 27 条 CLI 命令（27 = 全量 24 条（api-spec §3）＋规划扩展；竖切子集 15 条——三档口径见 [slice-implementation-guide.md](../development/slice-implementation-guide.md)） |
-| MCP Bridge | `src/access/mcp/bridge.py` | MCP 服务器进程，12 个工具（见 [api-spec.md](api-spec.md) §6.8） |
+| CLI 命令 | `src/access/cli.py` | 27 条 CLI 命令（27 = 全量 25 条（api-spec §3）＋规划扩展；竖切子集 15 条——三档口径见 [slice-implementation-guide.md](../development/slice-implementation-guide.md)） |
+| MCP Bridge | `src/access/mcp/bridge.py` | MCP 服务器进程，15 个工具（见 [api-spec.md](api-spec.md) §6.8） |
 | Memory Provider | `src/access/provider/kairos_provider.py` | Hermes 原生记忆 Provider，6 lifecycle hooks |
 | Agent Tool 定义 | `src/access/tools.py` | 5 个 Agent Tool（memories_write/memories_search/path_browse/memories_list_recent/memories_merge） |
 | 干扰控制层 | `src/access/interference.py` | WM 负载超限时降级检索结果 |
@@ -168,3 +168,4 @@ status: draft
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：竖切组件序号去括号混淆、### 条目口径勘误（58→65）、参数计数 347→358。 |
 | 0.0.15 | 2026-08-05 | 全面深度审计修复批次（changelog 0.0.15，依 comprehensive-documentation-audit P1-02）：端点计数同步 78→80（api-spec 注册 archive/restore 后）、物理总数 79→81；REST API 路由设计目标行同步。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：端点计数 80→85、物理总数 81→88（已对齐注记 + REST 路由行）；参数总数 358→371。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：MCP Bridge 工具计数 12→15（对齐 api-spec §6.8）；CLI 全量口径 24→25 联动（api-spec §3 补注册 kairos degradation switch）。 |

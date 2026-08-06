@@ -7,14 +7,14 @@ tags:
   - kairos
   - references
 created: 2026-08-05
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
 # Kairos 概念体系分级速查表
 
-> **定位（0.0.16 新增,建议六）**：全库 80+ 概念按暴露层级分三级,每级附带一句话通俗类比与代码模块映射。本文为**桥接文档**——术语的完整定义以 [glossary.md](glossary.md) 为权威(57 条中英文对照),本文只做归类与类比,不重复定义。新增术语时仍按 documentation-governance 术语注册规则登记 glossary,并可在本文补归类。
+> **定位（建议六）**：全库 80+ 概念按暴露层级分三级,每级附带一句话通俗类比与代码模块映射。本文为**桥接文档**——术语的完整定义以 [glossary.md](glossary.md) 为权威(68 条中英文对照),本文只做归类与类比,不重复定义。新增术语时仍按 documentation-governance 术语注册规则登记 glossary,并可在本文补归类。
 >
 > **阅读建议**：集成开发者/终端用户读 L1;Kairos 贡献者读 L1+L2;架构师/认知层研究者读全部三级。
 
@@ -28,7 +28,7 @@ status: draft
 |:--|:----|:---------|:------------|:------|
 | 1 | **记忆 (Memory)** | 文件系统里的一个文件——有内容、有路径、有元数据 | `POST /v1/memories`、`GET /v1/memories/{id}` | 稳定 |
 | 2 | **路径空间 (kairos://)** | 记忆的文件系统树——用路径组织记忆,像 `ls /project-a/meetings/` | `kairos://` URL 前缀 | 稳定 |
-| 3 | **四类契约 (Contract)** | 记忆的生存策略——常驻(pinned)/按需(lazy)/环境(contextual)/临时(ephemeral) | `POST /v1/memories` 的 `contract` 字段 | 稳定 |
+| 3 | **四类契约 (Contract)** | 记忆的生存策略——常驻(permanent)/按需(ondemand)/环境(environmental)/临时(temporary) | `POST /v1/memories` 的 `contract` 字段 | 稳定 |
 | 4 | **遗忘 (Forgetting)** | 不是删除——是"不再主动检索"。被遗忘的记忆仍在存储层 | `DELETE /v1/memories/{id}`、遗忘调度器后台运行 | 稳定 |
 | 5 | **校准 (Calibration)** | 用户给记忆打分："这条准确"或"这条不对"——系统据此调整信任度 | `POST /v1/calibrate` | 稳定 |
 | 6 | **检索 (Retrieval)** | 按关键词、时间、意图查找记忆——支持精确匹配和模糊语义搜索 | `POST /v1/memories/search` | 稳定 |
@@ -51,7 +51,7 @@ status: draft
 | 6 | **遗忘调度器 (Forgetting Scheduler)** | 定期巡检所有记忆,根据新鲜度决定留哪些、忘哪些(不是删,是标记不检索) | `scheduler/forgetting` | 结构性记忆(structural_value≥1)跳过 |
 | 7 | **元认知层 (Meta-cognition Layer)** | 系统的自我监测模块——不断检查"我的记忆健康吗?我的检索偏了吗?" | `meta/` | 只监测和报告,不做决策(监测+提案) |
 | 8 | **注意力调度器 (Attention Scheduler)** | 全局资源分配器——编码、巩固、检索三环节竞争注意力预算,检索优先级最高 | `scheduler/attention` | 逻辑独立、不物理驻留任何功能层 |
-| 9 | **三信号混合检索 (Hybrid Search)** | 三种"找法"加权融合——语义向量+BM25 关键词+实体加成 | `storage/hybrid_search.py` | 权重和恒为 1(0.50/0.35/0.15) |
+| 9 | **三信号混合检索 (Hybrid Search)** | 三种"找法"加权融合——语义向量+BM25 关键词+实体加成 | `storage/hybrid_search.py` | 权重和恒为 1(0.50/0.35/0.15)；三信号为候选域内融合权重（架构 §7.3a），检索扩展链路权重为四链路 0.50/0.20/0.10/0.20（架构 §5.2）——两套权重作用于检索管线不同阶段 |
 | 10 | **结构性记忆 (Structural Memory)** | 推理空间的"承重墙"——反例锚点、死胡同路径,拆了会塌 | `storage/structure_guard` | structural_value 0/1/2 三级保护 |
 | 11 | **记忆压力 (Memory Pressure)** | 系统的"拥挤感"——WM 快满了、遗忘积压了,主动提醒该减压 | `meta/pressure_monitor` | 四级指标+三级减压动作(0.0.16) |
 | 12 | **事件总线 (Event Bus)** | 系统内部的"邮局"——各层之间收发标准格式消息 | `bus/event_bus` | 10 类事件枚举,新增须经审计庭门禁 |
@@ -108,3 +108,4 @@ graph TD
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
 | 0.0.1 | 2026-08-05 | 概念分级速查表（0.0.16 批次,建议六落地）：L1 10 项 / L2 12 项 / L3 12 项,概念依赖图 Mermaid + "如果只读三页"速览路径。术语权威为 glossary。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：L1 四类契约英文名对齐 glossary 权威枚举（permanent/ondemand/environmental/temporary）；三信号混合检索权重补注两套权重口径（§7.3a 候选域内 / §5.2 检索扩展链路）；glossary 权威条数 57→68。 |

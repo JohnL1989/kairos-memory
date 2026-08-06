@@ -59,10 +59,10 @@ status: draft
 | `identity_confidence` | FLOAT | DEFAULT 0.5, [0,1] | 身份建构置信度——初始赋予后由叙事自洽度时间序列驱动更新（加强建构/降级审查的输入） |
 | `identity_reviewed_at` | TIMESTAMPTZ | — | 最近一次身份重评时间（叙事连贯性检测器触发或宪法解释层审查） |
 | `identity_review_count` | INTEGER | DEFAULT 0 | 身份重评累计次数（审计与降级提案依据） |
-| `is_structure` | BOOLEAN | DEFAULT FALSE | 是否为结构性记忆（认知完整性轴）。**0.0.16 双向同步**：与 `structural_value` 同步——`is_structure=true` ↔ `structural_value=2`（写入时按 `structural_value` 判定结果同步，保持后向兼容） |
-| `structural_value` | INTEGER | DEFAULT 0 | 半定量结构标记（0.0.16 新增，0/1/2）：0=非结构 / 1=疑似结构 / 2=确认结构。判定条件与遗忘调度器分级行为见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 结构性记忆守护（L1：被 ≥2 条 causal 引用/路径高分叉/叙事线断裂风险；L2：外部校准标记/手动标注/L1+引用计数 ≥ 阈值）。v1.1 三维连续度量上线后降级为快速索引（D-311 衔接） |
-| `structural_value_reasons` | JSONB | DEFAULT '[]' | 升档原因列表（0.0.16 新增），如 `["causal_ref_count_ge_2", "external_calibration_tagged"]` |
-| `structural_value_updated_at` | TIMESTAMPTZ | — | 最近一次升/降档时间（0.0.16 新增） |
+| `is_structure` | BOOLEAN | DEFAULT FALSE | 是否为结构性记忆（认知完整性轴）。**双向同步**：与 `structural_value` 同步——`is_structure=true` ↔ `structural_value=2`（写入时按 `structural_value` 判定结果同步，保持后向兼容） |
+| `structural_value` | INTEGER | DEFAULT 0 | 半定量结构标记（新增，0/1/2）：0=非结构 / 1=疑似结构 / 2=确认结构。判定条件与遗忘调度器分级行为见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 结构性记忆守护（L1：被 ≥2 条 causal 引用/路径高分叉/叙事线断裂风险；L2：外部校准标记/手动标注/L1+引用计数 ≥ 阈值）。v1.1 三维连续度量上线后降级为快速索引（D-311 衔接） |
+| `structural_value_reasons` | JSONB | DEFAULT '[]' | 升档原因列表（新增），如 `["causal_ref_count_ge_2", "external_calibration_tagged"]` |
+| `structural_value_updated_at` | TIMESTAMPTZ | — | 最近一次升/降档时间（新增） |
 | `is_deleted` | BOOLEAN | DEFAULT FALSE | 软删除标记，API 软删除操作设置此标记（保留审计痕迹） |
 | `calibration_confidence` | FLOAT | DEFAULT 0.5, [0,1] | 校准置信度 |
 | `vad_v` | FLOAT | DEFAULT 0, [-1,1] | 情感效价（Valence） |
@@ -83,9 +83,9 @@ status: draft
 | `is_latest` | BOOLEAN | DEFAULT TRUE | 是否属于版本链最新版本。新版本写入时旧版本自动置 FALSE；检索默认仅返回 is_latest=TRUE |
 | `last_access_at` | TIMESTAMPTZ | — | 最后访问时间（用于遗忘曲线计算） |
 | `domain` | TEXT | DEFAULT 'general' | 领域标签（用于领域路由检索） |
-| `quality_tier` | TEXT | DEFAULT 'world' | 认知质量层级（四层记忆质量层次）：mental_models / observation / experience / world。决定检索优先级和遗忘豁免级别。**权威定义所在（0.0.14 引用勘误）**：[architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §四层记忆质量层次（v1.1+ 规划组件，v0.1.0 仅承载字段与默认值 'world'） |
+| `quality_tier` | TEXT | DEFAULT 'world' | 认知质量层级（四层记忆质量层次）：mental_models / observation / experience / world。决定检索优先级和遗忘豁免级别。**权威定义所在（引用勘误）**：[architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §四层记忆质量层次（v1.1+ 规划组件，v0.1.0 仅承载字段与默认值 'world'） |
 | `compacted` | BOOLEAN | DEFAULT FALSE | 压缩标记：该记忆是否已被压缩合并进精炼记忆（见 `compaction_snapshots` 表）。`POST /v1/admin/compaction/rollback/{snapshot_id}` 回滚时恢复为 FALSE；已过去 >30 天的压缩不可回滚（RC-07 补充） |
-| `compression_trail` | JSONB | DEFAULT '{}' | 逐记忆压缩审计日志（0.0.16 新增）：记录编码/巩固阶段被压缩的认知维度、压缩比、原因、恢复债编号与版本——结构 `{total_compression_ratio, compressed_dimensions: [{dimension, category, compressed_to, compression_ratio, reason, recovery_debt, recovery_version, compressed_at}], last_updated}`。为架构 §10.11 全局 P6 监控的逐记忆粒度展开；检索侧维度丢失不写本字段（记事件总线 `retrieval_dimension_loss`）。能力矩阵见 [capability_matrix.yaml](../references/capability_matrix.yaml) |
+| `compression_trail` | JSONB | DEFAULT '{}' | 逐记忆压缩审计日志（新增）：记录编码/巩固阶段被压缩的认知维度、压缩比、原因、恢复债编号与版本——结构 `{total_compression_ratio, compressed_dimensions: [{dimension, category, compressed_to, compression_ratio, reason, recovery_debt, recovery_version, compressed_at}], last_updated}`。为架构 §10.11 全局 P6 监控的逐记忆粒度展开；检索侧维度丢失不写本字段（记事件总线 `retrieval_dimension_loss`）。能力矩阵见 [capability_matrix.yaml](../references/capability_matrix.yaml) |
 | `compacted_at` | TIMESTAMPTZ | — | 压缩发生时间（用于判定 30 天回滚窗口） |
 
 **索引**：
@@ -407,6 +407,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 | `platform` | TEXT | — | 平台标签 |
 | `filtered` | BOOLEAN | DEFAULT FALSE | 是否被捕获门控过滤 |
 | `captured_at` | TIMESTAMPTZ | NOT NULL | |
+| `node_episode_index_map` | JSONB | — | 批量摄取 episode 归因映射 {memory_node_id → episode_index}（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 Episode 归因索引） |
 
 **索引**：`idx_journal_entries_session` ON `session_id`（L1 摘要按会话回查）；`idx_journal_entries_captured` ON `captured_at`
 
@@ -516,6 +517,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 | `session_id` | TEXT | NOT NULL | Hermes 会话 ID |
 | `role` | TEXT | NOT NULL | user / assistant / tool |
 | `content` | TEXT | — | 消息内容 |
+| `parts` | JSONB | — | 多模态 Part 数组（TextPart/ImagePart/ToolPart 等，schema 见 [api-spec.md](api-spec.md) §18.2） |
 | `tool_call_id` | TEXT | — | 工具调用 ID |
 | `tool_calls` | JSONB | — | 工具调用参数 |
 | `tool_name` | TEXT | — | 工具名 |
@@ -1169,11 +1171,13 @@ CREATE VIRTUAL TABLE skills_fts USING fts5(
 
 安全规格 [security-specification.md](../security/security-specification.md) §2.1 密钥生命周期与 §2.2 权限分级的数据承载——即该节所述「内部密钥表」。与 `permission_acl` 的分工：本表管 **Key 的身份与生命周期**（谁持有、什么级别、是否有效），`permission_acl` 管 **路径粒度的授权**（该主体能访问哪些路径）；鉴权时先查本表解析出 `principal`，再以 `principal` 查 ACL。
 
+**注**：api_keys 为 v0.1.0 核心鉴权承载（对应安全规格 §2.1），非 P3 系蓝图组件，随本节点名保留（原归类注记不删，补此注即可）。
+
 | 列名 | 类型 | 约束 | 说明 |
 |:----|:----|:----|:-----|
 | `key_id` | TEXT | PK | 密钥公开标识（如 `ak_7f3d2e`），出现在日志与 `key revoke <key-id>` 命令中，**非机密** |
 | `key_hash` | TEXT | NOT NULL, UNIQUE | 加盐 PBKDF2-HMAC-SHA512 摘要（256,000 次迭代，盐取自 `KAIROS_SALT`，与安全规格 §2.1 一致）。**明文 Key 永不落库** |
-| `level` | TEXT | NOT NULL | 权限级别：`admin` / `write` / `read-only`（对应安全规格 §2.2） |
+| `level` | TEXT | NOT NULL | 权限级别：`admin` / `write` / `read`（对应安全规格 §2.2；与 api-spec §1 三级口径一致） |
 | `principal` | TEXT | NOT NULL | 关联 `permission_acl.principal` 的主体标识，用于路径级授权 |
 | `label` | TEXT | — | 人类可读用途标注（如「CI 流水线」「本地开发」），审计用 |
 | `created_at` | TIMESTAMPTZ | NOT NULL, DEFAULT now() | 签发时间 |
@@ -1190,7 +1194,7 @@ CREATE VIRTUAL TABLE skills_fts USING fts5(
 4. 否则通过，取 `level` 与 `principal` 进入 ACL 检查
 
 **约束**：
-- `level` 取值限于 `admin` / `write` / `read-only` 三值（CHECK 约束）
+- `level` 取值限于 `admin` / `write` / `read` 三值（CHECK 约束）
 - `key_hash` 全局唯一——同一明文 Key 不得重复登记
 - `rotated_from` 自引用外键，禁止成环（应用层保证：轮换链深度 ≤ 10）
 - 至少保留一个未吊销的 `admin` 级 Key——吊销最后一个 admin Key 的操作必须被拒绝（防自锁）
@@ -1385,3 +1389,4 @@ SQLite 无时区类型，故：
 | 0.0.16 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.16，建议二/七落地）：memories 表新增 structural_value（0/1/2 半定量）/structural_value_reasons/structural_value_updated_at 三字段与 is_structure 双向同步注记；新增 compression_trail JSONB 逐记忆压缩审计字段。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：顶层章节标题统一数字（一~十三→1~13）与中文序引用同步；前瞻记忆引用 §8→§3.2。 |
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题风格统一——「N、」改「§N」（13 个大章并入 §N 数字序形态，引用零联动）。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：api_keys.level 枚举统一为 read（含 CHECK 约束，与 api-spec §1 三级口径一致）；§8.1 conversation_messages 补 parts 列（对齐 api-spec §18.2 v0.1.0 交付承诺）；journal_entries 补 node_episode_index_map 列（架构 §5.2 Episode 归因索引）；api_keys 表补 v0.1.0 核心鉴权承载注记。 |

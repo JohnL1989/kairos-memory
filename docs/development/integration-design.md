@@ -121,7 +121,7 @@ for r in results:
 Kairos 通过独立的 MCP Bridge 服务器进程暴露能力给 Hermes Agent：
 
 - **通信协议**：MCP stdio 协议（Hermes Agent 启动 Kairos MCP 子进程，通过 stdin/stdout JSON-RPC 通信）
-- **工具注册**：Kairos 启动时向 Hermes 注册 MCP 工具（`kairos_store_memory` / `kairos_search_memories` / `kairos_link` 等 15 个），工具清单见 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1a MCP Bridge 实现表与 [api-spec.md](../specification/api-spec.md) §6.8。注：`memories_write` / `memories_search` / `path_browse` 为接入层 Agent Tool 定义（[implementation-map.md](../specification/implementation-map.md) `src/access/tools.py`），与 MCP 工具为两层接口，不混用
+- **工具注册**：Agent 拉起 MCP 子进程时注册工具（`kairos_store_memory` / `kairos_search_memories` / `kairos_link` 等 15 个），工具清单见 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1a MCP Bridge 实现表与 [api-spec.md](../specification/api-spec.md) §6.8（进程模型见 [technology-stack.md](../development/technology-stack.md) §七：独立子进程 + localhost HTTP 通信）。注：`memories_write` / `memories_search` / `path_browse` 为接入层 Agent Tool 定义（[implementation-map.md](../specification/implementation-map.md) `src/access/tools.py`），与 MCP 工具为两层接口，不混用
 - **进程模型**：MCP Bridge 作为独立子进程运行，与 Kairos 主进程通过 localhost HTTP 通信
 - **安全边界**：MCP 请求受 S-04（本地绑定）约束，仅接受本地连接
 
@@ -138,3 +138,4 @@ SDK 集成示例见 `src/access/mcp/bridge.py`。MCP 工具与 REST API 的等�
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：MCP 工具映射章节引用修正（§6.9 → §6.8）。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：MCP 工具注册改列 kairos_* 系列（15 个）并注明 Agent Tool 与 MCP 工具两层接口不混用。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-05 同源联动（审计未列）——MCP Bridge 落点 §7.3→§7.1a。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：MCP 工具注册时机修正——「Kairos 启动时向 Hermes 注册」改「Agent 拉起 MCP 子进程时注册」（进程模型见 technology-stack §七：独立子进程 + localhost HTTP 通信）。 |

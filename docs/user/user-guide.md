@@ -52,7 +52,7 @@ kairos init --db sqlite:///$HOME/.kairos/kairos.db
 kairos serve --port 8010
 ```
 
-> **注（0.0.11 澄清）**：第 1、2 步为同一 `kairos init` 命令的两个子项——首次执行一次即可完成密钥与数据库初始化；重复执行幂等（不覆盖既有密钥，仅补缺失项）。
+> **注（澄清）**：第 1、2 步为同一 `kairos init` 命令的两个子项——首次执行一次即可完成密钥与数据库初始化；重复执行幂等（不覆盖既有密钥，仅补缺失项）。
 
 `--init-key` 生成以下密钥并写入 `~/.kairos/.env`（与 quick-start 一致）：
 - `KAIROS_API_KEY` — API 鉴权

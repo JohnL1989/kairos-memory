@@ -109,9 +109,9 @@ status: draft
 
 | 路径 | 内容 |
 |:-----|:-----|
-| [`references/glossary.md`](references/glossary.md) | **术语表** — 67 条中英文术语对照（7 个分类表，不含版本记录；0.0.22 增补「热度层级衰减」「摄入侧情绪保护」「噪音规则库」；0.0.29 增补「编译器」「结构化通信单元」「编译净化」「检索深度分级」「命名配置集」「竖切」「结构性记忆」） |
+| [`references/glossary.md`](references/glossary.md) | **术语表** — 68 条中英文术语对照（7 个分类表，不含版本记录；0.0.22 增补「热度层级衰减」「摄入侧情绪保护」「噪音规则库」；0.0.29 增补「编译器」「结构化通信单元」「编译净化」「检索深度分级」「命名配置集」「竖切」「结构性记忆」；0.0.37 增补「准见证锚定」） |
 | [`references/error-reference.md`](references/error-reference.md) | **错误参考** — 11 类 38 个错误码 |
-| [`references/traceability-map.md`](references/traceability-map.md) | **需求可追溯性映射表** — 43 能力↔37 声明↔100 追踪项↔16 差距交叉映射 |
+| [`references/traceability-map.md`](references/traceability-map.md) | **需求可追溯性映射表** — 43 能力↔37 声明↔104 追踪项↔16 差距交叉映射 |
 | [`references/domain_keywords.yaml`](references/domain_keywords.yaml) | **领域关键词表** — 领域专有词频配置 |
 | [`references/usage-load-algorithm.md`](references/usage-load-algorithm.md) | **使用负载计量算法** |
 | [`references/vad-coordinate-algorithm.md`](references/vad-coordinate-algorithm.md) | **VAD 情感坐标算法** |
@@ -168,3 +168,7 @@ status: draft
 | 0.0.30 | 2026-08-06 | 仓库整洁化：审计过程材料移出仓库（reviews/ 目录与 audit-history-summary 移除、scripts/_deep_audit_out.json 纳入 .gitignore）；审计历史索引行移除。 |
 | 0.0.31 | 2026-08-06 | 第十一轮全库深度审计修复批次（changelog 0.0.31）：操作目录 53→66 项；术语表推理皮层别名（计数不变）。 |
 | 0.0.33 | 2026-08-06 | round12/round13 深度审计修复批次（changelog 0.0.33）：删除「审计与决策记录（过程产物）」空节。 |
+| 0.0.34 | 2026-08-06 | 第十四轮全库深度审计修复批次（changelog 0.0.34）：治理面计数统一（§0.4.1 图题/结构原则 → 两个正交治理面 + HTML 图题同源联动）；治理输入表述修正；检索权重单一权威（三链路标历史配比、四链路 0.50/0.20/0.10/0.20 唯一默认，configuration 同步）；§10.24 补 D-006/D-008/D-016/D-019；§5.2 节内导航补 5 节点；健康接口/差异检验引用修正；门禁新增 6.17/6.18/6.19。 |
+| 0.0.35 | 2026-08-06 | 第三方分析分诊（dg-bc/note，changelog 0.0.35）：架构 §3.9 补检索深度分级 ↔ 内容读取层级映射注记（R-01，R0 指针/R1 摘要仅定位/R2 全文唯一可用）；无债务登记。 |
+| 0.0.36 | 2026-08-06 | 第三方分析分诊（BaiShou-Next 白守，changelog 0.0.36）：架构 §3.3 补使用权重影子副本可重建性声明（R-03）；detailed-design §4 补升华产物 verbatim 拒绝护栏（R-02）；无债务登记。 |
+| 0.0.37 | 2026-08-06 | round15 全面深度审计修复批次（changelog 0.0.37）：45 项问题闭环（1 高/19 中/25 低）——M-03 三义统一、MCP 15/术语 68/CLI 25 计数联动、conversation_messages parts 列与 journal_entries episode 归因列补录、P3-19~25 债务补登 D-415~D-421、否决权「默认优先级」口径全库统一、三信号/四链路管线关系声明、意图契约第五契约说明、版本注记纪律收敛、竖切 REST 21 与 CLI 补注册等。 |

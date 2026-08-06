@@ -37,7 +37,7 @@ status: draft
 
 > **实现落点**：组件 3（三信号混合检索）→ `src/storage/hybrid_search.py`；组件 5（身份注册表）→ `src/storage/identity_registry.py`（见 implementation-map 存储层）。
 >
-> **计数口径注记（0.0.14）**：本清单按实现批次拆 **9 项**；[project-plan.md](../governance/project-plan.md) §一 竖切组件列按功能域记 **6 项**（统一 LTM+路径空间+三信号混合检索+单曲线衰减遗忘+身份注册表+基础审计日志，事件总线与 CLI/API 并入对应组件）——差异属粒度而非范围，两处口径一致。
+> **计数口径注记**：本清单按实现批次拆 **9 项**；[project-plan.md](../governance/project-plan.md) §一 竖切组件列按功能域记 **6 项**（统一 LTM+路径空间+三信号混合检索+单曲线衰减遗忘+身份注册表+基础审计日志，事件总线与 CLI/API 并入对应组件）——差异属粒度而非范围，两处口径一致。
 
 ---
 
@@ -67,9 +67,9 @@ status: draft
 
 ---
 
-## 三、竖切端点清单（REST 20 + CLI 15）
+## 三、竖切端点清单（REST 21 + CLI 15）
 
-> **口径**：竖切 CLI 15 条为竖切子集；全量 CLI 24 条（api-spec §3）；implementation-map 的 27 条含规划扩展（竖切 15 + 全量增量）——三处口径不同属有意设计，引用时注明档位。
+> **口径**：竖切 CLI 15 条为竖切子集；全量 CLI 25 条（api-spec §3）；implementation-map 的 27 条含规划扩展（竖切 15 + 全量增量）——三处口径不同属有意设计，引用时注明档位。
 
 **REST**（方法/路径以 [api-spec.md](../specification/api-spec.md) 为准）：
 
@@ -79,8 +79,9 @@ status: draft
 | `POST /v1/memories/batch` | 1 | W-03 |
 | `GET /v1/memories/{id}` | 1 | 读取 |
 | `PATCH /v1/memories/{id}` | 1 | M-01 |
-| `DELETE /v1/memories/{id}` | 1 | M-03（软删除） |
-| `POST /v1/memories/{id}/archive` | 4 | M-05（0.0.15 已注册，见 [api-spec.md](../specification/api-spec.md) §1.5） |
+| `DELETE /v1/memories/{id}` | 1 | 删除（软删除，依契约分级，见 [api-spec.md](../specification/api-spec.md) §1.5；非 M-03——M-03 显式遗忘为遗忘候选标记，经 CLI `kairos forget` 承载，见 [api-spec.md](../specification/api-spec.md) §3） |
+| `POST /v1/memories/{id}/archive` | 4 | M-05（已注册，见 [api-spec.md](../specification/api-spec.md) §1.5） |
+| `POST /v1/memories/{id}/restore` | 4 | M-05 恢复（已注册，见 [api-spec.md](../specification/api-spec.md) §1.5） |
 | `POST /v1/memories/search` | 3 | R-02/R-03 |
 | `GET /v1/memories?q=` | 3 | R-02（关键词检索） |
 | `GET /v1/path` | 2 | R-01 |
@@ -133,8 +134,8 @@ status: draft
 - **职责**：单曲线指数衰减遗忘得分（freshness = 2^(-days/HALF_LIFE)）、潜伏势能重估（latent_trigger 事件驱动）、复兴加速。
 - **架构**：§5.2 遗忘调度器/潜伏势能重估端口；§10.17 降级契约（skip_forgetting 仅标记不处理）；`KAIROS_FEATURE_FORGETTING_ENGINE` 竖切内 ON。
 - **表**：forgetting_queue / memories（last_access_at、heat_score、status）。
-- **API**：自动调度 + 手动触发；M-05 归档/恢复端点（`POST /v1/memories/{id}/archive` / `restore`，0.0.15 已注册，见 [api-spec.md](../specification/api-spec.md) §1.5）。
-- **配置**：KAIROS_FORGETTING_HALF_LIFE（默认 69 天）、KAIROS_FRESHNESS_ACTIVE_THRESHOLD（0.3）、KAIROS_FRESHNESS_STALE_THRESHOLD（0.1）——见 [configuration.md](../ops/configuration.md) §10。**0.0.14 勘误**：v0.1.0 遗忘算法为 freshness 单曲线（见 [detailed-design.md](../specification/detailed-design.md) §3），不依赖 `KAIROS_AGE_DECAY_CONSTANT`——该参数属于 v1.1 二维遗忘曲面目标（configuration 附录 A 已回填默认 30 天），竖切实现无需定值。
+- **API**：自动调度 + 手动触发；M-05 归档/恢复端点（`POST /v1/memories/{id}/archive` / `restore`，已注册，见 [api-spec.md](../specification/api-spec.md) §1.5）。
+- **配置**：KAIROS_FORGETTING_HALF_LIFE（默认 69 天）、KAIROS_FRESHNESS_ACTIVE_THRESHOLD（0.3）、KAIROS_FRESHNESS_STALE_THRESHOLD（0.1）——见 [configuration.md](../ops/configuration.md) §10。**勘误**：v0.1.0 遗忘算法为 freshness 单曲线（见 [detailed-design.md](../specification/detailed-design.md) §3），不依赖 `KAIROS_AGE_DECAY_CONSTANT`——该参数属于 v1.1 二维遗忘曲面目标（configuration 附录 A 已回填默认 30 天），竖切实现无需定值。
 - **测试**：TC-F01-001、TC-F02-001、TC-F03-001。
 - **验收**：E2E-02（写入→遗忘→复兴）。
 
@@ -154,6 +155,7 @@ status: draft
 - **表**：audit_log。
 - **API**：GET /v1/audit-log（含 HMAC 完整性校验）。
 - **测试**：E2E-06（写入→修改→删除→审计链验证）。
+- **监督平面注记**：竖切内监督平面部分启用（审计庭快照校验/审计日志比对）；完整监督平面随 `KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` 启用（configuration 同口径）。
 
 ### 组件 7：事件总线（4 类，W4）
 
@@ -169,7 +171,7 @@ status: draft
 - **架构**：§1.2 外部校准端口/强制冻结、§10.9 降级状态机、§8 S-11。
 - **API**：POST /v1/calibrate、POST /v1/freeze、POST /v1/unfreeze、POST /v1/degradation/switch。
 - **配置**：DEGRADATION_PERIOD_N/M 及滞回参数（[configuration.md](../ops/configuration.md) §1）；虚拟校准竖切内可选（默认关闭）。
-- **测试**：TC-CAL01-001、TC-CAL03-001、TC-CAL04-001（0.0.14 勘误：原 TC-C01-001 前缀已废弃，统一为 TC-CALxx-00x，见 [test-plan.md](../quality/test-plan.md) §3 命名约定）。
+- **测试**：TC-CAL01-001、TC-CAL03-001、TC-CAL04-001（勘误：原 TC-C01-001 前缀已废弃，统一为 TC-CALxx-00x，见 [test-plan.md](../quality/test-plan.md) §3 命名约定）。
 - **验收**：E2E-04/05/08。
 
 ### 组件 9：CLI/API 接入与冷启动（W1-W2）
@@ -224,3 +226,4 @@ W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双
 | 0.0.16 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.16，建议三落地）：组件 3 补 QueryAnalyzer 首迭代增强注记（意图分类规则优先+时间锚定，竖切后首迭代实现优先级）。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §三→§3 引用联动。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-07 存活探针端点 GET /v1/health→GET /health。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：REST 20→21（补 `POST /v1/memories/{id}/restore` 行，M-05 恢复端点）；DELETE 行 M-03 标注修正（软删除语义，M-03 显式遗忘经 CLI `kairos forget` 承载）；组件 6 补监督平面部分启用注记；CLI 全量 24→25 联动（api-spec §3 补注册）。 |

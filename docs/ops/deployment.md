@@ -8,8 +8,8 @@ tags:
   - deployment
   - ops
 created: 2026-07-18
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
@@ -31,7 +31,7 @@ status: draft
 |:-----|:--------|:--------|:--------|
 | **安装方式** | `pip install kairos && kairos serve` | `docker compose up -d` | `docker compose -f docker-compose.full.yml up -d` |
 | **数据库** | SQLite + sqlite-vec | PostgreSQL + pgvector | PostgreSQL + pgvector |
-| **启动时间** | ~10 秒 | ~10 秒 | ~15 秒 |
+| **启动时间** | ~10 秒 | ~10 秒 | ~15 秒（扩展设计值——NFR 仅定义标准模式启动 ≤10s，见 [nfr-specification.md](../specification/nfr-specification.md) §三） |
 | **记忆容量** | 10 万条 | 100 万条 | ≥100 万条 |
 | **升华层** | 受限（空闲单线） | 可用 | 完整多线 |
 | **策略层** | 内置（使用权重衰减） | 完整激活调度 | 完整 + 探索投资 |
@@ -73,13 +73,13 @@ status: draft
 | `KAIROS_SECRET_KEY` | 是 | — | AES-256-GCM 敏感字段加密密钥 |
 | `KAIROS_AUDIT_HMAC_KEY` | 是 | — | HMAC-SHA256 审计链签名密钥 |
 | `KAIROS_LLM_API_KEY` | 标准/全量模式 ✅；轻量模式 ❌ | — | LLM 供应商 API Key（轻量模式使用本地 BGE-M3 嵌入，不需 LLM，与 [user-guide.md](../user/user-guide.md) 一致） |
-| `KAIROS_LLM_ENDPOINT` | 是 | — | LLM 供应商端点 |
+| `KAIROS_LLM_ENDPOINT` | 标准/全量模式 ✅；轻量模式 ❌ | — | LLM 供应商端点（轻量模式使用本地 BGE-M3 嵌入，不需 LLM 端点，与 `KAIROS_LLM_API_KEY` 口径一致） |
 | `KAIROS_ADMIN_IPS` | 生产推荐 | — | 管理端点 IP 白名单 |
 | `KAIROS_SCHEDULER_INTERVAL` | 否 | 300s | 调度器检查周期 |
 | `KAIROS_DAILY_BUDGET_FEN` | 否 | 20000 | LLM 日预算上限（分） |
 | `KAIROS_CORE_LIMIT_BYTES` | 否 | 25KB | 常驻契约索引上限 |
 | `KAIROS_CORE_LIMIT_LINES` | 否 | 200 | 常驻契约索引行数上限 |
-| `KAIROS_SEARCH_DEFAULT_LIMIT` | 否（deployment 自定） | 5 | 默认召回上限（正文未收录，已在 [configuration.md](configuration.md) 附录 A 登记（0.0.11 批次），默认值由部署覆盖） |
+| `KAIROS_SEARCH_DEFAULT_LIMIT` | 否（deployment 自定） | 5 | 默认召回上限（正文未收录，已在 [configuration.md](configuration.md) 附录 A 登记，默认值由部署覆盖） |
 | `KAIROS_RATE_LIMIT_WRITE_PER_MIN` | 否 | 60 | 写操作限流（单客户端级别） |
 | `KAIROS_RATE_LIMIT_READ_PER_MIN` | 否 | 120 | 读操作限流 |
 | `KAIROS_INPUT_LIMIT_CONTENT_BYTES` | 否 | 65536 | 单条内容上限（字节） |
@@ -149,7 +149,7 @@ curl http://localhost:8010/health  # 健康检查端点
 
 ## 五、Docker 部署参考
 
-> **全量模式（docker-compose.full.yml）说明**：全量模式与标准模式的 compose 差异仅在**环境变量与特征标志**（启用完整监测器族 `KAIROS_FEATURE_META_COGNITION=true` 与探索投资，见 §一 部署模式表与架构 §0.8 特征标志），服务拓扑相同（kairos + db 双服务）。`docker-compose.full.yml` 参考骨架：复制下方 compose 文件，在 `environment` 追加 `KAIROS_FEATURE_META_COGNITION=true`（及对应的监测器族开关），并在启动命令中校验全量模式启动时间 ~15 秒（标准模式 ~10 秒，见 NFR 启动时间目标）。
+> **全量模式（docker-compose.full.yml）说明**：全量模式与标准模式的 compose 差异仅在**环境变量与特征标志**（启用完整监测器族 `KAIROS_FEATURE_META_COGNITION=true` 与探索投资，见 §一 部署模式表与架构 §0.8 特征标志），服务拓扑相同（kairos + db 双服务）。`docker-compose.full.yml` 参考骨架：复制下方 compose 文件，在 `environment` 追加 `KAIROS_FEATURE_META_COGNITION=true`（及对应的监测器族开关），并在启动命令中校验全量模式启动时间 ~15 秒（扩展设计值——NFR 仅定义标准模式启动 ≤10s，见 [nfr-specification.md](../specification/nfr-specification.md) §三；标准模式 ~10 秒）。
 
 ```yaml
 # docker-compose.yml
@@ -243,7 +243,7 @@ docker compose up -d        # 使用旧镜像重建
 kairos db migrate rollback  # 回滚数据库迁移
 ```
 
-## 九、进程级隔离演进路径（0.0.17 新增，Marvis 建议 R-2）
+## 九、进程级隔离演进路径（Marvis 建议 R-2）
 
 > **背景**：架构 §2.2 已声明单进程部署下 ME-1/ME-2/ME-3（监测/治理/自观察）为逻辑隔离而非故障隔离——"治理不影响监测"的承诺在单进程下有漏洞。本节定义从单进程到进程级隔离的演进路径与各阶段部署形态。
 
@@ -270,3 +270,4 @@ kairos db migrate rollback  # 回滚数据库迁移
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：遗忘能力口径注记（FORGETTING_ENGINE 默认 OFF）、行号引用改章节引用。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：KAIROS_SEARCH_DEFAULT_LIMIT 附录登记勘误；轻量模式校准能力注记（保留外部校准端口，不暴露 health 组件）。 |
 | 0.0.17 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.17，Marvis 建议 R-2 落地）：新增 §九 进程级隔离演进路径——已隔离项（宪法解释层/监督平面）+ v0.1.0.x 候选（ME-1/2/3 分离）+ v1.1 目标（全组件容器化）+ 生产部署建议 + 降级兼容。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：全量模式启动时间 ~15 秒补「扩展设计值」注记（NFR 仅定义标准模式启动 ≤10s，§一 部署模式表与 §五 compose 说明两处）；`KAIROS_LLM_ENDPOINT` 必填口径与 `KAIROS_LLM_API_KEY` 对齐（标准/全量 ✅，轻量 ❌）。 |

@@ -56,7 +56,7 @@ kairos init --init-key
 kairos init --db sqlite:///$HOME/.kairos/kairos.db
 ```
 
-> **注（0.0.11 澄清）**：第二步的 `kairos init --init-key` 与第三步的 `kairos init --db ...` 是**同一初始化命令的两种用途**（密钥生成 vs 数据库初始化），实际使用执行一次 `kairos init` 即可完成——首次执行时两个子项一并处理；重复执行 `kairos init` 不会覆盖已生成的密钥（幂等），仅对缺失项补初始化。
+> **注（澄清）**：第二步的 `kairos init --init-key` 与第三步的 `kairos init --db ...` 是**同一初始化命令的两种用途**（密钥生成 vs 数据库初始化），实际使用执行一次 `kairos init` 即可完成——首次执行时两个子项一并处理；重复执行 `kairos init` 不会覆盖已生成的密钥（幂等），仅对缺失项补初始化。
 
 ## 第四步：启动
 

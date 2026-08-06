@@ -8,8 +8,8 @@ tags:
   - governance
   - planning
 created: 2026-07-20
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
@@ -31,7 +31,7 @@ status: draft
 | 事件总线 | 4 类事件：use_event / calibration_signal / degradation_switch / latent_trigger（架构 §10.10） |
 | 身份模型 | 构造论：初始赋予（见证锚定写入触发）+ 叙事驱动双向更新（认知基础 D.2 / 架构 §5.2） |
 | 存储后端 | SQLite + sqlite-vec（首迭代）；PostgreSQL + pgvector 竖切验收后适配（ADR-001） |
-| 功能/表/端点 | feature-list 竖切标注（约 23 项功能）；data-model 竖切表子集（15 张，清单见 [slice-implementation-guide](../development/slice-implementation-guide.md)）；api-spec 竖切端点（REST 20 + CLI 15） |
+| 功能/表/端点 | feature-list 竖切标注（约 23 项功能）；data-model 竖切表子集（15 张，清单见 [slice-implementation-guide](../development/slice-implementation-guide.md)）；api-spec 竖切端点（REST 21 + CLI 15） |
 | 时间过滤基础窗口 | `KAIROS_TIME_FILTER_ENABLED` + `occurred_at` 可空加列（D-323）；竖切内第 5 周（W05）里程碑交付基础窗口，过滤执行待 v1.1/竖切扩展——「W5」此处为里程碑周次，与功能编号 W-05（关系标注）、竖切组件序号不混用 |
 
 ## 二、里程碑（周数按单人全时开发估算，实际以进度为准）
@@ -52,6 +52,8 @@ status: draft
 | W5 | 三信号混合检索 | 语义（sqlite-vec）+ BM25（FTS5）+ 实体加成（简化）三信号融合（0.50/0.35/0.15）；时间感知检索基础窗口（occurred_at 落列） | 1 万条基准：语义检索 P50 ≤100ms |
 | W6 | 遗忘 + 潜伏势能 | 单曲线指数衰减、潜伏势能重估（latent_trigger 事件）、复兴加速 | TC-F01~F03 通过 |
 
+> **检索权重口径注记**：三信号（语义/BM25/实体）为候选域内融合权重（架构 §7.3a）；检索扩展链路权重为四链路 0.50/0.20/0.10/0.20（架构 §5.2）——两套权重作用于检索管线不同阶段，不叠加。
+
 ### Phase 2：身份与治理闭环（第 7–8 周）
 
 | 周 | 里程碑 | 交付物 | 验证 |
@@ -66,7 +68,7 @@ status: draft
 | W9 | 基准 + 文档对齐 | benchmark 基线（写 P50≤50ms / 路径检索 P50≤20ms / 语义检索 P50≤100ms）；doc-audit 全绿；RTM/feature-list 竖切标注对齐 | 基线报告存入 `reports/benchmark-baseline-0.1.0.json` |
 | W10 | 竖切验收 | acceptance-criteria 竖切项全过；E2E 关键路径（写入→检索→遗忘→复兴→校准→降级）；19 红线竖切相关项 | 验收评审通过；定稿评审触发版本号升级（0.0.1 → 0.1.0） |
 
-### Phase ↔ 验收 ↔ 门禁对照（0.0.17 新增，Marvis 建议 R-10）
+### Phase ↔ 验收 ↔ 门禁对照（Marvis 建议 R-10）
 
 > 每 Phase 的完成判定——交付物 → 验收标准 → 门禁/E2E 覆盖。使里程碑有明确、可核验的完成判定。
 
@@ -101,3 +103,4 @@ status: draft
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：删除空节「一、阶段划分」；竖切范围表补时间过滤基础窗口（D-323）；W5 里程碑补时间感知检索基础窗口（occurred_at 落列）。 |
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：W5 里程碑周次消歧注记（与功能编号/组件序号区分）。 |
 | 0.0.17 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.17，Marvis 建议 R-10 落地）：§二 里程碑补「Phase ↔ 验收 ↔ 门禁」对照表——Phase 0-3 交付物 → acceptance-criteria 对应节 → 门禁/E2E 覆盖，每 Phase 明确完成判定与判定顺序。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：W5 里程碑补检索权重口径注记（三信号候选域内融合 vs 四链路检索扩展，两套权重不叠加）；竖切端点计数 REST 20→21 联动（slice-implementation-guide 补 restore 端点）。 |
