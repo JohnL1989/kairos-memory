@@ -18,7 +18,7 @@ last_reviewed: 2026-08-06
 
 ## 一、P3 前瞻组件（v1.1+ 目标，非 v0.1.0 交付）
 
-> **P3 编号导航**：本文按主题分组组织 P3 组件，**编号并非严格升序**（P3-11/12/13 位于 P3-14/15/16 之后）。P3-01~07、P3-18、P3-19 不在本文定义（分别见 [detailed-design.md](../specification/detailed-design.md)、[api-spec.md](../specification/api-spec.md)、[technology-stack.md](../development/technology-stack.md)，P3-18 为未使用编号）。完整编号→位置索引以 [feature-list.md](../specification/feature-list.md) §九（Phase 3 新增）为准。
+> **P3 编号导航**：本文按主题分组组织 P3 组件，**编号并非严格升序**（P3-11/12/13 位于 P3-14/15/16 之后）。P3-01~07、P3-18 不在本文定义（P3-01~07 分别见 [detailed-design.md](../specification/detailed-design.md) 与 [api-spec.md](../specification/api-spec.md)，P3-18 为未使用编号；P3-19 File Graph 承接自 [technology-stack.md](../development/technology-stack.md) §七，本文仅收录规格摘要）。完整编号→位置索引以 [feature-list.md](../specification/feature-list.md) §九（Phase 3 新增）为准。
 
 #### P3-08 GLiNER2 本地 NER（Local NER with GLiNER2 — 205M CPU 模型降本）
 
@@ -185,8 +185,9 @@ GLiNER2 本地 NER 管线：
   │      规则触发条件：同一操作模式在 ≥3 个不同 task_class 下均获 success ≥5 次。
   │      world_model_rules 表：rule_id, task_class, trigger_condition, action_template, preconditions, confidence, evidence_count, created_at
   │   Skills（结晶技能）：经过严格验证的可交付技能。
-  │      Playbook status=promoted + success_count ≥ KAIROS_SKILL_PROMOTION_MIN_SUCCESS（默认 10）
-  │      + 被 ≥ KAIROS_SKILL_PROMOTION_MIN_CONTEXTS（默认 2）个独立上下文引用。
+  │      Playbook status=promoted + 满足技能生命周期状态机的晋升门禁（usage_count ≥
+  │      KAIROS_SKILL_PROMOTION_MIN_USAGE（默认 5）且 success_rate ≥ KAIROS_SKILL_PROMOTION_MIN_RATE（默认 0.7），
+  │      见技能生命周期状态机）+ 被 ≥ KAIROS_SKILL_PROMOTION_MIN_CONTEXTS（默认 2）个独立上下文引用。
   │      达到条件后自动注册到 Hermes skill 目录（MCP 工具接口）供跨会话调用。
   │   进化门禁：低级→高级的跃迁必须满足对应的置信度下限和证据数量，不可跳过层级。
   │   - L1→L2：同一操作模式在 session 中出现 ≥3 次（由升华管道统计）
@@ -200,9 +201,10 @@ GLiNER2 本地 NER 管线：
   │   「隐式记忆产物」提升为「一等可治理实体」。本系统是三级技能进化中 L3 Skills 层的工程落地。
   │
   │   **skills 表**（详见 [data-model.md](../specification/data-model.md)）：
-  │   `(id, name, description, category, embedding, status: active/deprecated/superseded/experimental,
+  │   `(id, name, description, category, embedding, status: experimental/active/deprecated/archived/superseded/retired,
   │     version, source_playbook_id → procedural_playbooks, source_memory_ids[], usage_count,
   │     success_rate, last_used_at, created_at, updated_at, superseded_by, confidence, metadata)`
+  │   状态枚举以技能生命周期状态机的六态为权威（experimental/active/deprecated/archived/superseded/retired，见下）
   │   每条 skill 记录关联其来源——可追溯到产出该技能的 playbook（三级进化 L2→L3 的门禁记录）
   │   和原始记忆条目（完整的溯源链），确保技能的可审计性。
   │
@@ -461,7 +463,7 @@ GLiNER2 本地 NER 管线：
 
 **架构承载：**
 - 使用权重陡升 → [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5 差异检验（语义内核相似度比对）
-- 高负载+低见证 → 合并阻断（[architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5 step 7）
+- 高负载+低见证 → 合并阻断（[architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5 step 8）
 - 语境自指禁令（S-14）：内部信号不得作为见证锚定真实性的证据来源
 
 此公理与辞典式裁决排序中「探索 > 宪法 > 校准 > 认知完整性 > 时间 > 间接度」一致——身份（见证锚定）高于使用排序（时间/间接度），以正交否决权介入。
@@ -473,7 +475,7 @@ GLiNER2 本地 NER 管线：
 1. **外部校准为一等约束：** 当外部校准（不含 virtual 标记的拟真校准信号）与内部叙事自洽度计算值冲突时，外部校准覆盖内部计算值。标记为 `virtual` 的校准信号（[architecture-v0.1.0.md](architecture-v0.1.0.md) §1.2 虚拟校准生成器）走独立校验路径——仅比对不触发 override，不适用本规则。原内部叙事自洽度标记为 `overridden_by_external`，存档于主副本元数据供审计。
 
   **is_identity 不可侵犯：** 外部校准覆盖操作不得影响 is_identity 标志位的存续状态。is_identity 的变更（含降级为普通记忆）仅可经宪法修订端口（[architecture-v0.1.0.md](architecture-v0.1.0.md) §1.2）且经宪法解释层出具语境适用性判例后执行，见证仲裁无权单方面更改。
-  **错误见证锚定的半衰期与自愈机制**：若一条记忆被错误地见证锚定且外部校准长期静默，其修正依赖可能永不到达的外部校准信号。补偿机制——(a) 每条见证锚定记忆的 `calibration_confidence`（[architecture-v0.1.0.md](architecture-v0.1.0.md) §4）按配置的衰减率随时间降权，即使无校准事件也会渐进降权；(b) 当 `calibration_confidence` 衰减至阈值以下时，记忆自动从「见证锚定优先」降为「使用权重优先」——影子副本可正常合并，差异检验持续生效；(c) 若降权后使用权重与记忆内容出现持续矛盾，触发「见证锚定存疑」告警至宪法解释层。衰减率和阈值见 [ops/configuration.md](../ops/configuration.md)
+  **错误见证锚定的半衰期与自愈机制**：若一条记忆被错误地见证锚定且外部校准长期静默，其修正依赖可能永不到达的外部校准信号。补偿机制——(a) 每条见证锚定记忆的 `calibration_confidence`（[architecture-v0.1.0.md](architecture-v0.1.0.md) §5.2）按配置的衰减率随时间降权，即使无校准事件也会渐进降权；(b) 当 `calibration_confidence` 衰减至阈值以下时，记忆自动从「见证锚定优先」降为「使用权重优先」——降为使用权重优先，合并仍受主架构 §5.5 第 8 步约束（高负载+低见证的影子副本不得合并回主副本），差异检验持续生效；(c) 若降权后使用权重与记忆内容出现持续矛盾，触发「见证锚定存疑」告警至宪法解释层。衰减率和阈值见 [ops/configuration.md](../ops/configuration.md)
 2. **重算触发：** 覆盖触发后，叙事连贯性检测器（[architecture-v0.1.0.md](architecture-v0.1.0.md) §2.2）自动重启该记忆所在时间窗口的连贯性重算。重算基线切换为外部校准覆盖后的新分数——检测器以新基线做偏移检测，避免持续发出已处理告警。若检测器输出持续背离外部校准超过预设周期数（可配置），通过宪法主权面发出「解释枯竭告警」——提示外部校准与内部叙事存在结构性张力，需外部审慎复核。
 3. **无冲突基线：** 内部叙事自洽度在无外部校准冲突时，独立作为见证价值轴的运作基础。
 
@@ -503,20 +505,20 @@ GLiNER2 本地 NER 管线：
 
 - **补充**：新信息在旧信息之外增加细节，不否定旧信息。直接合并入 LTM，旧信息的见证锚定不受影响。补充后的记忆在检索时获得多来源加权（新旧来源各自独立投票）。
 - **修正**：新信息直接否定旧记忆的核心主张。旧记忆标记为 `superseded_by_{new_id}`，保留原始内容但不参与激活权重计算。新记忆以独立条目写入 LTM，获得单独的使用价值起点。修正场景由 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5 差异检验的兜底机制覆盖（累积偏差检测自动触发）。
-- **重构**：新信息改变系统理解旧信息的方式，而非否定旧信息的内容。旧信息本身不变，但其在认知结构中的位置和关联权重重新计算——整合窗（[architecture-v0.1.0.md](architecture-v0.1.0.md) §4）的前向关联权重微调承担此职能。重构不产生新条目，只更新关联图拓扑。
+- **重构**：新信息改变系统理解旧信息的方式，而非否定旧信息的内容。旧信息本身不变，但其在认知结构中的位置和关联权重重新计算——整合窗（[architecture-v0.1.0.md](architecture-v0.1.0.md) §5.2）的前向关联权重微调承担此职能。重构不产生新条目，只更新关联图拓扑。
 
 三类场景由接入层摄取管道（[architecture-v0.1.0.md](architecture-v0.1.0.md) §7.3）在写入时根据语义内核相似度判定：高相似度（cosine ≥ 0.85）→ 补充；中等相似度（0.60 ≤ cosine < 0.85）且核心主张冲突 → 修正；低相似度（cosine < 0.60）或语义位移但无核心冲突 → 重构。
 
 > **P6 受控例外声明**：系统定义记忆的三种模态（确定性/可能性/假设性）为连续置信度谱上的锚点区间，模态转换应基于置信度梯度做渐进修正。当前架构实现采用离散模态标记（如 `virtual` / `external` / `provisional_during_calibration_gap`），此为 v0.1.0 的受控简化。离散化造成的信息损失（过渡区间的中间状态未建模）标注如下——(1) 丢失的维度信息：模态间的连续置信度梯度；(2) 压缩比：N 个连续值映射为 3–4 个离散态；(3) 方向性：信息损失单指向（离散保留高置信端，低置信端合并）。P6 合规条件满足因离散标记仍保留多维表征可回溯性——原始置信度存储于记忆元数据，离散标记仅为索引。当架构层实现置信度→模态渐变转换时，撤销此例外标注。
 
-> **VAD 一阶维度的 v0.1.0 受控简化声明**：认知基础（[cognitive-foundation.md](cognitive-foundation.md) §1.4 其他认知要素）将情感纹理 VAD 定位为度量空间一阶维度（应进入帕累托前沿计算）。当前架构实现中，VAD 通过情感提升通道（[architecture-v0.1.0.md](architecture-v0.1.0.md) §4）作为「可选注入」参与检索排序——仅在 VAD 匹配度超过阈值时生效，默认路径空间/向量检索忽略情感维度。此为 v0.1.0 的受控简化。**补偿措施**：为符合「独立维度而非可选插件」的定位，在检索排序中为 VAD 设置一个情感中性权重作为默认基线（权重系数可配置，建议 v0.1.0 默认 0.1），确保 VAD 始终作为帕累托前沿计算的一维输入（即使系数极低），而非在低匹配度时完全忽略。**能力缺口**：此降维使认知基础声明的「VAD 作为度量空间一阶维度全程参与帕累托前沿计算」在 v0.1.0 仅实现于高唤醒事件场景，低唤醒/低匹配度检索中 VAD 的排序影响被静默。影响范围限于检索排序阶段，不影响编码和巩固环节的 VAD 强制录入。当架构层评估 VAD 全时参与的效率可接受时，撤销此简化。
+> **VAD 一阶维度的 v0.1.0 受控简化声明**：认知基础（[cognitive-foundation.md](cognitive-foundation.md) §1.4 其他认知要素）将情感纹理 VAD 定位为度量空间一阶维度（应进入帕累托前沿计算）。当前架构实现中，VAD 通过情感提升通道（[architecture-v0.1.0.md](architecture-v0.1.0.md) §3.2）作为「可选注入」参与检索排序——仅在 VAD 匹配度超过阈值时生效，默认路径空间/向量检索忽略情感维度。此为 v0.1.0 的受控简化。**补偿措施**：为符合「独立维度而非可选插件」的定位，在检索排序中为 VAD 设置一个情感中性权重作为默认基线（权重系数可配置，建议 v0.1.0 默认 0.1），确保 VAD 始终作为帕累托前沿计算的一维输入（即使系数极低），而非在低匹配度时完全忽略。**能力缺口**：此降维使认知基础声明的「VAD 作为度量空间一阶维度全程参与帕累托前沿计算」在 v0.1.0 仅实现于高唤醒事件场景，低唤醒/低匹配度检索中 VAD 的排序影响被静默。影响范围限于检索排序阶段，不影响编码和巩固环节的 VAD 强制录入。当架构层评估 VAD 全时参与的效率可接受时，撤销此简化。
 
 路径空间（kairos://）定位为使用价值轴的**检索级**和**验证级**的架构落点。它不承载见证价值轴——见证锚定独立于路径空间。
 
 路径的层级结构映射到使用价值轴的间接度：
-- `kairos://users/{id}/core/` → 高激活权重路径（常驻投影）
-- `kairos://users/{id}/memories/` → 中等激活权重路径（按需投影）
-- `kairos://projects/{id}/rules/` → 条件激活路径（环境投影）
+- `kairos://_user/{id}/core/` → 高激活权重路径（常驻投影）
+- `kairos://_user/{id}/memories/` → 中等激活权重路径（按需投影）
+- `kairos://_project/{id}/rules/` → 条件激活路径（环境投影）
 - `kairos://_system/tmp/` → 低激活权重路径（临时投影）
 
 ### 5.7 预留——多 Agent 校准参数
@@ -693,7 +695,7 @@ GraphRAG 检索模式：
   查询: "项目 Alpha 用了哪些技术？谁在维护？"
     │
     ├─ 向量检索（现有）    → 语义相似的记忆（可能不精确）
-    ├─ 路径检索（现有）    → kairos://projects/alpha/**（确定性子集）
+    ├─ 路径检索（现有）    → kairos://_project/alpha/**（确定性子集）
     │
     └─ GraphRAG 检索（新增）→ 从实体知识图谱出发的图遍历：
          │
@@ -718,6 +720,8 @@ GraphRAG 检索模式：
          5. 结果融合
             GraphRAG 结果与向量/路径结果在三链路融合框架（[architecture-v0.1.0.md](architecture-v0.1.0.md) §5 三链路融合）
             中按权重合并：语义 0.40 + 路径 0.25 + 实体共现 0.15 + GraphRAG 子图 0.20
+            **权重口径注记**：此为 GraphRAG 场景的 v1.1 独立配比（语义 0.40/路径 0.25/实体共现 0.15/GraphRAG 子图 0.20），
+            与主架构四链路唯一默认（语义/共现/kNN/因果 0.50/0.20/0.10/0.20）不同——GraphRAG 场景下 kNN/因果链路由子图权重替代。
 ```
 
 **Rust Core 架构**：
@@ -1105,7 +1109,7 @@ TeamScope 双层命名空间：
 v0.1.0 单租户数据 → v1.2 TeamScope 迁移：
 
   1. 现有单租户数据默认分配 team_id = "default"、user_id = "default"
-     （保持向后兼容——v0.1.0 路径 kairos://users/default/... 不变）
+     （保持向后兼容——v0.1.0 路径 kairos://_user/default/... 不变）
 
   2. 用户创建首个 team 时：
      ├─ 创建 team_id = "my-team"
@@ -1355,3 +1359,4 @@ function check_permission(path, principal, requested_perm):
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题归位中文序（一、P3 前瞻组件 / 二、核心机制规格 / 三、P3 前瞻组件续）。 |
 | 0.0.30 | 2026-08-06 | 仓库整洁化批次（changelog 0.0.30）：audit-history-summary 引用清理，引用同步。 |
 | 0.0.33 | 2026-08-06 | round12/round13 深度审计修复批次（changelog 0.0.33）：版本记录补登 0.0.30 行（原漏登记）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：技能体系统一（状态机六态权威+晋升门禁参数化）；引用落点修正（§5.5 step 8/§5.2/§3.2）；P3 导航矛盾消除；GraphRAG 独立配比注记；见证自愈与架构 §5.5 第 8 步双向收敛；路径空间统一下划线命名。 |

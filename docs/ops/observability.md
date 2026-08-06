@@ -106,7 +106,7 @@ status: draft
 | 写入延迟退化 | 写入 P95 延迟超 NFR 基线持续 5 分钟（基于 `kairos_write_duration_ms` 直方图 P95 分位数） | warning | 检查嵌入服务 |
 | 检索延迟退化 | 检索 P95 延迟超 NFR 基线持续 5 分钟（基于 `kairos_read_duration_ms` 直方图 P95 分位数） | warning | 检查 pgvector 索引 |
 | 校准中断警告 | 距上次校准 > 3 周期（=900s/15min，对应 `KAIROS_VIRTUAL_CALIBRATION_TIMEOUT` 术语表口径，configuration §1） | info | 检查校准源 |
-| 校准中断严重 | 距上次校准 > 6 周期（=1800s/30min，对应 `KAIROS_CALIBRATION_DEGRADE_THRESHOLD`，configuration §1） | warning | 触发降级**告警**——实际降级模式切换仍以他律性降级契约的周期阈值 N/M 为准（`KAIROS_DEGRADATION_*`，configuration §2；N=50/M=200 周期），本告警仅提示校准静默已超常规窗口 |
+| 校准中断严重 | 距上次校准 > 6 周期（=1800s/30min，对应 `KAIROS_CALIBRATION_DEGRADE_THRESHOLD`，configuration §1） | warning | 触发降级**告警**——实际降级模式切换仍以他律性降级契约的周期阈值 N/M 为准（`KAIROS_DEGRADATION_*`，configuration §4；N=50/M=200 周期），本告警仅提示校准静默已超常规窗口 |
 | 拟真校准失稳 | 虚拟校准连续冲突次数 ≥ `KAIROS_VIRTUAL_CALIBRATION_CONFLICT_THRESHOLD`（默认 3 次，configuration §1） | warning | 检查外部校准源（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.2 虚拟校准生成器） |
 | 偏置告警 | 来源多样性收敛或校准衰减超阈 | warning | 人工审查 |
 | 正反馈告警 | 偏置在加速放大 | critical | 宪法解释层介入 |
@@ -144,3 +144,4 @@ status: draft
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：可观测性四支柱、补拟真校准失稳告警行。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：校准中断严重告警改「触发降级告警」并注明 N/M 契约为准；§4a 告警投递渠道勘误（KAIROS_ALERT_* 已参数化）；硬编码阈值加基线注记（健康检查 3 次/预算 10%）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：/metrics 端点断言式陈述弱化为设计目标（标注「端点待定义，api-spec §1.8 登记前为设计目标」）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：configuration 章节引用修正（§2→§4）。 |

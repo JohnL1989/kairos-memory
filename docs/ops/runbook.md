@@ -8,7 +8,7 @@ tags:
   - ops
   - runbook
 created: 2026-07-21
-updated: 2026-08-04
+updated: 2026-08-06
 last_reviewed: 2026-08-04
 status: draft
 ---
@@ -145,7 +145,9 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 
 ## §5 故障排查
 
-### 5.1 启动失败
+> **口径**：本节为值班速查子集；完整排查步骤见 [troubleshooting.md](troubleshooting.md)（§二 症状排查表、§三 错误码速查 38 项全量），错误码权威定义见 [error-reference.md](../references/error-reference.md)。
+
+### 5.1 启动失败（速查）
 
 | 现象 | 检查项 |
 |:-----|:-------|
@@ -153,7 +155,9 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 | 数据库连接失败 | ① `KAIROS_DB_DSN` 是否正确 ② 数据库服务是否运行 |
 | 端口冲突 | `--port` 参数指定可用端口 |
 
-### 5.2 运行时异常
+完整排查步骤见 [troubleshooting.md](troubleshooting.md) §二。
+
+### 5.2 运行时异常（速查）
 
 | 现象 | 排查步骤 |
 |:-----|:---------|
@@ -162,31 +166,19 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 | 校准信号无响应 | ① 检查外部校准端点可达性 ② `kairos health` 检查宪法主权面状态 |
 | 告警持续 | ① `kairos logs --level warn` 定位源 ② 检查对应监测器阈值 ③ 按需调整参数 |
 
-### 5.3 错误码索引
+完整排查步骤见 [troubleshooting.md](troubleshooting.md) §二。
 
-> 本表为常用子集（17/38），全量错误码见 [error-reference.md](../references/error-reference.md)。
+### 5.3 错误码索引（速查）
+
+> 本表为最常用子集；全量 38 项错误码及权威定义（含 HTTP 语义与响应体结构）见 [error-reference.md](../references/error-reference.md)。
 
 | 错误码 | 说明 | 处理 |
 |:-------|:-----|:-----|
 | `ERR-AUTH-001` | API Key 无效 | 检查 `KAIROS_API_KEY` 和 `KAIROS_SALT` |
 | `ERR-AUTH-002` | API Key 过期/吊销 | 生成新 Key |
-| `ERR-AUTH-003` | 权限不足 | 升级 Key 级别 |
-| `ERR-RATE-001` | 写限流 | 等待重置或提高 `KAIROS_RATE_LIMIT_WRITE_PER_MIN` |
-| `ERR-RATE-002` | 读限流 | 等待重置或提高 `KAIROS_RATE_LIMIT_READ_PER_MIN` |
-| `ERR-INPUT-001` | 输入超长 | 减少内容长度 |
-| `ERR-INPUT-002` | 路径格式无效 | 确认以 `kairos://` 开头 |
-| `ERR-INPUT-003` | 路径深度超限 | 减少路径层级 |
-| `ERR-INPUT-004` | 缺少必填字段 | 检查请求参数 |
-| `ERR-INPUT-005` | 记忆类型无效 | 检查 memory_types 值 |
-| `ERR-INPUT-006` | 契约类型无效 | 检查 contract 值 |
-| `ERR-INPUT-007` | JSON 解析失败 | 检查请求体格式 |
 | `ERR-DB-001` | 数据库连接失败 | 检查 `KAIROS_DB_DSN` 和数据库服务 |
-| `ERR-DB-002` | 数据库迁移失败 | 检查迁移文件，手动修复后重试 |
 | `ERR-LLM-001` | LLM 调用超时 | 检查 LLM 端点可达性 |
-| `ERR-LLM-002` | 已废弃——合并至 ERR-RATE-003，见 error-reference | 使用 ERR-RATE-003 |
 | `ERR-SEC-001` | 安全红线违反 | 检查操作是否符合红线约束 |
-
-完整错误码参考见 [references/error-reference.md](../references/error-reference.md)。
 
 ---
 
@@ -238,3 +230,4 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 | 0.0.1 | 2026-07-31 | 运维手册：日常操作/备份恢复/升级降级/配置与密钥管理/故障排查。 |
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：错误码速查表补充子集声明与 ERR-LLM-002 废弃标注、备份命令统一目录与时间戳命名、CLI 命令状态声明。 |
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：备份保留期引用修正（§1.1/§三 + 参数化）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：§5 故障排查精简为值班速查子集+指针（与 troubleshooting 双向互链）。 |

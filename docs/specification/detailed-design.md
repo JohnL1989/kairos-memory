@@ -148,7 +148,8 @@ Access Layer → 验证门禁（高信用源豁免→跳过 raw）
 摄取验证环 → 失败 → 丢弃
   │ 通过
   ▼
-升格为 item（可检索。对应 data-model hall=validation→canonical 两阶段推进）
+升格为 item——经验证区（validation）推进至正式库（canonical）后可检索
+（三区流转：raw 驻 processing 区，item 经 validation→canonical 两阶段推进，见 data-model memories.hall）
   │
   ├──→ 写入见证锚定主副本（强一致）
   ├──→ 初始化使用权重影子副本（最终一致）
@@ -197,11 +198,10 @@ class StorageBackend(ABC):
 ```python
 FORGETTING_SCORE(memory):
     # v0.1.0 权威算法（架构 §5.2 遗忘调度器·单曲线指数衰减）
-    # freshness = 2^(-days_since_last_access / HALF_LIFE)，weight = base_weight × freshness
+    # freshness = 2^(-days_since_last_access / HALF_LIFE)
     # 三阈值判定：freshness ≥ ACTIVE_THRESHOLD → active / [STALE_THRESHOLD, ACTIVE_THRESHOLD) → stale / < STALE_THRESHOLD → archived
     days_since_last_access = (NOW - memory.last_access_at).days   # last_access_at 来自 memories 表
     freshness = 2 ** (-days_since_last_access / HALF_LIFE)        # HALF_LIFE 默认 69 天（KAIROS_FORGETTING_HALF_LIFE）
-    weight = memory.base_weight * freshness                        # base_weight 为记忆基础权重
 
     # 身份与结构豁免（见证豁免 S-10 + 结构性记忆守护）
     if memory.is_identity or memory.is_structure:
@@ -253,6 +253,8 @@ FORGETTING_SCORE(memory):
 （架构 §5.2 forgetAfter，清理前写审计日志 expiry_cascade_delete）。
 ```
 
+> **状态机范围注记**：第四态 Superseded 由知识演化 replaces 触发（架构 §5.2），本图为 ACTIVE/STALE/ARCHIVED 三态 + temporary 契约例外。Superseded 记忆经宪法修订端口恢复。
+
 ---
 
 ## §4 升华管道
@@ -283,11 +285,11 @@ strategy（抽象模式，跨场景适用）
 behavior（自动化行为规则，不检索直接输出）
 ```
 
-### 升华产物质量护栏（R-02，外部理念吸收）
+### 升华产物质量护栏（R-02）
 
 **verbatim 拒绝**：strategy 阶段产物（抽象萃取/Reflect `done` 结论）与源 item 内容 verbatim 相同（或仅格式包装）时判定为**无效升华**——LLM 偷懒直接复制输入不产生抽象，收敛判据（§4.1，针对反思结论稳定性）无法拦截此失效模式。处理：拒绝该产物，标记 `sublimation_invalid` 审计事件（§10.10 事件总线），重试一次（重试输入附加「产物不得与源文本相同」指令）；重试仍 verbatim 相同则放弃本次升华，留待下个空闲周期（不进入 behavior 阶段，不触发人工确认门控）。
 
-> 设计来源：会话压缩器的 verbatim 检查（外部实证参考）（摘要与最后一条消息完全相同则拒绝）——同一「模型复制输入冒充产出」失效模式的护栏结构。Kairos 的 Reflect 收敛判据（§4.1）与 verbatim 检查为两个独立维度：前者防「结论不稳定」，后者防「产物无抽象」。
+> 设计来源：会话压缩器的 verbatim 检查（摘要与最后一条消息完全相同则拒绝）——同一「模型复制输入冒充产出」失效模式的护栏结构。Kairos 的 Reflect 收敛判据（§4.1）与 verbatim 检查为两个独立维度：前者防「结论不稳定」，后者防「产物无抽象」。
 
 ### 4.1 Reflect 反思循环
 
@@ -526,7 +528,7 @@ LAYER_DISTILL(session_id):
 蒸馏置信度低于 KAIROS_CAPTURE_CONFIDENCE_FLOOR（默认 0.6）的产物标记为待审，
 不自动进入上层。关系检测在 L1 阶段执行。
 
-> **TMT 形态对照（市场理念吸收，2026-08-05；债务 D-336）**：本管道与实战型开源记忆系统（外部实证参考：时间粒度层级蒸馏）的 L1 碎片→L2 会话→L3 每日→L4 每周→L5 画像五级蒸馏形态同构（蒸馏算子 Φᵢ:(Cᵢ,Hᵢ,Iᵢ)→{m⁽ⁱ⁾}，10 分钟/日/周/月节奏逐级压缩，见认知基础 §1.1 时间粒度层级实证对照声明）。对照价值：TMT 的节奏参数（10 分钟/日/周/月）与触发时点（日终/周终/月末）可作为本管道调度参数的参考基线，不改变 v0.1.0 既有口径。
+> **TMT 形态对照（实证参考基线：TMT；债务 D-336）**：本管道与实战型开源记忆系统（外部实证参考：时间粒度层级蒸馏）的 L1 碎片→L2 会话→L3 每日→L4 每周→L5 画像五级蒸馏形态同构（蒸馏算子 Φᵢ:(Cᵢ,Hᵢ,Iᵢ)→{m⁽ⁱ⁾}，10 分钟/日/周/月节奏逐级压缩，见认知基础 §1.1 时间粒度层级实证对照声明）。对照价值：TMT 的节奏参数（10 分钟/日/周/月）与触发时点（日终/周终/月末）可作为本管道调度参数的参考基线，不改变 v0.1.0 既有口径。
 
 ```text
 REASONING_LOOP(context):
@@ -573,7 +575,7 @@ REASONING_LOOP(context):
 |-----------|:-------|:-------|:-----|
 | `use_event` | WM | 策略+存储+元认知 | 使用事件提交 |
 | `calibration_signal` | 宪法主权面 | 全层广播 | 外部校准信号注入 |
-| `degradation_switch` | 宪法主权面 | 全层广播 | 降级模式切换 |
+| `degradation_switch` | 宪法主权面 | 元认知+策略 | 降级模式切换 |
 | `intention_activate` | 策略层 | WM | 前瞻意图激活 |
 | `intention_resolve` | WM | 策略→存储 | 前瞻意图完成/取消 |
 | `affective_boost` | 策略层 | WM | 情感基线提升注入 |
@@ -585,7 +587,7 @@ REASONING_LOOP(context):
 ---
 ## §9 检索引擎
 
-> **补充章节（市场理念吸收，2026-08-04）**：架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3a 定义了三信号混合检索的公式与权重，本节点明其**管线执行顺序、状态机与 StorageBackend 接口**——此前检索算法细节仅存在于架构文档，无施工图纸。
+> **补充章节**：架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3a 定义了三信号混合检索的公式与权重，本节点明其**管线执行顺序、状态机与 StorageBackend 接口**——此前检索算法细节仅存在于架构文档，无施工图纸。
 
 ### 职责边界
 
@@ -737,6 +739,8 @@ $$\text{mmr}(d) = \lambda \cdot \text{sim}(q, d) - (1 - \lambda) \cdot \max_{j \
 | **L3: 字典匹配** | `spaCy PhraseMatcher` 预加载领域词典 | 技术栈名称、内部项目名、行业术语、配置键名 | "PostgreSQL"→TECH_STACK, "kairos://"→KAIROS_PATH |
 | **L4: EntityRuler 管道** | 用户自定义 `patterns.jsonl` 文件 | 组织特定实体模式（客户名、产品名、内部缩写） | 通过配置指定路径 |
 
+> **存储映射**：L1~L4 输出与 LLM 提取共享同一实体表，`entities.type` 存储层统一为四值枚举（project/people/concept/tool，权威口径见 [data-model.md](data-model.md) §8.2）；各类别映射规则见 §9.4「存储枚举映射」注记。
+
 **150+ 过滤词表（Stop-Entity List）**：
 
 L1 提取结果经过滤词表二次筛选——移除高频率但低信息价值的泛化实体（如 "今天"、"明天"、"这里"、"那个"、"stuff"、"thing"、"someone" 等）。过滤词表分中英双语维护：
@@ -821,6 +825,8 @@ LLM 实体提取是 Kairos 实体知识图谱的核心数据源——每次 Deep
 - `type`（必填）：实体类型，枚举值 `PERSON / ORG / GPE / DATE / TECH_STACK / CONCEPT / PROJECT / TOOL / EVENT / PRODUCT`
 - `confidence`（必填）：浮点数 0-1，LLM 自评置信度
 - `attributes`（可选）：键值对形式的实体属性（如版本号、角色、分类）
+
+> **存储枚举映射**：`type` 为外部提取输出（LLM/spaCy）的 10 类枚举；持久化至 `entities.type` 时映射为存储层四值枚举（[data-model.md](data-model.md) §8.2 entities 表，存储层权威口径）：PERSON/ORG/GPE → `people`；PROJECT/TOOL/TECH_STACK → `project`；CONCEPT/EVENT/PRODUCT → `concept`；DATE → 时间字段（如 `occurred_at` 事件时间，不落 entities.type）。其余类（如 spaCy L1 的 MONEY/PERCENT/LOC/FAC、L2/L3 规则类 VERSION/GIT_SHA 等）归 `concept`——四值闭合。
 
 **写入策略**：
 - LLM 置信度 ≥ 配置阈值（见 [ops/configuration.md](../ops/configuration.md) §6.6）→ 直接写入实体表，source=`llm`
@@ -1147,10 +1153,10 @@ Connectors 是 Kairos 与外部 SaaS 平台之间的**事件驱动同步桥接�
 
 | Connector | 同步触发方式 | 摄取内容 | 默认契约 | 路径前缀 |
 |:----------|:-----------|:--------|:--------|:--------|
-| **Gmail** | Webhook（Google Pub/Sub）+ 轮询兜底（默认 300s） | 新邮件摘要（主题+发件人+正文前 2000 字符）、附件文本提取 | 按需 | `kairos://users/{id}/gmail/` |
-| **Google Drive** | Webhook（Drive API Changes）+ 轮询兜底（默认 600s） | 新增/修改文件文本提取（GDoc/GSheet/GSlides/PDF） | 环境 | `kairos://projects/{id}/drive/` |
-| **Notion** | 轮询（Notion API search，默认 300s） | 新增/修改页面 Markdown 内容、数据库条目变更 | 环境 | `kairos://projects/{id}/notion/` |
-| **GitHub** | Webhook（Repository events）+ 轮询兜底（默认 600s） | Issues/PRs 正文+评论、Release Notes、README/Wiki 变更、Commits diff 摘要 | 环境 | `kairos://projects/{id}/github/` |
+| **Gmail** | Webhook（Google Pub/Sub）+ 轮询兜底（默认 300s） | 新邮件摘要（主题+发件人+正文前 2000 字符）、附件文本提取 | 按需 | `kairos://_user/{id}/gmail/` |
+| **Google Drive** | Webhook（Drive API Changes）+ 轮询兜底（默认 600s） | 新增/修改文件文本提取（GDoc/GSheet/GSlides/PDF） | 环境 | `kairos://_project/{id}/drive/` |
+| **Notion** | 轮询（Notion API search，默认 300s） | 新增/修改页面 Markdown 内容、数据库条目变更 | 环境 | `kairos://_project/{id}/notion/` |
+| **GitHub** | Webhook（Repository events）+ 轮询兜底（默认 600s） | Issues/PRs 正文+评论、Release Notes、README/Wiki 变更、Commits diff 摘要 | 环境 | `kairos://_project/{id}/github/` |
 
 > **注**：Notion 官方 Webhook 支持有限（v0.1.0 仅提供页面级 `updated_time` 查询），因此 v0.1.0 以轮询为主要触发方式。v1.1 目标迁移至 Notion Webhook GA 版本。
 
@@ -1383,8 +1389,8 @@ archive.kairos（ZIP 压缩包，无压缩或 deflate）
     {
       "type": "uuid_collision",
       "memory_id": "uuid-123",
-      "existing_path": "kairos://users/abc/core/mem_001",
-      "incoming_path": "kairos://users/abc/core/mem_001",
+      "existing_path": "kairos://_user/abc/core/mem_001",
+      "incoming_path": "kairos://_user/abc/core/mem_001",
       "existing_created_at": "2026-07-20T10:00:00Z",
       "incoming_created_at": "2026-07-25T10:00:00Z"
     }
@@ -1524,7 +1530,7 @@ Kairos 的存储层维护两套数据视图——**文件系统视图**（`memor
 
 > 本节承接外部项目理念吸收的工程细节，权威定义在认知基础与架构文档，本节为施工参考。
 
-**噪音规则库参考清单（市场理念吸收，2026-08-05；债务 D-338，架构 §7.3 噪音规则库层的工程承接）**：
+**噪音规则库参考清单（实证参考清单，债务 D-338，架构 §7.3 噪音规则库层的工程承接）**：
 
 四类纯正则规则（零 LLM 成本，命中不计轮数、不升温）：
 
@@ -1537,7 +1543,7 @@ Kairos 的存储层维护两套数据视图——**文件系统视图**（`memor
 
 重要性加分表（内容类型 → 参考分，摄入侧附加）：未完成任务 5 / 纠正 4 / 决策 3 / 情绪 3 / 路径变更 2 / 工具结果 1 / 寒喧 0 / 保护 ∞。加分仅作编码深度分配与影子副本置信度累积速率参考，不聚合为单标量参与价值裁决（P6）。规则与加分表在 v0.1.0.x 实现阶段按架构 §7.3 权威口径细化。
 
-**热度体系参考参数表（市场理念吸收，2026-08-05；债务 D-335，usage-load-algorithm 三.5 与认知基础 §1.1 的工程承接）**：
+**热度体系参考参数表（实证参考参数表，债务 D-335，usage-load-algorithm 三.5 与认知基础 §1.1 的工程承接）**：
 
 | 参数 | 参考值 | 用途 |
 |:-----|:-------|:-----|
@@ -1566,3 +1572,4 @@ Kairos 的存储层维护两套数据视图——**文件系统视图**（`memor
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec 中文序引用联动（§十四→§14 等 5 处）。 |
 | 0.0.36 | 2026-08-06 | 第三方分析分诊（BaiShou-Next 白守，changelog 0.0.36）：§4 升华管道新增「升华产物质量护栏（R-02）」——strategy 阶段产物与源 item verbatim 相同（或仅格式包装）判定无效升华，标记 `sublimation_invalid` 审计事件并重试一次，重试仍相同则放弃本次升华。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：外部理念吸收表述收敛（R-02 护栏/verbatim 设计来源/TMT 形态对照去产品名，保留技术信息）；「吸收承接注记」标题去版本号前缀；5D 混合排序两处补历史沿用名注记（架构 §7.3a 术语口径）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：遗忘伪代码删悬空 base_weight；实体提取输出→存储枚举映射注记；§2 写入路径三区流转改写；遗忘状态机补 Superseded 态注记；升华产物质量护栏来源收敛；路径空间统一下划线命名。 |

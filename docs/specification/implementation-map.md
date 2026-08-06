@@ -15,7 +15,7 @@ status: draft
 
 # Kairos 架构实现映射
 
-> **已对齐**（2026-08-03 核定，2026-08-04 复核）：表数 **57** 与 [data-model.md](data-model.md) 一致（该文档现有 65 个 `###` 条目——57 物理表 = 65 减 `retrieval_enhancement_config`（配置参数清单）减 8.12/8.17 两节标题减 13.1~13.5 五节；原「58 个 ### 条目」口径在 0.0.11 勘误）；端点数 **85** 与 [api-spec.md](api-spec.md) 一致——口径为 `/v1` 业务端点（0.0.15 注册 `archive`/`restore` 后 78→80，0.0.16 新增 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85），另有 3 个无 `/v1` 前缀端点（`GET /health` 探针、`GET /audit/compression`、`GET /audit/compression/summary`）不计入（物理总数 88，见 [api-spec.md](api-spec.md) §版本记录）；本文档登记 **70** 个组件代码路径（按下方各表第二列 `src/` 路径行统计）；参数总数 **371**（configuration 正文 223 + 附录 A 148，见 [configuration.md](../ops/configuration.md)）。
+> **已对齐**（2026-08-03 核定，2026-08-04 复核）：表数 **57** 与 [data-model.md](data-model.md) 一致（该文档现有 65 个 `###` 条目——57 物理表 = 65 减 `retrieval_enhancement_config`（配置参数清单）减 8.12/8.17 两节标题减 13.1~13.5 五节；原「58 个 ### 条目」口径经勘误）；端点数 **85** 与 [api-spec.md](api-spec.md) 一致——口径为 `/v1` 业务端点（注册 `archive`/`restore` 后 78→80，0.0.16 新增 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85），另有 3 个无 `/v1` 前缀端点（`GET /health` 探针、`GET /audit/compression`、`GET /audit/compression/summary`）不计入（物理总数 88，见 [api-spec.md](api-spec.md) §版本记录）；本文档登记 **70** 个组件代码路径（按下方各表第二列 `src/` 路径行统计）；参数总数 **371**（configuration 正文 223 + 附录 A 148，见 [configuration.md](../ops/configuration.md)）。
 
 **引用约定：** `架构 §X.Y` 指 [foundation/architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) 第 X 节第 Y 小节。架构文档含 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0–[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §12（含 §10 质量属性与不变量等）。代码路径以 `src/` 为根。
 
@@ -67,9 +67,9 @@ status: draft
 | 路径空间索引 | `src/storage/path_index.py` | `kairos://` 路径前缀索引与树状查询 |
 | 向量索引 | `src/storage/vector_index.py` | pgvector/sqlite-vec 语义相似度搜索 |
 | 关系索引 | `src/storage/relation_index.py` | 四类关系 + 粒度关系的 CRUD 与查询 |
-| 三信号混合检索 | `src/storage/hybrid_search.py` | 语义+自适应 BM25+实体共现三信号融合排序（架构 §7.3a）；**竖切组件 3**（竖切组件序号独立于功能编号——对应 feature-list 竖切检索类 R-18，见 [feature-list.md](feature-list.md) 竖切范围注记；原「（W5）」括号标注与里程碑周/功能编号混淆，0.0.11 勘误去除） |
+| 三信号混合检索 | `src/storage/hybrid_search.py` | 语义+自适应 BM25+实体共现三信号融合排序（架构 §7.3a）；**竖切组件 3**（竖切组件序号独立于功能编号——对应 feature-list 竖切检索类 R-18，见 [feature-list.md](feature-list.md) 竖切范围注记；原「（W5）」括号标注与里程碑周/功能编号混淆，经勘误去除） |
 | 双副本管理 | `src/storage/dual_copy.py` | 见证锚定（强一致）与使用权重（最终一致）分离管理 |
-| 身份注册表 | `src/storage/identity_registry.py` | is_identity 初始赋予/动态建构/降级提案（架构 §5.2，见证锚定体系）；**竖切组件 5**（竖切组件序号独立于功能编号；原「（W7）」括号标注混淆，0.0.11 勘误去除） |
+| 身份注册表 | `src/storage/identity_registry.py` | is_identity 初始赋予/动态建构/降级提案（架构 §5.2，见证锚定体系）；**竖切组件 5**（竖切组件序号独立于功能编号；原「（W7）」括号标注混淆，经勘误去除） |
 | 升华管道 | `src/storage/sublimation_pipeline.py` | raw→item→strategy→behavior 四阶段状态机，含 L0-L4 层级蒸馏 |
 | Reflect 自反思循环 | `src/storage/reflect.py` | item→strategy 阶段 agentic 反思循环（详细设计 §4.1，recall/search_observations/search_mental_models/done 四类只读工具） |
 | 遗忘调度器 | `src/storage/forgetting.py` | 二维遗忘曲面计算 + 潜伏势能重估 + 复兴加速 |
@@ -137,7 +137,7 @@ status: draft
 |:--------|:---------|:-----|
 | 事件总线 | `src/events/bus.py` | 事件发布/订阅/背压，基于 usage_events 表 |
 | 事件类型定义 | `src/events/types.py` | 10 类事件枚举 + 消息结构（权威源：架构 §10.10；首迭代实现 4 类：use_event/calibration_signal/degradation_switch/latent_trigger） |
-| 配置加载 | `src/config.py` | 环境变量/配置文件加载，371 项参数（configuration 正文 223 + 附录 A 148，与 configuration 一致；0.0.16 新增校准衰减 3 项/structural_value 3 项/记忆压力 4 项；0.0.22 新增噪音规则库/情绪保护 3 项正文参数） |
+| 配置加载 | `src/config.py` | 环境变量/配置文件加载，370 项参数（configuration 正文 224 + 附录 A 146，与 configuration 一致） |
 | CLI 入口 | `src/main.py` | 应用入口点（Click/Typer CLI 框架） |
 | 调度器 | `src/scheduler.py` | 升华/遗忘/重估等周期性任务调度（APScheduler） |
 | 工具函数 | `src/utils/` | 通用工具（嵌入/Hash/脱敏/日志等） |
@@ -169,3 +169,4 @@ status: draft
 | 0.0.15 | 2026-08-05 | 全面深度审计修复批次（changelog 0.0.15，依 comprehensive-documentation-audit P1-02）：端点计数同步 78→80（api-spec 注册 archive/restore 后）、物理总数 79→81；REST API 路由设计目标行同步。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：端点计数 80→85、物理总数 81→88（已对齐注记 + REST 路由行）；参数总数 358→371。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：MCP Bridge 工具计数 12→15（对齐 api-spec §6.8）；CLI 全量口径 24→25 联动（api-spec §3 补注册 kairos degradation switch）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：参数计数口径同步（正文 224 + 附录 A 146 = 370）；版本标记清理。 |

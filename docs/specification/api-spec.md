@@ -30,7 +30,7 @@ status: draft
 
 ```json
 {
-  "path": "kairos://users/{id}/memories/",
+  "path": "kairos://_user/{id}/memories/",
   "content": "记忆内容",
   "contract": "ondemand",
   "memory_types": ["semantic"],
@@ -45,14 +45,14 @@ status: draft
 
 **响应** `201 Created`：
 ```json
-{"id": "uuid", "path": "kairos://users/{id}/memories/{uuid}", "version": 1}
+{"id": "uuid", "path": "kairos://_user/{id}/memories/{uuid}", "version": 1}
 ```
 
 **错误**：`400`（参数无效）、`401`（认证失败）、`403`（权限不足）、`413`（内容超长）、`422`（语义校验失败，如缺少必填字段）、`429`（请求过多，限流触发）
 
 **POST /v1/memories/batch** — 批量导入（W-03）
 
-**约束**：最大批量 100 条。非幂等——重复提交可能产生重复记录。部分失败返回 207 Multi-Status（成功条数 + 失败详情）。
+**约束**：最大批量 100 条。非幂等——重复提交可能产生重复记录。部分失败返回 207 Multi-Status（成功条数 + 失败详情）。`on_conflict`（skip|overwrite）与 §16 导入 `conflict_resolution`（fail/overwrite/skip）语义不同：批量导入对冲突条目逐条跳过/覆盖，冲突经 207 逐条返回而非整体失败，无 fail 档（见 §16 导入）。
 
 ```json
 {
@@ -78,7 +78,7 @@ status: draft
 
 ### 1.2 记忆检索
 
-**GET /v1/memories?path=kairos://users/{id}/memories/&limit=10&offset=0**
+**GET /v1/memories?path=kairos://_user/{id}/memories/&limit=10&offset=0**
 
 **GET /v1/memories?q=search+query&limit=5**
 
@@ -102,7 +102,7 @@ status: draft
   "mode": "hybrid",
   "weights": {"semantic": 0.5, "bm25": 0.35, "entity": 0.15},
   "limit": 10,
-  "filters": {"contract": "permanent", "path_prefix": "kairos://projects/"}
+  "filters": {"contract": "permanent", "path_prefix": "kairos://_project/"}
 }
 ```
 
@@ -235,7 +235,7 @@ status: draft
 {"reason": "compliance_erase", "review_id": "uuid"}
 ```
 
-**POST /v1/memories/{id}/archive** — 归档记忆（竖切功能 M-05，0.0.15 注册）
+**POST /v1/memories/{id}/archive** — 归档记忆（竖切功能 M-05）
 - 将记忆从活跃存储移至冷存储（`status=archived`），常规检索不再返回，数据保留可恢复
 - 语义对齐：对应架构 12 规范操作集 `archive`（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3.1），幂等——已归档记忆重复归档返回成功（200）但不重复操作（见架构 §7.3.1 幂等性清单）
 - 契约约束：permanent 契约归档前须经宪法修订端口降级（直接返回 403）；temporary 契约不进入归档（到期由 forgetAfter 硬删除，见架构 §5.2）；其余契约正常归档
@@ -254,9 +254,9 @@ status: draft
 
 ### 1.6 路径操作
 
-**GET /v1/path?path=kairos://users/{id}/** — 路径下记忆列表
+**GET /v1/path?path=kairos://_user/{id}/** — 路径下记忆列表
 
-**GET /v1/path/tree?path=kairos://users/** — 路径空间树状浏览
+**GET /v1/path/tree?path=kairos://_user/** — 路径空间树状浏览
 
 **POST /v1/path/suppress** — 路径级检索抑制（S-16/S-17）
 
@@ -424,7 +424,7 @@ status: draft
 }
 ```
 
-**响应**：`{"id": "uuid", "path": "kairos://users/{id}/memories/{uuid}", "version": 1}`
+**响应**：`{"id": "uuid", "path": "kairos://_user/{id}/memories/{uuid}", "version": 1}`
 
 **错误**：`422`（缺少 provenance 等必填字段）、`413`（内容超长）、`429`（限流）
 
@@ -457,7 +457,7 @@ status: draft
 }
 ```
 
-**响应**：`{"nodes": [{"path": "kairos://users/", "children": 3}], "truncated": false}`
+**响应**：`{"nodes": [{"path": "kairos://_user/", "children": 3}], "truncated": false}`
 
 ### Tool: memories_list_recent
 
@@ -498,11 +498,11 @@ status: draft
 |:----|:-----|:-----|
 | `kairos init` | 初始化系统（创建配置、目录和数据库） | `kairos init --db sqlite:///$HOME/.kairos/kairos.db` |
 | `kairos serve` | 启动服务 | `kairos serve --port 8010` |
-| `kairos write <path>` | 写入记忆 | `kairos write kairos://users/default/memories/ --content "..."` |
-| `kairos read <path>` | 读取记忆 | `kairos read kairos://users/default/memories/abc` |
+| `kairos write <path>` | 写入记忆 | `kairos write kairos://_user/default/memories/ --content "..."` |
+| `kairos read <path>` | 读取记忆 | `kairos read kairos://_user/default/memories/abc` |
 | `kairos search <query>` | 搜索 | `kairos search "关键词" --limit 10` |
-| `kairos ls <path>` | 列出路径 | `kairos ls kairos://users/default/` |
-| `kairos tree <path>` | 树状浏览 | `kairos tree kairos://projects/ --depth 3` |
+| `kairos ls <path>` | 列出路径 | `kairos ls kairos://_user/default/` |
+| `kairos tree <path>` | 树状浏览 | `kairos tree kairos://_project/ --depth 3` |
 | `kairos forget <id>` | 显式遗忘 | `kairos forget uuid` |
 | `kairos suppress <id>` | 定向遗忘 | `kairos suppress uuid --reason compliance` |
 | `kairos health` | 健康检查 | `kairos health` |
@@ -511,7 +511,7 @@ status: draft
 | `kairos stop` | 停止服务 | `kairos stop` |
 | `kairos logs` | 查看日志 | `kairos logs --tail 100` |
 | `kairos audit verify-chain` | 审计链完整性验证（HMAC 审计链算法见 [threat-model.md](../security/threat-model.md) HMAC 审计链——`hmac = HMAC-SHA256(hmac_key, timestamp + operator + action + content_hash + prev_hmac)`，5 项输入；details 等可变信息以 SHA256 摘要并入 content_hash 参与链计算；支持精确定位篡改记录与整体完整性校验） | `kairos audit verify-chain` |
-| `kairos sublimation trigger` | 手动触发升华 | `kairos sublimation trigger --path kairos://projects/x/` |
+| `kairos sublimation trigger` | 手动触发升华 | `kairos sublimation trigger --path kairos://_project/x/` |
 | `kairos sublimation progress` | 查询升华进度 | `kairos sublimation progress` |
 | `kairos calibrate` | 外部校准 | `kairos calibrate --memory-id uuid --score 0.85` |
 | `kairos degradation switch` | 降级模式切换（CAL-04） | `kairos degradation switch --mode safe_hibernation` |
@@ -550,7 +550,7 @@ status: draft
 | event_type | 说明 | 发送者 | 接收者 |
 |-----------|:-----|:-------|:-------|
 | `calibration_signal` | 外部校准信号注入 | 宪法主权面 | 全层广播 |
-| `degradation_switch` | 降级模式切换 | 宪法主权面 | 全层广播 |
+| `degradation_switch` | 降级模式切换 | 宪法主权面 | 元认知+策略（架构 §10.10 口径：宪法主权面发布，元认知层+策略层接收） |
 | `use_event` | 使用事件提交（影子副本、权重、审计） | WM | 策略+存储+元认知 |
 | `intention_activate` | 前瞻保持触发条件匹配 | 策略 | WM |
 | `intention_resolve` | 前瞻执行关闭裁定 | WM | 策略→存储 |
@@ -585,7 +585,7 @@ status: draft
   "id": "uuid",
   "level": "overview",
   "content": "记忆内容（按层级截断）",
-  "path": "kairos://users/{id}/memories/{uuid}",
+  "path": "kairos://_user/{id}/memories/{uuid}",
   "session": {"id": "uuid", "label": "会话标签"},
   "metadata": {"created_at": "ISO8601", "contract": "ondemand", "version": 1}
 }
@@ -925,7 +925,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 | `kairos_get_hot_memories` | 热度最高记忆 | GET /v1/memories/heat-top （定义见 §1） |
 | `kairos_search_graph` | 图谱检索 | POST /v1/graph/search |
 | `kairos_extract_entities` | 实体提取 | POST /v1/entities/extract |
-| `kairos_get_memory_traces` | 记忆生命周期历史 | 操作目录 §3 |
+| `kairos_get_memory_traces` | 记忆生命周期历史 | 操作目录 §3（memory_states 生命周期历史仅经 MCP `kairos_get_memory_traces` 访问，REST 不单独开放） |
 | `kairos_feedback_memory` | 可信度反馈 | POST /v1/memories/{id}/feedback （定义见 §1） |
 | `kairos_calibrate` | 校准信号 | POST /v1/calibrate |
 | `kairos_get_stats` | 记忆库报告 | GET /v1/memories/stats （定义见 §1） |
@@ -1052,7 +1052,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 > **定位**：架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2「Saga 命名叙事线」的外部接口。
 > **被架构引用**：[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2（叙事线端点）——本章节号变更须同步回改。
 >
-> **v0.1.0 子集声明（0.0.16 决策,建议五）**：本批次落地最小子集——创建/添加记忆/按叙事线检索/手动完结四操作（纯数据库实现,无 LLM 依赖）。`summarize` 端点需 LLM 调用,标注为 v1.1 启用;自动聚合（知识演化自动加入、Deep 聚类创建）与自动完结（90 天空闲）为 v1.1 目标。成员有序列表由 `narrative_threads.memory_ids` 数组承载（不新增 position 列）。
+> **v0.1.0 子集声明（决策）**：本批次落地最小子集——创建/添加记忆/按叙事线检索/手动完结四操作（纯数据库实现,无 LLM 依赖）。`summarize` 端点需 LLM 调用,标注为 v1.1 启用;自动聚合（知识演化自动加入、Deep 聚类创建）与自动完结（90 天空闲）为 v1.1 目标。成员有序列表由 `narrative_threads.memory_ids` 数组承载（不新增 position 列）。
 
 ### POST /v1/narrative/threads — 创建叙事线（v0.1.0 子集）
 
@@ -1344,7 +1344,7 @@ Schema 版本化——修改后自动递增 `schema_id` 后缀，旧 Schema 保�
 
 **权限**：admin
 
-Content-Type: multipart/form-data。`conflict_resolution`：fail / overwrite / skip。
+Content-Type: multipart/form-data。`conflict_resolution`：fail / overwrite / skip（与 §1 batch 的 `on_conflict`（skip|overwrite）语义不同：导入为整包级操作，fail=任一冲突即整体中止；batch 无 fail 档——冲突经 207 逐条返回）。
 
 **响应** `200`：`{"imported": 15420, "skipped": 0, "conflicts": 0, "errors": []}`
 
@@ -1355,7 +1355,7 @@ Content-Type: multipart/form-data。`conflict_resolution`：fail / overwrite / s
 ```json
 {
   "checks": ["C1", "C2", "C4"],
-  "path_prefix": "kairos://users/abc/"
+  "path_prefix": "kairos://_user/abc/"
 }
 ```
 
@@ -1369,7 +1369,7 @@ Content-Type: multipart/form-data。`conflict_resolution`：fail / overwrite / s
 
 **权限**：read
 
-**Query**：`?type=mermaid&layout=TD&path_prefix=kairos://projects/alpha/&max_nodes=50`
+**Query**：`?type=mermaid&layout=TD&path_prefix=kairos://_project/alpha/&max_nodes=50`
 
 渲染实体知识图谱、关系索引、因果链路为 Mermaid 图（SVG/PNG 格式）。
 
@@ -1386,10 +1386,10 @@ Content-Type: multipart/form-data。`conflict_resolution`：fail / overwrite / s
 
 | 资源类型 | `resource_type` | 摄取方式 | 默认契约 | 默认路径前缀 |
 |:--------|:---------------|:--------|:--------|:-----------|
-| 本地文件 | `file` | 读取文件内容 → 文本提取（PDF/DOCX/Markdown/TXT） | 环境 | `kairos://projects/{id}/files/` |
-| 网页 URL | `url` | HTTP GET → HTML→Markdown 提取（可配置 CSS selector 聚焦） | 按需 | `kairos://users/{id}/inbox/web-pages/` |
-| Sitemap | `sitemap` | 解析 sitemap.xml → 批量递归抓取子 URL（深度可控） | 环境 | `kairos://projects/{id}/docs/` |
-| RSS/Atom Feed | `rss` | 轮询 feed → 增量提取新条目 | 环境 | `kairos://users/{id}/inbox/feeds/` |
+| 本地文件 | `file` | 读取文件内容 → 文本提取（PDF/DOCX/Markdown/TXT） | 环境 | `kairos://_project/{id}/files/` |
+| 网页 URL | `url` | HTTP GET → HTML→Markdown 提取（可配置 CSS selector 聚焦） | 按需 | `kairos://_user/{id}/inbox/web-pages/` |
+| Sitemap | `sitemap` | 解析 sitemap.xml → 批量递归抓取子 URL（深度可控） | 环境 | `kairos://_project/{id}/docs/` |
+| RSS/Atom Feed | `rss` | 轮询 feed → 增量提取新条目 | 环境 | `kairos://_user/{id}/inbox/feeds/` |
 
 **`add_resource` 接口 Schema**：
 
@@ -1405,8 +1405,8 @@ Content-Type: multipart/form-data。`conflict_resolution`：fail / overwrite / s
     "chunk_overlap": 200                    // 分块重叠（字符，默认 200）
   },
   "watch_interval": 3600,                   // 定时刷新间隔（秒），0 或不设置 = 仅摄取一次
-  "contract": "permanent|ondemand|environmental|temporary|intention",  // 契约类型（五值枚举，权威定义见 data-model memories.contract；intention 仅系统内部 kairos://_system/intentions/ 路径使用），默认 environmental
-  "path_prefix": "kairos://projects/{id}/docs/"         // 目标路径前缀（可选，自动推断）
+  "contract": "permanent|ondemand|environmental|temporary|intention",  // 契约类型（五值枚举，权威定义见 data-model memories.contract；intention 仅系统内部 kairos://_system/intentions/ 路径使用），未显式指定时按资源类型默认（见上表：url 类型默认 ondemand，其余默认 environmental）
+  "path_prefix": "kairos://_project/{id}/docs/"         // 目标路径前缀（可选，自动推断）
 }
 ```
 
@@ -1523,7 +1523,7 @@ ImagePart 输入
 **存储策略**：
 - data URI 图片：解码后以二进制 BLOB 存入 `image_blobs` 表，原始 data URI 保留在 `memories.content` 的 ImagePart 中作为溯源引用
 - URL 图片：首次访问时下载并缓存至本地，后续检索时从缓存读取。缓存 TTL 见 [ops/configuration.md](../ops/configuration.md) §6.7
-- 图片的语义向量：由多模态 embedding 模型（如 CLIP）生成，存入 `memories.embedding` 的图片专用向量空间（与文本向量独立存储，维度可不同）
+- 图片语义向量：v0.1.0 图片仅存储（`image_blobs` 表），不生成语义向量；v1.1 多模态 embedding 启用时，由多模态 embedding 模型（如 CLIP/SigLIP）生成，存入 `memories.embedding` 的图片专用向量空间（与文本向量独立存储，维度可不同）
 
 **ToolPart**——工具调用/返回片段：
 
@@ -1625,5 +1625,6 @@ v1.1 规划：
 | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：§6.8 MCP Bridge 工具表补关系管理 3 工具（kairos_link/kairos_unlink/kairos_relations，15 口径统一）；指引段 §7.3.1→§7.1a 并注明 15 构成；§1.4 archive 引用 §7.3→§7.3.1；sessions/evolution 路径占位符统一为 {id}。 |
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题风格统一——「N、」改「§N」（18 个大章并入 §N 数字序形态，引用零联动）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：§4 事件优先级口径改写（当前已使用 0（校准/降级）/3（use_event）/6（latent_trigger），0-2 不被背压阻塞）；§3 CLI 表补注册 `kairos degradation switch`（CLI 24→25，对齐竖切实现指南与 test-plan 使用）；§8 叙事线已完结拒新成员错误 400→409（状态冲突，无新错误码）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：端点计数口径去版本化；batch/import 冲突策略枚举互引注记；图片语义向量版本边界（v0.1.0 仅存储）；degradation_switch 接收者按架构 §10.10 收敛；竖切 M-05 注册注记去版本号；路径空间统一下划线命名；RL 初始化注记。 |
 
-> **端点计数口径（2026-08-03 决策 D-13；0.0.15 更新；0.0.25 勘误）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（0.0.15 注册 `archive`/`restore` 两个竖切端点后 78→80；0.0.16 新增 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §健康检查）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §9），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。
+> **端点计数口径（决策 D-13 核定）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（注册 `archive`/`restore` 两个竖切端点后 78→80；补 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §健康检查）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §9），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。

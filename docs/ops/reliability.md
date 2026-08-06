@@ -66,7 +66,7 @@ pg_dump -d kairos -f ~/.kairos/backups/kairos-$(date +%Y%m%d-%H%M%S).sql
 
 | 控制项 | 默认值 | 说明 |
 |:------|:-------|:-----|
-| 单次调用超时 | 30s（轻量）/ 60s（全量）（`KAIROS_LLM_TIMEOUT_S`，见 [configuration.md](configuration.md) §7） | 超时计入重试次数 |
+| 单次调用超时 | 30s（轻量）/ 60s（全量）（`KAIROS_LLM_TIMEOUT_S`，见 [configuration.md](configuration.md) §7） | 超时计入重试次数。轻量档 30s 取值适用于轻量模式启用 LLM 功能（如实体提取）的场景；纯本地 BGE-M3 推理不涉及 LLM 超时 |
 | 最大重试次数 | 3 次（`KAIROS_RETRY_MAX_ATTEMPTS=3`，见 [configuration.md](configuration.md) §8.7） | 超限后切换降级模型 |
 | 连续失败熔断 | 5 次 | 连续 5 次调用失败（含超时），熔断该模型 5 分钟 |
 | 熔断冷却 | 5 分钟 | 冷却期满后放行一次探测调用，成功则恢复，失败则重置冷却计时器 |
@@ -98,9 +98,9 @@ pg_dump -d kairos -f ~/.kairos/backups/kairos-$(date +%Y%m%d-%H%M%S).sql
 
 > **容量预算**：单次全量备份体积 ≈ 数据库文件体积（10 万条 ≈ 2GB 级，标准模式 NFR 口径；轻量模式 ≤500MB，见 [nfr-specification.md](../specification/nfr-specification.md) §四）；30 天保留总量预算 ≤ 单次体积 × 30 + WAL 7 天 × 日增量 + 升华快照 30 天 × 单次体积。备份目录占用 ≥ 磁盘 75% 时触发清理最旧备份（保留期最短的 WAL 先行），≥ 92% 时停止升华快照并告警（与 §1.4 磁盘告警联动）。
 >
-> **核算注记（0.0.37）**：以 NFR 口径换算（10 万条 ≈ 2GB 级标准模式，[nfr-specification.md](../specification/nfr-specification.md) §四），数据库全量 30 天保留 ≈ 60GB，超出 NFR 标准模式 50GB 磁盘预算（§二）——备份目录须独立磁盘或远程存储承载，或按实际数据量下调保留天数（`KAIROS_BACKUP_RETENTION_DAYS` 已参数化）；WAL 7 天与升华快照保留另计。原「100 万条 ≈ 2GB 级」表述与 NFR 冲突，已按 NFR 口径修正。
+> **核算注记**：以 NFR 口径换算（10 万条 ≈ 2GB 级标准模式，[nfr-specification.md](../specification/nfr-specification.md) §四），数据库全量 30 天保留 ≈ 60GB，超出 NFR 标准模式 50GB 磁盘预算（§二）——备份目录须独立磁盘或远程存储承载，或按实际数据量下调保留天数（`KAIROS_BACKUP_RETENTION_DAYS` 已参数化）；WAL 7 天与升华快照保留另计。原「100 万条 ≈ 2GB 级」表述与 NFR 冲突，已按 NFR 口径修正。
 >
-> **参数化注记（0.0.14）**：常驻契约快照与升华快照的「30 天」保留期为基线硬编码值（数据库全量 30 天与 WAL 7 天已由 `KAIROS_BACKUP_RETENTION_DAYS`/`KAIROS_WAL_ARCHIVE_RETENTION_DAYS` 参数化）；快照保留期的参数化列入后续运维批次（届时在 configuration 附录 A 登记），当前按基线值执行。
+> **参数化注记**：常驻契约快照与升华快照的「30 天」保留期为基线硬编码值（数据库全量 30 天与 WAL 7 天已由 `KAIROS_BACKUP_RETENTION_DAYS`/`KAIROS_WAL_ARCHIVE_RETENTION_DAYS` 参数化）；快照保留期的参数化列入后续运维批次（届时在 configuration 附录 A 登记），当前按基线值执行。
 
 ---
 
@@ -124,3 +124,4 @@ pg_dump -d kairos -f ~/.kairos/backups/kairos-$(date +%Y%m%d-%H%M%S).sql
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：快照保留期参数化注记（基线硬编码 30 天，参数化列入后续批次）。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-01 三环不变量引用 §6/§10.3→§10.3。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：`error_log`/`events` 表改指真实承载（写入审计日志（使用事件总线）；升华恢复改 sublimation_queue 表 status=pending/processing，见 data-model）；备份容量换算口径修正（100 万条≈2GB 级 → 10 万条≈2GB 级 NFR 口径，原表述与 NFR 冲突）；30 天保留 vs NFR 50GB 磁盘预算核算注记。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：轻量档 LLM 超时取值适用前提注记；版本标记收敛。 |

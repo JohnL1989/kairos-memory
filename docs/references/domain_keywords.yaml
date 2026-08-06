@@ -18,7 +18,7 @@ nlp:
 
 computer_vision:
   - [计算机视觉, 图像识别, 目标检测, 语义分割, OCR]
-  - [computer vision, image recognition, object detection, semantic segmentation]
+  - [computer vision, image recognition, object detection, semantic segmentation, optical character recognition]
 
 recommender_system:
   - [推荐系统, 协同过滤, 矩阵分解, 召回, 排序]
@@ -34,7 +34,7 @@ database:
 
 security:
   - [安全, 加密, 认证, 授权, 审计, 红线]
-  - [security, encryption, authentication, authorization, audit]
+  - [security, encryption, authentication, authorization, audit, compliance]
 
 system_design:
   - [系统设计, 架构, 分布式, 微服务, 高可用]

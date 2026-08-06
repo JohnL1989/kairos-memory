@@ -71,9 +71,10 @@ status: draft
 | 见证价值轴 | Witness Value Axis | 外部校准（符合论）+ 内部叙事自洽度（融贯论），同轴双层 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 |
 | 时间轴 | Temporal Axis | 物理时间衰减 + 逻辑-因果时间（事件时序/因果关系/程序执行流）正交双轴 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 |
 | 认知完整性轴 | Cognitive Integrity Axis | 反例锚点/死胡同路径/组合约束的结构性占位价值，`is_structure=true` 的记忆不参与遗忘 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 |
+| 可及性轴 | Accessibility Axis | 五轴之一——记忆被当前任务可访问/可用的程度；v0.1.0 以工程代理承载（路径竞争降权幅度与路径密度监测联合指标、路径注册表检索深度度量），完整维度见认知基础 §1.1/E.6a | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 |
 | 价值独立性公理 | Value Independence Axiom | "好用≠真实"——使用权重与见证锚定结构性冲突，非默认和谐 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.5（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
 | 记忆压力 | Memory Pressure | 系统对自身记忆资源状态的主动感知与压力驱动行动——四类压力信号（上下文预算利用率/检索失败率/冗余率/遗忘队列积压）触发主动话题/重组/归档建议（保守倾向，不直接执行） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) D.7 记忆压力声明 |
-| 热度层级衰减 | Tiered Heat Decay | 使用价值/时间轴的实证参考基线（市场理念吸收 noah-gen3-type2）——热度组合公式 `热度=1.0+频次×2+新近×10+重要性加分`、层级衰减 ×0.985/0.975/0.965/0.95、父节点传播 `max×0.6+mean×0.3+一致性×0.1`；参考基线非默认值，仅作捕获门控与影子副本置信度累积速率参考（P6 禁止聚合单标量裁决） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 热度体系实证参考基线声明 |
+| 热度层级衰减 | Tiered Heat Decay | 使用价值/时间轴的实证参考基线（noah-gen3-type2，MIT 许可）——热度组合公式 `热度=1.0+频次×2+新近×10+重要性加分`、层级衰减 ×0.985/0.975/0.965/0.95、父节点传播 `max×0.6+mean×0.3+一致性×0.1`；参考基线非默认值，仅作捕获门控与影子副本置信度累积速率参考（P6 禁止聚合单标量裁决） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 热度体系实证参考基线声明 |
 | 摄入侧情绪保护 | Ingest-side Emotional Burst Protection | 输入信号（用户/环境消息）命中情绪爆发模式时，该轮输入整体进入保护通道（生命周期豁免+升温抑制）；为 D-019(a) 情感调制（记忆自身 VAD）的摄入侧扩展；关键词表由外部校准维护、不自动学习 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) D.12 摄入侧情绪爆发→整轮保护声明 |
 | 辞典式排序 | Lexicographic Ordering | 六级辞典式排序链（探索>宪法>校准>认知完整性>时间>间接度）+ 身份面否决权，宪法级不变量 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.3 |
 | 见证锚定 | Witness Anchor | 存储层主副本——强一致性，不可篡改，含叙事自洽度字段 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1-5.2（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
@@ -100,7 +101,7 @@ status: draft
 
 | 术语 | 英文 | 定义 | 来源 |
 |:----|:-----|:-----|:-----|
-| 双副本分离 | Dual Copy Separation | 见证锚定（强一致）+ 使用权重（最终一致），S-14 语境自指禁令——内部信号不得作为见证锚定真实性的证据来源 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1-5.2（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
+| 双副本分离 | Dual Copy Separation | 见证锚定（强一致）+ 使用权重（最终一致），S-14 语境自指禁令——内部信号不得作为见证锚定真实性的证据来源；同一机制在架构文档亦作「双副本隔离」（架构 §0.1 总览表）、「双副本」（data-model §3），全库三称并存 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1-5.2（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
 | 事件总线 | Event Bus | 基于数据库表（events，ADR-002）承载的跨层异步通信机制——10 类事件（v0.1.0 首迭代 4 类），优先级 0–9，发布/订阅/背压/优先级规则见架构 §10.10 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 / [adr.md](../governance/adr.md) ADR-002 |
 | 沙箱验证环 | Sandbox Verification Loop | WM 层新类型/新价值轴试运行→元审计确认→合并的验证机制 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §6 |
 | 模拟隔离区 | Simulation Isolation Zone | WM 层反事实假设空间，模拟产物不可未经实证转正（S-13） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §6 |
@@ -145,3 +146,4 @@ status: draft
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：D-04 术语表补 7 条（编译器/结构化通信单元/编译净化/检索深度分级/命名配置集/竖切/结构性记忆），60→67 条。 |
 | 0.0.31 | 2026-08-06 | 第十一轮全库深度审计修复批次（changelog 0.0.31）：WM调度预处理器条目补「推理皮层」中文别名与架构 §4 定位（计数不变 67）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：身份面词条补宪法否决默认优先级口径（附录 C.6）；新增「准见证锚定」术语条目（67→68 条）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：补可及性轴词条（68→69）；双副本分离补三称别名注记。 |

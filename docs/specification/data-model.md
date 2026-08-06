@@ -366,7 +366,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 | `bias_reset_count` | INTEGER | DEFAULT 0 | 偏置重置次数 |
 | `content_snapshot` | JSONB | — | 种子内容的定稿快照 |
 
-### sublimation_outputs（升华输出表，v0.1.0 新增）
+### sublimation_outputs（升华输出表，v0.1.0 交付）
 
 | 列名 | 类型 | 约束 | 说明 |
 |:----|:-----|:-----|:-----|
@@ -395,7 +395,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 **约束**：无 UNIQUE 约束——支持同一记忆多次状态转换（保留完整历史）。
 **索引**：INDEX(memory_id, state_changed_at) 加速历史查询
 
-### journal_entries（升华原始轮次表，v0.1.0 新增）
+### journal_entries（升华原始轮次表，v0.1.0 交付）
 
 | 列名 | 类型 | 约束 | 说明 |
 |:----|:-----|:-----|:-----|
@@ -411,7 +411,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 
 **索引**：`idx_journal_entries_session` ON `session_id`（L1 摘要按会话回查）；`idx_journal_entries_captured` ON `captured_at`
 
-### session_summaries（L1 会话摘要表，v0.1.0 新增）
+### session_summaries（L1 会话摘要表，v0.1.0 交付）
 
 | 列名 | 类型 | 约束 | 说明 |
 |:----|:-----|:-----|:-----|
@@ -428,7 +428,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 | `created_at` | TIMESTAMPTZ | NOT NULL | |
 | `ttl_days` | INTEGER | DEFAULT 30 | 保留天数 |
 
-### daily_reports（L2 日报告表，v0.1.0 新增）
+### daily_reports（L2 日报告表，v0.1.0 交付）
 
 | 列名 | 类型 | 约束 | 说明 |
 |:----|:-----|:-----|:-----|
@@ -443,7 +443,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 | `created_at` | TIMESTAMPTZ | NOT NULL | |
 | UNIQUE(user_id, report_date) | | | |
 
-### weekly_packs（L3 周知识包表，v0.1.0 新增）
+### weekly_packs（L3 周知识包表，v0.1.0 交付）
 
 | 列名 | 类型 | 约束 | 说明 |
 |:----|:-----|:-----|:-----|
@@ -458,7 +458,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 | `created_at` | TIMESTAMPTZ | NOT NULL | |
 | UNIQUE(user_id, week_start) | | | |
 
-### user_profiles（L4 用户画像表，v0.1.0 新增）
+### user_profiles（L4 用户画像表，v0.1.0 交付）
 
 用户画像分**静态（static）**与**动态（dynamic）**两层——静态层记录长期稳定事实（偏好、身份、特质），数据来自 L4 profile 的跨周聚合；动态层记录近期活动和当前上下文（正在进行的任务、最近对话主题），数据来自 L1→L3 增量更新。两层共享同一张表，通过 `trait_type`（static/dynamic）区分。检索时静态层权重高于动态层。
 
@@ -472,11 +472,11 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 | `confidence` | FLOAT | DEFAULT 0.5 | 画像置信度 |
 | `version` | INTEGER | DEFAULT 1 | 画像版本号 |
 | `updated_at` | TIMESTAMPTZ | NOT NULL | |
-| `rl_weights` | JSONB | — | RL 权重五维配置：键为 `relevance`/`recency`/`frequency`/`user_feedback`/`trust_score`，各维独立取值，不强制和为 1（各维度独立更新，见 [rl-weight-spec.md](rl-weight-spec.md) 初始化说明）。`entity_boost`（默认 0.05）为配置参数，不参与五维排序，v1.1+ 激活完整加权时并入 |
+| `rl_weights` | JSONB | — | RL 权重五维配置：键为 `relevance`/`recency`/`frequency`/`user_feedback`/`trust_score`，初始化不归一化；更新管线经 Bounded Simplex Projection 强制 Σ=1（见 [rl-weight-spec.md](rl-weight-spec.md)）。`entity_boost`（默认 0.05）为配置参数，不参与五维排序，v1.1+ 激活完整加权时并入 |
 
-### retrieval_enhancement_config（检索增强配置参数，v0.1.0 新增）
+### retrieval_enhancement_config（检索增强配置参数，v0.1.0 交付）
 
-以下参数控制三信号混合检索、GSPO 聚类去重、MMR 去重三个阶段的行为。所有参数存储在 `config` 表中，key 前缀为 `kairos.retrieval`。config 表键名 = `KAIROS_*` 环境变量名去掉 `KAIROS_` 前缀后转小写点分格式（如 `KAIROS_HYBRID_SEMANTIC_WEIGHT` → `hybrid.semantic_weight`），与 [configuration.md](../ops/configuration.md) §1 环境变量一一对应。
+以下参数控制三信号混合检索、GSPO 聚类去重、MMR 去重三个阶段的行为。所有参数存储在 `config` 表中，key 前缀为 `kairos.retrieval`。config 表键名 = `KAIROS_*` 环境变量名去掉 `KAIROS_` 前缀后转小写点分格式（如 `KAIROS_HYBRID_SEMANTIC_WEIGHT` → `kairos.retrieval.hybrid.semantic_weight`），与 [configuration.md](../ops/configuration.md) §1 环境变量一一对应。
 
 | 参数键 | 值类型 | 默认值 | 范围/取值 | 所属阶段 | 说明 |
 |:------|:------|:------|:---------|:--------|:-----|
@@ -614,7 +614,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 | `id` | UUID | PK | |
 | `topic` | TEXT | NOT NULL | 话题描述 |
 | `summary` | TEXT | — | 话题摘要 |
-| `priority` | FLOAT | DEFAULT 0 | 话题优先级，[0,1] 区间数值越大优先级越高（高优先级判据 ≥ 0.7——on_turn_start hook 注入阈值，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 主动话题生成器；0.0.14 勘误：原 INTEGER 0=最高 口径与架构 ≥0.7 阈值互斥，统一为 FLOAT） |
+| `priority` | FLOAT | DEFAULT 0 | 话题优先级，[0,1] 区间数值越大优先级越高（高优先级判据 ≥ 0.7——on_turn_start hook 注入阈值，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 主动话题生成器；勘误：原 INTEGER 0=最高 口径与架构 ≥0.7 阈值互斥，统一为 FLOAT） |
 | `evidence_count` | INTEGER | DEFAULT 0 | 累积证据数 |
 | `related_ids` | UUID[] | — | 关联记忆 ID 列表 |
 | `status` | TEXT | DEFAULT 'pending' | pending / acknowledged / processed / expired |
@@ -819,7 +819,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 
 ---
 
-### 8.17 v0.1.0 新增功能表
+### 8.17 v0.1.0 功能承载表
 
 以下四张表为 v0.1.0 新增功能的持久化承载——QueryAnalyzer 查询缓存、时间桶覆盖统计、防抖任务注册、以及自动过期推断日志。
 
@@ -1026,7 +1026,7 @@ HAVING SUM(CASE WHEN is_false_positive THEN 1 ELSE 0 END) * 1.0 / COUNT(*) > 0.1
 | HKCS | current_task/phase | TEXT | 编译器 | 当前任务阶段 |
 ---
 
-## §11 P3 基础设施表（v0.1.0 新增）
+## §11 P3 基础设施表（v0.1.0 交付）
 
 > **定位**：以下七张表为架构文档 P3-20 ~ P3-25 与 P3-05 的数据承载——覆盖 Schema 版本管理、断点续训检查点、PreparedStatementCache 命中率监测、FTS5 全文索引（memories_fts / skills_fts）、Permission ACL 权限控制、内部密钥表（api_keys，对应安全规格 [security-specification.md](../security/security-specification.md) §2.1）。所有表以 SQLite（轻量模式）为设计基准，PostgreSQL（标准模式）等价替换对应类型（**例外：FTS5 全文索引为 SQLite 独有虚拟表，PostgreSQL 无等价物，标准模式改用 pg_bigm / zhparser，见 `memories_fts` / `skills_fts` 节说明**）。
 
@@ -1390,3 +1390,4 @@ SQLite 无时区类型，故：
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：顶层章节标题统一数字（一~十三→1~13）与中文序引用同步；前瞻记忆引用 §8→§3.2。 |
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题风格统一——「N、」改「§N」（13 个大章并入 §N 数字序形态，引用零联动）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：api_keys.level 枚举统一为 read（含 CHECK 约束，与 api-spec §1 三级口径一致）；§8.1 conversation_messages 补 parts 列（对齐 api-spec §18.2 v0.1.0 交付承诺）；journal_entries 补 node_episode_index_map 列（架构 §5.2 Episode 归因索引）；api_keys 表补 v0.1.0 核心鉴权承载注记。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：rl_weights 归一化口径统一（初始化不归一化/更新投影强制 Σ=1）；实体类型存储枚举映射注记；配置键名映射示例修正；表标题 v0.1.0 交付口径；零版本标记收敛。 |

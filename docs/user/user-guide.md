@@ -8,7 +8,7 @@ tags:
   - user
   - guide
 created: 2026-07-20
-updated: 2026-08-05
+updated: 2026-08-06
 last_reviewed: 2026-08-05
 status: draft
 ---
@@ -96,7 +96,7 @@ client = KairosClient(api_key="sk-...")
 
 # 写入一条按需记忆
 memory = client.write(
-    path="kairos://sessions/abc123/",
+    path="kairos://_session/abc123/",
     content="用户偏好：暗色主题",
     source="user_input",         # SDK 参数名 source 对应 API 字段 provenance（S-15 来源标识，必填；合法枚举值见 api-spec provenance 字段）
     contract="ondemand",         # 可选：permanent / ondemand / environmental / temporary
@@ -107,14 +107,14 @@ print(f"写入成功：{memory.id}")
 
 ```bash
 # 使用 CLI
-kairos write kairos://sessions/abc123/ --content "用户偏好：暗色主题" --contract ondemand
+kairos write kairos://_session/abc123/ --content "用户偏好：暗色主题" --contract ondemand
 ```
 
 ### 2.2 检索记忆
 
 ```python
 # 按路径前缀检索
-results = client.search(path="kairos://sessions/abc123/")
+results = client.search(path="kairos://_session/abc123/")
 for r in results:
     print(f"[{r.path}] {r.content}")
 
@@ -124,8 +124,8 @@ results = client.search("暗色主题", limit=5)
 
 ```bash
 kairos search "暗色主题" --limit 5
-kairos ls kairos://sessions/abc123/
-kairos tree kairos://sessions/ --depth 2
+kairos ls kairos://_session/abc123/
+kairos tree kairos://_session/ --depth 2
 ```
 
 ### 2.3 管理记忆
@@ -164,9 +164,9 @@ kairos status
 
 ### 3.1 路径规划
 
-- 使用 `kairos://projects/{project_name}/sessions/` 组织项目级记忆
-- 使用 `kairos://sessions/{session_id}/` 组织会话级临时记忆
-- 使用 `kairos://users/{user_id}/preferences/` 存储用户偏好
+- 使用 `kairos://_project/{project_name}/sessions/` 组织项目级记忆
+- 使用 `kairos://_session/{session_id}/` 组织会话级临时记忆
+- 使用 `kairos://_user/{user_id}/preferences/` 存储用户偏好
 - 使用 `kairos://knowledge/` 存储全局知识库
 
 ### 3.2 契约选择
@@ -220,3 +220,4 @@ KAIROS_SEED_PATH=~/.kairos/seeds/   # 可选。未设置则使用内置默认种
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：init 幂等澄清。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：检索吞吐 200→180 ops/s 口径；LLM_ENDPOINT 模式限定；kairos read 参数语义注记；SDK source 参数映射注记。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §三→§3 引用联动。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：路径空间统一下划线命名。 |

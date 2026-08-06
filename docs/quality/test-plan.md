@@ -54,11 +54,17 @@ status: draft
 
 ### 预留测试用例编号（代码启动后补充）
 
-> W-05/W-06、R-04~R-07、M-04、SF-01~04、CAL-02/06 等功能的测试用例编号在此登记占位（TC-W05-001~ 等），补充时须与 requirements-baseline RTM 一一对应。TC-C01 前缀已废弃，统一为 TC-CALxx-00x 格式。
+> W-05/W-06、R-04~R-07、M-02/M-04/M-06、A-02/A-03/A-05/A-06、SF-01~04、CAL-02/06 等功能的测试用例编号在此登记占位（TC-W05-001~ 等），补充时须与 requirements-baseline RTM 一一对应。TC-C01 前缀已废弃，统一为 TC-CALxx-00x 格式。
 
 | ID | 用途 | 补充时机 |
 |:---|:-----|:--------|
 | TC-GOLD-001~ | 黄金集回归（Judge 漂移检测，来源 [threat-model.md](../security/threat-model.md) §三 Judge 漂移行）——黄金集非功能清单项，独立前缀 GOLD 与功能前缀（W/R/M/SF/CAL）区分 | 代码启动后补充 |
+| TC-M02-001~ | 契约变更（M-02，[feature-list.md](../specification/feature-list.md)） | 代码启动后补充 |
+| TC-M06-001~ | 记忆导出（M-06，GET /v1/memories/{id}/export） | 代码启动后补充 |
+| TC-A02-001~ | 配置查看/修改（A-02） | 代码启动后补充 |
+| TC-A03-001~ | 调度器状态查询（A-03，GET /v1/scheduler/status） | 代码启动后补充 |
+| TC-A05-001~ | 种子状态查看（A-05） | 代码启动后补充 |
+| TC-A06-001~ | 路径索引重建（A-06） | 代码启动后补充 |
 
 ---
 
@@ -205,3 +211,4 @@ seeds = [
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：竖切测试缺口补全——W-03/M-03/M-05/A-07 用例、迁移/回滚测试类型（§1 覆盖表+§3.9）、E2E 竖切 7/9 门禁对照注记、F-03/E2E-02 复兴触发勘误。 |
 | 0.0.33 | 2026-08-06 | round12/round13 深度审计修复批次（changelog 0.0.33）：预留编号表补 TC-GOLD-001~ 黄金集回归占位（Judge 漂移检测）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：TC-M03-001 对齐 api-spec 显式遗忘语义（`kairos forget` 标记遗忘候选入队列，S-16 留痕断言按 S-16 适用范围调整）；TC-MEMV-001 回滚参数改 body `target_version`（对齐 api-spec §1.4）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：预留表补 M-02/M-06/A-02/A-03/A-05/A-06 六项占位。 |

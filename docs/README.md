@@ -76,7 +76,7 @@ status: draft
 | 路径 | 内容 |
 |:-----|:-----|
 | [`ops/deployment.md`](ops/deployment.md) | **部署指南** — 三级部署规模（轻量/标准/全量）+ 三级能力梯度（全量/标准/内核），环境变量、Docker 参考 |
-| [`ops/configuration.md`](ops/configuration.md) | **配置参数参考** — 223 项参数（2026-08-05 核定；口径：表格行首为 `KAIROS_*` 的参数定义行；含附录 A 全库索引 148 项，总计 371 项）+ 动态调参规则 |
+| [`ops/configuration.md`](ops/configuration.md) | **配置参数参考** — 224 项参数（2026-08-06 核定；口径：表格行首为 `KAIROS_*` 的参数定义行；含附录 A 全库索引 146 项，总计 370 项）+ 动态调参规则 |
 | [`ops/reliability.md`](ops/reliability.md) | **可靠性策略** — RTO/RPO、备份、WAL 归档、LLM 熔断 |
 | [`ops/observability.md`](ops/observability.md) | **可观测性设计** — 指标/日志/告警/检测器可见性 |
 | [`ops/troubleshooting.md`](ops/troubleshooting.md) | **故障排查** — 常见问题与恢复命令 |
@@ -109,17 +109,17 @@ status: draft
 
 | 路径 | 内容 |
 |:-----|:-----|
-| [`references/glossary.md`](references/glossary.md) | **术语表** — 68 条中英文术语对照（7 个分类表，不含版本记录；0.0.22 增补「热度层级衰减」「摄入侧情绪保护」「噪音规则库」；0.0.29 增补「编译器」「结构化通信单元」「编译净化」「检索深度分级」「命名配置集」「竖切」「结构性记忆」；0.0.37 增补「准见证锚定」） |
+| [`references/glossary.md`](references/glossary.md) | **术语表** — 69 条中英文术语对照（7 个分类表），含热度层级衰减/摄入侧情绪保护/噪音规则库/编译器/结构化通信单元/编译净化/检索深度分级/命名配置集/竖切/结构性记忆/准见证锚定等词条 |
 | [`references/error-reference.md`](references/error-reference.md) | **错误参考** — 11 类 38 个错误码 |
 | [`references/traceability-map.md`](references/traceability-map.md) | **需求可追溯性映射表** — 43 能力↔37 声明↔104 追踪项↔16 差距交叉映射 |
-| [`references/domain_keywords.yaml`](references/domain_keywords.yaml) | **领域关键词表** — 领域专有词频配置 |
+| [`references/domain_keywords.yaml`](references/domain_keywords.yaml) | **领域关键词表** — 领域关键词路由表（中英对照；词频统计待代码启动后引入） |
 | [`references/usage-load-algorithm.md`](references/usage-load-algorithm.md) | **使用负载计量算法** |
 | [`references/vad-coordinate-algorithm.md`](references/vad-coordinate-algorithm.md) | **VAD 情感坐标算法** |
 | [`references/value-dimension-entropy.md`](references/value-dimension-entropy.md) | **价值维度熵值守护算法** |
-| [`references/concept-tiers.md`](references/concept-tiers.md) | **概念分级速查表** — L1/L2/L3 三级概念归类 + 一句话类比 + 代码映射 + 依赖图（0.0.16 新增） |
-| [`references/capability_matrix.yaml`](references/capability_matrix.yaml) | **认知维度承载能力矩阵** — 各版本对认知维度的承载程度与恢复债编号（0.0.16 新增） |
+| [`references/concept-tiers.md`](references/concept-tiers.md) | **概念分级速查表** — L1/L2/L3 三级概念归类 + 一句话类比 + 代码映射 + 依赖图 |
+| [`references/capability_matrix.yaml`](references/capability_matrix.yaml) | **认知维度承载能力矩阵** — 各版本对认知维度的承载程度与恢复债编号 |
 
-总计：55 份核心文档**（foundation 4 + specification 12 + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1 = 55，即 **53 份 md + 2 份 yaml**；0.0.16 新增 `concept-tiers.md` 与 `capability_matrix.yaml`；0.0.29 新增 `development/engineering-workflow.md`；审计过程材料（审计报告/审计历史摘要）不随仓库分发，处置记录见 changelog 各批次）**。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
+总计：55 份核心文档**（foundation 4 + specification 12 + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1 = 55，即 **53 份 md + 2 份 yaml**；含 `concept-tiers.md`、`capability_matrix.yaml` 与 `development/engineering-workflow.md`；审计过程材料（审计报告/审计历史摘要）不随仓库分发，处置记录见 changelog 各批次）**。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
 
 ## 阅读建议
 
@@ -154,7 +154,7 @@ status: draft
 | 0.0.12 | 2026-08-04 | 门禁盲区闭环批次：决策 D-05 引用标注「决策」前缀。 |
 | 0.0.13 | 2026-08-04 | 认知×架构交叉审计修复批次（决策 D-16~D-27）：本条目为 0.0.15 补登（原缺失，见 [changelog.md](governance/changelog.md) 0.0.13）。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次索引同步：术语计数 56→57（增补并行审查）；全库 31 份文档 0.0.14 条目登记（详见 [changelog.md](governance/changelog.md) 0.0.14）。 |
-| 0.0.15 | 2026-08-05 | 全面深度审计修复批次索引同步（依 comprehensive-documentation-audit）：0.0.13 版本批次补登；api-spec 注册归档/恢复端点（业务端点 78→80，物理总数 81）；端点计数口径注记；全库正文双空格清零。 |
+| 0.0.15 | 2026-08-05 | 全面深度审计修复批次索引同步（依 comprehensive-documentation-audit）：0.0.13 版本批次补登；api-spec 注册归档/恢复端点（业务端点 78→80，物理总数 81）；端点计数口径注记；全库正文双空格清零。（0.0.25 勘误联动：现行口径为业务端点 85 + 3 无前缀 = 物理 88，见 api-spec 端点计数口径） |
 | 0.0.16 | 2026-08-05 | Marvis 建议落地批次索引同步：新增 [references/concept-tiers.md](references/concept-tiers.md) 与 [references/capability_matrix.yaml](references/capability_matrix.yaml)（核心文档 52→54）；决策记录入「审计与决策记录」索引（详见 [changelog.md](governance/changelog.md) 0.0.16）。 |
 | 0.0.17 | 2026-08-05 | Marvis 其余建议批次索引同步：R-1~R-10 处置（详见 [changelog.md](governance/changelog.md) 0.0.17）。 |
 | 0.0.18 | 2026-08-05 | 审计归档批次索引同步：reviews 10 份报告归档为 1 份审计历史摘要（决策 D-01~D-27 迁移至 `adr.md`「审计决策迁移」节）;审计索引节 8 行合并为 1 行。 |
@@ -164,11 +164,14 @@ status: draft
 | 0.0.22 | 2026-08-05 | 外部项目理念吸收批次索引同步（noah-gen3-type2）：配置参数计数同步（正文 220→223、附录 A 148 项不变、总计 368→371）；术语计数同步（glossary 57→60 条，增补热度层级衰减、摄入侧情绪保护、噪音规则库）；详见 [changelog.md](governance/changelog.md) 0.0.22。 |
 | 0.0.23 | 2026-08-05 | 内容架构全面审视批次索引同步：认知基础与系统架构结构修复（详见 [changelog.md](governance/changelog.md) 0.0.23）。 |
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次索引同步：implementation-map 索引行组件数 40+→70（3-02）；版本记录补登 0.0.19（2-04，详见 [changelog.md](governance/changelog.md) 0.0.24）。 |
+| 0.0.25~0.0.28 | 2026-08-06 | （合并占位：changelog 0.0.25~0.0.28 批次的变更未逐条登记于本文档，见 [changelog.md](governance/changelog.md) 全景——其中 0.0.25 含 api-spec 端点计数勘误 80/81 → 85/88，见版本记录 0.0.15 条目联动注记） |
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：新增 [development/engineering-workflow.md](development/engineering-workflow.md)（核心文档 54→55、53 md + 2 yaml）；glossary 60→67 条同步。 |
 | 0.0.30 | 2026-08-06 | 仓库整洁化：审计过程材料移出仓库（reviews/ 目录与 audit-history-summary 移除、scripts/_deep_audit_out.json 纳入 .gitignore）；审计历史索引行移除。 |
 | 0.0.31 | 2026-08-06 | 第十一轮全库深度审计修复批次（changelog 0.0.31）：操作目录 53→66 项；术语表推理皮层别名（计数不变）。 |
+| 0.0.32 | 2026-08-06 | 第三方分析分诊（echomind）+ 全量债务 v0.1.0 可实现性评估批次（changelog 0.0.32，未触及本文档，占位登记）。 |
 | 0.0.33 | 2026-08-06 | round12/round13 深度审计修复批次（changelog 0.0.33）：删除「审计与决策记录（过程产物）」空节。 |
 | 0.0.34 | 2026-08-06 | 第十四轮全库深度审计修复批次（changelog 0.0.34）：治理面计数统一（§0.4.1 图题/结构原则 → 两个正交治理面 + HTML 图题同源联动）；治理输入表述修正；检索权重单一权威（三链路标历史配比、四链路 0.50/0.20/0.10/0.20 唯一默认，configuration 同步）；§10.24 补 D-006/D-008/D-016/D-019；§5.2 节内导航补 5 节点；健康接口/差异检验引用修正；门禁新增 6.17/6.18/6.19。 |
 | 0.0.35 | 2026-08-06 | 第三方分析分诊（dg-bc/note，changelog 0.0.35）：架构 §3.9 补检索深度分级 ↔ 内容读取层级映射注记（R-01，R0 指针/R1 摘要仅定位/R2 全文唯一可用）；无债务登记。 |
 | 0.0.36 | 2026-08-06 | 第三方分析分诊（BaiShou-Next 白守，changelog 0.0.36）：架构 §3.3 补使用权重影子副本可重建性声明（R-03）；detailed-design §4 补升华产物 verbatim 拒绝护栏（R-02）；无债务登记。 |
 | 0.0.37 | 2026-08-06 | round15 全面深度审计修复批次（changelog 0.0.37）：45 项问题闭环（1 高/19 中/25 低）——M-03 三义统一、MCP 15/术语 68/CLI 25 计数联动、conversation_messages parts 列与 journal_entries episode 归因列补录、P3-19~25 债务补登 D-415~D-421、否决权「默认优先级」口径全库统一、三信号/四链路管线关系声明、意图契约第五契约说明、版本注记纪律收敛、竖切 REST 21 与 CLI 补注册等。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：全面审计 113 项闭环（3 高/64 中/46 低）——推论幽灵引用闭环（认知基础 §2.1 补五条推论）、帕累托三轴口径统一、零版本标记全库收敛；路径空间统一下划线；参数计数 224+146=370、glossary 68→69；35 份文档版本记录同步。 |

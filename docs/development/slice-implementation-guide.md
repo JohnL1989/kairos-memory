@@ -63,7 +63,7 @@ status: draft
 | 14 | `memories_fts` | 3 | FTS5 全文索引（BM25 信号） |
 | 15 | `schema_version` | 9 | schema 版本管理 |
 
-**竖切外主要表及排除理由**：升华管道 7 张（sublimation_queue / journal_entries / session_summaries / daily_reports / weekly_packs / user_profiles / sublimation_outputs——升华不在竖切）；同步与对话（sync_queue / conversation_messages——端云同步/对话持久化不在竖切）；实体图谱扩展（memory_chunks / entity_communities / skills / skill_versions / playbooks / playbook_versions / procedural_playbooks_fts / causal_links / memory_semantic_knn——分块/社区/技能/图谱遍历不在竖切）；维护与新鲜度（fact_freshness / freshness_inference_log / debounced_tasks / memory_flags / knowledge_evolution——后台维护扩展不在竖切）；权限与加工区（permission_acl / solution_branches / extinction_fossils——P3-25/知识加工区不在竖切）；密钥管理（api_keys——多 Key 轮换/吊销属平台模式，v0.1.0 轻量模式采用 `KAIROS_API_KEY` 单 Key 环境变量校验，见 [security-specification.md](../security/security-specification.md) §2.1 的 L/P 适用标注）；上下文块与查询增强（memory_blocks / memory_block_versions / query_analysis_cache / query_time_buckets——编译管线/QueryAnalyzer 不在竖切）；图谱分析（narrative_threads / compaction_snapshots / world_model_rules / prompt_dependencies）；基础设施日志（training_checkpoints / stmt_cache_metrics）；图片（image_blobs——竖切 W-04 仅记录 VAD 元数据，无图片摄取）。
+**竖切外主要表及排除理由**：升华管道 7 张（sublimation_queue / journal_entries / session_summaries / daily_reports / weekly_packs / user_profiles / sublimation_outputs——升华不在竖切）；同步与对话（sync_queue / conversation_messages——端云同步/对话持久化不在竖切）；实体图谱扩展（memory_chunks / entity_communities / skills / skill_versions / playbooks / playbook_versions / procedural_playbooks_fts / causal_links / memory_semantic_knn——分块/社区/技能/图谱遍历不在竖切）；维护与新鲜度（fact_freshness / freshness_inference_log / debounced_tasks / memory_flags / knowledge_evolution——后台维护扩展不在竖切）；权限与加工区（permission_acl / solution_branches / extinction_fossils——P3-25/知识加工区不在竖切）；密钥管理（api_keys——多 Key 轮换/吊销属平台模式，v0.1.0 轻量模式采用 `KAIROS_API_KEY_HASH` 单 Key 环境变量校验（密钥哈希口径，文件权限 600），见 [security-specification.md](../security/security-specification.md) §2.1 的 L/P 适用标注）；上下文块与查询增强（memory_blocks / memory_block_versions / query_analysis_cache / query_time_buckets——编译管线/QueryAnalyzer 不在竖切）；图谱分析（narrative_threads / compaction_snapshots / world_model_rules / prompt_dependencies）；基础设施日志（training_checkpoints / stmt_cache_metrics）；图片（image_blobs——竖切 W-04 仅记录 VAD 元数据，无图片摄取）。
 
 ---
 
@@ -126,7 +126,7 @@ status: draft
 - **API**：POST /v1/memories/search、GET /v1/memories?q=。
 - **配置**：三信号权重与候选池大小（[configuration.md](../ops/configuration.md) §6.1）。
 - **测试**：TC-R02-001~002、TC-R03-001~002。
-- **首迭代增强（0.0.16 决策,建议三）**：QueryAnalyzer（架构 §2.6.1）定位为竖切后**首迭代实现优先级**——本组件竖切交付仅原生检索;首迭代补 QueryAnalyzer 意图分类（规则优先+模型兜底,意图枚举以架构 §2.6.1 五+1 类为权威）与时间锚定（相对/绝对/事件/会话四类解析,含 fallback_query 字段）,作为查询前置增强检索意图理解。事件锚定与 fallback_query 规格见架构 §2.6.1。
+- **首迭代增强（决策）**：QueryAnalyzer（架构 §2.6.1）定位为竖切后**首迭代实现优先级**——本组件竖切交付仅原生检索;首迭代补 QueryAnalyzer 意图分类（规则优先+模型兜底,意图枚举以架构 §2.6.1 五+1 类为权威）与时间锚定（相对/绝对/事件/会话四类解析,含 fallback_query 字段）,作为查询前置增强检索意图理解。事件锚定与 fallback_query 规格见架构 §2.6.1。
 - **验收**：1 万条 SQLite 基准语义检索 P50 ≤100ms。
 
 ### 组件 4：遗忘调度器 + 潜伏势能重估（W6）
@@ -144,7 +144,7 @@ status: draft
 - **职责**：is_identity 初始赋予（见证锚定写入触发，冷启动锚点）；identity_confidence 双向更新（叙事自洽度结构性上升→提升；持续下降→宪法解释层判例降级）；见证豁免（S-10）；身份面否决权经预提交总线承载（§1.8）。
 - **架构**：§5.2 身份注册表（动态建构）、§1.8 预提交总线/身份总线监听器（三态状态机）、§8 S-10/S-16。
 - **表**：memories（is_identity / identity_confidence / identity_reviewed_at / identity_review_count）+ audit_log（identity_demotion 留痕）。
-- **配置**：KAIROS_NARRATIVE_AUDIT_CYCLE_MAX（默认 5 调度周期，>12 启动校验拒绝）、身份注册表监听器参数（[configuration.md](../ops/configuration.md) §1）。
+- **配置**：KAIROS_NARRATIVE_AUDIT_CYCLE_MAX（默认 5 调度周期，>12 启动校验拒绝）、身份注册表监听器参数（[configuration.md](../ops/configuration.md) §0.10）。
 - **测试**：S-10 单测（见证豁免不可绕过）；identity_demotion 审计可追溯。
 - **验收**：G-03 v0.1.0 判据（双向更新可观测、审计可追溯）。
 
@@ -170,7 +170,7 @@ status: draft
 - **职责**：外部校准端口（admin Key 鉴权）；降级状态机（保守静默→受限交叉验证→安全休眠，校准时延驱动）；强制冻结/解冻。
 - **架构**：§1.2 外部校准端口/强制冻结、§10.9 降级状态机、§8 S-11。
 - **API**：POST /v1/calibrate、POST /v1/freeze、POST /v1/unfreeze、POST /v1/degradation/switch。
-- **配置**：DEGRADATION_PERIOD_N/M 及滞回参数（[configuration.md](../ops/configuration.md) §1）；虚拟校准竖切内可选（默认关闭）。
+- **配置**：DEGRADATION_PERIOD_N/M 及滞回参数（[configuration.md](../ops/configuration.md) §4）；虚拟校准竖切内可选（默认关闭）。
 - **测试**：TC-CAL01-001、TC-CAL03-001、TC-CAL04-001（勘误：原 TC-C01-001 前缀已废弃，统一为 TC-CALxx-00x，见 [test-plan.md](../quality/test-plan.md) §3 命名约定）。
 - **验收**：E2E-04/05/08。
 
@@ -227,3 +227,4 @@ W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §三→§3 引用联动。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-07 存活探针端点 GET /v1/health→GET /health。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：REST 20→21（补 `POST /v1/memories/{id}/restore` 行，M-05 恢复端点）；DELETE 行 M-03 标注修正（软删除语义，M-03 显式遗忘经 CLI `kairos forget` 承载）；组件 6 补监督平面部分启用注记；CLI 全量 24→25 联动（api-spec §3 补注册）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：configuration 章节引用修正（§1→§4/§0.10）；轻量模式认证环境变量统一为 KAIROS_API_KEY_HASH；决策注记去版本号。 |

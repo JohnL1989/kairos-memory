@@ -72,7 +72,7 @@ Agent 应用
 | 错误类型 | 传播方式 | Agent 可见性 |
 |:--------|:---------|:------------|
 | 输入验证失败 | 直接返回 4xx | 可见 |
-| 存储层异常 | 返回 503（内部码 `ERR-DB-*` 仅日志记录） | 可见（重试建议，但不暴露内部错误码） |
+| 存储层异常 | 返回 503/404/409（内部码 `ERR-DB-*` 为内部运维与日志使用码，API 层不直接返回——对外映射为 503/404/409，映射规则见 [api-spec.md](../specification/api-spec.md) §7） | 可见（重试建议，但不暴露内部错误码） |
 | LLM 超时 | 返回 503（内部码 `ERR-LLM-*` 仅日志记录） | 可见（可降级为纯路径检索，但不暴露内部错误码） |
 | 安全红线违反 | 返回 403 + `ERR-SEC-*` | 可见 |
 | 层内异常（非传播） | 日志记录 + 降级触发 | 不可见（健康检查可查询） |
@@ -102,7 +102,7 @@ client = KairosClient(
 
 # 写入
 memory = client.write(
-    path="kairos://sessions/abc123/",
+    path="kairos://_session/abc123/",
     content="用户偏好：暗色主题",
     contract="ondemand",
     memory_types="semantic",
@@ -139,3 +139,4 @@ SDK 集成示例见 `src/access/mcp/bridge.py`。MCP 工具与 REST API 的等�
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：MCP 工具注册改列 kairos_* 系列（15 个）并注明 Agent Tool 与 MCP 工具两层接口不混用。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-05 同源联动（审计未列）——MCP Bridge 落点 §7.3→§7.1a。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：MCP 工具注册时机修正——「Kairos 启动时向 Hermes 注册」改「Agent 拉起 MCP 子进程时注册」（进程模型见 technology-stack §七：独立子进程 + localhost HTTP 通信）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：ERR-DB-* 返回口径按 api-spec §7 收敛；路径空间统一下划线命名。 |

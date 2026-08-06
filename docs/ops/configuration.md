@@ -17,11 +17,11 @@ status: draft
 
 > **时间单位定义**：本文中「个调度周期」为相对时间单位，1 调度周期 = `KAIROS_SCHEDULER_INTERVAL` 配置值（默认 300 秒 / 5 分钟）。所有以「调度周期」为单位的参数均以此值为基准换算。
 
-> **参数名约定**：所有配置参数通过环境变量或配置文件设置，统一使用 `KAIROS_` 前缀。本文正文列出 223 项核心参数（v0.1.0 设计阶段的参数主索引）。部署模式特有参数（如 [deployment.md](deployment.md) 中的 `KAIROS_DB_DSN`、`KAIROS_LITE_MODE`）和可靠性参数（如 LLM 超时/熔断阈值）在对应文档中定义，并已在**附录 A** 中建立全量索引（148 项）。**全库参数总数 = 223 + 148 = 371 项**，本文为唯一完整入口。（0.0.11 勘误：此前计数含 3 项 LLM 参数在正文与附录重复登记——`KAIROS_LLM_MAX_COST_PER_CALL_FEN`/`KAIROS_LLM_CIRCUIT_BREAK_FAILURES`/`KAIROS_LLM_CIRCUIT_BREAK_COOLDOWN_S` 已在附录去重（历史计数链见版本记录）；本批次新增可靠性/告警/运维参数 14 项；0.0.16 新增校准衰减 3 项/structural_value 3 项/记忆压力 4 项正文参数；0.0.22 新增噪音规则库/情绪保护 3 项正文参数。）
+> **参数名约定**：所有配置参数通过环境变量或配置文件设置，统一使用 `KAIROS_` 前缀。本文正文列出 224 项核心参数（v0.1.0 设计阶段的参数主索引）。可靠性参数（如 LLM 超时/熔断阈值）在正文 §7 定义；部署模式特有参数（如 [deployment.md](deployment.md) 中的 `KAIROS_DB_DSN`、`KAIROS_LITE_MODE`）在对应文档中定义，并已在**附录 A** 中建立全量索引（146 项）。**全库参数总数 = 224 + 146 = 370 项**，本文为唯一完整入口。（附录收录规则：正文已定义参数不入附录——`KAIROS_LLM_MAX_COST_PER_CALL_FEN`/`KAIROS_LLM_CIRCUIT_BREAK_FAILURES`/`KAIROS_LLM_CIRCUIT_BREAK_COOLDOWN_S` 曾两处重复登记，已按此规则在附录去重；历史计数链见版本记录。）
 
 > **状态声明**：以下参数为草稿完善阶段的设计值。框架实现版本锁定后可能微调。
 
-> **新增列说明（RC-08）**：自 2026-08-03 起，全部参数表表头由 `| 参数 | 默认值 | 说明 |` 扩展为 `| 参数 | 默认值 | 取值范围 | 生效时机 | 说明 |`。「取值范围」按参数语义推断（权重/阈值/概率类为 [0,1]，周期类为 ≥1 周期，布尔类为 {true,false}）；「生效时机」标注配置热加载能力（核心参数多为重启生效）。
+> **新增列说明（RC-08）**：自 2026-08-03 起，正文 §1–§10 参数表表头由 `| 参数 | 默认值 | 说明 |` 扩展为 `| 参数 | 默认值 | 取值范围 | 生效时机 | 说明 |`。「取值范围」按参数语义推断（权重/阈值/概率类为 [0,1]，周期类为 ≥1 周期，布尔类为 {true,false}）；「生效时机」标注配置热加载能力（核心参数多为重启生效）。
 
 ## 一、架构层参数（按章节）
 
@@ -115,9 +115,9 @@ status: draft
 | `KAIROS_PROVIDER_DEFAULT_ACCURACY` | 0.5 | 见说明约束 | 重启生效 | 新 Provider 参与加权前的默认历史准确率（v0.1.0 默认关闭，v1.1+ 启用加权） |
 | `KAIROS_PROVIDER_MIN_CALIBRATION_EVENTS` | 5 | ≥0 整数 | 重启生效 | 新 Provider 参与加权所需的最小校准事件数（v0.1.0 默认关闭，v1.1+ 启用加权） |
 | `KAIROS_DAILY_BUDGET_FEN` | 20000 | ≥0 整数 | 重启生效 | LLM 日预算上限（分，约 ¥200/天） |
-| `KAIROS_INGEST_NOISE_FILTER_ENABLED` | true | {true,false} | 重启生效 | 摄取噪音规则库层开关（市场理念吸收 2026-08-05，D-338）：§7.3 捕获门控后的四类纯正则噪音规则（单字/短确认、语气词、元命令、分隔符与纯标点行），命中不计轮数、不触发使用权重升温 |
-| `KAIROS_EMOTIONAL_BURST_KEYWORDS` | 见说明约束 | 见说明约束 | 重启生效 | 摄入侧情绪爆发关键词表（市场理念吸收 2026-08-05，D-337）：命中整轮进入保护通道；由外部校准维护、不自动学习扩展（保守倾向 E.5），初始表随实现批次核定 |
-| `KAIROS_EMOTIONAL_BURST_PROTECTION_ENABLED` | true | {true,false} | 重启生效 | 摄入侧情绪保护总开关（市场理念吸收 2026-08-05，D-337）：§5.2 摄入侧情绪保护组件的启用开关 |
+| `KAIROS_INGEST_NOISE_FILTER_ENABLED` | true | {true,false} | 重启生效 | 摄取噪音规则库层开关（实证参考基线，债务 D-338）：§7.3 捕获门控后的四类纯正则噪音规则（单字/短确认、语气词、元命令、分隔符与纯标点行），命中不计轮数、不触发使用权重升温 |
+| `KAIROS_EMOTIONAL_BURST_KEYWORDS` | 见说明约束 | 见说明约束 | 重启生效 | 摄入侧情绪爆发关键词表（债务 D-337）：命中整轮进入保护通道；由外部校准维护、不自动学习扩展（保守倾向 E.5），初始表随实现批次核定 |
+| `KAIROS_EMOTIONAL_BURST_PROTECTION_ENABLED` | true | {true,false} | 重启生效 | 摄入侧情绪保护总开关（债务 D-337）：§5.2 摄入侧情绪保护组件的启用开关 |
 
 #### §6.1 三信号混合检索参数（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3a）
 
@@ -131,7 +131,7 @@ status: draft
 | `KAIROS_BM25_K1_BASE` | 1.2 | 见说明约束 | 重启生效 | BM25 k1 基值（中等长度查询） |
 | `KAIROS_BM25_B_BASE` | 0.75 | 见说明约束 | 重启生效 | BM25 b 基值（中性长度归一化） |
 | `KAIROS_HYBRID_CANDIDATE_POOL_SIZE` | 100 | ≥0 整数 | 重启生效 | 语义检索召回候选池大小（ANN top-K） |
-| `KAIROS_TIME_FILTER_ENABLED` | true | {true,false} | 重启生效 | 时间过滤约束开关（市场理念吸收 2026-08-04）：§7.3a 检索管线中 as_of/事件时间窗口/纪元边界的候选域裁剪。false 时检索行为与无时间过滤完全一致（退化兼容） |
+| `KAIROS_TIME_FILTER_ENABLED` | true | {true,false} | 重启生效 | 时间过滤约束开关（实证参考基线）：§7.3a 检索管线中 as_of/事件时间窗口/纪元边界的候选域裁剪。false 时检索行为与无时间过滤完全一致（退化兼容） |
 
 #### §6.2 GSPO 聚类去重参数（[detailed-design.md](../specification/detailed-design.md) §9.1）
 
@@ -257,7 +257,7 @@ status: draft
 
 ### §8.2 [预留]
 
-### §8.3 检索与蒸馏参数（v0.1.0 新增）
+### §8.3 检索与蒸馏参数（v0.1.0 交付）
 
 > ⚠️ **废弃声明**：以下 `KAIROS_SEARCH_WEIGHT_*` 变量组出自 v0.1.0 之前的 5D 混合排序**权重框架**（语义+BM25+时序+信任+热度），已被 v0.1.0 的三信号混合检索（§6.1 `KAIROS_HYBRID_*`）替代。时序/信任/热度作为排序调制因子而非独立基础维度，权重由 RL 重排序层（[rl-weight-spec.md](../specification/rl-weight-spec.md)）管理。**新部署请勿引用本节变量，迁移说明见 §6.1。**（口径注记：此处废弃的是 5D **权重参数框架**；「5D 混合排序」作为检索管线排序调制层的沿用名仍保留，见架构 §7.3a 检索管线术语口径——两者不矛盾）
 
@@ -275,9 +275,9 @@ status: draft
 | `KAIROS_SEARCH_WEIGHT_RELIABILITY` | 0.10 | [0,1] | 重启生效 | 混合排序可信度权重 |
 | `KAIROS_SEARCH_WEIGHT_HEAT` | 0.15 | [0,1] | 重启生效 | 混合排序热度权重 |
 
-### §8.4 身份映射参数（v0.1.0 新增）
+### §8.4 身份映射参数（v0.1.0 交付）
 
-`KAIROS_IDENTITY_MAP` 为 JSON 格式，配置多平台用户 ID 到规范用户 ID 的映射：
+`KAIROS_USER_ALIASES` 为 JSON 格式，配置多平台用户 ID 到规范用户 ID 的映射（参数名统一口径见架构 §5.2 跨平台身份映射）：
 
 ```json
 {
@@ -292,6 +292,8 @@ status: draft
 仅在 `kairos://_user/` 域下生效。
 
 ### §8.5 质量指标
+
+> **表格式说明**：本表为质量指标表（非 `KAIROS_` 参数，不计入参数计数）。
 
 | 指标 | 值 | 属性 |
 |:-----|:---|:-----|
@@ -326,7 +328,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 参数 | 默认值 | 取值范围 | 生效时机 | 说明 |
 | --- | --- | --- | --- | --- |
 | `KAIROS_MCP_ENABLED` | `true` | 见说明约束 | 重启生效 | MCP Server 总开关 |
-| `KAIROS_SDK_PYTHON_MIN_VERSION` | `3.11` | 见说明约束 | 重启生效 | Python SDK 最低版本（与 [development-setup.md](../development/development-setup.md) 一致） |
+| `KAIROS_SDK_PYTHON_MIN_VERSION` | `3.10` | 见说明约束 | 重启生效 | Python SDK 最低版本（SDK 为独立交付物，版本要求与后端运行时（3.11–3.13）互不约束，见 [technology-stack.md](../development/technology-stack.md) §七） |
 | `KAIROS_SDK_TYPESCRIPT_MIN_VERSION` | `5.0` | 见说明约束 | 重启生效 | TypeScript SDK 最低版本 |
 | `KAIROS_SDK_GO_MIN_VERSION` | `1.21` | 见说明约束 | 重启生效 | Go SDK 最低版本 |
 | `KAIROS_FILE_GRAPH_MAX_TRAVERSAL_DEPTH` | `3` | 见说明约束 | 重启生效 | 多跳图遍历最大深度 |
@@ -376,12 +378,12 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | --- | --- | --- | --- | --- |
 | `KAIROS_FORGETTING_HALF_LIFE` | 69 | ≥0 整数 | 重启生效 | 遗忘半衰期（天） |
 | `KAIROS_HIGH_FORK_THRESHOLD` | 5 | ≥1 整数 | 重启生效 | structural_value L1 判定——路径高分叉节点子节点数阈值（建议二，架构 §5.2 结构性记忆守护） |
-| `KAIROS_STRUCTURAL_CONFIRMED_THRESHOLD` | 5 | ≥1 整数 | 重启生效 | structural_value L1→L2 升级的 causal 引用计数阈值（0.0.16 新增，建议二） |
-| `KAIROS_STRUCTURAL_REVIEW_INTERVAL` | 86400 | ≥3600 整数 | 重启生效 | L1→L2 周期审查间隔（秒，后台维护引擎 Deep 模式执行）（0.0.16 新增，建议二） |
-| `KAIROS_PRESSURE_WM_OCCUPANCY_THRESHOLD` | 0.8 | [0,1] | 重启生效 | 记忆压力·上下文预算压力——WM 槽位占用率阈值（0.0.16 新增，建议四，架构 §5.2 压力信号族） |
-| `KAIROS_PRESSURE_LOW_HIT_RATIO` | 0.3 | [0,1] | 重启生效 | 记忆压力·检索失败压力——24h 窗口低命中率阈值（0.0.16 新增，建议四） |
-| `KAIROS_PRESSURE_REDUNDANCY_RATIO` | 0.4 | [0,1] | 重启生效 | 记忆压力·冗余压力——GSPO 聚类命中率阈值（0.0.16 新增，建议四） |
-| `KAIROS_PRESSURE_BACKLOG_RATIO` | 2.0 | ≥0 浮点 | 重启生效 | 记忆压力·遗忘积压压力——遗忘队列待评估/24h 已评估比阈值（0.0.16 新增，建议四） |
+| `KAIROS_STRUCTURAL_CONFIRMED_THRESHOLD` | 5 | ≥1 整数 | 重启生效 | structural_value L1→L2 升级的 causal 引用计数阈值（建议二） |
+| `KAIROS_STRUCTURAL_REVIEW_INTERVAL` | 86400 | ≥3600 整数 | 重启生效 | L1→L2 周期审查间隔（秒，后台维护引擎 Deep 模式执行）（建议二） |
+| `KAIROS_PRESSURE_WM_OCCUPANCY_THRESHOLD` | 0.8 | [0,1] | 重启生效 | 记忆压力·上下文预算压力——WM 槽位占用率阈值（建议四，架构 §5.2 压力信号族） |
+| `KAIROS_PRESSURE_LOW_HIT_RATIO` | 0.3 | [0,1] | 重启生效 | 记忆压力·检索失败压力——24h 窗口低命中率阈值（建议四） |
+| `KAIROS_PRESSURE_REDUNDANCY_RATIO` | 0.4 | [0,1] | 重启生效 | 记忆压力·冗余压力——GSPO 聚类命中率阈值（建议四） |
+| `KAIROS_PRESSURE_BACKLOG_RATIO` | 2.0 | ≥0 浮点 | 重启生效 | 记忆压力·遗忘积压压力——遗忘队列待评估/24h 已评估比阈值（建议四） |
 | `KAIROS_FRESHNESS_ACTIVE_THRESHOLD` | 0.3 | 见说明约束 | 重启生效 | 活跃记忆 freshness 下限 |
 | `KAIROS_FRESHNESS_STALE_THRESHOLD` | 0.1 | 见说明约束 | 重启生效 | 归档记忆 freshness 下限 |
 | `KAIROS_DOMAIN_KEYWORDS_PATH` | `~/.kairos/domain_keywords.yaml` | 见说明约束 | 重启生效 | 领域知识库路径 |
@@ -400,6 +402,8 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 1. 安全红线（S-01~S-19）阈值不可调低
 2. 跨层三环不变量（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.3）不可被调参破坏
 3. 辞典式排序优先级链不受动态调参影响（受 CONSTITUTIONAL_LOCK_PERIOD 保护）
+
+> **设计约束注记**：「每秒调参不超过 1 次」为设计约束（无外部需求来源）——避免热调参与检索路径竞争。
 
 ---
 
@@ -420,6 +424,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_FEATURE_SUBLIMATION_PIPELINE` | OFF | — | 升华管道不启动；所有记忆保持 raw 状态 |
 | `KAIROS_FEATURE_GSPO_DEDUP` | OFF | — | GSPO 去重和 MMR 去重不执行 |
 | `KAIROS_FEATURE_ENTITY_GRAPH` | OFF | — | 实体知识图谱和社区检测不加载。三信号检索中的实体加成信号权重（α_e）重新分配给语义和 BM25 |
+| `KAIROS_FEATURE_CONNECTORS` | OFF | — | Gmail/Drive/Notion/GitHub 外部连接器同步不加载 |
 
 **实体加成 Noop 降级细节**（`ENTITY_GRAPH=OFF` 时）：`score_entity` 始终返回 0，`norm()` 对单值集返回 [0,1] 线性映射，不报错、不丢精度。三信号公式自动退化为双信号：α_s 从 0.50 升至 0.60，α_b 从 0.35 升至 0.40。
 
@@ -427,7 +432,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 **启动输出预期：** 系统启动时输出 `flags: ON/OFF, count: N/M`。证伪测试（标记 `[FALSIFICATION]`）与功能测试同套件管理，失败时核心假设标志强制关闭。
 
-### §0.10 未闭合风险缓解参数
+### §0.10 未闭合风险缓解参数（编号为历史遗留：本节位于 §11 之后）
 
 以下参数对应架构审计确认的 4 项未闭合工程风险，必须在 v0.1.0 首次实现中设定基线值并纳入启动校验。
 
@@ -441,7 +446,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 **关联风险登记**：以上参数对应的完整风险分析见 [governance/debt-collection.md](../governance/debt-collection.md) D-024~D-027。首次实现时须将 `KAIROS_NARRATIVE_AUDIT_CYCLE_MAX` 和 `KAIROS_META_EVENT_DROP_MONITOR` 纳入启动校验——未通过则阻断启动。
 
-### §0.11 核心度量代理参数
+### §0.11 核心度量代理参数（编号为历史遗留：本节位于 §11 之后）
 
 以下参数承载 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 中三项核心度量的**可操作代理定义**（D-15 方案 A）。三项度量原定义均含不可计算成分（CRI 无权重/窗口、认知完整性含不可知分母、可及性轴无数据源），此处的参数化是使其可实现的最小充分集。
 
@@ -465,18 +470,18 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 ## 附录 A：全库参数总索引（正文未收录部分）
 
-> **用途**：本文正文各节收录 223 项核心参数；全库另有 **148 项** `KAIROS_*` 参数散落在架构、规格、部署、质量等文档中定义，此前无任何集中索引。本附录建立完整映射，使「配置参数入口」名副其实。（0.0.11 勘误：原 151 项含 3 项 LLM 参数与正文 §7 重复登记，已去重；附录仅收录正文未定义的参数。计数口径：0.0.16 正文增至 220 项、0.0.22 增至 223 项。）
+> **用途**：本文正文各节收录 224 项核心参数；全库另有 **146 项** `KAIROS_*` 参数散落在架构、规格、部署、质量等文档中定义，此前无任何集中索引。本附录建立完整映射，使「配置参数入口」名副其实。（附录仅收录正文未定义的参数；计数口径：正文 224 项 + 附录 146 项 = 370 项。）
 >
-> **权威性**：默认值一栏自各参数的**定义出处**抄录，语义以出处文档为准；出处未给出默认值的标注 `—（待定义）`（共 11 项），编码启动前须补齐。
+> **权威性**：默认值一栏自各参数的**定义出处**抄录，语义以出处文档为准；出处未给出默认值的标注 `—（待定义）`（共 10 项），编码启动前须补齐。
 >
 > **维护约定**：新增 `KAIROS_*` 参数须同时登记至本文正文对应章节或本附录，二者取其一，不得只在架构文档中出现。
 
 | 参数 | 默认值 | 定义出处 |
 |:-----|:-------|:---------|
 | `KAIROS_ADMIN_IPS` | —（待定义） | `ops/deployment.md §三 环境变量` |
-| `KAIROS_AGE_DECAY_CONSTANT` | `30 天` | `specification/detailed-design.md` §3 遗忘得分（0.0.11 回填——AGE_DECAY_CONSTANT 默认 30 天） |
+| `KAIROS_AGE_DECAY_CONSTANT` | `30 天` | `specification/detailed-design.md` §3 遗忘得分（AGE_DECAY_CONSTANT 默认 30 天） |
 | `KAIROS_API_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
-| `KAIROS_API_KEY_HASH` | —（待定义） | `security-specification.md §2.1 API Key 生命周期` |
+| `KAIROS_API_KEY_HASH` | —（必填，轻量模式单 Key 校验场景；文件权限 600） | `security-specification.md §2.1 API Key 生命周期` |
 | `KAIROS_AUDIT_HMAC_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_BATCH_TRANSACTION_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_BENCHMARK_OFF_BY_ONE_SCORE` | `0.80` | `acceptance-criteria.md §文档检查` |
@@ -484,10 +489,10 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_BENCHMARK_SAME_CHAIN_SCORE` | `0.30` | `acceptance-criteria.md §文档检查` |
 | `KAIROS_BENCHMARK_TASK_SCORE_WEIGHTS` | `[0.40, 0.30, 0.20, 0.10]` | `acceptance-criteria.md §文档检查` |
 | `KAIROS_BENCHMARK_TEMPORAL_GRANULARITY` | `day` | `acceptance-criteria.md §文档检查` |
-| `KAIROS_CALIBRATION_CONFLICT_THRESHOLD` | `0.35`（cosine） | `specification/detailed-design.md` §5 校准（0.0.11 回填）；单次冲突判定阈值，与正文 `KAIROS_VIRTUAL_CALIBRATION_CONFLICT_THRESHOLD`（连续次数阈值）为同一冲突检测链的两个环节（0.0.14 注记） |
-| `KAIROS_CALIBRATION_MERGE_THRESHOLD` | `0.15`（cosine） | `specification/detailed-design.md` §5 校准（0.0.11 回填） |
-| `KAIROS_CALIBRATION_SILENT_COUNT` | `6 次` | `specification/detailed-design.md` §5 校准（0.0.11 回填） |
-| `KAIROS_CALIBRATION_TIMEOUT` | `300 秒` | `specification/detailed-design.md` §5 校准（0.0.11 回填） |
+| `KAIROS_CALIBRATION_CONFLICT_THRESHOLD` | `0.35`（cosine） | `specification/detailed-design.md` §5 校准；单次冲突判定阈值，与正文 `KAIROS_VIRTUAL_CALIBRATION_CONFLICT_THRESHOLD`（连续次数阈值）为同一冲突检测链的两个环节 |
+| `KAIROS_CALIBRATION_MERGE_THRESHOLD` | `0.15`（cosine） | `specification/detailed-design.md` §5 校准 |
+| `KAIROS_CALIBRATION_SILENT_COUNT` | `6 次` | `specification/detailed-design.md` §5 校准 |
+| `KAIROS_CALIBRATION_TIMEOUT` | `300 秒` | `specification/detailed-design.md` §5 校准 |
 | `KAIROS_CHUNK_DIFF_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_CHUNK_DIFF_MIN_SAVINGS` | `0.3` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_COMMUNITY_DETECTION_ALGORITHM` | `label_propagation` | `architecture-blueprint-v1.1.md §社区检测（Community Detection）` |
@@ -522,12 +527,11 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_DERIVED_FROM_REGENERATION_INTERVAL` | `Deep 模式日频` | `architecture-blueprint-v1.1.md §四层记忆质量层次（Four-Tier Memory Quality Hierarchy）` |
 | `KAIROS_DISTILLED_MAX_IDLE_DAYS` | `180 天` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_ENV_MAX_IDLE_DAYS` | `30 天` | `architecture-v0.1.0.md §5.2 组件` |
-| `KAIROS_EXPLORATION_BUDGET_RATIO` | `0.30`（30%） | `foundation/architecture-v0.1.0.md` §0.9 探索窗口（0.0.11 回填） |
-| `KAIROS_EXPLORATION_CLOSURE_MODE` | `fixed_window` | `foundation/architecture-v0.1.0.md` §0.9（0.0.11 回填——v0.1.0 默认固定窗口，v1.1 认知状态触发） |
+| `KAIROS_EXPLORATION_BUDGET_RATIO` | `0.30`（30%） | `foundation/architecture-v0.1.0.md` §0.9 探索窗口 |
+| `KAIROS_EXPLORATION_CLOSURE_MODE` | `fixed_window` | `foundation/architecture-v0.1.0.md` §0.9（v0.1.0 默认固定窗口，v1.1 认知状态触发） |
 | `KAIROS_EXPLORATION_GAIN_THRESHOLD` | `0.15` | `architecture-v0.1.0.md §探索窗口关闭判据` |
 | `KAIROS_EXPORT_MAX_MEMORIES` | `100000` | `specification/detailed-design.md §11.4 可移植备份格式（.kairos 协议）` |
 | `KAIROS_EXPORT_TEMP_DIR` | `/tmp/kairos-export` | `specification/detailed-design.md §11.4 可移植备份格式（.kairos 协议）` |
-| `KAIROS_FEATURE_CONNECTORS` | `OFF` | `architecture-v0.1.0.md §最小系统` |
 | `KAIROS_FLAG_CONTRADICTION_JACCARD_THRESHOLD` | `0.7` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_FLAG_CONTRADICTION_POLARITY_MODEL` | `使用 LLM 分类` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_FLAG_NEEDS_VERIFY_COOLDOWN_DAYS` | `7 天` | `architecture-v0.1.0.md §5.2 组件` |
@@ -540,9 +544,9 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_FTS5_ENABLED` | `true` | `foundation/architecture-blueprint-v1.1.md §P3-21 FTS5 全文搜索——contentless-external 模式` |
 | `KAIROS_FTS5_OPTIMIZE_INTERVAL` | `3600` | `foundation/architecture-blueprint-v1.1.md §P3-21 FTS5 全文搜索——contentless-external 模式` |
 | `KAIROS_FTS5_TOKENIZER` | `unicode61` | `foundation/architecture-blueprint-v1.1.md §P3-21 FTS5 全文搜索——contentless-external 模式` |
-| `KAIROS_FUSE_GAIN_THRESHOLD` | `0.15` | `specification/detailed-design.md` §1 融合（0.0.11 回填） |
-| `KAIROS_FUSE_SUPPRESSION_FACTOR` | `0.3` | `specification/detailed-design.md` §1 融合（0.0.11 回填） |
-| `KAIROS_IDENTITY_MAP` | 见正文 §8.4（JSON 示例） | 本文 §8.4（0.0.11 回填） |
+| `KAIROS_FUSE_GAIN_THRESHOLD` | `0.15` | `specification/detailed-design.md` §1 融合 |
+| `KAIROS_FUSE_SUPPRESSION_FACTOR` | `0.3` | `specification/detailed-design.md` §1 融合 |
+| `KAIROS_USER_ALIASES` | 见正文 §8.4（JSON 示例） | 本文 §8.4（与正文 §8.4 同一参数） |
 | `KAIROS_IMPORT_MAX_SIZE_BYTES` | `1073741824` | `specification/detailed-design.md §11.4 可移植备份格式（.kairos 协议）` |
 | `KAIROS_IMPORT_TRANSACTION_TIMEOUT` | `600` | `specification/detailed-design.md §11.4 可移植备份格式（.kairos 协议）` |
 | `KAIROS_INFERENCE_FALSE_POSITIVE_THRESHOLD` | `0.15` | `architecture-v0.1.0.md §5.2 组件` |
@@ -550,7 +554,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_INTENT_CLASSIFIER_MODEL` | `./models/intent-t5-small` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
 | `KAIROS_INTENT_CONFIDENCE_THRESHOLD` | `0.6` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
 | `KAIROS_KNN_INCREMENTAL_THRESHOLD` | `100` | `architecture-v0.1.0.md §5.2 组件` |
-| `KAIROS_KNN_K` | `10` | `foundation/architecture-v0.1.0.md` §5.2 三链路（0.0.11 回填——k 可配置，默认 10） |
+| `KAIROS_KNN_K` | `10` | `foundation/architecture-v0.1.0.md` §5.2 三链路（k 可配置，默认 10） |
 | `KAIROS_LITE_MODE` | `true` | `ops/deployment.md §三 环境变量` |
 | `KAIROS_LLM_API_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_LLM_ENDPOINT` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
@@ -613,7 +617,6 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_TIMESTAMP_BATCH_SIZE` | `32` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_TIMESTAMP_MODEL_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_TIMESTAMP_MODEL_PATH` | `./models/timestamp-t5-small` | `architecture-v0.1.0.md §5.2 组件` |
-| `KAIROS_USER_ALIASES` | `{}`（未配置不执行映射） | `foundation/architecture-v0.1.0.md` §5.2 跨平台身份映射（0.0.11 回填——JSON 格式 `{"agent_id": "canonical_user_id"}`） |
 | `KAIROS_VARIABLE_HEALING_ENABLED` | `true` | `architecture-v0.1.0.md §4.4 变量愈合（Variable Healing）` |
 | `KAIROS_VARIABLE_HEALING_HARD_FAIL` | `true——愈合失败时阻止注入` | `architecture-v0.1.0.md §4.4 变量愈合（Variable Healing）` |
 | `KAIROS_VARIABLE_HEALING_MAX_BACKFILL_CHARS` | `100` | `architecture-v0.1.0.md §4.4 变量愈合（Variable Healing）` |
@@ -646,3 +649,4 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：附录 A「来源」列 136 处硬行号引用整体废除（C-03/F-01）——改为「文档 §章节」语义引用（含权威落点核查：38 处原引用文档无定义、落点修正至 detailed-design/blueprint 等权威段；KAIROS_PATH 标注待定义）。 |
 | 0.0.34 | 2026-08-06 | 第十四轮全库深度审计修复批次（changelog 0.0.34）：`KAIROS_RETRIEVAL_LINK_WEIGHTS` 由「—（待定义）」补填默认值 `{"semantic": 0.50, "cooc": 0.20, "knn": 0.10, "causal": 0.20}`，来源列指向架构 §5.2 三链路融合与检索扩展（唯一权威）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：附录 A「待定义」计数 12→11（0.0.34 已回填 `KAIROS_RETRIEVAL_LINK_WEIGHTS`）；`KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` OFF 行为补竖切例外注记（竖切内监督平面部分启用——审计庭快照校验/审计日志比对，见 slice-implementation-guide 组件 6）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：§11 特征标志补 KAIROS_FEATURE_CONNECTORS（11→12）；KAIROS_SDK_PYTHON_MIN_VERSION 统一 3.10；身份映射参数名统一为 KAIROS_USER_ALIASES；正文 224 + 附录 A 146 = 370 计数核定；附录/§0.10 格式注记；动态调参约束注记。 |

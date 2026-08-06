@@ -34,7 +34,7 @@ status: draft
 | 常量 | UPPER_SNAKE | `MAX_PROTOCOL_COUNT = 10` |
 | 事件类型 | snake_case | `use_event`, `calibration_signal` |
 | 配置键 | UPPER_SNAKE | `KAIROS_DAILY_BUDGET_FEN`, `KAIROS_FORGETTING_SCORE_THRESHOLD` |
-| 路径键 | kebab-case（路径段） | `kairos://users/default/core/` |
+| 路径键 | kebab-case（路径段） | `kairos://_user/default/core/` |
 | 数据库列 | snake_case | `usage_count`, `is_identity` |
 | JSON 字段 | snake_case | 同 Python |
 | 异步函数 | `async def` + `_async` 后缀（仅在函数名不足以表达异步性时） | `async def retrieve_memories_async(...)` |
@@ -121,3 +121,4 @@ kairos/
 | 0.0.1 | 2026-07-31 | 开发规范：命名/项目结构/错误处理/日志/注释约定。 |
 | 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：frontmatter 与版本记录同步（第二轮全库深度审计修复批次）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：层间传播错误事件改指真实事件类型——「发送 `error_event`」改「发送 `use_event`（payload 标记错误）或按架构 §10.6 注册门禁新增事件类型」。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：路径空间统一下划线命名。 |

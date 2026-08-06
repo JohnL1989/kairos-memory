@@ -15,7 +15,7 @@ status: draft
 
 # Kairos 故障排查指南
 
-> **文档定位：** 常见问题的排查步骤和恢复命令。不包含系统设计或配置细节——部署配置见 [docs/ops/deployment.md](deployment.md)，可靠性策略见 [docs/ops/reliability.md](reliability.md)，设计约束见 [docs/foundation/architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7「安全红线」。
+> **文档定位：** 常见问题的排查步骤和恢复命令。不包含系统设计或配置细节——部署配置见 [docs/ops/deployment.md](deployment.md)，可靠性策略见 [docs/ops/reliability.md](reliability.md)，设计约束见 [docs/foundation/architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7「安全红线」。值班速查子集（启动失败/运行时异常/错误码）见 [runbook.md](runbook.md) §5。
 
 > **⚠ 草稿完善声明**：本文所有 CLI 命令（`kairos db restore`、`kairos db repair`、`kairos admin key rotate` 等）与 SQL 语句均为**设计示例**，当前无构建产物、无可执行命令。项目处于设计冻结阶段，代码尚未启动。**请勿将本文当作可执行的灾难恢复手册使用**——在代码实现前，本文的价值在于定义"应当具备哪些恢复能力"，而非"如何执行恢复"。具体命令语法在实现后可能变化，读者应关注排查思路与恢复语义而非命令文本。
 
@@ -23,17 +23,24 @@ status: draft
 
 ## 一、CLI 命令定义状态
 
-下表标注本文引用的运维命令在规格文档中的定义来源。**「无」表示该命令目前仅在本文出现，尚未在任何规格文档中定义契约**——实现前须先补齐定义，否则将成为实现盲区。
+下表标注本文引用的运维命令在规格文档中的定义来源。**「无」表示该命令未在 [api-spec.md](../specification/api-spec.md) §3 登记契约**（可能仅在本文或 runbook/security-spec 中使用）——实现前须先补齐定义，否则将成为实现盲区。
 
 | 命令 | 定义来源 | 状态 |
 |:-----|:---------|:-----|
 | `kairos db verify` | [api-spec.md](../specification/api-spec.md) §3 | 已定义 |
+| `kairos admin key rotate` | [api-spec.md](../specification/api-spec.md) §3 | 已定义 |
 | `kairos db repair` | 无 | ⚠ 待定义（灾难恢复主命令） |
 | `kairos db restore <backup_path>` | 无 | ⚠ 待定义（灾难恢复主命令） |
 | `kairos db migrate rollback` | 无 | ⚠ 待定义（灾难恢复主命令） |
-| `kairos admin key rotate` | [api-spec.md](../specification/api-spec.md) §3 | 已定义 |
+| `kairos admin key revoke <key-id>` | 无（runbook §4.2、security-spec §2.1 使用中） | ⚠ 待定义 |
+| `kairos admin key rotate --hmac` | 无（runbook §4.3 使用中） | ⚠ 待定义 |
+| `kairos audit log` | 无（runbook §6.2 使用中） | ⚠ 待定义 |
+| `kairos audit approve-forgetting <id>` | 无（runbook §6.2 使用中） | ⚠ 待定义 |
+| `kairos health --full` | 无（runbook §1.2/§2.3 使用中） | ⚠ 待定义 |
+| `kairos logs --level / --module / --since / --follow` | 无（runbook §1.3 使用中；api-spec §3 仅定义 `kairos logs --tail`） | ⚠ 待定义 |
+| `kairos config show` / `kairos config reset <param>` | 无（runbook §4.1 使用中；api-spec §3 仅定义 `kairos config set`） | ⚠ 待定义 |
 
-> 上述 3 条命令（db repair / db restore / db migrate rollback）在 [api-spec.md](../specification/api-spec.md) §3 中无定义，此缺口已在 [governance/cognitive-architecture-gap.md](../governance/cognitive-architecture-gap.md) 之外单列，须在 v0.1.0 编码启动前补齐 CLI 契约规格。
+> 上述 3 条灾难恢复主命令（db repair / db restore / db migrate rollback）在 [api-spec.md](../specification/api-spec.md) §3 中无定义，此缺口已在 [governance/cognitive-architecture-gap.md](../governance/cognitive-architecture-gap.md) 之外单列。**全部待定义命令须于编码启动前在 api-spec §3 登记契约，或从使用方文档（runbook/security-spec）移除**，否则将成为实现盲区。
 
 ---
 
@@ -56,7 +63,7 @@ status: draft
 
 > **口径**：本表为 [references/error-reference.md](../references/error-reference.md) 的运维视角镜像，**已覆盖全部 38 个已定义错误码**（此前仅收录 17 项，覆盖率 44.7%）。错误码的权威定义（含 HTTP 状态码语义与响应体结构）以 error-reference 为准；本表额外提供「排查动作」列，供值班时直接使用。
 >
-> **返回方式**：`ERR-AUTH-*`、`ERR-RATE-*`、`ERR-INPUT-*`、`ERR-DB-004/005`、`ERR-CTR-*`、`ERR-CNF-*`、`ERR-SYS-001/002` 由 HTTP API 直接返回；`ERR-DB-001/002/003`、`ERR-LLM-*`、`ERR-SUB-*`、`ERR-CAL-*`、`ERR-SEC-001`、`ERR-SYS-003/004/005` 主要出现在内部日志中，用于排查。
+> **返回方式**：`ERR-AUTH-*`、`ERR-RATE-*`、`ERR-INPUT-*`、`ERR-CTR-*`、`ERR-CNF-*`、`ERR-SEC-001`、`ERR-SYS-001/002` 由 HTTP API 直接返回；`ERR-DB-*`、`ERR-LLM-*`、`ERR-SUB-*`、`ERR-CAL-*`、`ERR-SYS-003/004/005` 为内部运维与日志使用码，API 层不直接返回——对外映射为 503/404/409（映射规则见 [api-spec.md](../specification/api-spec.md) §7），主要用于排查。
 
 | 错误码 | HTTP | 含义 | 排查动作 |
 |:------|:----:|:-----|:--------|
@@ -120,3 +127,4 @@ status: draft
 | 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：frontmatter 与版本记录同步（第二轮全库深度审计修复批次）。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §四→§4 引用联动。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：CLI 命令定义状态表修正——`kairos db verify` / `kairos admin key rotate` 改为「已定义（api-spec §3）」，0 命中声明改「3 条命令（db repair/db restore/db migrate rollback）无定义」；安全事件排查表 key rotate 行引用同步。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：CLI 命令状态表全量盘点（10 条待定义子命令）；ERR-DB-*/ERR-SEC-001 返回口径按 api-spec §7 收敛。 |

@@ -31,11 +31,13 @@ status: draft
 |:-----|:--------|:--------|:--------|
 | **安装方式** | `pip install kairos && kairos serve` | `docker compose up -d` | `docker compose -f docker-compose.full.yml up -d` |
 | **数据库** | SQLite + sqlite-vec | PostgreSQL + pgvector | PostgreSQL + pgvector |
-| **启动时间** | ~10 秒 | ~10 秒 | ~15 秒（扩展设计值——NFR 仅定义标准模式启动 ≤10s，见 [nfr-specification.md](../specification/nfr-specification.md) §三） |
+| **启动时间** | ~10 秒（扩展设计值——NFR 仅定义标准模式启动 ≤10s，见 [nfr-specification.md](../specification/nfr-specification.md) §三） | ~10 秒 | ~15 秒（扩展设计值——NFR 仅定义标准模式启动 ≤10s，见 [nfr-specification.md](../specification/nfr-specification.md) §三） |
 | **记忆容量** | 10 万条 | 100 万条 | ≥100 万条 |
 | **升华层** | 受限（空闲单线） | 可用 | 完整多线 |
 | **策略层** | 内置（使用权重衰减） | 完整激活调度 | 完整 + 探索投资 |
 | **元认知层** | — | — | 完整监测器族 |
+| **宪法主权面** | 简化（仅外部校准端口 + 必选宪法约束，架构 §0.5 内核级） | 舍弃（架构 §0.5 标准级；外部校准端口为不可裁剪最小承载） | 完整（外部校准 + 宪法修订端口 + 监督平面） |
+| **推理皮层** | — | — | 完整（架构 §0.5 全量级组成） |
 | **适用场景** | 个人开发、试用心 | 正式生产 | 全功能部署 |
 
 三种模式下 API 兼容，核心记忆操作（写入/检索）均可用。**遗忘能力注记**：遗忘调度器在竖切（v0.1.0-slice）内显式启用；完整系统形态下 `KAIROS_FEATURE_FORGETTING_ENGINE` 默认 OFF（仅基础 TTL 清理），需在配置中显式开启（见 [configuration.md](configuration.md) §11 特征标志与架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8）。差异在于元认知层监测深度（全量模式有完整监测器族）和跨层协调能力——轻量模式为独立进程，标准/全量模式支持 Docker 编排。切换只需要更改配置文件中的数据源指向和部署方式。
@@ -143,13 +145,13 @@ curl http://localhost:8010/health  # 健康检查端点
 }
 ```
 
-> **轻量模式说明**：components 中不含 `sublimation`、`calibration`、`embedding`（BGE-M3 本地推理不暴露为独立组件），`db` 使用 SQLite（无连接池指标）。**校准能力注记（0.0.14）**：轻量模式不含 calibration **组件**（不暴露为 health 独立组件），但保留外部校准端口能力（架构内核级梯度「外部校准端口不可裁剪」——校准信号接收与处理仍可用，仅不单独呈现为健康检查组件）。
+> **轻量模式说明**：components 中不含 `sublimation`、`calibration`、`embedding`（BGE-M3 本地推理不暴露为独立组件），`db` 使用 SQLite（无连接池指标）。**校准能力注记**：轻量模式不含 calibration **组件**（不暴露为 health 独立组件），但保留外部校准端口能力（架构内核级梯度「外部校准端口不可裁剪」——校准信号接收与处理仍可用，仅不单独呈现为健康检查组件）。
 
 ---
 
 ## 五、Docker 部署参考
 
-> **全量模式（docker-compose.full.yml）说明**：全量模式与标准模式的 compose 差异仅在**环境变量与特征标志**（启用完整监测器族 `KAIROS_FEATURE_META_COGNITION=true` 与探索投资，见 §一 部署模式表与架构 §0.8 特征标志），服务拓扑相同（kairos + db 双服务）。`docker-compose.full.yml` 参考骨架：复制下方 compose 文件，在 `environment` 追加 `KAIROS_FEATURE_META_COGNITION=true`（及对应的监测器族开关），并在启动命令中校验全量模式启动时间 ~15 秒（扩展设计值——NFR 仅定义标准模式启动 ≤10s，见 [nfr-specification.md](../specification/nfr-specification.md) §三；标准模式 ~10 秒）。
+> **全量模式（docker-compose.full.yml）说明**：全量模式 = 标准模式 + **全部特征标志 ON**（对应架构 §0.8 命名配置集 `kairos-full`——全部标志 ON 为唯一受支持的全量形态，见架构 §0.8「命名配置集与组合约束」）。与标准模式的 compose 差异仅在**环境变量与特征标志**（启用完整监测器族 `KAIROS_FEATURE_META_COGNITION=true` 与探索投资等，见 §一 部署模式表与架构 §0.8 特征标志），服务拓扑相同（kairos + db 双服务）。`docker-compose.full.yml` 参考骨架：复制下方 compose 文件，在 `environment` 追加 `kairos-full` 配置集所需特征标志（共 12 个标志全部置 ON，见 [configuration.md](configuration.md) §11 与架构 §0.8），并在启动命令中校验全量模式启动时间 ~15 秒（扩展设计值——NFR 仅定义标准模式启动 ≤10s，见 [nfr-specification.md](../specification/nfr-specification.md) §三；标准模式 ~10 秒）。
 
 ```yaml
 # docker-compose.yml
@@ -208,7 +210,7 @@ kairos db backup      # 手动备份
 Kairos 输出结构化 JSON 日志到 stdout（容器部署模式）；本地运行时同时写入 `~/.kairos/logs/`（按日轮转，保留 30 天）。日志格式见 [observability.md](observability.md) §二。
 
 ```json
-{"level":"info","timestamp":"2026-07-18T10:00:00Z","component":"scheduler","message":"sublimation stage 2 completed","events_processed":42}
+{"level":"info","timestamp":"2026-07-18T10:00:00Z","logger":"kairos.scheduler","message":"sublimation stage 2 completed","events_processed":42}
 ```
 
 日志级别：`debug` / `info` / `warn` / `error`。通过 `KAIROS_LOG_LEVEL` 环境变量配置（取值范围 `debug|info|warn|error`）。
@@ -271,3 +273,4 @@ kairos db migrate rollback  # 回滚数据库迁移
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：KAIROS_SEARCH_DEFAULT_LIMIT 附录登记勘误；轻量模式校准能力注记（保留外部校准端口，不暴露 health 组件）。 |
 | 0.0.17 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.17，Marvis 建议 R-2 落地）：新增 §九 进程级隔离演进路径——已隔离项（宪法解释层/监督平面）+ v0.1.0.x 候选（ME-1/2/3 分离）+ v1.1 目标（全组件容器化）+ 生产部署建议 + 降级兼容。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：全量模式启动时间 ~15 秒补「扩展设计值」注记（NFR 仅定义标准模式启动 ≤10s，§一 部署模式表与 §五 compose 说明两处）；`KAIROS_LLM_ENDPOINT` 必填口径与 `KAIROS_LLM_API_KEY` 对齐（标准/全量 ✅，轻量 ❌）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：全量模式与架构 kairos-full 配置集对齐（补宪法主权面/推理皮层维度）；日志字段统一 logger；轻量模式启动时间补扩展设计值注记。 |

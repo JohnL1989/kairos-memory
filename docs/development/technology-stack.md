@@ -75,7 +75,7 @@ status: draft
 | 静态类型 | mypy | — | 类型检查 |
 | 代码格式 | ruff | — | 格式化 + lint |
 | 可观测性（追踪） | OpenTelemetry | ≥ 1.20 | 分布式追踪与指标埋点标准；跨组件 trace/metric 统一导出（见 [observability.md](../ops/observability.md)）。**v1.1 目标引入**——v0.1.0 以日志关联追踪为主，不引入 OTel SDK |
-| 可观测性（指标） | Prometheus | ≥ 2.45 | 拉取式指标采集与告警规则；v0.1.0 经 prometheus_client 直出 `/metrics` 端点（observability 暴露协议），v1.1 引入 OpenTelemetry 后切换 exporter |
+| 可观测性（指标） | Prometheus | ≥ 2.45 | 拉取式指标采集与告警规则；v0.1.0 经 prometheus_client 直出 `/metrics` 端点（observability 暴露协议——**端点待定义**，在 api-spec §1.8 登记前为设计目标），v1.1 引入 OpenTelemetry 后切换 exporter |
 | 可观测性（可视化） | Grafana | ≥ 10.0 | 指标/追踪看板与告警面板 |
 
 ## 六、版本兼容矩阵
@@ -142,3 +142,4 @@ File Graph 是 Kairos 路径空间的图论增强层——将 `kairos://` 路径
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：版本记录补 0.0.15~0.0.18 合并占位行（2-5）。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-05 MCP Bridge 落点 §7.3→§7.1a。 |
 | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：MCP 工具集构成公式重写（C-01）——「12 规范操作直接映射」修正为「基础工具集 12（3 规范操作直接映射 + 检索/维护/治理类 9）+ 关系管理 3」。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：/metrics 端点弱化为待定义口径（与 observability 同步）。 |

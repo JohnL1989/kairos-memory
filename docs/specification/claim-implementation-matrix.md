@@ -29,26 +29,26 @@ status: draft
 
 | 编号 | 认知层声明 | 来源 | 承载版本 | 承载组件 | 验证条件 | 备注 |
 |:----|:----------|:----|:--------|:---------|:--------|:-----|
-| C-01 | 四轴正交（使用/见证/时间/认知完整性） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.1 | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.1 四轴映射 + §5 存储层 | 运行时可验证四轴度量函数输入集互不包含 | 认知完整性轴 v0.1.0 二值化，完整度量 v1.1 |
+| C-01 | 四轴正交（使用/见证/时间/认知完整性） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.1 | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.1 四轴映射 + §5 存储层 | 运行时可验证四轴度量函数输入集互不包含 | ⚠️ 认知完整性轴 v0.1.0 二值化，完整度量 v1.1 |
 | C-02 | 潜伏势能（零使用价值记忆保留依据） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.1 | v0.1.0 | §5.2 潜伏势能重估端口 + §2.2 盲区标注 | 盲区触发→潜伏势能重估→保留/归档全链路可观测 | ✅ |
 | C-03 | 多重记忆（情景/语义/程序三类 + 身份关联参数） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.2 | v0.1.0 | §5.2 内容类型编码层 | 写入时三类编码标记可追溯；`identity_relevance` 参数控制叙事特殊规则 | ✅ |
 | C-04 | 六种记忆关系（causal/independent/hierarchical/competitive/part_whole/derived_from——前四类对应认知基础四类关系，part_whole 为粒度关系、derived_from 为派生关系） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.2 | v0.1.0 | §5.2 关系索引（`memory_relations.relation_type` 枚举，见 [data-model.md](data-model.md) §1） | 按关系类型查询可返回正确结果 | ✅ 关系索引已就绪（枚举口径与 feature-list/implementation-map 统一） |
 | C-05 | 编码门控准则 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 D.6 | v0.1.0 | §6.3 摄取验证门禁 | 持久化前经使用价值置信度门控 | ✅ |
-| C-06 | 表征降级门控 | D.6 | v1.1 | — | 待实现 | v0.1.0 无反向门控 |
+| C-06 | 表征降级门控 | D.6 | v1.1 | — | 待实现 | 🔜 v0.1.0 无反向门控 |
 | C-07 | 巩固（主动离线重组） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 | v0.1.0 | §5.2 巩固子模块 + 升华管道 | 离线阶段回放/抽象萃取/情感再标记可触发 | ✅ |
 | C-08 | 遗忘（适应性优化） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 | v0.1.0 | §5.2 遗忘调度器（v0.1.0 单曲线指数衰减） | 遗忘决策基于去语境化程度×年龄（v0.1.0 为单曲线近似，完整二维遗忘曲面 v1.1，见架构 §5.2 / detailed-design §3） | ⚠️ v0.1.0 单曲线简化 |
 | C-09 | 更新（补充/修正/重构） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 更新（版本链 superseded_by）+ [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.6 三类场景（v1.1 完整） | 新信息冲突按语义相似度分类处理 | ✅ |
 | C-10 | 检索（重建本位） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 | v0.1.0 | §5.2 路径空间 + §6.2 多路径融合 | 检索结果可追溯至重建过程 | ✅ |
-| C-11 | 三类检索偏差（图式同化/来源混淆/叙事自洽化） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 | v0.1.0 | §2.2 来源混淆/图式同化/叙事连贯检测器（均预留） | 检测器预留，v0.1.0 不实现 | 三类偏差 v0.1.0 无监测覆盖 |
+| C-11 | 三类检索偏差（图式同化/来源混淆/叙事自洽化） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 | v0.1.0 | §2.2 来源混淆/图式同化/叙事连贯检测器（均预留） | 检测器预留，v0.1.0 不实现 | ⚠️ 三类偏差 v0.1.0 无监测覆盖 |
 | C-12 | 想象膨胀效应 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 | v0.1.0 | §5.2 模拟隔离区标记隔离 | 模拟产物不可未经实证转正（S-13） | ✅ |
 | C-13 | 前瞻保持 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 | v0.1.0 | §5.2 WM调度预处理器 + 前瞻保持跨层协议 | 意图保持→触发监控→激活全链路可追踪（v0.1.0 为概要/预留承载，完整闭环待 v1.1） | ⚠️ |
-| C-14 | 元记忆（熟知感/盲区感知/校准感） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.4 | v0.1.0 | §2.2 元记忆偏置监测器 | 熟知感端口/盲区标注/校准衰减监测三项齐备 | 校准感为衰减监测，非完整度量 |
-| C-15 | 内隐调制（横切属性） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.4 | v0.1.0 | §3.2 调节器 + 内隐调制共享基元（概念声明） | 偏向向量写入事件总线+可观测性规则 | 共享基元为设计声明，无组件定义 |
-| C-16 | 情感纹理 VAD（一阶维度） | D.12（情感声明）、认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.4（其他认知要素） | v0.1.0 | §5.2 情感提升通道（可选注入） | VAD 通过条件激活参与检索，非全时参与 | 受控简化（G-02），恢复条件见 G-02（全时参与 v1.1） |
+| C-14 | 元记忆（熟知感/盲区感知/校准感） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.4 | v0.1.0 | §2.2 元记忆偏置监测器 | 熟知感端口/盲区标注/校准衰减监测三项齐备 | ⚠️ 校准感为衰减监测，非完整度量 |
+| C-15 | 内隐调制（横切属性） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.4 | v0.1.0 | §3.2 调节器 + 内隐调制共享基元（概念声明） | 偏向向量写入事件总线+可观测性规则 | ⚠️ 共享基元为设计声明，无组件定义 |
+| C-16 | 情感纹理 VAD（一阶维度） | D.12（情感声明）、认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.4（其他认知要素） | v0.1.0 | §5.2 情感提升通道（可选注入） | VAD 通过条件激活参与检索，非全时参与 | ⚠️ 受控简化（G-02），恢复条件见 G-02（全时参与 v1.1） |
 | C-17 | 心境一致性回忆偏置 | D.12（情感声明） | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.2 心境一致性偏置监测器 | 检索候选集的 VAD 匹配占比超阈触发告警 | ✅ |
 | C-18 | 辞典式排序（六级链+身份面否决权） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.1 | v0.1.0 | §3.3 辞典式裁决器 | 裁决结果严格按六级链位次+身份面否决权输出 | ✅ |
 | C-19 | 排序弹性与例外预算上限 | E.3 | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.3 排列漂移审计 + E.3 审计结果三类 | 例外计数≥阈值时触发审计 | ✅ |
-| C-20 | 认知关节调整累积熵监测 | E.2 | v1.1 | — | 待实现 | v0.1.0 无累积监测 |
+| C-20 | 认知关节调整累积熵监测 | E.2 | v1.1 | — | 待实现 | 🔜 v0.1.0 无累积监测 |
 | C-21 | 价值独立性公理（好用≠真实） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.1 | v0.1.0 | §5.3 + S-14 + §5.5 差异检验 | 使用权重不可反向写回见证锚定 | ✅ |
 | C-22 | 分域真理观 | C.6 | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2.1 真理路由器（分域真理路由——原「真理模式切换协议」表述已随双轨切换模型废除，见认知基础 C.5） | 三域切换条件可判定+跨域默认项选择触发（决策 D-01） | ✅ |
 | C-23 | 操作真理↔规范真理双轨（已被否决权正交模型替代，见 cognitive-foundation §C.5） | C.5 | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 真理模式切换协议（四态，引用为废止前口径） | 事后三类+前瞻一类触发条件 | ❌ 已废弃 |
@@ -64,7 +64,7 @@ status: draft
 | C-33 | 他律性降级契约 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3 | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.9 三模式状态机 | 保守静默→受限交叉验证→安全休眠 | ✅ |
 | C-34 | 种子偏置（最小化/可复审/可替换） | B.2 | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.2 种子生命周期追踪（a-d） | 种子注入/审查/替换/主动消解全链路可审计 | ✅ |
 | C-35 | 社会性校准信任（三前置条件） | C.3 | v0.1.0 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.4 `kairos://_social/` 占位 | 三前置条件不满足时空路径保持为占位 | ✅ |
-| C-36 | 动机性遗忘 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 | v0.1.0 | §5.2 检索路径抑制器 | 定向遗忘由宪法解释层授权 | 架构为集中授权，认知层为自发策略，机制有差异 |
+| C-36 | 动机性遗忘 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.3 | v0.1.0 | §5.2 检索路径抑制器 | 定向遗忘由宪法解释层授权 | ⚠️ 架构为集中授权，认知层为自发策略，机制有差异 |
 | C-37 | WM调度预处理器（最小必要回路） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.4 | v0.1.0 | §5.2 WM调度预处理器 | 三类操作（前瞻监控/事件排序/候选裁剪）可独立运转 | ✅ |
 
 ---
@@ -116,6 +116,7 @@ C-02 潜伏势能、C-03 多重记忆、C-04 关系索引、C-05 编码门控、
 | 0.0.12 | 2026-08-04 | 门禁盲区闭环批次：决策 D-01 引用标注「决策」前缀。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：C-04 引用 data-model §一→§1（4-1 章节编号统一联动）。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：C-18/C-19/C-24 落点 §3.2→§3.3（H-01）；C-23 已废弃条目补「引用为废止前口径」注记。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：矩阵行级 ⚠️/🔜 状态标记补全（C-01/11/14/15/16/36、C-06/20）。 |
 
 ## 版本边界
 

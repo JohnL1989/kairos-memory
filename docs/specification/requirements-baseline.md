@@ -44,7 +44,7 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 | W-01 | 按路径写入记忆 | 系统运行中、认证通过 | 记忆写入 LTM，返回路径 | P0 | 写入后可被路径前缀检索到 |
 | W-02 | 指定契约写入 | 同 W-01 | 记忆按契约类型存储；常驻记忆不受遗忘调度 | P0 | 常驻记忆在 100 轮遗忘周期后仍存在 |
 | W-03 | 批量导入 | 系统运行中 | 批量记忆全部写入，失败项记录错误 | P1 | 1000 条导入 ≤30s |
-| W-04 | 多模态写入（VAD） | 同 W-01 | 情感元数据与记忆一同存储 | P0 | 检索时可按 VAD 相似度过滤 |
+| W-04 | VAD 情感元数据写入 | 同 W-01 | 情感元数据与记忆一同存储 | P0 | 检索时可按 VAD 相似度过滤 |
 | W-05 | 关系标注 | 同 W-01 | 关系索引建立 | P1 | 可按关系类型检索关联记忆 |
 | W-06 | 高信用源豁免 | 来源标记为代码库或手动输入 | 跳过验证环直接写入 item | P1 | 豁免记忆立即可用 |
 | W-07 | 敏感信息脱敏 | 内容匹配敏感模式 | 自动打标并脱敏存储 | P0 | 明文不写入持久存储 |
@@ -126,7 +126,7 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 
 ## §2 非功能需求
 
-从 [nfr-specification.md](nfr-specification.md) 整合，每条可测量。
+从 [nfr-specification.md](nfr-specification.md) 整合，每条可测量。**口径注记**：本表仅收录竖切验收相关指标子集；完整指标以 [nfr-specification.md](nfr-specification.md) 为权威。未收录类：多路径融合延迟、写入/检索吞吐、升华批处理、遗忘扫描、启动时间、资源指标（内存/CPU/磁盘）、安全指标（审计链完整性/敏感信息脱敏/API Key 轮换/LLM 日预算）。
 
 | ID | 指标 | 目标值 | 测量方法 |
 |:---|:-----|:------|:---------|
@@ -175,7 +175,7 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 | M-03 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 遗忘调度器 | `DELETE /v1/memories/{id}`（软删除） | 代码启动后补充 |
 | M-05 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 归档 | `POST /v1/memories/{id}/archive` / `POST /v1/memories/{id}/restore`（api-spec §1.5，已注册） | 代码启动后补充 |
 | F-01 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 遗忘调度器 | 自动调度 | TC-F01-001 |
-| F-02 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 潜伏势能重估 | `latent_trigger` 事件 + 手动触发 | TC-F02-001 |
+| F-02 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 潜伏势能重估 | `latent_trigger` 事件 + 手动触发（由 `POST /v1/maintenance/run` 承载，见 [api-spec.md](api-spec.md) §6.3） | TC-F02-001 |
 | F-03 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 复兴加速 | 自动（潜伏势能重估/外部校准触发，勘误：非检索触发） | TC-F03-001 |
 | CAL-01 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.2 | `POST /v1/calibrate` | TC-CAL01-001 |
 | CAL-03 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.2 | `POST /v1/freeze` | TC-CAL03-001 |
@@ -185,6 +185,16 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 | A-02 | [configuration.md](../ops/configuration.md) | `GET/PATCH /v1/config` | 代码启动后补充 |
 | A-04 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.2 种子 | `POST /v1/seeds` | 代码启动后补充 |
 | A-07 | [deployment.md](../ops/deployment.md) | CLI `kairos db migrate` | 代码启动后补充 |
+
+#### 横切项（无独立需求 ID，验收由竖切验收标准承载）
+
+| 横切项 | 设计章节 | 验收归属（[acceptance-criteria.md](../quality/acceptance-criteria.md) §〇 竖切验收标准） | 测试用例 |
+|:--------|:--------|:---------|:------------------------|
+| 事件总线 4 类（use_event / calibration_signal / degradation_switch / latent_trigger） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 事件类型原语表 | 「事件总线」行：4 类事件发布/订阅/背压/优先级可用，trace_id 可审计 | 事件集成测试 |
+| 身份注册表（构造论：初始赋予 + 叙事驱动双向更新） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 身份注册表 | 「身份构造论」行：外部校准触发 is_identity 置信度变更（升降双向），S-10 见证豁免不可绕过 | G-03 v0.1.0 判据；S-10 单测 |
+| 双副本分离（见证锚定主副本 + 使用权重影子副本） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1 双副本 | 「双副本分离」行：使用权重写回见证锚定被拒绝 | S-14 单测 |
+| 审计 HMAC 链 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.7 审计日志；HMAC 算法见 [threat-model.md](../security/threat-model.md) HMAC 审计链 | 审计事件经 CAL-05（`GET /v1/audit-log`）查询验证；「质量门禁」行 doc-audit 全绿 | E2E-06 |
+| 19 条安全红线 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §8 安全红线 | 「质量门禁」行：19 条红线逐条单测 | 19 条红线单元测试 |
 
 > 预留用例编号：W-05/W-06、R-04~R-07、M-04、SF-01~04、CAL-02/06 等核心功能对应测试用例编号（TC-W05-001~ 等）待代码启动后补充，编号规则见 [test-plan.md](../quality/test-plan.md)，补充时须与 RTM 一一对应，避免编号冲突（TC-C01 前缀已废弃）。
 
@@ -240,3 +250,4 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 | 0.0.16~0.0.23 | 2026-08-05 | （合并占位：changelog 0.0.16~0.0.23 批次无涉及本文的变更，见 [changelog.md](../governance/changelog.md) 全景） |
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：RTM R-01/R-02 设计章节列引用 §4.2→§5 路径空间/向量空间（1-03，对齐 feature-list）；M-05 端点标注改 api-spec §1.5 注册端点（2-01）；§1.8 前瞻记忆段引用改指 §3.2（1-08 联动）；RTM「arch」缩写统一为「架构」（22 行，4-04）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：RTM R-18 行版本注记清理（「0.0.14 补充 RTM 行」→「补充 RTM 行」）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：N 表补口径注记（竖切子集，完整以 nfr-specification 为权威）；RTM 补竖切横切项小节；F-02 手动触发补端点承载注记。 |

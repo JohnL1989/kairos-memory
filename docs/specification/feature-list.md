@@ -44,10 +44,10 @@ status: draft
 | W-01 | 按路径写入记忆 | 在指定路径下创建一条记忆，自动分配默认契约 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 摄取 |
 | W-02 | 指定契约写入 | 写入时显式指定契约类型（常驻/按需/环境/临时） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.1 使用契约 |
 | W-03 | 批量导入 | 从文件或管道批量导入记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 多源摄取 |
-| W-04 | 多模态写入 | 写入时附带情感 VAD 元数据 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 情感效价空间 |
+| W-04 | VAD 情感元数据写入 | 写入时附带情感 VAD 元数据 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 情感效价空间 |
 | W-05 | 关系标注 | 在记忆写入时标注关系类型（causal / independent / hierarchical / competitive / part_whole / derived_from 六种，详见 [data-model.md](data-model.md) `memory_relations` 表——`hierarchical` 对应认知基础「弱层级关系」） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 关系索引 |
 | W-06 | 高信用源豁免 | 来自代码库或用户手动输入的写入可跳过验证环 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 高信用源豁免 |
-| W-07 | 敏感信息脱敏 | 含敏感信息的写入自动打标并脱敏 | S-07 |
+| W-07 | 敏感信息脱敏 | 含敏感信息的写入自动打标并脱敏 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §8（S-07） |
 
 ## 二、记忆检索
 
@@ -152,6 +152,7 @@ status: draft
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：M-21 引用 api-spec §八→§8（4-1 章节编号统一联动）。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-05 同源联动（审计未列）——H-01 MCP Bridge 落点 §7.3→§7.1a。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：H-01 MCP 工具计数 12→15（基础工具集 12 + 关系管理 3，对齐 api-spec §6.8）；PM-02 事件总线口径与架构 §10.10 竖切统一（4 类事件，intention 事件按 §10.6 注册门禁）。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：P3-04/W-13 多模态版本档位注记（v0.1.0 子集交付）；R-21 更名四链路图谱扩展；W-04 更名 VAD 情感元数据写入；W-07 补 S-07 链接；零版本标记收敛。 |
 
 ---
 
@@ -230,7 +231,7 @@ status: draft
 | R-18 | 三信号混合检索 | 语义 + 自适应 BM25 + 实体加成三路加权融合（0.50/0.35/0.15） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3a |
 | R-19 | GSPO 聚类去重 | 同源同域高相似记忆几何均值压缩，CV>0.15 激活 | [detailed-design.md](detailed-design.md) §9.1 |
 | R-20 | MMR 去重 | GSPO 后 MMR λ=0.5 贪心去重（跨源语义冗余） | [detailed-design.md](detailed-design.md) §9.2 |
-| R-21 | 三链路图谱扩展 | Entity 共现 + Semantic kNN + Causal 链并行扩展，融合权重 0.50/0.20/0.10/0.20 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
+| R-21 | 四链路图谱扩展 | 语义 + Entity 共现 + Semantic kNN + Causal 四链并行扩展，融合权重 0.50/0.20/0.10/0.20（语义/共现/kNN/因果，架构 §5.2 检索扩展链路） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | R-22 | 编译管线敏捷检索 | 编译时注入双模检索（Fast <10ms + Deep 按需） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3d |
 | M-15 | 技能管理系统 | skills 表 + find_skills 语义搜索 + 六态生命周期 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | M-16 | MemCube 四层分化 | textual/activation/parametric/preference 四层记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
@@ -250,7 +251,7 @@ status: draft
 |:----|:-----|:-----|:------------|
 | M-19 | Flag 系统 | needs_verify（30天无演化链）+ contradiction（Jaccard>0.7+极性相反）主动告警 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | M-20 | 版本链模型 | parentMemoryId/rootMemoryId/nextVersionId/isLatest 四字段 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
-| M-21 | Saga 叙事线 | narrative_threads 表。**v0.1.0 子集（0.0.16）：创建/添加记忆/按叙事线检索/手动完结四操作（纯 DB 无 LLM），端点见 [api-spec.md](api-spec.md) §8；summarize_thread() 与自动聚合/自动完结为 v1.1 目标** | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
+| M-21 | Saga 叙事线 | narrative_threads 表。**v0.1.0 子集：创建/添加记忆/按叙事线检索/手动完结四操作（纯 DB 无 LLM），端点见 [api-spec.md](api-spec.md) §8；summarize_thread() 与自动聚合/自动完结为 v1.1 目标** | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | M-22 | Mental Model 可刷新 | DERIVED_FROM 关系追踪 + 源变化触发 re-generation | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | M-23 | 可配置 Profile Schema | 声明式 Schema + 5 预设模板 + L4 蒸馏刷新 | [detailed-design.md](detailed-design.md) §11.3 |
 | R-23 | QueryAnalyzer | 三阶段（意图5类→实体5类型→时间6种）理解层 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.1 |
@@ -262,7 +263,7 @@ status: draft
 | SF-18 | 防抖反射执行器 | 同 thread_id 新提交自动取消旧任务 + after_seconds 延迟 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.1 |
 | SF-19 | 双模式 Compaction | sliding_window 增量 + all 全量 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | SF-20 | 变量愈合 | 变量注册表 + 三策略回填 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4.4 |
-| W-13 | 资源摄取 | add_resource file/URL/sitemap/RSS + watch_interval | [api-spec.md](api-spec.md) §18.1 |
+| W-13 | 资源摄取 | add_resource file/URL/sitemap/RSS + watch_interval（**v0.1.0 交付**，与 api-spec §18.2 多模态 Part 的 v0.1.0 档位一致，见 §18.1） | [api-spec.md](api-spec.md) §18.1 |
 | W-14 | spaCy 实体提取 | 非 LLM NER 4 规则 + 150+ 过滤词 | [detailed-design.md](detailed-design.md) §9.3 |
 | W-15 | ADD-only 提取协议 | 叠加非替代，linked_memory_ids 溯源 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3g |
 | A-23 | Connectors 同步 | Gmail/Drive/Notion/GitHub webhook + 轮询兜底 | [detailed-design.md](detailed-design.md) §11.2 |
@@ -304,7 +305,7 @@ status: draft
 | P3-01 | 实体抽取双策略 | LLM 优先 JSON + 关键字降级（前缀词典 Trie + spaCy） | [detailed-design.md](detailed-design.md) §9.4 |
 | P3-02 | .kairos 备份协议 | 自包含 ZIP（manifest + NDJSON + .npy 向量 + SHA-256）三级冲突 | [detailed-design.md](detailed-design.md) §11.4 |
 | P3-03 | 一致性检查 | 8 维检查（C1-C8），Light/Deep/On-demand 三模式 | [detailed-design.md](detailed-design.md) §11.5 |
-| P3-04 | 多模态 Part 接口 | TextPart/ImagePart/ToolPart 统一 Schema | [api-spec.md](api-spec.md) §18.2 |
+| P3-04 | 多模态 Part 接口 | TextPart/ImagePart/ToolPart 统一 Schema（**v0.1.0 子集交付**：文本/图片 data URI/URL/工具 Part，见 api-spec §18.2；音频/文件等扩展 Part 为 P3 长期储备） | [api-spec.md](api-spec.md) §18.2 |
 | P3-05 | 断点续训 | 检查点持久化 + 指数退避重试 + 7 参数 | [detailed-design.md](detailed-design.md) §10.5 |
 | P3-06 | 用户画像性能基准 | P50≤50ms/P99≤200ms，LRU 缓存+预热降级 | [detailed-design.md](detailed-design.md) §10.6 |
 | P3-07 | 三 SDK 战略 | MCP + Python/TS/Go 三语言 | [technology-stack.md](../development/technology-stack.md) §七 |

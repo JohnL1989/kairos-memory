@@ -34,7 +34,7 @@ status: draft
 | 6 | **检索 (Retrieval)** | 按关键词、时间、意图查找记忆——支持精确匹配和模糊语义搜索 | `POST /v1/memories/search` | 稳定 |
 | 7 | **Saga 叙事线 (Narrative Thread)** | 手动整理的故事线——"关于项目 A 架构演进的完整叙事" | `POST /v1/narrative/threads` | v0.1.0 子集 |
 | 8 | **健康检查 (Health)** | 系统体检报告——各组件的健康状态与运行指标 | `GET /v1/health/detail` | 稳定 |
-| 9 | **校准状态 (Calibration Status)** | 系统"自判模式"指示灯——告诉用户系统多久没收到校准反馈 | `GET /v1/health/calibration`、检索响应 `meta.calibration_status` | 0.0.16 新增 |
+| 9 | **校准状态 (Calibration Status)** | 系统"自判模式"指示灯——告诉用户系统多久没收到校准反馈 | `GET /v1/health/calibration`、检索响应 `meta.calibration_status` | 稳定 |
 | 10 | **审计 (Audit)** | 系统的黑匣子——所有关键操作的留痕记录,可验证完整性 | `kairos audit verify-chain` | 稳定 |
 
 ## L2：开发者必知概念（理解代码结构必需）
@@ -53,7 +53,7 @@ status: draft
 | 8 | **注意力调度器 (Attention Scheduler)** | 全局资源分配器——编码、巩固、检索三环节竞争注意力预算,检索优先级最高 | `scheduler/attention` | 逻辑独立、不物理驻留任何功能层 |
 | 9 | **三信号混合检索 (Hybrid Search)** | 三种"找法"加权融合——语义向量+BM25 关键词+实体加成 | `storage/hybrid_search.py` | 权重和恒为 1(0.50/0.35/0.15)；三信号为候选域内融合权重（架构 §7.3a），检索扩展链路权重为四链路 0.50/0.20/0.10/0.20（架构 §5.2）——两套权重作用于检索管线不同阶段 |
 | 10 | **结构性记忆 (Structural Memory)** | 推理空间的"承重墙"——反例锚点、死胡同路径,拆了会塌 | `storage/structure_guard` | structural_value 0/1/2 三级保护 |
-| 11 | **记忆压力 (Memory Pressure)** | 系统的"拥挤感"——WM 快满了、遗忘积压了,主动提醒该减压 | `meta/pressure_monitor` | 四级指标+三级减压动作(0.0.16) |
+| 11 | **记忆压力 (Memory Pressure)** | 系统的"拥挤感"——WM 快满了、遗忘积压了,主动提醒该减压 | `meta/pressure_monitor` | 四级指标+三级减压动作 |
 | 12 | **事件总线 (Event Bus)** | 系统内部的"邮局"——各层之间收发标准格式消息 | `bus/event_bus` | 10 类事件枚举,新增须经审计庭门禁 |
 
 ## L3：设计文档概念（架构/认知层精确术语）
@@ -105,7 +105,10 @@ graph TD
 
 ## 版本记录
 
+> 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
+
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
 | 0.0.1 | 2026-08-05 | 概念分级速查表（0.0.16 批次,建议六落地）：L1 10 项 / L2 12 项 / L3 12 项,概念依赖图 Mermaid + "如果只读三页"速览路径。术语权威为 glossary。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：L1 四类契约英文名对齐 glossary 权威枚举（permanent/ondemand/environmental/temporary）；三信号混合检索权重补注两套权重口径（§7.3a 候选域内 / §5.2 检索扩展链路）；glossary 权威条数 57→68。 |
+| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：零版本标记收敛（稳定性列枚举化）；版本记录补标准引导块。 |

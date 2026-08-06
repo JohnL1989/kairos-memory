@@ -35,7 +35,7 @@ dimensions:
     missing: ["rhythm_memory", "temporal_discounting", "execution_flow_structure"]
     recovery_debt: "D-301"        # 逻辑-因果轴完整落地(v1.1)
   cognitive_integrity:
-    carrier: "semiquant_reduction"  # 0.0.16 起: 布尔 is_structure → structural_value 0/1/2 半定量
+    carrier: "semiquant_reduction"  # 布尔 is_structure → structural_value 0/1/2 半定量
     compression_ratio: 1.0
     covered: ["structural_value(0/1/2)", "is_structure_boolean"]
     missing: ["anti_example_coverage", "dead_end_density", "connectivity"]
