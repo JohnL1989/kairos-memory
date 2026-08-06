@@ -473,154 +473,154 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 | 参数 | 默认值 | 定义出处 |
 |:-----|:-------|:---------|
-| `KAIROS_ADMIN_IPS` | —（待定义） | `ops/deployment.md:76` |
+| `KAIROS_ADMIN_IPS` | —（待定义） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_AGE_DECAY_CONSTANT` | `30 天` | `specification/detailed-design.md` §3 遗忘得分（0.0.11 回填——AGE_DECAY_CONSTANT 默认 30 天） |
-| `KAIROS_API_KEY` | —（必填，无默认值） | `ops/deployment.md:70` |
-| `KAIROS_API_KEY_HASH` | —（待定义） | `security/security-specification.md:58` |
-| `KAIROS_AUDIT_HMAC_KEY` | —（必填，无默认值） | `ops/deployment.md:73` |
-| `KAIROS_BATCH_TRANSACTION_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:1891` |
-| `KAIROS_BENCHMARK_OFF_BY_ONE_SCORE` | `0.80` | `quality/acceptance-criteria.md:145` |
-| `KAIROS_BENCHMARK_OFF_BY_TWO_SCORE` | `0.50` | `quality/acceptance-criteria.md:146` |
-| `KAIROS_BENCHMARK_SAME_CHAIN_SCORE` | `0.30` | `quality/acceptance-criteria.md:147` |
-| `KAIROS_BENCHMARK_TASK_SCORE_WEIGHTS` | `[0.40, 0.30, 0.20, 0.10]` | `quality/acceptance-criteria.md:148` |
-| `KAIROS_BENCHMARK_TEMPORAL_GRANULARITY` | `day` | `quality/acceptance-criteria.md:144` |
+| `KAIROS_API_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
+| `KAIROS_API_KEY_HASH` | —（待定义） | `security-specification.md §2.1 API Key 生命周期` |
+| `KAIROS_AUDIT_HMAC_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
+| `KAIROS_BATCH_TRANSACTION_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_BENCHMARK_OFF_BY_ONE_SCORE` | `0.80` | `acceptance-criteria.md §文档检查` |
+| `KAIROS_BENCHMARK_OFF_BY_TWO_SCORE` | `0.50` | `acceptance-criteria.md §文档检查` |
+| `KAIROS_BENCHMARK_SAME_CHAIN_SCORE` | `0.30` | `acceptance-criteria.md §文档检查` |
+| `KAIROS_BENCHMARK_TASK_SCORE_WEIGHTS` | `[0.40, 0.30, 0.20, 0.10]` | `acceptance-criteria.md §文档检查` |
+| `KAIROS_BENCHMARK_TEMPORAL_GRANULARITY` | `day` | `acceptance-criteria.md §文档检查` |
 | `KAIROS_CALIBRATION_CONFLICT_THRESHOLD` | `0.35`（cosine） | `specification/detailed-design.md` §5 校准（0.0.11 回填）；单次冲突判定阈值，与正文 `KAIROS_VIRTUAL_CALIBRATION_CONFLICT_THRESHOLD`（连续次数阈值）为同一冲突检测链的两个环节（0.0.14 注记） |
 | `KAIROS_CALIBRATION_MERGE_THRESHOLD` | `0.15`（cosine） | `specification/detailed-design.md` §5 校准（0.0.11 回填） |
 | `KAIROS_CALIBRATION_SILENT_COUNT` | `6 次` | `specification/detailed-design.md` §5 校准（0.0.11 回填） |
 | `KAIROS_CALIBRATION_TIMEOUT` | `300 秒` | `specification/detailed-design.md` §5 校准（0.0.11 回填） |
-| `KAIROS_CHUNK_DIFF_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:1924` |
-| `KAIROS_CHUNK_DIFF_MIN_SAVINGS` | `0.3` | `foundation/architecture-v0.1.0.md:1924` |
-| `KAIROS_COMMUNITY_DETECTION_ALGORITHM` | `label_propagation` | `foundation/architecture-blueprint-v1.1.md:417` |
-| `KAIROS_COMMUNITY_DETECTION_ENABLED` | `true` | `foundation/architecture-blueprint-v1.1.md:417` |
-| `KAIROS_COMMUNITY_MIN_SIZE` | `3` | `foundation/architecture-blueprint-v1.1.md:417` |
-| `KAIROS_COMPACTION_ALL_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:2132` |
-| `KAIROS_COMPACTION_BATCH_SIZE` | `100` | `foundation/architecture-v0.1.0.md:2092` |
-| `KAIROS_COMPACTION_FULL_THRESHOLD` | `100,000` | `foundation/architecture-v0.1.0.md:2097` |
-| `KAIROS_COMPACTION_KEEP_RECENT` | `5` | `foundation/architecture-v0.1.0.md:2090` |
-| `KAIROS_COMPACTION_SLIDING_WINDOW_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:2131` |
-| `KAIROS_COMPACTION_SUPERSEDED_RATIO` | `0.3` | `foundation/architecture-v0.1.0.md:2098` |
-| `KAIROS_CONNECTORS_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:2416` |
-| `KAIROS_CONNECTORS_MAX_FAILURES` | `5` | `foundation/architecture-v0.1.0.md:2419` |
-| `KAIROS_CONNECTORS_MAX_RETRIES` | `3` | `foundation/architecture-v0.1.0.md:2418` |
-| `KAIROS_CONNECTORS_POLL_MIN_INTERVAL` | `60` | `foundation/architecture-v0.1.0.md:2420` |
-| `KAIROS_CONNECTORS_WEBHOOK_PORT` | `8443` | `foundation/architecture-v0.1.0.md:2417` |
-| `KAIROS_CONSISTENCY_AUTO_FIX_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:2727` |
-| `KAIROS_CONSISTENCY_DEEP_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:2726` |
-| `KAIROS_CONSISTENCY_HASH_VERIFY_SAMPLE_RATE` | `0.05` | `foundation/architecture-v0.1.0.md:2729` |
-| `KAIROS_CONSISTENCY_INDEX_FRAG_THRESHOLD` | `0.3` | `foundation/architecture-v0.1.0.md:2728` |
-| `KAIROS_CONSISTENCY_LIGHT_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:2725` |
-| `KAIROS_CONSISTENCY_MAX_FIX_PER_CYCLE` | `1000` | `foundation/architecture-v0.1.0.md:2730` |
-| `KAIROS_CORE_LIMIT_BYTES` | `25KB` | `ops/deployment.md:79` |
-| `KAIROS_CORE_LIMIT_LINES` | `200` | `ops/deployment.md:80` |
-| `KAIROS_DB_DSN` | `sqlite:///$HOME/.kairos/kairos.db`（轻量模式，与 backup/restore 路径一致） | `ops/deployment.md:66` |
-| `KAIROS_DB_PASSWORD` | —（待定义） | `ops/deployment.md:69` |
-| `KAIROS_DEBOUNCE_DEFAULT_AFTER_SECONDS` | `3 秒` | `foundation/architecture-v0.1.0.md:1091` |
-| `KAIROS_DEBOUNCE_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:1090` |
-| `KAIROS_DEBOUNCE_MAX_CHAIN_CANCELS` | `5，触发告警阈值` | `foundation/architecture-v0.1.0.md:1092` |
-| `KAIROS_DERIVED_FROM_MIN_STRENGTH` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:316` |
-| `KAIROS_DERIVED_FROM_MIN_VALID_SOURCES_RATIO` | `0.5，有效源低于此比例触发降级` | `foundation/architecture-blueprint-v1.1.md:318` |
-| `KAIROS_DERIVED_FROM_REGENERATION_INTERVAL` | `Deep 模式日频` | `foundation/architecture-blueprint-v1.1.md:317` |
-| `KAIROS_DISTILLED_MAX_IDLE_DAYS` | `180 天` | `foundation/architecture-v0.1.0.md:1796` |
-| `KAIROS_ENV_MAX_IDLE_DAYS` | `30 天` | `foundation/architecture-v0.1.0.md:1794` |
+| `KAIROS_CHUNK_DIFF_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_CHUNK_DIFF_MIN_SAVINGS` | `0.3` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_COMMUNITY_DETECTION_ALGORITHM` | `label_propagation` | `architecture-blueprint-v1.1.md §社区检测（Community Detection）` |
+| `KAIROS_COMMUNITY_DETECTION_ENABLED` | `true` | `architecture-blueprint-v1.1.md §社区检测（Community Detection）` |
+| `KAIROS_COMMUNITY_MIN_SIZE` | `3` | `architecture-blueprint-v1.1.md §社区检测（Community Detection）` |
+| `KAIROS_COMPACTION_ALL_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_COMPACTION_BATCH_SIZE` | `100` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_COMPACTION_FULL_THRESHOLD` | `100,000` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_COMPACTION_KEEP_RECENT` | `5` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_COMPACTION_SLIDING_WINDOW_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_COMPACTION_SUPERSEDED_RATIO` | `0.3` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_CONNECTORS_ENABLED` | `true` | `specification/detailed-design.md §11.2 Connectors 同步模式（Webhook 式自动同步）` |
+| `KAIROS_CONNECTORS_MAX_FAILURES` | `5` | `specification/detailed-design.md §11.2 Connectors 同步模式（Webhook 式自动同步）` |
+| `KAIROS_CONNECTORS_MAX_RETRIES` | `3` | `specification/detailed-design.md §11.2 Connectors 同步模式（Webhook 式自动同步）` |
+| `KAIROS_CONNECTORS_POLL_MIN_INTERVAL` | `60` | `specification/detailed-design.md §11.2 Connectors 同步模式（Webhook 式自动同步）` |
+| `KAIROS_CONNECTORS_WEBHOOK_PORT` | `8443` | `specification/detailed-design.md §11.2 Connectors 同步模式（Webhook 式自动同步）` |
+| `KAIROS_CONSISTENCY_AUTO_FIX_ENABLED` | `true` | `specification/detailed-design.md §11.5 文件系统-向量索引一致性检查` |
+| `KAIROS_CONSISTENCY_DEEP_ENABLED` | `true` | `specification/detailed-design.md §11.5 文件系统-向量索引一致性检查` |
+| `KAIROS_CONSISTENCY_HASH_VERIFY_SAMPLE_RATE` | `0.05` | `specification/detailed-design.md §11.5 文件系统-向量索引一致性检查` |
+| `KAIROS_CONSISTENCY_INDEX_FRAG_THRESHOLD` | `0.3` | `specification/detailed-design.md §11.5 文件系统-向量索引一致性检查` |
+| `KAIROS_CONSISTENCY_LIGHT_ENABLED` | `true` | `specification/detailed-design.md §11.5 文件系统-向量索引一致性检查` |
+| `KAIROS_CONSISTENCY_MAX_FIX_PER_CYCLE` | `1000` | `specification/detailed-design.md §11.5 文件系统-向量索引一致性检查` |
+| `KAIROS_CORE_LIMIT_BYTES` | `25KB` | `ops/deployment.md §三 环境变量` |
+| `KAIROS_CORE_LIMIT_LINES` | `200` | `ops/deployment.md §三 环境变量` |
+| `KAIROS_DB_DSN` | `sqlite:///$HOME/.kairos/kairos.db`（轻量模式，与 backup/restore 路径一致） | `ops/deployment.md §三 环境变量` |
+| `KAIROS_DB_PASSWORD` | —（待定义） | `ops/deployment.md §三 环境变量` |
+| `KAIROS_DEBOUNCE_DEFAULT_AFTER_SECONDS` | `3 秒` | `architecture-v0.1.0.md §2.6.3 防抖反射执行器（Debounced Reflex Executor）` |
+| `KAIROS_DEBOUNCE_ENABLED` | `true` | `architecture-v0.1.0.md §2.6.3 防抖反射执行器（Debounced Reflex Executor）` |
+| `KAIROS_DEBOUNCE_MAX_CHAIN_CANCELS` | `5，触发告警阈值` | `architecture-v0.1.0.md §2.6.3 防抖反射执行器（Debounced Reflex Executor）` |
+| `KAIROS_DERIVED_FROM_MIN_STRENGTH` | —（待定义） | `architecture-blueprint-v1.1.md §四层记忆质量层次（Four-Tier Memory Quality Hierarchy）` |
+| `KAIROS_DERIVED_FROM_MIN_VALID_SOURCES_RATIO` | `0.5，有效源低于此比例触发降级` | `architecture-blueprint-v1.1.md §四层记忆质量层次（Four-Tier Memory Quality Hierarchy）` |
+| `KAIROS_DERIVED_FROM_REGENERATION_INTERVAL` | `Deep 模式日频` | `architecture-blueprint-v1.1.md §四层记忆质量层次（Four-Tier Memory Quality Hierarchy）` |
+| `KAIROS_DISTILLED_MAX_IDLE_DAYS` | `180 天` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_ENV_MAX_IDLE_DAYS` | `30 天` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_EXPLORATION_BUDGET_RATIO` | `0.30`（30%） | `foundation/architecture-v0.1.0.md` §0.9 探索窗口（0.0.11 回填） |
 | `KAIROS_EXPLORATION_CLOSURE_MODE` | `fixed_window` | `foundation/architecture-v0.1.0.md` §0.9（0.0.11 回填——v0.1.0 默认固定窗口，v1.1 认知状态触发） |
-| `KAIROS_EXPLORATION_GAIN_THRESHOLD` | `0.15` | `foundation/architecture-v0.1.0.md:526` |
-| `KAIROS_EXPORT_MAX_MEMORIES` | `100000` | `foundation/architecture-v0.1.0.md:2655` |
-| `KAIROS_EXPORT_TEMP_DIR` | `/tmp/kairos-export` | `foundation/architecture-v0.1.0.md:2658` |
-| `KAIROS_FEATURE_CONNECTORS` | `OFF` | `foundation/architecture-v0.1.0.md:477` |
-| `KAIROS_FLAG_CONTRADICTION_JACCARD_THRESHOLD` | `0.7` | `foundation/architecture-v0.1.0.md:2169` |
-| `KAIROS_FLAG_CONTRADICTION_POLARITY_MODEL` | `使用 LLM 分类` | `foundation/architecture-v0.1.0.md:2170` |
-| `KAIROS_FLAG_NEEDS_VERIFY_COOLDOWN_DAYS` | `7 天` | `foundation/architecture-v0.1.0.md:2154` |
-| `KAIROS_FLAG_NEEDS_VERIFY_DAYS` | `30 天` | `foundation/architecture-v0.1.0.md:2153` |
-| `KAIROS_FLAG_NEEDS_VERIFY_WEIGHT_PENALTY` | `0.7` | `foundation/architecture-v0.1.0.md:2153` |
-| `KAIROS_FORGETAFTER_CASCADE_DELETE` | `true` | `foundation/architecture-v0.1.0.md:1759` |
-| `KAIROS_FORGETAFTER_SCAN_INTERVAL` | `3600 秒，即 Light 模式周期` | `foundation/architecture-v0.1.0.md:1758` |
-| `KAIROS_FRESHNESS_INFERENCE_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:1793` |
-| `KAIROS_FTS5_CHINESE_SEGMENTATION` | `true` | `foundation/architecture-v0.1.0.md:2941` |
-| `KAIROS_FTS5_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:2939` |
-| `KAIROS_FTS5_OPTIMIZE_INTERVAL` | `3600` | `foundation/architecture-v0.1.0.md:2942` |
-| `KAIROS_FTS5_TOKENIZER` | `unicode61` | `foundation/architecture-v0.1.0.md:2940` |
+| `KAIROS_EXPLORATION_GAIN_THRESHOLD` | `0.15` | `architecture-v0.1.0.md §探索窗口关闭判据` |
+| `KAIROS_EXPORT_MAX_MEMORIES` | `100000` | `specification/detailed-design.md §11.4 可移植备份格式（.kairos 协议）` |
+| `KAIROS_EXPORT_TEMP_DIR` | `/tmp/kairos-export` | `specification/detailed-design.md §11.4 可移植备份格式（.kairos 协议）` |
+| `KAIROS_FEATURE_CONNECTORS` | `OFF` | `architecture-v0.1.0.md §最小系统` |
+| `KAIROS_FLAG_CONTRADICTION_JACCARD_THRESHOLD` | `0.7` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_FLAG_CONTRADICTION_POLARITY_MODEL` | `使用 LLM 分类` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_FLAG_NEEDS_VERIFY_COOLDOWN_DAYS` | `7 天` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_FLAG_NEEDS_VERIFY_DAYS` | `30 天` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_FLAG_NEEDS_VERIFY_WEIGHT_PENALTY` | `0.7` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_FORGETAFTER_CASCADE_DELETE` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_FORGETAFTER_SCAN_INTERVAL` | `3600 秒，即 Light 模式周期` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_FRESHNESS_INFERENCE_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_FTS5_CHINESE_SEGMENTATION` | `true` | `foundation/architecture-blueprint-v1.1.md §P3-21 FTS5 全文搜索——contentless-external 模式` |
+| `KAIROS_FTS5_ENABLED` | `true` | `foundation/architecture-blueprint-v1.1.md §P3-21 FTS5 全文搜索——contentless-external 模式` |
+| `KAIROS_FTS5_OPTIMIZE_INTERVAL` | `3600` | `foundation/architecture-blueprint-v1.1.md §P3-21 FTS5 全文搜索——contentless-external 模式` |
+| `KAIROS_FTS5_TOKENIZER` | `unicode61` | `foundation/architecture-blueprint-v1.1.md §P3-21 FTS5 全文搜索——contentless-external 模式` |
 | `KAIROS_FUSE_GAIN_THRESHOLD` | `0.15` | `specification/detailed-design.md` §1 融合（0.0.11 回填） |
 | `KAIROS_FUSE_SUPPRESSION_FACTOR` | `0.3` | `specification/detailed-design.md` §1 融合（0.0.11 回填） |
 | `KAIROS_IDENTITY_MAP` | 见正文 §8.4（JSON 示例） | 本文 §8.4（0.0.11 回填） |
-| `KAIROS_IMPORT_MAX_SIZE_BYTES` | `1073741824` | `foundation/architecture-v0.1.0.md:2656` |
-| `KAIROS_IMPORT_TRANSACTION_TIMEOUT` | `600` | `foundation/architecture-v0.1.0.md:2657` |
-| `KAIROS_INFERENCE_FALSE_POSITIVE_THRESHOLD` | `0.15` | `foundation/architecture-v0.1.0.md:1798` |
-| `KAIROS_INFERENCE_MULTIPLIER` | `1.5` | `foundation/architecture-v0.1.0.md:1797` |
-| `KAIROS_INTENT_CLASSIFIER_MODEL` | `./models/intent-t5-small` | `foundation/architecture-v0.1.0.md:1014` |
-| `KAIROS_INTENT_CONFIDENCE_THRESHOLD` | `0.6` | `foundation/architecture-v0.1.0.md:1015` |
-| `KAIROS_KNN_INCREMENTAL_THRESHOLD` | `100` | `foundation/architecture-v0.1.0.md:2201` |
+| `KAIROS_IMPORT_MAX_SIZE_BYTES` | `1073741824` | `specification/detailed-design.md §11.4 可移植备份格式（.kairos 协议）` |
+| `KAIROS_IMPORT_TRANSACTION_TIMEOUT` | `600` | `specification/detailed-design.md §11.4 可移植备份格式（.kairos 协议）` |
+| `KAIROS_INFERENCE_FALSE_POSITIVE_THRESHOLD` | `0.15` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_INFERENCE_MULTIPLIER` | `1.5` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_INTENT_CLASSIFIER_MODEL` | `./models/intent-t5-small` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
+| `KAIROS_INTENT_CONFIDENCE_THRESHOLD` | `0.6` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
+| `KAIROS_KNN_INCREMENTAL_THRESHOLD` | `100` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_KNN_K` | `10` | `foundation/architecture-v0.1.0.md` §5.2 三链路（0.0.11 回填——k 可配置，默认 10） |
-| `KAIROS_LITE_MODE` | `true` | `ops/deployment.md:68` |
-| `KAIROS_LLM_API_KEY` | —（必填，无默认值） | `ops/deployment.md:74` |
-| `KAIROS_LLM_ENDPOINT` | —（必填，无默认值） | `ops/deployment.md:75` |
-| `KAIROS_LOG_LEVEL` | `info` | `ops/deployment.md:67` |
-| `KAIROS_MEMORY_VERSIONING_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:1933` |
-| `KAIROS_MEMORY_VERSION_LIMIT` | `50` | `foundation/architecture-v0.1.0.md:1933` |
-| `KAIROS_NARRATIVE_COHERENCE_ALERT_THRESHOLD` | `0.4` | `foundation/architecture-v0.1.0.md:2079` |
-| `KAIROS_NARRATIVE_COMPLETION_IDLE_DAYS` | `90 天` | `foundation/architecture-v0.1.0.md:2071` |
-| `KAIROS_NARRATIVE_MAX_MEMORIES_PER_THREAD` | `100` | `foundation/architecture-v0.1.0.md:2077` |
-| `KAIROS_NARRATIVE_THREADS_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:2076` |
-| `KAIROS_ONDEMAND_MAX_IDLE_DAYS` | `90 天` | `foundation/architecture-v0.1.0.md:1795` |
-| `KAIROS_PATH` | —（待定义） | `foundation/architecture-v0.1.0.md:3647` |
-| `KAIROS_PLAYBOOK_NEGATIVE_THRESHOLD` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:155` |
-| `KAIROS_PLAYBOOK_PROMOTION_THRESHOLD` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:154` |
-| `KAIROS_PROFILE_CONFIDENCE_THRESHOLD` | `0.3` | `foundation/architecture-v0.1.0.md:2501` |
-| `KAIROS_PROFILE_MAX_FIELDS` | `30` | `foundation/architecture-v0.1.0.md:2503` |
-| `KAIROS_PROFILE_REFRESH_INTERVAL_HOURS` | `24` | `foundation/architecture-v0.1.0.md:2502` |
-| `KAIROS_PROFILE_SCHEMA_ID` | `general-v1` | `foundation/architecture-v0.1.0.md:2500` |
-| `KAIROS_PROMPT_DEPENDENCY_STRATEGY` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:628` |
-| `KAIROS_QUERY_ANALYSIS_CACHE_TTL` | `300 秒` | `foundation/architecture-v0.1.0.md:1016` |
-| `KAIROS_QUERY_ANALYZER_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:1013` |
-| `KAIROS_RETRIEVAL_LINK_WEIGHTS` | —（待定义） | `foundation/architecture-v0.1.0.md:2232` |
-| `KAIROS_SALT` | —（必填，无默认值） | `ops/deployment.md:71` |
-| `KAIROS_SCHEDULER_INTERVAL` | `300s` | `ops/deployment.md:77` |
-| `KAIROS_SCHEMA_STRICT_MODE` | `true` | `foundation/architecture-v0.1.0.md:2985` |
-| `KAIROS_SCHEMA_VERSION` | `编译时常量` | `foundation/architecture-v0.1.0.md:2984` |
-| `KAIROS_SEARCH_DEFAULT_LIMIT` | `5` | `ops/deployment.md:81` |
-| `KAIROS_SECRET_KEY` | —（必填，无默认值） | `ops/deployment.md:72` |
-| `KAIROS_SEED_PATH` | `~/.kairos/seeds/` | `user/user-guide.md:192` |
-| `KAIROS_SKILL_ARCHIVE_DAYS` | `180 天` | `foundation/architecture-blueprint-v1.1.md:221` |
-| `KAIROS_SKILL_DEPRECATION_INACTIVE_DAYS` | `90 天` | `foundation/architecture-blueprint-v1.1.md:219` |
-| `KAIROS_SKILL_EXPERIMENTAL_MAX_AGE` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:217` |
-| `KAIROS_SKILL_PROMOTION_MIN_CONTEXTS` | `2` | `foundation/architecture-blueprint-v1.1.md:174` |
-| `KAIROS_SKILL_PROMOTION_MIN_RATE` | `0.7` | `foundation/architecture-blueprint-v1.1.md:215` |
-| `KAIROS_SKILL_PROMOTION_MIN_SUCCESS` | `10` | `foundation/architecture-blueprint-v1.1.md:173` |
-| `KAIROS_SKILL_PROMOTION_MIN_USAGE` | `5` | `foundation/architecture-blueprint-v1.1.md:214` |
-| `KAIROS_SQLCIPHER_ENABLED` | `false` | `foundation/architecture-v0.1.0.md:2912` |
-| `KAIROS_SQLCIPHER_KDF_ITER` | `256000` | `foundation/architecture-v0.1.0.md:2915` |
-| `KAIROS_SQLCIPHER_KEY` | `—（必填，启用时）` | `foundation/architecture-v0.1.0.md:2913` |
-| `KAIROS_SQLCIPHER_PAGE_SIZE` | `4096` | `foundation/architecture-v0.1.0.md:2914` |
-| `KAIROS_STMT_CACHE_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:2962` |
-| `KAIROS_STMT_CACHE_HIT_RATE_ALERT` | `0.80` | `foundation/architecture-v0.1.0.md:2963` |
-| `KAIROS_STMT_CACHE_SIZE` | `96` | `foundation/architecture-v0.1.0.md:2961` |
-| `KAIROS_SUBLIMATION_ENCRYPTION_KEY` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:561` |
-| `KAIROS_SUBLIMATION_MODE` | `remote` | `foundation/architecture-blueprint-v1.1.md:569` |
-| `KAIROS_SYMBOLIC_COMPRESSION` | `true` | `foundation/architecture-v0.1.0.md:1808` |
-| `KAIROS_SYMBOLIC_DEFAULT_LAYOUT` | `TD` | `foundation/architecture-v0.1.0.md:3010` |
-| `KAIROS_SYMBOLIC_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:3008` |
-| `KAIROS_SYMBOLIC_MAX_NODES` | `200` | `foundation/architecture-v0.1.0.md:3009` |
-| `KAIROS_SYMBOLIC_RENDER_FORMAT` | `svg` | `foundation/architecture-v0.1.0.md:3011` |
-| `KAIROS_TEAMSCOPE_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:3143` |
-| `KAIROS_TEMPORAL_APPLY_THRESHOLD` | `0.7` | `foundation/architecture-blueprint-v1.1.md:406` |
-| `KAIROS_TEMPORAL_BUCKET_COUNT` | `8` | `foundation/architecture-v0.1.0.md:1054` |
-| `KAIROS_TEMPORAL_CANDIDATE_POOL_SIZE` | `50` | `foundation/architecture-v0.1.0.md:1056` |
-| `KAIROS_TEMPORAL_ENTRY_POINTS` | `10` | `foundation/architecture-v0.1.0.md:1055` |
-| `KAIROS_TEMPORAL_EXPIRY_ENABLED` | `true` | `foundation/architecture-blueprint-v1.1.md:406` |
-| `KAIROS_TEMPORAL_EXTRA_BUFFER_DAYS` | —（待定义） | `foundation/architecture-blueprint-v1.1.md:404` |
-| `KAIROS_TEMPORAL_SAMPLING_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:1053` |
-| `KAIROS_TEMPORARY_MAX_TTL` | `7 天` | `foundation/architecture-v0.1.0.md:1756` |
-| `KAIROS_TIMESTAMP_BATCH_SIZE` | `32` | `foundation/architecture-v0.1.0.md:1979` |
-| `KAIROS_TIMESTAMP_MODEL_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:1979` |
-| `KAIROS_TIMESTAMP_MODEL_PATH` | `./models/timestamp-t5-small` | `foundation/architecture-v0.1.0.md:1979` |
+| `KAIROS_LITE_MODE` | `true` | `ops/deployment.md §三 环境变量` |
+| `KAIROS_LLM_API_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
+| `KAIROS_LLM_ENDPOINT` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
+| `KAIROS_LOG_LEVEL` | `info` | `ops/deployment.md §三 环境变量` |
+| `KAIROS_MEMORY_VERSIONING_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_MEMORY_VERSION_LIMIT` | `50` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_NARRATIVE_COHERENCE_ALERT_THRESHOLD` | `0.4` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_NARRATIVE_COMPLETION_IDLE_DAYS` | `90 天` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_NARRATIVE_MAX_MEMORIES_PER_THREAD` | `100` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_NARRATIVE_THREADS_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_ONDEMAND_MAX_IDLE_DAYS` | `90 天` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_PATH` | —（待定义） | `ops/configuration.md 参数总表（待定义）` |
+| `KAIROS_PLAYBOOK_NEGATIVE_THRESHOLD` | —（待定义） | `architecture-blueprint-v1.1.md §过程知识 Playbook 系统（Procedural Playbook System）` |
+| `KAIROS_PLAYBOOK_PROMOTION_THRESHOLD` | —（待定义） | `architecture-blueprint-v1.1.md §过程知识 Playbook 系统（Procedural Playbook System）` |
+| `KAIROS_PROFILE_CONFIDENCE_THRESHOLD` | `0.3` | `specification/detailed-design.md §11.3 可配置 Profile Schema（Configurable Profile Schema）` |
+| `KAIROS_PROFILE_MAX_FIELDS` | `30` | `specification/detailed-design.md §11.3 可配置 Profile Schema（Configurable Profile Schema）` |
+| `KAIROS_PROFILE_REFRESH_INTERVAL_HOURS` | `24` | `specification/detailed-design.md §11.3 可配置 Profile Schema（Configurable Profile Schema）` |
+| `KAIROS_PROFILE_SCHEMA_ID` | `general-v1` | `specification/detailed-design.md §11.3 可配置 Profile Schema（Configurable Profile Schema）` |
+| `KAIROS_PROMPT_DEPENDENCY_STRATEGY` | —（待定义） | `architecture-blueprint-v1.1.md §P3-15 Prompt 依赖关系图` |
+| `KAIROS_QUERY_ANALYSIS_CACHE_TTL` | `300 秒` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
+| `KAIROS_QUERY_ANALYZER_ENABLED` | `true` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
+| `KAIROS_RETRIEVAL_LINK_WEIGHTS` | —（待定义） | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_SALT` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
+| `KAIROS_SCHEDULER_INTERVAL` | `300s` | `ops/deployment.md §三 环境变量` |
+| `KAIROS_SCHEMA_STRICT_MODE` | `true` | `foundation/architecture-blueprint-v1.1.md §P3-23 Schema 前向版本保护` |
+| `KAIROS_SCHEMA_VERSION` | `编译时常量` | `foundation/architecture-blueprint-v1.1.md §P3-23 Schema 前向版本保护` |
+| `KAIROS_SEARCH_DEFAULT_LIMIT` | `5` | `ops/deployment.md §三 环境变量` |
+| `KAIROS_SECRET_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
+| `KAIROS_SEED_PATH` | `~/.kairos/seeds/` | `user-guide.md §3.4 种子锚点` |
+| `KAIROS_SKILL_ARCHIVE_DAYS` | `180 天` | `architecture-blueprint-v1.1.md §技能管理系统（Skill Management System）` |
+| `KAIROS_SKILL_DEPRECATION_INACTIVE_DAYS` | `90 天` | `architecture-blueprint-v1.1.md §技能管理系统（Skill Management System）` |
+| `KAIROS_SKILL_EXPERIMENTAL_MAX_AGE` | —（待定义） | `architecture-blueprint-v1.1.md §技能管理系统（Skill Management System）` |
+| `KAIROS_SKILL_PROMOTION_MIN_CONTEXTS` | `2` | `architecture-blueprint-v1.1.md §三级技能进化（Skill Evolution）` |
+| `KAIROS_SKILL_PROMOTION_MIN_RATE` | `0.7` | `architecture-blueprint-v1.1.md §技能管理系统（Skill Management System）` |
+| `KAIROS_SKILL_PROMOTION_MIN_SUCCESS` | `10` | `architecture-blueprint-v1.1.md §三级技能进化（Skill Evolution）` |
+| `KAIROS_SKILL_PROMOTION_MIN_USAGE` | `5` | `architecture-blueprint-v1.1.md §技能管理系统（Skill Management System）` |
+| `KAIROS_SQLCIPHER_ENABLED` | `false` | `foundation/architecture-blueprint-v1.1.md §P3-20 SQLCipher 静态加密` |
+| `KAIROS_SQLCIPHER_KDF_ITER` | `256000` | `foundation/architecture-blueprint-v1.1.md §P3-20 SQLCipher 静态加密` |
+| `KAIROS_SQLCIPHER_KEY` | `—（必填，启用时）` | `foundation/architecture-blueprint-v1.1.md §P3-20 SQLCipher 静态加密` |
+| `KAIROS_SQLCIPHER_PAGE_SIZE` | `4096` | `foundation/architecture-blueprint-v1.1.md §P3-20 SQLCipher 静态加密` |
+| `KAIROS_STMT_CACHE_ENABLED` | `true` | `foundation/architecture-blueprint-v1.1.md §P3-22 PreparedStatementCache——96 条 LRU 缓存管理` |
+| `KAIROS_STMT_CACHE_HIT_RATE_ALERT` | `0.80` | `foundation/architecture-blueprint-v1.1.md §P3-22 PreparedStatementCache——96 条 LRU 缓存管理` |
+| `KAIROS_STMT_CACHE_SIZE` | `96` | `foundation/architecture-blueprint-v1.1.md §P3-22 PreparedStatementCache——96 条 LRU 缓存管理` |
+| `KAIROS_SUBLIMATION_ENCRYPTION_KEY` | —（待定义） | `architecture-blueprint-v1.1.md §P3-14 远程/本地双模式升华` |
+| `KAIROS_SUBLIMATION_MODE` | `remote` | `architecture-blueprint-v1.1.md §P3-14 远程/本地双模式升华` |
+| `KAIROS_SYMBOLIC_COMPRESSION` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_SYMBOLIC_DEFAULT_LAYOUT` | `TD` | `foundation/architecture-blueprint-v1.1.md §P3-24 Symbolic Memory——Mermaid Canvas 节点图可视化` |
+| `KAIROS_SYMBOLIC_ENABLED` | `true` | `foundation/architecture-blueprint-v1.1.md §P3-24 Symbolic Memory——Mermaid Canvas 节点图可视化` |
+| `KAIROS_SYMBOLIC_MAX_NODES` | `200` | `foundation/architecture-blueprint-v1.1.md §P3-24 Symbolic Memory——Mermaid Canvas 节点图可视化` |
+| `KAIROS_SYMBOLIC_RENDER_FORMAT` | `svg` | `foundation/architecture-blueprint-v1.1.md §P3-24 Symbolic Memory——Mermaid Canvas 节点图可视化` |
+| `KAIROS_TEAMSCOPE_ENABLED` | `true` | `foundation/architecture-blueprint-v1.1.md §P3-17 TeamScope 多租户隔离` |
+| `KAIROS_TEMPORAL_APPLY_THRESHOLD` | `0.7` | `architecture-blueprint-v1.1.md §事实新鲜度元数据（Fact Freshness Metadata）` |
+| `KAIROS_TEMPORAL_BUCKET_COUNT` | `8` | `architecture-v0.1.0.md §2.6.2 时间覆盖均匀采样（Temporal Coverage Uniform Sampling）` |
+| `KAIROS_TEMPORAL_CANDIDATE_POOL_SIZE` | `50` | `architecture-v0.1.0.md §2.6.2 时间覆盖均匀采样（Temporal Coverage Uniform Sampling）` |
+| `KAIROS_TEMPORAL_ENTRY_POINTS` | `10` | `architecture-v0.1.0.md §2.6.2 时间覆盖均匀采样（Temporal Coverage Uniform Sampling）` |
+| `KAIROS_TEMPORAL_EXPIRY_ENABLED` | `true` | `architecture-blueprint-v1.1.md §事实新鲜度元数据（Fact Freshness Metadata）` |
+| `KAIROS_TEMPORAL_EXTRA_BUFFER_DAYS` | —（待定义） | `architecture-blueprint-v1.1.md §事实新鲜度元数据（Fact Freshness Metadata）` |
+| `KAIROS_TEMPORAL_SAMPLING_ENABLED` | `true` | `architecture-v0.1.0.md §2.6.2 时间覆盖均匀采样（Temporal Coverage Uniform Sampling）` |
+| `KAIROS_TEMPORARY_MAX_TTL` | `7 天` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_TIMESTAMP_BATCH_SIZE` | `32` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_TIMESTAMP_MODEL_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_TIMESTAMP_MODEL_PATH` | `./models/timestamp-t5-small` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_USER_ALIASES` | `{}`（未配置不执行映射） | `foundation/architecture-v0.1.0.md` §5.2 跨平台身份映射（0.0.11 回填——JSON 格式 `{"agent_id": "canonical_user_id"}`） |
-| `KAIROS_VARIABLE_HEALING_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:1581` |
-| `KAIROS_VARIABLE_HEALING_HARD_FAIL` | `true——愈合失败时阻止注入` | `foundation/architecture-v0.1.0.md:1581` |
-| `KAIROS_VARIABLE_HEALING_MAX_BACKFILL_CHARS` | `100` | `foundation/architecture-v0.1.0.md:1581` |
-| `KAIROS_VERSION_CHAIN_ENABLED` | `true` | `foundation/architecture-v0.1.0.md:2013` |
-| `KAIROS_VERSION_CHAIN_MAX_LENGTH` | `50` | `foundation/architecture-v0.1.0.md:2014` |
-| `KAIROS_WORLD_MODEL_MIN_CLASSES` | `3` | `foundation/architecture-blueprint-v1.1.md:178` |
-| `KAIROS_WORLD_MODEL_MIN_SUCCESS` | `5` | `foundation/architecture-blueprint-v1.1.md:178` |
+| `KAIROS_VARIABLE_HEALING_ENABLED` | `true` | `architecture-v0.1.0.md §4.4 变量愈合（Variable Healing）` |
+| `KAIROS_VARIABLE_HEALING_HARD_FAIL` | `true——愈合失败时阻止注入` | `architecture-v0.1.0.md §4.4 变量愈合（Variable Healing）` |
+| `KAIROS_VARIABLE_HEALING_MAX_BACKFILL_CHARS` | `100` | `architecture-v0.1.0.md §4.4 变量愈合（Variable Healing）` |
+| `KAIROS_VERSION_CHAIN_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_VERSION_CHAIN_MAX_LENGTH` | `50` | `architecture-v0.1.0.md §5.2 组件` |
+| `KAIROS_WORLD_MODEL_MIN_CLASSES` | `3` | `architecture-blueprint-v1.1.md §三级技能进化（Skill Evolution）` |
+| `KAIROS_WORLD_MODEL_MIN_SUCCESS` | `5` | `architecture-blueprint-v1.1.md §三级技能进化（Skill Evolution）` |
 
 ## 版本记录
 
@@ -643,3 +643,4 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 0.0.22 | 2026-08-05 | 外部项目理念吸收批次（changelog 0.0.22）：§6 新增 3 项参数——噪音规则库层开关（INGEST_NOISE_FILTER_ENABLED）、摄入侧情绪爆发关键词表（EMOTIONAL_BURST_KEYWORDS）、摄入侧情绪保护总开关（EMOTIONAL_BURST_PROTECTION_ENABLED）。正文参数 220→223 项，附录 A 148 项不变，全库总数 368→371 项。 |
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：附录 A 引言正文参数计数 210→223（2-02，口径补注 0.0.16/0.0.22 增长链）；「12 项待定义」核验仍准确。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-01 三环不变量引用 §6/§10.3→§10.3；M-11 附录 A KAIROS_SEED_PATH 来源行号 189→192。 |
+| 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：附录 A「来源」列 136 处硬行号引用整体废除（C-03/F-01）——改为「文档 §章节」语义引用（含权威落点核查：38 处原引用文档无定义、落点修正至 detailed-design/blueprint 等权威段；KAIROS_PATH 标注待定义）。 |

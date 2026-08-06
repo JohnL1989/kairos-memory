@@ -539,6 +539,50 @@ def check_mechanism_sections() -> None:
     print(f"[6.14] 机制名→权威章节抽检: {len(MECH_SECTIONS)} 条映射，{bad} 项漂移")
 
 
+def check_hard_line_refs() -> None:
+    """6.15 硬行号引用禁令（0.0.28 补盲区，闭环第十轮审计 C-03/F-01）。
+
+    语义化交叉引用是 documentation-governance §2 的规范（文档名+章节）；
+    `path.md:行号` 引用随编辑必漂移（configuration 附录 A 曾 135/136 漂移），
+    整体废除。匹配 `[\w.\-/]+\.md:\d+` 即报错；reviews/ 为审计产物（证据需
+    引用原文行号）不在扫描范围（EXCLUDE_DIRS）。
+    """
+    bad = 0
+    for p in md_files():
+        text = p.read_text(encoding="utf-8")
+        hits = re.findall(r"[\w.\-/]+\.md:\d+(?:-\d+)?", text)
+        for h in hits:
+            fail(f"硬行号引用禁令（6.15）: {p.relative_to(DOCS)} -> {h}（改「文档 §章节」语义引用）")
+            bad += 1
+    print(f"[6.15] 硬行号引用禁令: {bad} 处残留")
+
+
+def check_mcp_tool_rows() -> None:
+    """6.12a MCP 工具表行数比对（0.0.28 补盲区，闭环第十轮审计 C-01）。
+
+    MCP Bridge 工具集权威口径 15 个（0.0.14 裁决）——api-spec §6.8 注册表与
+    架构 §7.1a 概览表的 `kairos_` 工具行数须相等且为 15，两表工具名集合须一致。
+    """
+    bad = 0
+    api = (DOCS / "specification" / "api-spec.md").read_text(encoding="utf-8")
+    arch = (DOCS / "foundation" / "architecture-v0.1.0.md").read_text(encoding="utf-8")
+    sec68 = api[api.index("### 6.8"):api.index("### 6.9")]
+    sec71a = arch[arch.index("### 7.1a"):arch.index("### 7.3")]
+    api_tools = set(re.findall(r"^\|\s*`(kairos_[a-z_]+)`", sec68, re.M))
+    arch_tools = set(re.findall(r"^\|\s*`(kairos_[a-z_]+)`", sec71a, re.M))
+    if len(api_tools) != 15:
+        fail(f"MCP 工具表行数（6.12a）: api-spec §6.8 实为 {len(api_tools)} 行，权威口径 15")
+        bad += 1
+    if len(arch_tools) != 15:
+        fail(f"MCP 工具表行数（6.12a）: 架构 §7.1a 实为 {len(arch_tools)} 行，权威口径 15")
+        bad += 1
+    if api_tools != arch_tools:
+        fail(f"MCP 工具表一致性（6.12a）: api-spec §6.8 与架构 §7.1a 工具名集合不一致——"
+             f"仅 api-spec 有 {sorted(api_tools - arch_tools)} / 仅架构有 {sorted(arch_tools - api_tools)}")
+        bad += 1
+    print(f"[6.12a] MCP 工具表比对: api-spec {len(api_tools)} 行 / 架构 {len(arch_tools)} 行，{bad} 项差异")
+
+
 def check_config_index() -> None:
     """7) 全库引用的 KAIROS_* 参数必须在 configuration.md 中有定义或索引。"""
     cfg = (DOCS / "ops" / "configuration.md").read_text(encoding="utf-8")
@@ -982,6 +1026,8 @@ def main() -> int:
     check_numeric()
     check_ddl_fields()
     check_mechanism_sections()
+    check_hard_line_refs()
+    check_mcp_tool_rows()
     check_config_index()
     check_fences()
     check_table_render()

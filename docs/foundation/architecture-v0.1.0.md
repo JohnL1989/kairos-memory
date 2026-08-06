@@ -2917,7 +2917,7 @@ Memory Provider 通过 Hermes 原生记忆接口注册。Provider 部署配置�
 - **L2 宪法约束**：操作是否违反宪法级偏好（§1.5）或安全红线（§8）。宪法解释层（§1.6）在操作执行前审查。
 - **L3 身份否决**：操作产出在进入存储层前须经预提交总线（§1.8）的身份总线监听器检查——是否威胁 `is_identity` 记忆的叙事连续性。
 
-**MCP Bridge 集成（0.0.14 勘误）**：MCP Bridge 工具集为 **15 个**（完整清单见 §7.1a MCP Bridge 实现表与 [api-spec.md](../specification/api-spec.md) §6.8）——12 规范操作中的 create/delete/search/link/unlink 直接映射为 MCP 工具（`kairos_store_memory` 等），另含关系管理 3 工具（`kairos_link`/`kairos_unlink`/`kairos_relations`）与检索/维护类工具（`kairos_get_hot_memories`/`kairos_search_graph` 等）；规范操作集中的其余操作（read/update/merge/fork/archive/restore/purge）经 REST API 暴露。每个工具的 `on_pre_execute` hook 执行 L1+L2 检查，`on_post_execute` hook 在写入前执行 L3 预提交总线检查。Clarify 消歧步骤（见下文）在 `on_pre_execute` 中先于治理检查执行——参数不完整时先补全，再进入治理门禁。
+**MCP Bridge 集成（0.0.14 勘误）**：MCP Bridge 工具集为 **15 个**（完整清单见 §7.1a MCP Bridge 实现表与 [api-spec.md](../specification/api-spec.md) §6.8）——基础工具集 12 个：3 个规范操作直接映射（create→`kairos_store_memory`、search→`kairos_search_memories`、delete→`kairos_delete_memory`）+ 检索/维护/治理类 9 个（`kairos_get_hot_memories`/`kairos_search_graph`/`kairos_extract_entities`/`kairos_get_memory_traces`/`kairos_feedback_memory`/`kairos_calibrate`/`kairos_get_stats`/`kairos_search_sessions`/`kairos_tree`）；另含关系管理 3 工具（`kairos_link`/`kairos_unlink`/`kairos_relations`——link/unlink 与规范操作集中 link/unlink（`kairos_link_memories`/`kairos_unlink_memories`）语义对应，工具名简化去 `_memories` 后缀）。规范操作集中的其余操作（read/update/merge/fork/archive/restore/purge）经 REST API 暴露。每个工具的 `on_pre_execute` hook 执行 L1+L2 检查，`on_post_execute` hook 在写入前执行 L3 预提交总线检查。Clarify 消歧步骤（见下文）在 `on_pre_execute` 中先于治理检查执行——参数不完整时先补全，再进入治理门禁。
 
 > **配置参数**：规范操作集的开关、严格模式和 Clarify 消歧参数见 [ops/configuration.md](../ops/configuration.md) §6.1。
 
@@ -3853,3 +3853,4 @@ P6 全局闸门规定累计压缩比上限为 30%。v0.1.0 因从五维规范目
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：§5.12 DFA 命名统一与 v1.1 交付占位（D-401 反向对齐）；引用落点批量修正 11 处（审计 8 + grep 同源 3）；领域路由双处定义收敛（§10.18 权威）；§10.23 P3-11/12/13 索引小节归位；§10.24 D-401 落点 §5.2→§5.12；速查表监督平面补名；api-spec/data-model 中文序引用联动。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：H-01 §3.2→§3.3 引用落点 13 处（含审计遗漏：§0.6 P6 压缩比双口径引用）+ §3.2 首段补价值裁决子系统反向指引；H-02 编译器管线顺序裁定「感知缓冲→注意力筛选→编译器」，修订 4 处互斥表述并补摄取验证门禁编译环节；M-01 跨层三环不变量 §6→§10.3 三处；M-06 检索深度分级 §3.2→§3.9。 |
 | 0.0.27 | 2026-08-06 | 第三方分析摘要分诊批次（changelog 0.0.27）：§0.8 补「命名配置集与组合约束」——三种命名配置集（minimal/slice/full）为唯一部署与测试目标，启动时校验组合合法性，未命名组合拒绝启动；编码纪律同步。 |
+| 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：§7.1a :2920 MCP Bridge 集成构成表述重写（C-01/F-03）——去除 link/unlink 重复计数，明确「3 规范操作直接映射 + 检索/维护/治理 9 + 关系管理 3 = 15」，link/unlink 与规范操作集命名对应注记。 |

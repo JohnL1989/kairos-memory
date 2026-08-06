@@ -95,7 +95,7 @@ Kairos 作为记忆基础设施，通过标准化协议和官方 SDK 降低集�
 Kairos 对外暴露符合 MCP 规范的 Tool 接口，将 12 规范操作集（[架构 §7.3.1](../foundation/architecture-v0.1.0.md)）映射为 MCP Tool。Agent 通过 MCP Client 发现并调用 Kairos 的记忆工具，无需理解内部存储模型。
 
 - **MCP Server 实现（0.0.14 勘误）**：MCP Server 作为**独立子进程**运行（stdio 传输），由 Agent 的 MCP Client 启动，与 Kairos 主进程通过 localhost HTTP 通信（进程模型与 [integration-design.md](../development/integration-design.md) §七、api-spec §6.8 一致——非主进程内嵌）。Server 端实现完整治理门禁（L1 权限 + L2 宪法约束 + L3 身份否决）
-- **Tool 命名规范**：`kairos_<operation>`（如 `kairos_store_memory`、`kairos_search_memories`），完整工具清单（15 个：12 规范操作直接映射 + 关系管理 3 工具）见 [架构 §7.1a MCP Bridge 实现](../foundation/architecture-v0.1.0.md) 与 [api-spec §6.8](../specification/api-spec.md)
+- **Tool 命名规范**：`kairos_<operation>`（如 `kairos_store_memory`、`kairos_search_memories`），完整工具清单（15 个：基础工具集 12——含 create/search/delete 三个规范操作直接映射与检索/维护/治理类 9 个——另加关系管理 3 工具，构成口径见架构 §7.1a）见 [架构 §7.1a MCP Bridge 实现](../foundation/architecture-v0.1.0.md) 与 [api-spec §6.8](../specification/api-spec.md)
 - **Clarify 消歧**：MCP Tool 的 `on_pre_execute` hook 在参数不完整时触发 Clarify 步骤，反问补全后执行，保证工具调用的健壮性
 - **渐进增强**：MCP 为基线协议，后续版本可扩展为支持 Resources（记忆目录浏览）和 Prompts（检索模板），丰富交互模式
 
@@ -141,3 +141,4 @@ File Graph 是 Kairos 路径空间的图论增强层——将 `kairos://` 路径
 | 0.0.20 | 2026-08-05 | 第五轮全库深度审计修复批次（changelog 0.0.20）：三语言 SDK 表补「版本对齐策略」注记（SDK ≥3.10 为独立交付物，与后端 3.11–3.13 基线互不约束）。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：版本记录补 0.0.15~0.0.18 合并占位行（2-5）。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-05 MCP Bridge 落点 §7.3→§7.1a。 |
+| 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：MCP 工具集构成公式重写（C-01）——「12 规范操作直接映射」修正为「基础工具集 12（3 规范操作直接映射 + 检索/维护/治理类 9）+ 关系管理 3」。 |

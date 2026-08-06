@@ -8,8 +8,8 @@ tags:
   - design
   - api
 created: 2026-07-20
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
@@ -237,7 +237,7 @@ status: draft
 
 **POST /v1/memories/{id}/archive** — 归档记忆（竖切功能 M-05，0.0.15 注册）
 - 将记忆从活跃存储移至冷存储（`status=archived`），常规检索不再返回，数据保留可恢复
-- 语义对齐：对应架构 12 规范操作集 `archive`（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3），幂等——已归档记忆重复归档返回成功（200）但不重复操作（见架构 §7.3 幂等性清单）
+- 语义对齐：对应架构 12 规范操作集 `archive`（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3.1），幂等——已归档记忆重复归档返回成功（200）但不重复操作（见架构 §7.3.1 幂等性清单）
 - 契约约束：permanent 契约归档前须经宪法修订端口降级（直接返回 403）；temporary 契约不进入归档（到期由 forgetAfter 硬删除，见架构 §5.2）；其余契约正常归档
 - 错误：`404`（记忆不存在）、`403`（permanent 契约拒绝归档）
 ```json
@@ -641,7 +641,7 @@ status: draft
 
 ### 6.1 会话消息 API
 
-**POST /v1/sessions/{session_id}/messages** — 批量写入会话消息（Hermes on_session_end 调用）
+**POST /v1/sessions/{id}/messages** — 批量写入会话消息（Hermes on_session_end 调用）
 
 **权限**：write
 
@@ -661,7 +661,7 @@ status: draft
 
 **Query**：`?user_id=default&limit=20`
 
-**GET /v1/sessions/{session_id}/messages** — 读取会话消息（支持游标分页）
+**GET /v1/sessions/{id}/messages** — 读取会话消息（支持游标分页）
 
 **权限**：read
 
@@ -843,7 +843,7 @@ status: draft
 }
 ```
 
-**GET /v1/evolution/{knowledge_id}** — 查询知识演化链
+**GET /v1/evolution/{id}** — 查询知识演化链
 
 **权限**：read
 
@@ -915,7 +915,7 @@ status: draft
 
 ### 6.8 MCP Bridge 工具映射
 
-MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程注册到 Hermes Agent。技术规格见 `src/access/mcp/bridge.py`。工具清单见架构文档 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3.1（十二规范操作集）。
+MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程注册到 Hermes Agent。技术规格见 `src/access/mcp/bridge.py`。工具清单共 **15 个**（基础工具集 12 + 关系管理 3，构成口径见架构文档 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1a；十二规范操作集见架构 §7.3.1）——下表为 MCP Bridge 工具注册的权威清单。
 
 | 工具 | 功能 | 等价 REST 操作（内部路由映射，部分非独立公开端点） |
 |:----|:-----|:--------------|
@@ -931,6 +931,9 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 | `kairos_search_sessions` | 会话搜索 | GET /v1/sessions |
 | `kairos_tree` | 路径浏览 | GET /v1/path/tree |
 | `kairos_delete_memory` | 软删除记忆 | DELETE /v1/memories/{id} |
+| `kairos_link` | 创建两条记忆间的有向关系边（from_uri → uris，支持批量链接；必填 `reason`，可选 `relation_type` 基础六值 + 语义标记扩展、`confidence`，权威枚举见 [data-model.md](data-model.md) memory_relations 表） | —（无独立公开 REST 端点，经 MCP 工具直连关系索引，见架构 §7.1a 关系管理 API） |
+| `kairos_unlink` | 移除两条记忆间的指定关系边（按 `relation_type` 精确匹配或 `relation_type=*` 全删；软删除保留审计追溯） | —（同上） |
+| `kairos_relations` | 查询某记忆的所有关系边（`{inbound, outbound}`，支持 `relation_type` 过滤与 `direction` 限定） | —（同上） |
 
 ### 6.9 知识加工区 API
 
@@ -1617,5 +1620,7 @@ v1.1 规划：
 | 0.0.16 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.16，建议一/四/五/七落地）：检索响应补 meta.calibration_status 与 nudge 可选字段；新增 GET /v1/health/calibration、GET /v1/health/memory-pressure、GET /audit/compression、GET /audit/compression/summary 四端点；§8 叙事线 API 补 v0.1.0 子集声明与 create/members/memories 三端点。（0.0.25 勘误补登：业务端点计数 80→85、物理总数 81→88，口径注记同步） |
 | 0.0.20 | 2026-08-05 | 第五轮全库深度审计修复批次（changelog 0.0.20）：§6.5/§8/§9/§10 补「被架构引用」反向注记（架构引用本章节时须同步回改，防章节号漂移）。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：端点计数重算 80→85、物理总数 81→88（口径注记同步 + 0.0.16 条目勘误补登）；顶层章节标题统一数字（一~十八→1~18）与中文序引用同步；前瞻记忆引用 §8→§3.2。 |
+| 0.0.26~0.0.27 | 2026-08-06 | (合并占位：changelog 0.0.26/0.0.27 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景) |
+| 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：§6.8 MCP Bridge 工具表补关系管理 3 工具（kairos_link/kairos_unlink/kairos_relations，15 口径统一）；指引段 §7.3.1→§7.1a 并注明 15 构成；§1.4 archive 引用 §7.3→§7.3.1；sessions/evolution 路径占位符统一为 {id}。 |
 
 > **端点计数口径（2026-08-03 决策 D-13；0.0.15 更新；0.0.25 勘误）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（0.0.15 注册 `archive`/`restore` 两个竖切端点后 78→80；0.0.16 新增 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §健康检查）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §9），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。

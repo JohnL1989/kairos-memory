@@ -8,8 +8,8 @@ tags:
   - design
   - api
 created: 2026-07-22
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-06
+last_reviewed: 2026-08-06
 status: draft
 ---
 
@@ -94,6 +94,19 @@ status: draft
 | OP-051 | TMT 补扫 | 自动（Deep 模式） | — | — | L2→L3→L4 逐级 |
 | OP-052 | P6 合规扫描 | 自动（Deep 模式） | — | — | 压缩比余量监控 |
 | OP-053 | 事实新鲜度过期扫描 | 自动（Deep 模式） | — | — | valid_until→expired→stale |
+| OP-054 | 记忆归档 | POST /v1/memories/{id}/archive | — | — | 竖切功能 M-05（0.0.15 注册）；须满足遗忘调度器（架构 §5）freshness 阈值条件或经宪法解释层批准；is_identity=true 记忆不可归档（见证豁免） |
+| OP-055 | 归档恢复 | POST /v1/memories/{id}/restore | — | — | 竖切功能 M-05 配套；须经潜伏势能重估端口（架构 §5）匹配验证——语义向量与当前活跃上下文盲区方向余弦 ≥ 阈值（默认 0.6） |
+| OP-056 | 版本回滚 | POST /v1/memories/{id}/rollback | — | S-08（admin） | 回滚到指定版本 |
+| OP-057 | 版本历史 | GET /v1/memories/{id}/versions | — | — | 获取记忆版本历史 |
+| OP-058 | 记忆导出 | GET /v1/memories/{id}/export?clearance=export | — | S-07（脱敏） | 掩码+截断语义（与 OP-044 一致） |
+| OP-059 | 记忆反馈 | POST /v1/memories/{id}/feedback | kairos_feedback_memory | — | 可信度反馈（升温/降温），线上反馈闭环端口 |
+| OP-060 | 显式实体提取 | POST /v1/entities/extract | kairos_extract_entities | S-15 | 区别于 OP-004（写入时自动触发）——独立显式调用 |
+| OP-061 | 反思触发 | POST /v1/reflect | — | — | 对现有记忆执行按需深度分析 |
+| OP-062 | 主动主题查询 | GET /v1/proactive/topics | — | — | 待处理主动话题（A-17） |
+| OP-063 | 升华状态查询 | GET /v1/sublimation/status | — | — | 升华进度查询（SF-04） |
+| OP-064 | 升华触发 | POST /v1/sublimation/trigger | — | — | 手动触发升华（SF-02） |
+| OP-065 | 解冻 | POST /v1/unfreeze | — | — | OP-036 强制冻结的逆操作 |
+| OP-066 | 大厅详情 | GET /v1/halls/{hall} | — | — | 指定区域内记忆列表（对应 OP-030/031 区推进/退回） |
 
 ## 四、按阶段统计
 
@@ -101,16 +114,16 @@ status: draft
 |:-----|:------:|:------|
 | ENC | 7 | 创建/摄入 |
 | RET | 15 | 检索/查询/报告 |
-| STR | 31 | 更新/治理/运维/自动 |
-| **总计** | **53** | |
+| STR | 44 | 更新/治理/运维/自动 |
+| **总计** | **66** | |
 
 > **对应关系**：本目录的 53 项操作与 [feature-list.md](feature-list.md) 的 **168 项能力（43 核心 + 125 扩展）** 之间存在多对多映射（0.0.11 勘误：原表述仅含 125 项扩展功能，遗漏 43 项核心功能——如 OP-001 按路径写入对应核心 W-01）——一项功能可对应多种调用方式，一项操作也可服务于多项功能。操作目录回答"系统能执行什么指令"，功能清单回答"系统对外提供什么能力"。
 >
-> **调用方式注记**：操作支持 API + Tool + CLI 三种调用方式，但 CLI 映射为 api-spec §3 CLI 命令集的**子集**（本目录未逐项登记 CLI 列——CLI 覆盖的高频运维操作见 api-spec §3，其余经 REST/MCP 调用）；工具列混排 MCP Bridge 工具（`kairos_*`，12 个）与 Agent Tool（`memories_*`，5 个），来源区分见 api-spec §6.8/§2。OP-046/047 为内部操作（无对外端点），不视为缺口。
+> **调用方式注记**：操作支持 API + Tool + CLI 三种调用方式，但 CLI 映射为 api-spec §3 CLI 命令集的**子集**（本目录未逐项登记 CLI 列——CLI 覆盖的高频运维操作见 api-spec §3，其余经 REST/MCP 调用）；工具列混排 MCP Bridge 工具（`kairos_*`，15 个——本列仅列示高频操作对应项，完整注册清单以 [api-spec.md](api-spec.md) §6.8 为准）与 Agent Tool（`memories_*`，5 个），来源区分见 api-spec §6.8/§2。OP-046/047 为内部操作（无对外端点），不视为缺口。
 
 ## 五、与 api-spec 的覆盖边界声明
 
-> **覆盖边界**：本目录 53 项操作覆盖 api-spec §1~§7 核心端点；§8~§18 的扩展端点（叙事线 summarize/complete、压缩 run/rollback、POST /v1/causal、技能 GET/POST /v1/skills、Connector register、Profile schema、/v1/admin/export|import、GET /v1/graph/render、§18 资源摄取与多模态等）属 v0.1.0 全量或 v1.1+ 扩展，端点定义以 [api-spec.md](api-spec.md) §8~§18 为权威（api-spec 已定稿，共 88 端点 = 85 个 `/v1` 业务端点 + 3 个无前缀端点），本目录不逐项登记 OP-054+ 条目。
+> **覆盖边界**：本目录 66 项操作覆盖 api-spec §1~§7 的 **49/56 个 `/v1` 端点**（功能类端点全覆盖——0.0.28 补登记忆生命周期 6 + 主动功能 7 共 13 个 OP-054~066）；**7 个运维探针/内部维护端点不建 OP**：`/v1/config`（GET/PATCH）、`/v1/health/calibration`、`/v1/health/memory-pressure`、`/v1/scheduler/status`、`/v1/seeds`、`/v1/webhooks`（v1.1 预留）、`/v1/path/rebuild-index`——无操作语义或仅内部维护触发，端点定义以 api-spec §1~§7 为权威；§8~§18 的扩展端点（叙事线 summarize/complete、压缩 run/rollback、POST /v1/causal、技能 GET/POST /v1/skills、Connector register、Profile schema、/v1/admin/export|import、GET /v1/graph/render、§18 资源摄取与多模态等）属 v0.1.0 全量或 v1.1+ 扩展，端点定义以 [api-spec.md](api-spec.md) §8~§18 为权威（api-spec 已定稿，共 88 端点 = 85 个 `/v1` 业务端点 + 3 个无前缀端点），本目录不逐项登记 OP-067+ 条目。
 
 ---
 ## 版本记录
@@ -128,3 +141,5 @@ status: draft
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：OP-024/OP-026 契约到期语义统一（temporary 硬删除留痕/其余归档）；OP-005 超限注记归属说明（维度降维系统级性质）。 |
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：§五 覆盖边界声明 OP-054+ 悬空承诺收口（2-03）——扩展端点定义以 api-spec §8~§18 为权威，不再逐项登记。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：覆盖边界端点计数 81→88（85 业务 + 3 无前缀）；api-spec 中文序引用联动。 |
+| 0.0.26~0.0.27 | 2026-08-06 | (合并占位：changelog 0.0.26/0.0.27 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景) |
+| 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：覆盖声明失真修复（C-02）——补 OP-054~066 共 13 项（记忆生命周期 6 + 主动功能 7），工具列注记 12→15 与枚举说明，覆盖声明改写为 49/56 + 7 个运维探针豁免清单；统计表 STR 31→44、总计 53→66。 |
