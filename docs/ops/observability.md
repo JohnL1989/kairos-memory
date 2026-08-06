@@ -38,6 +38,8 @@ status: draft
 | `kairos_event_bus_queue_depth` | Gauge | 事件总线队列深度 | priority |
 | `kairos_sublimation_stage` | Gauge | 升华管道各阶段计数 | stage |
 | `kairos_forgetting_score` | Gauge | 遗忘得分分布 | bucket |
+| `kairos_stale_call_ratio` | Gauge | 过时调用率——被选中进入输出的检索结果中 status=stale/expired（或 fact_freshness 过期）者占比（Deep 模式日频聚合，指标定义见 [acceptance-criteria.md](../quality/acceptance-criteria.md) §一a） | user_id |
+| `kairos_task_success_rate` | Gauge | 任务成功率（集成场景）——三态对比：完整上下文 / 仅检索记忆 / 无记忆（反事实检验，见 [test-strategy.md](../quality/test-strategy.md) §2.7） | mode |
 | `kairos_budget_remaining_fen` | Gauge | LLM 日预算剩余（分） | provider |
 | `kairos_calibration_last_arrival` | Gauge | 距上次校准信号到达的秒数 | source |
 | `kairos_degradation_mode` | Gauge | 当前降级模式（0=正常 1=静默 2=受限交叉验证 3=安全休眠） | — |
@@ -113,6 +115,7 @@ status: draft
 | 身份偏置告警 | 身份一致性记忆系统性压制异质记忆 | warning | 人工审查 |
 | 冻结超时 | 冻结持续超过预设时长 | critical | 自动告警至外部管理员 |
 | 预算耗尽 | LLM 日预算余额 < 10%（基线硬编码值，对应 `KAIROS_DAILY_BUDGET_FEN` 上限；告警比例参数化列入后续运维批次） | info | 等待预算重置或充值 |
+| 过时调用率超阈 | `kairos_stale_call_ratio` > 20%（设计目标，首轮基准后校准；指标定义见 acceptance-criteria §一a） | warning | 检查遗忘调度器 freshness 参数与检索排序的时间惩罚；> 40% 升级 critical 触发治理面审查 |
 
 ### §4a 告警投递
 
@@ -145,3 +148,4 @@ status: draft
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：校准中断严重告警改「触发降级告警」并注明 N/M 契约为准；§4a 告警投递渠道勘误（KAIROS_ALERT_* 已参数化）；硬编码阈值加基线注记（健康检查 3 次/预算 10%）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：/metrics 端点断言式陈述弱化为设计目标（标注「端点待定义，api-spec §1.8 登记前为设计目标」）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：configuration 章节引用修正（§2→§4）。 |
+| 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：运行时指标补 `kairos_stale_call_ratio` / `kairos_task_success_rate`（记忆质量评估，指标定义见 acceptance-criteria §一a）；告警规则补「过时调用率超阈」。 |

@@ -59,6 +59,19 @@ status: draft
 
 ---
 
+## 二a、记忆循环四动作失败模式（写入/巩固/检索/遗忘）
+
+> **外部理念吸收注记**：本表吸收自「Agent Continual Learning」系列对记忆循环的失败模式分析（唐国梁Tommy，2026-07）——记忆循环（验证→写入→去重抽象→按条件检索→用后评估→更新或遗忘）的每一步都可能失败：写入失败积累垃圾、巩固失败产生互相矛盾的规则、检索失败在错误场景调用经验、遗忘失败让系统固守过时世界。下表将四类失败模式映射到 Kairos 已有监控信号，供排障时按「症状 → 失败环节 → 检查点」定位。
+
+| 失败模式 | 症状 | 对应监控信号（observability §一） | 检查点 |
+|:--------|:-----|:------------------------------|:------|
+| **写入失败→积累垃圾** | 记忆库膨胀但检索质量下降；检索结果大量低相关 | `kairos_memory_count` 异常增长、GSPO 聚类命中率上升（冗余压力） | ① 摄取管道的验证环节（ADD-only 协议、四层递进式摄取防御）是否被绕过 ② 探索产物是否未经验证即进入常规存储（置信度带 30%→70%→95% 是否执行）③ `kairos_write_total` 中 status 分布 |
+| **巩固失败→矛盾规则** | 同一主题存在互相矛盾的记忆条目；contradiction Flag 密度上升 | 事件总线 `contradiction_detected` 事件频率、knowledge_evolution 的 challenges 记录密度 | ① 升华管道蒸馏产物是否通过冲突检验（ERR-SUB-002）② 新信息冲突解决（补充/修正/重构）是否按语义内核相似度正确分流 ③ memory_flags 中 contradiction 的解析率（长期未解析=矛盾悬而未决） |
+| **检索失败→错误场景调用** | 过时经验被高频选中；任务成功率下降但检索延迟正常 | `kairos_stale_call_ratio`（过时调用率，见 acceptance-criteria §一a）、`kairos_task_success_rate` 三态对比 | ① 排序调制的「高相似 × 过时联合惩罚」是否生效（架构 §7.3a）② conditions/encoding_context 的环境匹配是否执行 ③ 检索路径是否越过了路径空间硬过滤边界 |
+| **遗忘失败→固守过时世界** | 陈旧记忆长期占活跃存储；freshness 分布异常 | `kairos_forgetting_score` 分布、遗忘队列积压比（`KAIROS_PRESSURE_BACKLOG_RATIO`） | ① 遗忘调度器是否运行（Light 模式心跳）② freshness.py 推断是否被 false_positive 调优抑制（假阳性率阈值 15%）③ 结构性守护/身份豁免是否误用了范围（`is_structure=true` 记忆过多=守护过度） |
+
+---
+
 ## 三、错误码速查（全量 38 项）
 
 > **口径**：本表为 [references/error-reference.md](../references/error-reference.md) 的运维视角镜像，**已覆盖全部 38 个已定义错误码**（此前仅收录 17 项，覆盖率 44.7%）。错误码的权威定义（含 HTTP 状态码语义与响应体结构）以 error-reference 为准；本表额外提供「排查动作」列，供值班时直接使用。
@@ -128,3 +141,4 @@ status: draft
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §四→§4 引用联动。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：CLI 命令定义状态表修正——`kairos db verify` / `kairos admin key rotate` 改为「已定义（api-spec §3）」，0 命中声明改「3 条命令（db repair/db restore/db migrate rollback）无定义」；安全事件排查表 key rotate 行引用同步。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：CLI 命令状态表全量盘点（10 条待定义子命令）；ERR-DB-*/ERR-SEC-001 返回口径按 api-spec §7 收敛。 |
+| 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：新增 §二a 记忆循环四动作失败模式表（写入/巩固/检索/遗忘 → 症状 → 监控信号 → 检查点）。 |

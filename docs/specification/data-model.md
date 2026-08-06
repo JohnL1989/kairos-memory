@@ -72,7 +72,7 @@ status: draft
 | `heat_score` | FLOAT | DEFAULT 1.0, [0,1] | 热度评分，用于排序权重调制 |
 | `expires_at` | TIMESTAMPTZ | — | 临时契约自动清除时间（仅 temporary 契约有效，到期后台 forgetAfter 硬删除——数据不可恢复。清理前写入审计日志（标记 `expiry_cascade_delete`，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 forgetAfter）——不留审计痕迹的场景仅限捕获阶段拒绝的输入。与 POST /v1/memories/{id}/expire 的「到期归档」不同：temporary 硬删除不可恢复，适用于明确的临时数据治理策略） |
 | `locked_until` | TIMESTAMPTZ | — | 锁定保护截止时间（`POST /v1/memories/{id}/lock` 设置，到期自动解锁） |
-| `encoding_context` | JSONB | — | 编码情境（时空上下文/任务目标/关联记忆ID） |
+| `encoding_context` | JSONB | — | 编码情境（时空上下文/任务目标/关联记忆ID）。**`conditions` 子结构约定（外部理念吸收，changelog 0.0.39）**：条件性经验（「适用于什么场景/哪个用户/哪个网站或工具版本」的经验）应在 encoding_context 中记录显式 `conditions` 子结构——`{applies_to: ["<用户/网站/工具版本标识>"], prerequisites: ["<前提条件>"], exceptions: ["<不适用场景>"]}`。用途：(a) 写入时约束经验固化——无条件约束的经验不得在升华管道中被去语境化为通用规律（对应「一条经验是否携带适用范围」的写入判定）；(b) 检索时按当前环境匹配 conditions——环境不匹配的候选在排序中降权（v1.1 落地为独立过滤维度，v0.1.0 作为 encoding_context 的约定子结构，不新增列）。与 `domain`（领域路由标签）互补：domain 是粗粒度领域分类，conditions 是细粒度适用条件。v0.1.0 仅要求写入时填充（升华管道 L1 阶段识别条件性表述时录入），检索侧不做强制过滤 |
 | `occurred_at` | TIMESTAMPTZ | — | **事件时间**——记忆所描述的事实实际发生的时间（区别于 `created_at` 事务时间：写入时间）。由轻量级时间戳后处理（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 event_time 提取）回填，可空（无法判定事件时间的记忆不填）。双时态模型（认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 双时态声明）：事件时间归逻辑-因果轴/物理轴输入，事务时间由衰减子轴承载。竖切 v0.1.0-slice 落列为可空字段 |
 | `created_at` | TIMESTAMPTZ | NOT NULL | 创建时间（**事务时间**——记录写入系统的时间，与 `occurred_at` 事件时间区分） |
 | `updated_at` | TIMESTAMPTZ | NOT NULL | 最后更新时间 |
@@ -1391,3 +1391,4 @@ SQLite 无时区类型，故：
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题风格统一——「N、」改「§N」（13 个大章并入 §N 数字序形态，引用零联动）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：api_keys.level 枚举统一为 read（含 CHECK 约束，与 api-spec §1 三级口径一致）；§8.1 conversation_messages 补 parts 列（对齐 api-spec §18.2 v0.1.0 交付承诺）；journal_entries 补 node_episode_index_map 列（架构 §5.2 Episode 归因索引）；api_keys 表补 v0.1.0 核心鉴权承载注记。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：rl_weights 归一化口径统一（初始化不归一化/更新投影强制 Σ=1）；实体类型存储枚举映射注记；配置键名映射示例修正；表标题 v0.1.0 交付口径；零版本标记收敛。 |
+| 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：encoding_context 补 `conditions` 子结构约定（条件性经验适用范围显式化）。 |
