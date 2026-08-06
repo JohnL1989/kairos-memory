@@ -241,7 +241,7 @@ status: draft
 
 - **决策迁移至 ADR**：决策编号 D-01~D-27 权威定义从 reviews 审计报告迁移至 [adr.md](./adr.md)「审计决策迁移」节（D-01~D-15 源自 08-03 审计批次、D-16~D-27 源自 08-04 交叉审计批次;D-06→ADR-001、D-11→ADR-011 由既有 ADR 承载,仅登记迁移关系）;documentation-governance §5 决策编号注册表定义源改指 `adr.md`。
 - **审计报告归档**：新增审计历史摘要（10 轮审计汇总表 + 决策索引 + 归档机制）;删除 reviews 下 10 份审计报告（2026-08-03~08-05 各轮）——问题处置要点以 changelog 各批次为准,问题清单不再长期保留。
-- **引用改指**：全库 30 处 reviews 引用改指 `audit-history-summary.md`（changelog 8、debt-collection 5、cognitive-foundation 3、documentation-governance 2、architecture 2、blueprint 1、README 索引 8 行合并为 1 行 + 版本记录 1 处）;`audit-history-summary.md` 纳入文档计数。
+- **引用改指**：全库 30 处 reviews 引用改指 `audit-history-summary.md`（changelog 8、debt-collection 5、cognitive-foundation 3、documentation-governance 2、architecture 2、blueprint 1、README 索引 8 行合并为 1 行 + 版本记录 1 处）;`audit-history-summary.md` 纳入文档计数（该文件已于 0.0.30 移出仓库，计数随之去除，此处为 0.0.18 时点历史事实）。
 - **归档机制（防堆积）**：documentation-governance 执行记录与 audit-history-summary 声明后续审计闭环后登记于摘要并删除原报告——审计报告不再累积。
 - **门禁**：`scripts/doc-audit.py` 18 类 + 14a 全绿（0 FAIL 0 WARN）;`deep-audit.py` 全绿。
 
@@ -364,7 +364,7 @@ status: draft
 - **1-08 前瞻记忆段归位**：架构 §8 末「前瞻记忆」段迁至 §3.2 前瞻保持跨层协调协议段后（语义聚合），§8 仅保留安全红线与红线语义补充；requirements-baseline §1.8 与 feature-list PM-01 引用改指 §3.2（feature-list 为审计未列的联动同源引用）。
 - **2-03 OP-054+ 承诺收口**：operation-catalog §五 覆盖边界声明改为「扩展端点定义以 api-spec §八~§十八 为权威（0.0.15 定稿，81 端点），本目录不逐项登记 OP-054+ 条目」——未按审计建议二补登条目（将波及操作计数 53 项与 README/门禁基线，选建议一收口）。
 - **2-04 README 版本记录补登 0.0.19**：0.0.18 与 0.0.20 之间补插「0.0.19 第四轮批次索引同步：blueprint 文件名 v1.1+ → v1.1（补登，原缺失）」。
-- **2-05 执行记录刷新**：documentation-governance §3 执行记录补 08-05 批次审计记录（批次明细见 audit-history-summary §一；不引用轮数——审计断言「12 轮累计」与汇总表实际行数不符，按事实不引用具体轮数）。
+- **2-05 执行记录刷新**：documentation-governance §3 执行记录补 08-05 批次审计记录（批次明细原见 audit-history-summary §一，该文件已于 0.0.30 移出仓库，处置明细见 changelog 0.0.30；不引用轮数——审计断言「12 轮累计」与汇总表实际行数不符，按事实不引用具体轮数）。
 - **3-01 悬空承诺收口**：架构 §0.4 删除「认知基础尚未逐层同步双标注，认知基础下一轮修订时同步」半句，改为「认知基础交叉引用以章节号为准，层编号映射以本节为权威」。
 - **3-02 README 组件数同步**：implementation-map 索引行「40+ 组件」→「70 组件」（对齐 implementation-map 0.0.10 条目 67→70 与 test-plan 口径）。
 - **4-01 documentation-governance 版本记录占位补齐**：补「0.0.3~0.0.10 合并占位」「0.0.13 占位」「0.0.15~0.0.16 合并占位」行。
@@ -428,6 +428,8 @@ status: draft
 
 - **移除审计过程材料**：删除 docs/reviews/ 目录（审计历史摘要）；scripts/_deep_audit_out.json 移出 git 跟踪并纳入 .gitignore。
 - **全库引用清理**：认知基础决策编号引用改指 [adr.md](adr.md)（决策权威已迁移）；debt-collection 5 处债务谱系标注保留「认知×架构审计问题 P-xx」文字删链接；changelog 历史条目 14 处「依/见」链接去链接；governance/architecture/blueprint/README/engineering-workflow 引用同步；README 移除审计历史索引行、修订「审计过程材料不随仓库分发」说明（文档计数不变 55 份）。
+- **2.1-01 README 计数同步（补登）**：README 文档份数声明同步为 55/53（53 份 md + 2 份 yaml）——0.0.31 叙述节声称「0.0.30 已闭环」但本批登记缺失，round13 R13-02 指出后补记。
+
 ## 0.0.31（2026-08-06）— 第十一轮全库深度审计修复批次
 
 > 闭环 round11 共 13 项问题中的 9 项成立项（1 高 2.1-01 经复核已在 0.0.30 闭环；2.3-01/2.3-02 随 0.0.30 仓库整洁化闭环；2.2-01 部分不准确——推理皮层以别名收录、命名配置集已列全）。**审计断言核验**：round11 报告 13 项逐项实测——README 计数、操作数、changelog 叙述节、blueprint 承诺、术语覆盖、CRLF 清单全部属实；§5.5 引用 38 处复核无漂移（观察项通过）。
@@ -462,7 +464,38 @@ status: draft
   - **维持 34 项**（真实障碍，理由逐条登记 §七 7.1 表）：技术依赖（D-012 性能门禁、D-013 周期审计承诺、D-016/306/312 连续度量依赖、D-303 类型级子结构、D-305/332 关键路径、D-307 认知原理先行、D-324 多维独立裁决框架、D-325 后台维护引擎、D-328 图结构、D-331 依赖 Phase 1 验收、D-401 三区集成独立排期）、安全取舍（D-320 集中授权可审计、D-327 例外路径禁用）、产品阶段（D-308/309/310 v1.2 路线图、D-413 v1.2 多租户）、增量度量（D-403）、触发条件驱动（D-404/405/407~412）、运行观测评估（D-005 图式分治、D-336 连续谱）、学习信号依赖（D-020）。
 - **评估纪律**：维持项均附真实障碍与可追溯理由（§七 7.1/7.2）；升格项正文预期版本同步；摘要表状态列与状态说明同步；rl-weight-spec/debt-collection 版本记录升 0.0.32。
 
-- **门禁**：`scripts/doc-audit.py` 18 类 + 14a + 6.13/6.14/6.15/6.12a/6.8a/6.16 待验证;`deep-audit.py` 待验证。
+- **门禁**：`scripts/doc-audit.py` 18 类 + 14a + 6.13/6.14/6.15/6.12a/6.8a/6.16 已验证全绿（exit 0，0 FAIL）;`deep-audit.py` 已验证全绿（exit 0）——2026-08-06 round13 实测回填。
+
+## 0.0.33（2026-08-06）— round12/round13 深度审计修复批次
+
+> 闭环 round12 遗留 7 项 + round13 新发现 1 项（R13-04）+ 观察项 2 项（R13-06/R13-09）；**「遗留项核销」机制首个实例**（round12 遗留核销表见下，承接 round13 流程建议 10）。审计断言核验：round13 报告 8 项逐项实测——7 项属实；R13-03 表述微误（实测 D-406 第三列已为 v0.1.0.x，Phase 列实际错位 9 行而非 10 行）。
+
+### round12 遗留核销表（机制首个实例：每轮遗留项挂批次末尾，下轮开跑前先逐项核销）
+
+| round12 编号 | round13 编号 | 处置批次 | 核销 |
+|:--|:--|:--|:--|
+| ① 版本记录登记缺口 | R13-01 | 0.0.33 | ✅ 闭环（architecture 补 0.0.29/0.0.30、cognitive-foundation 补 0.0.30、blueprint 补 0.0.30，各补 0.0.33 说明行） |
+| ② changelog 闭环登记错位 | R13-02 | 0.0.33 | ✅ 闭环（0.0.30 叙述节补记 2.1-01） |
+| ③ threat-model 黄金集悬空 | R13-05 | 0.0.33 | ✅ 闭环（test-plan 预留表补 TC-GOLD-001~ 占位） |
+| ④ round11 报告断链 | — | 0.0.30 | ✅ 已闭环（reviews/ 目录删除，round13 复核确认） |
+| ⑤ README 空节残留 | R13-07 | 0.0.33 | ✅ 闭环（空节删除） |
+| ⑥ 摘要表 Phase 列错位 | R13-03 | 0.0.33 | ✅ 闭环（D-404/405/407~412 → v1.1、D-413 → v1.2，背景文本移除；D-406 实测已正确） |
+| ⑦ doc-audit SyntaxWarning | R13-08 | 0.0.33 | ✅ 闭环（docstring 改 raw string，compile 检测无其他非法转义） |
+| ⑧ changelog 历史提及 | R13-06 | 0.0.33 | ✅ 闭环（0.0.24「见」式指引改注；0.0.18「纳入文档计数」补失效注记；历史叙述保留） |
+
+- **R13-01 版本记录登记缺口（round12 ① 遗留）**：architecture 补登 0.0.29（§11 术语计数 60→67 同步）/0.0.30（引用清理）两行；cognitive-foundation 补登 0.0.30（决策编号引用改指 [adr.md](adr.md)）；blueprint 补登 0.0.30（引用同步）。**根因治理（流程级）**：engineering-workflow §三 提交规范新增「批次收尾检查清单」——触及即登记 + 门禁清单同步 + 门禁结果回填（round12 P1 建议 9 落地；脚本级自动校验无法判定「批次是否实质触及某文档」，选人工清单方案）。
+- **R13-02 changelog 闭环登记错位（round12 ② 遗留）**：0.0.30 叙述节补记「2.1-01 README 计数同步（补登）」。
+- **R13-03 摘要表 Phase 列错位（round12 ⑥ 遗留）**：debt-collection §四 摘要表 D-404/405/407~412 第三列改 v1.1、D-413 改 v1.2（与 §七 评估表「维持 v1.1/v1.2」结论一致），背景文本移除（活跃区五要素已完整），状态列补「（维持，0.0.32 评估）」与同表格式对齐。
+- **R13-04 工程流程门禁清单过时（round13 新发现）**：engineering-workflow §四 CI 门禁清单补 6.8a + 6.16（对齐 changelog 0.0.31 门禁行；release-guide 实测未列门禁清单，无需同步）。
+- **R13-05 黄金集用例悬空（round12 ③ 遗留）**：test-plan 预留编号表补 `TC-GOLD-001~` 占位行（黄金集回归 = Judge 漂移检测，来源 threat-model §三；黄金集非功能清单项，独立前缀 GOLD 与 W/R/M/SF/CAL 功能前缀区分）。
+- **R13-07 README 空节（round12 ⑤ 遗留）**：删除「审计与决策记录（过程产物）」空节标题与空表头（计数注记已含「审计过程材料不随仓库分发」说明，无需另补）。
+- **R13-08 doc-audit SyntaxWarning（round12 ⑦ 遗留）**：6.15 docstring 改 raw string（`\w`/`\.` 未转义），compile 全量检测确认无其他非法转义序列。
+- **R13-06 changelog 历史指引断链（观察项）**：0.0.24 叙述节「批次明细见 audit-history-summary §一」改注（该文件已于 0.0.30 移出仓库）；0.0.18 叙述节「纳入文档计数」补失效注记（0.0.30 后不再计数）；0.0.18 其余历史叙述与版本记录行按 append-only 保留。
+- **R13-09 正文批次注记纪律（观察项，记录在案）**：审计建议 documentation-governance 增补「正文批次注记纪律」（允许/禁止类型 + 每文档上限）。现状 15+ 处注记均属决策溯源/教训类（含 0.0.22「门禁虚假绿灯」教训），暂无膨胀迹象，**维持现状**；纪律条文待后续文档规范批次按需落地（观察项不阻断）。
+- **0.0.32 门禁验证回填（round13 流程建议 11）**：0.0.32 条目「待验证」→「已验证」（doc-audit 全绿 exit 0、deep-audit 全绿 exit 0，2026-08-06 round13 实测）。
+- **版本记录登记**：architecture/cognitive-foundation/blueprint/debt-collection/README/engineering-workflow/test-plan 版本记录登记 0.0.33 行（补登动作本身如实登记）。
+
+- **门禁**：`scripts/doc-audit.py` 18 类 + 14a + 6.13/6.14/6.15/6.12a/6.8a/6.16 全绿（0 FAIL）;`deep-audit.py` 全绿（exit 0）。
 
 ## 版本记录
 
@@ -502,3 +535,4 @@ status: draft
 | 0.0.30 | 2026-08-06 | 仓库整洁化批次：审计过程材料移出仓库——删除 docs/reviews/ 目录（审计历史摘要）与 scripts/_deep_audit_out.json（纳入 .gitignore）；全库 audit-history-summary 引用清理（决策编号改指 [adr.md](adr.md)、债务谱系标注保留文字删链接、changelog 历史条目去链接）；README 移除审计历史索引、修订审计材料不随仓库分发的说明。 |
 | 0.0.31 | 2026-08-06 | 第十一轮全库深度审计修复批次（round11 9 项成立问题闭环）：操作数同步 66 + 门禁 6.8a OP 行数校验；changelog 0.0.27~0.0.30 叙述节补齐；blueprint v1.1 承诺追缴补登 D-404~D-413 共 10 条；glossary 推理皮层别名收录；行尾统一 LF（20 份 + .gitattributes + 门禁 6.16）；catalog「—」语义注记；架构 §0.8 短名注记；deep-audit 输出改系统临时目录。 |
 | 0.0.32 | 2026-08-06 | 第三方分析分诊（echomind）+ 全量债务 v0.1.0 可实现性评估批次：EchoMind 16 项交叉核实（14 项已覆盖/有意差异/互为印证——含 RL 权重设计独立实现印证、宣称-实际反面教材、SKILL 层集成佐证；rl-weight-spec 补衰减防坑注记；新增 D-414 检索反馈权重快照）；debt-collection §七 评估表 62 条活跃债务全量评估（9 已覆盖/7 升格 v0.1.0.x/1 规格升格/11 已在首版范围/34 维持附真实理由）；正文与摘要表同步（D-006/007/008/009/010/011/014/018/019/102/103/301/302/402/406/414，D-102 过时描述修订）。 |
+| 0.0.33 | 2026-08-06 | round12/round13 深度审计修复批次：round12 遗留 8 项全量核销（核销表见叙述节）——版本记录补登（architecture 0.0.29/0.0.30、cognitive-foundation 0.0.30、blueprint 0.0.30）、changelog 0.0.30 补记 2.1-01、摘要表 Phase 列修复（D-404/405/407~412 → v1.1、D-413 → v1.2）、test-plan 黄金集占位 TC-GOLD-001~、README 空节删除、doc-audit docstring raw string 修复；round13 新发现 R13-04 门禁清单补 6.8a/6.16 + 「批次收尾检查清单」（流程级根因治理）；观察项 R13-06 历史指引改注、R13-09 记录在案；0.0.32 门禁验证回填。 |

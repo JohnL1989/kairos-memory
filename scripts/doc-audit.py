@@ -550,7 +550,7 @@ def check_mechanism_sections() -> None:
 
 
 def check_hard_line_refs() -> None:
-    """6.15 硬行号引用禁令（0.0.28 补盲区，闭环第十轮审计 C-03/F-01）。
+    r"""6.15 硬行号引用禁令（0.0.28 补盲区，闭环第十轮审计 C-03/F-01）。
 
     语义化交叉引用是 documentation-governance §2 的规范（文档名+章节）；
     `path.md:行号` 引用随编辑必漂移（configuration 附录 A 曾 135/136 漂移），

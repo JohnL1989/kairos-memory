@@ -71,11 +71,6 @@ status: draft
 | [`governance/documentation-governance.md`](governance/documentation-governance.md) | **文档治理规范** — 更新联动/交叉引用/状态管理/编号注册 |
 | [`governance/release-guide.md`](governance/release-guide.md) | **发布指南** — 版本号/检查清单/发布步骤/许可证 |
 
-## 审计与决策记录（过程产物）
-
-| 路径 | 内容 |
-|:-----|:-----|
-
 ## 运维文档
 
 | 路径 | 内容 |
@@ -172,3 +167,4 @@ status: draft
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：新增 [development/engineering-workflow.md](development/engineering-workflow.md)（核心文档 54→55、53 md + 2 yaml）；glossary 60→67 条同步。 |
 | 0.0.30 | 2026-08-06 | 仓库整洁化：审计过程材料移出仓库（reviews/ 目录与 audit-history-summary 移除、scripts/_deep_audit_out.json 纳入 .gitignore）；审计历史索引行移除。 |
 | 0.0.31 | 2026-08-06 | 第十一轮全库深度审计修复批次（changelog 0.0.31）：操作目录 53→66 项；术语表推理皮层别名（计数不变）。 |
+| 0.0.33 | 2026-08-06 | round12/round13 深度审计修复批次（changelog 0.0.33）：删除「审计与决策记录（过程产物）」空节。 |
