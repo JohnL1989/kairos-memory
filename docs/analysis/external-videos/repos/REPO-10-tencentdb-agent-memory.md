@@ -20,7 +20,7 @@ status: draft
 | 仓库 | https://github.com/TencentCloud/TencentDB-Agent-Memory |
 | Star | 16670★（任务简报口径，2026-08-07） |
 | 语言/许可 | TypeScript（OpenClaw 插件，npm @tencentdb-agent-memory/memory-tencentdb）+ Python（Hermes provider）/ MIT（LICENSE 明示「licensed under the MIT」，Copyright 2026 Tencent） |
-| 视频对应 | VID-13（BV1tiuA6mENb，C 级游戏串台）、VID-21（BV1V9Lp68Ey1，C 级串台）、VID-23（BV18kDjBxEYR，C 级串台）——**三者笔记均未产出**，见存疑 |
+| 视频对应 | VID-13（BV1tiuA6mENb）、VID-21（BV1V9Lp68Ey1）、VID-23（BV18kDjBxEYR）——三者笔记见 [notes/](../notes/) 对应文件，见存疑 |
 | 分析日期 | 2026-08-07 |
 | 素材来源声明 | 直连 GitHub 失败，经 gh-proxy 镜像下载 main 分支 tarball（2.3MB，无 .git，无 commit SHA）；版本 0.3.6（package.json） |
 
@@ -95,7 +95,7 @@ status: draft
 6. **语境隔离参数**（`openclaw.plugin.json` 配置面）：offload.mildOffloadRatio=0.5/aggressiveCompressRatio=0.85/mmdMaxTokenRatio=0.2；bm25.language=zh（jieba）/en——CRI 治理与 BM25 中文分词的工程参考值
 
 ## 存疑与未验证
-- VID-13/21/23 均为 C 级串台素材且**笔记均未产出**（notes 目录无对应文件），「分层索引架构/跨会话记忆」仅来自任务简报转述与视频标题；本笔记的「视频对照」以标题口径为限，逐条机制对照不可行（未验证）
+- VID-13/21/23 原为 C 级串台素材（后经 whisper 重转写成功），笔记已产出；「分层索引架构/跨会话记忆」部分来自任务简报转述与视频标题，逐条机制对照以笔记标注为限（未验证）
 - 基准数字（token −61.38%、通过率 +51.52%、PersonaMem 48%→76%）为 README 自述（```README.md```），未附完整复现脚本逐项核验（未执行）
 - 「lossless recovery」为口径表述：L1 提取本身是 LLM 有损蒸馏（原子事实≠原文），「无损」指追溯链而非内容保真——如实记录口径与实现的偏差
 - warmup 指数、空闲超时等调度行为基于源码静态阅读，未运行验证（未执行）
@@ -107,3 +107,4 @@ status: draft
 | 版本 | 日期 | 摘要 |
 |:-----|:-----|:-----|
 | 0.0.1 | 2026-08-07 | 外部视频分析批次初始化（素材抓取/转写/精读） |
+| 0.0.42 | 2026-08-07 | 0.0.2（0.0.42 批次）审计修复：VID-13/21/23 笔记状态更新（已产出，串台重转写成功）。 |

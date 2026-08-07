@@ -8,8 +8,8 @@ tags:
   - design
   - technology
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -92,7 +92,7 @@ Kairos 作为记忆基础设施，通过标准化协议和官方 SDK 降低集�
 
 **MCP（Model Context Protocol）集成战略**：
 
-Kairos 对外暴露符合 MCP 规范的 Tool 接口，将 12 规范操作集（[架构 §7.3.1](../foundation/architecture-v0.1.0.md)）映射为 MCP Tool。Agent 通过 MCP Client 发现并调用 Kairos 的记忆工具，无需理解内部存储模型。
+Kairos 对外暴露符合 MCP 规范的 Tool 接口，将 15 个 MCP Tool（基础工具集 12——含 create/search/delete 三个规范操作直接映射与检索/维护/治理类 9 个——另加关系管理 3 工具；构成口径见 [架构 §7.1a](../foundation/architecture-v0.1.0.md)）映射为 MCP Tool。Agent 通过 MCP Client 发现并调用 Kairos 的记忆工具，无需理解内部存储模型。
 
 - **MCP Server 实现（勘误）**：MCP Server 作为**独立子进程**运行（stdio 传输），由 Agent 的 MCP Client 启动，与 Kairos 主进程通过 localhost HTTP 通信（进程模型与 [integration-design.md](../development/integration-design.md) §七、api-spec §6.8 一致——非主进程内嵌）。Server 端实现完整治理门禁（L1 权限 + L2 宪法约束 + L3 身份否决）
 - **Tool 命名规范**：`kairos_<operation>`（如 `kairos_store_memory`、`kairos_search_memories`），完整工具清单（15 个：基础工具集 12——含 create/search/delete 三个规范操作直接映射与检索/维护/治理类 9 个——另加关系管理 3 工具，构成口径见架构 §7.1a）见 [架构 §7.1a MCP Bridge 实现](../foundation/architecture-v0.1.0.md) 与 [api-spec §6.8](../specification/api-spec.md)
@@ -103,15 +103,15 @@ Kairos 对外暴露符合 MCP 规范的 Tool 接口，将 12 规范操作集（[
 
 | SDK 语言 | 定位 | 核心能力 | 最低版本要求 |
 |:--------|:-----|:--------|:-----------|
-| **Python** | AI/ML 生态首选 | 完整的 12 规范操作客户端、async/await 支持、pydantic 模型校验、与 LangChain/LlamaIndex 的 Memory 集成适配器 | Python ≥ 3.10 |
-| **TypeScript** | Web/Node.js 生态 | 完整的 12 规范操作客户端、Edge Runtime 兼容（Vercel/Cloudflare Workers）、Zod schema 校验、与 Vercel AI SDK 的 Memory Provider 集成 | Node.js ≥ 18 / TypeScript ≥ 5.0 |
-| **Go** | 基础设施/CLI 工具生态 | 完整的 12 规范操作客户端、低内存占用（< 10MB 运行时）、静态链接单二进制分发、gRPC streaming 支持（v1.1） | Go ≥ 1.21 |
+| **Python** | AI/ML 生态首选 | 完整的 15 个 MCP Tool 客户端（基础工具集 12 + 关系管理 3）、async/await 支持、pydantic 模型校验、与 LangChain/LlamaIndex 的 Memory 集成适配器 | Python ≥ 3.10 |
+| **TypeScript** | Web/Node.js 生态 | 完整的 15 个 MCP Tool 客户端（基础工具集 12 + 关系管理 3）、Edge Runtime 兼容（Vercel/Cloudflare Workers）、Zod schema 校验、与 Vercel AI SDK 的 Memory Provider 集成 | Node.js ≥ 18 / TypeScript ≥ 5.0 |
+| **Go** | 基础设施/CLI 工具生态 | 完整的 15 个 MCP Tool 客户端（基础工具集 12 + 关系管理 3）、低内存占用（< 10MB 运行时）、静态链接单二进制分发、gRPC streaming 支持（v1.1） | Go ≥ 1.21 |
 
 > **版本对齐策略（补充）**：Python SDK 最低版本要求 ≥ 3.10——SDK 为独立交付物，其版本要求与后端运行时（§一，目标兼容 3.11–3.13）互不约束；后端运行仍以 3.11–3.13 为基线。
 
 **SDK 设计原则**：
 
-- **API 一致性**：三语言 SDK 暴露相同的操作语义（12 规范操作集），仅语言习惯适配（Python 用 snake_case，TS 用 camelCase，Go 用 PascalCase）
+- **API 一致性**：三语言 SDK 暴露相同的操作语义（15 个 MCP Tool：基础工具集 12 + 关系管理 3），仅语言习惯适配（Python 用 snake_case，TS 用 camelCase，Go 用 PascalCase）
 - **零依赖目标**（Go SDK）：除标准库外零外部依赖，确保在任何 Go 环境中 `go get` 即可用
 - **渐进式类型安全**：Python 用 pydantic、TS 用 Zod、Go 用 struct tags——编译/校验时捕获参数错误
 - **测试共享**：三语言 SDK 共享同一套集成测试用例描述（YAML 格式），各语言 SDK 根据描述生成对应测试代码，确保行为一致性
@@ -143,3 +143,8 @@ File Graph 是 Kairos 路径空间的图论增强层——将 `kairos://` 路径
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-05 MCP Bridge 落点 §7.3→§7.1a。 |
 | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：MCP 工具集构成公式重写（C-01）——「12 规范操作直接映射」修正为「基础工具集 12（3 规范操作直接映射 + 检索/维护/治理类 9）+ 关系管理 3」。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：/metrics 端点弱化为待定义口径（与 observability 同步）。 |
+| 0.0.39 | 2026-08-07 | （合并占位：changelog 0.0.39 外部理念吸收批次——6 项借鉴落地于 acceptance-criteria/test-strategy/data-model/architecture/troubleshooting/benchmark-plan，未变更本文档技术选型，见 [changelog.md](../governance/changelog.md) 全景） |
+| 0.0.40 | 2026-08-07 | （合并占位：changelog 0.0.40 外部视频分析批次——新建 analysis/external-videos/ 分析产物目录，未变更本文档技术选型） |
+| 0.0.41 | 2026-08-07 | （合并占位：changelog 0.0.41 外部理念吸收落地批次 AP-01~28——认知基础 8 声明 + 架构 22 机制 + 规格层 7 文档，未变更本文档技术选型） |
+| 0.0.42 | 2026-08-07 | （合并占位：changelog 0.0.42 文档审计修复批次——§6 豁免 2 修订、§6.1 声明承载矩阵版本边界剥离，未变更本文档技术选型） |
+| 0.0.43 | 2026-08-07 | 文档审计修复批次（changelog 0.0.43）：§七 MCP/SDK 工具数口径统一为「15 个 MCP Tool（基础工具集 12 + 关系管理 3）」（原「12 规范操作集」与同文档「15 个工具」矛盾，审计报告 F2）；updated 同步至 2026-08-07。 |

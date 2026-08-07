@@ -8,8 +8,8 @@ tags:
   - design
   - integration
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -92,14 +92,15 @@ Kairos 支持通过 Webhook 或事件轮询向 Agent 通知异步事件。Webhoo
 
 > **外部理念吸收配套**（changelog 0.0.39）：本契约为 [test-strategy.md](../quality/test-strategy.md) §2.7 反事实检验（TC-CF-001~004）与 [acceptance-criteria.md](../quality/acceptance-criteria.md) §一a「任务成功率改善」指标提供数据来源——评价记忆系统不能只看召回率，任务成功率是「记忆是否让 Agent 变强」的直接测量。
 
-**契约形态**：宿主 Agent（Hermes）在任务结束后，通过事件总线回传任务结果（无需新增 REST 端点）：
+**契约形态**：宿主 Agent（Hermes）在任务结束后，通过事件总线回传任务结果（无需新增 REST 端点）。**事件类型复用 `use_event`**（事件类型枚举见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10——任务结果以 `use_event` 的 payload 标记 `task_outcome` 承载，不新增全局事件类型，枚举保持 10 类不变；同 retrieval_dimension_loss / reflect_agentic_loop 先例）：
 
 ```json
 {
-  "event_type": "task_outcome",
+  "event_type": "use_event",
   "source_layer": "access",
   "memory_id": null,
   "context": {
+    "marker": "task_outcome",
     "task_id": "task-20260806-001",
     "task_class": "web-form-submit",
     "mode": "retrieval_only",
@@ -109,17 +110,18 @@ Kairos 支持通过 Webhook 或事件轮询向 Agent 通知异步事件。Webhoo
 }
 ```
 
-**字段语义**：
+**字段语义**（payload 内，`marker="task_outcome"` 时生效）：
 
 | 字段 | 必填 | 说明 |
 |:----|:----|:-----|
+| `marker` | 是 | `task_outcome`——标记 use_event 载荷为任务结果回传 |
 | `task_id` | 是 | 任务唯一标识（Agent 侧生成），用于去重与跨模式关联 |
 | `task_class` | 是 | 任务类别，用于按类聚合成功率 |
 | `mode` | 是 | 三态之一：`full_context`（完整上下文）/ `retrieval_only`（仅检索记忆，反事实检验态）/ `no_memory`（无记忆基线）——对应 test-strategy §2.7 三态对比 |
 | `success` | 是 | 布尔任务结果 |
 | `metadata` | 否 | 自由扩展（尝试次数、耗时等） |
 
-**v0.1.0 承载**：落 `usage_events` 表（data-model §4）——`event_type='task_outcome'`，任务反馈存入 `context` JSONB，按 `created_at` 分区。Deep 模式日频聚合三态成功率，供 `kairos_task_success_rate` 指标（observability §1.1）与过时调用率联动分析。**不新增表、不新增端点**。
+**v0.1.0 承载**：落 `usage_events` 表（data-model §4）——`event_type='use_event'`（payload `marker='task_outcome'`），任务反馈存入 `context` JSONB，按 `created_at` 分区。Deep 模式日频聚合三态成功率，供 `kairos_task_success_rate` 指标（observability §1.1）与过时调用率联动分析。**不新增表、不新增端点、不新增事件类型**。
 
 **泄漏防护**：`task_id` 归属验证集的任务不得同时出现在经验来源中（基准设计红线，见 [benchmark-plan.md](../quality/benchmark-plan.md) §3.11）——集成层在回传时不校验（校验属基准执行侧义务，见 TC-CF-004）。
 
@@ -177,4 +179,5 @@ SDK 集成示例见 `src/access/mcp/bridge.py`。MCP 工具与 REST API 的等�
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-05 同源联动（审计未列）——MCP Bridge 落点 §7.3→§7.1a。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：MCP 工具注册时机修正——「Kairos 启动时向 Hermes 注册」改「Agent 拉起 MCP 子进程时注册」（进程模型见 technology-stack §七：独立子进程 + localhost HTTP 通信）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：ERR-DB-* 返回口径按 api-spec §7 收敛；路径空间统一下划线命名。 |
-| 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：新增 §五a 任务成功率回传契约——`task_outcome` 事件（三态 mode 字段），承载反事实检验数据源，v0.1.0 落 usage_events 表不新增端点。 |
+| 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：新增 §五a 任务成功率回传契约——`task_outcome` 事件（三态 mode 字段），承载反事实检验数据源，v0.1.0 落 usage_events 表不新增端点。（0.0.42 勘误：`task_outcome` 改为 `use_event` payload 标记承载——不新增全局事件类型，枚举保持 10 类，见架构 §10.10） |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§五a task_outcome 事件改 use_event payload 标记承载（不新增全局事件类型，枚举保持 10 类，架构 §10.10）；版本记录补勘误注记。 |

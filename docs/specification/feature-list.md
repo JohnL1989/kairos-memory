@@ -8,8 +8,8 @@ tags:
   - design
   - requirements
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -55,7 +55,7 @@ status: draft
 |:----|:-----|:-----|:------------|
 | R-01 | 路径前缀检索 | 按 kairos:// 路径前缀查询记忆集合 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 路径空间 |
 | R-02 | 语义检索 | 按内容语义相似度检索（向量搜索） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 向量空间 |
-| R-03 | 多路径融合 | 同时走多条检索路径后汇聚结果 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 多路径结果集 |
+| R-03 | 多路径融合 | 同时走多条检索路径后汇聚结果 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4.2 汇聚式多路径融合 |
 | R-04 | 按契约过滤 | 仅检索指定契约类型的记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.1 契约过滤 |
 | R-05 | 按时间范围过滤 | 检索指定时间窗口内的记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 时间索引 |
 | R-06 | 按情感维度检索 | 按 VAD 相似度检索记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 情感提升通道 |
@@ -153,6 +153,7 @@ status: draft
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-05 同源联动（审计未列）——H-01 MCP Bridge 落点 §7.3→§7.1a。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：H-01 MCP 工具计数 12→15（基础工具集 12 + 关系管理 3，对齐 api-spec §6.8）；PM-02 事件总线口径与架构 §10.10 竖切统一（4 类事件，intention 事件按 §10.6 注册门禁）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：P3-04/W-13 多模态版本档位注记（v0.1.0 子集交付）；R-21 更名四链路图谱扩展；W-04 更名 VAD 情感元数据写入；W-07 补 S-07 链接；零版本标记收敛。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：R-03 多路径结果集引用改指 §4.2；M-15/M-17/PL-04~06 技能类引用改指 blueprint §一；R-17 实体加成引用改指 §7.3a；债务编号前缀补标。 |
 
 ---
 
@@ -200,13 +201,13 @@ status: draft
 | R-14 | 分块差分索引 | Update 操作只 embedding 新行，不变行保留向量 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 长文本分块引擎·差分同步 |
 | R-15 | 时序知识图谱 | 实体关系带 valid_from/valid_to，支持 as_of 时间点查询 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 实体知识图谱·时序查询 |
 | R-16 | 关系失效与替代 | invalidate/supersede 操作，版本化实体关系 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 实体知识图谱·时序查询 |
-| R-17 | 实体检索加成 | 查询实体匹配候选关联实体→第 6 维加权（v1.1+ 激活完整加权时参与排序） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 实体加成 |
-| PL-01 | Playbook 创建 | 升华 strategy 阶段自动产出结构化 playbook candidate | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 过程知识 Playbook |
-| PL-02 | Playbook 搜索 | 按 task_class/title/steps 全文检索 + 语义混合搜索 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 过程知识 Playbook |
-| PL-03 | Playbook 反馈 | 使用后记录 outcome，自动更新 confidence 和状态 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 过程知识 Playbook |
-| PL-04 | Playbook 状态机 | candidate→needs_review→reviewed→promoted→superseded | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 过程知识 Playbook |
-| PL-05 | 三级技能进化 | L1 Traces→L2 Policies→L3 World Model→Skills | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 三级技能进化 |
-| PL-06 | World Model 规则 | 跨 task_class 稳定模式自动沉淀为 world_model_rules | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 三级技能进化 |
+| R-17 | 实体检索加成 | 查询实体匹配候选关联实体→第 6 维加权（v1.1+ 激活完整加权时参与排序） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3a 实体加成 |
+| PL-01 | Playbook 创建 | 升华 strategy 阶段自动产出结构化 playbook candidate | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（过程知识 Playbook 系统） |
+| PL-02 | Playbook 搜索 | 按 task_class/title/steps 全文检索 + 语义混合搜索 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（过程知识 Playbook 系统） |
+| PL-03 | Playbook 反馈 | 使用后记录 outcome，自动更新 confidence 和状态 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（过程知识 Playbook 系统） |
+| PL-04 | Playbook 状态机 | candidate→needs_review→reviewed→promoted→superseded | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（过程知识 Playbook 系统） |
+| PL-05 | 三级技能进化 | L1 Traces→L2 Policies→L3 World Model→Skills | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（三级技能进化） |
+| PL-06 | World Model 规则 | 跨 task_class 稳定模式自动沉淀为 world_model_rules | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（三级技能进化） |
 | W-12 | 捕获门控增强 | 12 种 skip pattern + secret regex + trivial + hard_max | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 摄取验证门禁·捕获门控 |
 | A-15 | Recall Funnel | 检索 trace 结构化（stage counts + timings + scoring） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 / [api-spec.md](api-spec.md) §6.7 |
 | A-16 | Freshness 报告 | fact_freshness 覆盖度/过期/需验证统计 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 事实新鲜度元数据 |
@@ -233,9 +234,9 @@ status: draft
 | R-20 | MMR 去重 | GSPO 后 MMR λ=0.5 贪心去重（跨源语义冗余） | [detailed-design.md](detailed-design.md) §9.2 |
 | R-21 | 四链路图谱扩展 | 语义 + Entity 共现 + Semantic kNN + Causal 四链并行扩展，融合权重 0.50/0.20/0.10/0.20（语义/共现/kNN/因果，架构 §5.2 检索扩展链路） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | R-22 | 编译管线敏捷检索 | 编译时注入双模检索（Fast <10ms + Deep 按需） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3d |
-| M-15 | 技能管理系统 | skills 表 + find_skills 语义搜索 + 六态生命周期 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
+| M-15 | 技能管理系统 | skills 表 + find_skills 语义搜索 + 六态生命周期 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（技能管理系统） |
 | M-16 | MemCube 四层分化 | textual/activation/parametric/preference 四层记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
-| M-17 | 四层记忆质量层次 | mental_models>observation>experience>world 检索优先级 1.00/0.75/0.50/0.25 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
+| M-17 | 四层记忆质量层次 | mental_models>observation>experience>world 检索优先级 1.00/0.75/0.50/0.25 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（四层记忆质量层次） |
 | M-18 | 组件注册表 | 运行时类型化组件注册 + 优先级回退 + 五态生命周期 | 横切组件 |
 | SF-14 | 编译管线上下文组装 | 四阶段（采集→分类渲染→注入元数据→哈希缓存）多源上下文组装 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4.3 |
 | SF-15 | 编译管线降级模式 | 4 级降级（full→structured→attributes→empty） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4.3 |

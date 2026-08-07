@@ -8,8 +8,8 @@ tags:
   - quality
   - performance
 created: 2026-07-20
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-08
+last_reviewed: 2026-08-08
 status: draft
 ---
 
@@ -124,7 +124,7 @@ status: draft
 
 ### 3.8 遗忘扫描延迟
 
-> **通过/失败判据**：10 万条全表扫描 ≤ 60s（NFR 规格 §二）
+> **通过/失败判据**：10 万条全表扫描 ≤ 60s（[nfr-specification.md](../specification/nfr-specification.md) §一 性能）
 
 ```text
 1. 准备：写入 100000 条记忆（含不同过期时间）
@@ -197,6 +197,21 @@ status: draft
 
 **落地口径**：建议项（非硬性发布门槛）——基准套件搭建时收录隐式关联用例 ≥ 30 个；回归阈值沿用 §四 统计方法（10 次重复 P50/P95，异常值剔除后补测）。
 
+> **间接查询入测注记（外部理念吸收 0.0.44；外部实证：PAPER-02 InMind 信任悖论）**：Kairos 验收不得只测直接查询——**间接查询（跨域关联）须进检索链路测试集**：外部实证显示显式关联检索 84% 命中 vs 隐式关联仅 14.4%（检索假设被证伪：查询语义相似 ≠ 所需记忆），只测直接查询会系统性高估检索质量。落地：§3.13 的 125 任务套件即为间接查询承载（与本节一致），新增用例时同步登记来源（外部实证标注）。
+
+> **长上下文问答基准参考注记（外部理念吸收 0.0.44；外部实证：PAPER-03 Zero-Mem / PAPER-05 ACM）**：长上下文问答基准参考——LoCoMo + 448K 长上下文 HotpotQA 改造（PAPER-03 基准方法）；Compaction 质量对标参考值 LongMemEval 92% / LoCoMo 93.2%（PAPER-05 Maximem Synap，**参考非门槛**）。评估维度缺口补录：latency / token 效率 / context-rot 抗性三维度纳入评估维度清单（CRI 维度 Kairos 已承载）。参考值须经本地校准后方可作门槛（外部实证标注）。
+
+### 3.14 任务感知评分评估流程（0.0.42 自 detailed-design §10.2 承接）
+
+任务感知评分（Task-Aware Precision@K / MRR）的基准评估流程（评分协议定义见 [detailed-design.md](../specification/detailed-design.md) §10.2，时序参数见 [acceptance-criteria.md](acceptance-criteria.md) §三）：
+
+1. 以时间点 T 执行查询 Q，记录检索结果 R（top-K，K 可配置）
+2. 对 R 中每条记忆计算 `task_score`（相对于期望答案集 A 中的对应条目）
+3. 聚合得分：
+   - **Task-Aware Precision@K** = Σ(task_score(r) for r in R) / K
+   - **Task-Aware MRR** = max(task_score(r) for r in R) / rank_of_max
+4. 传统 Precision@K 和 MRR 同时计算（作为对照组）——用于量化评分协议的改进幅度
+
 ---
 
 ## 四、性能回归阈值
@@ -229,3 +244,5 @@ status: draft
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：§3.4 升华批处理补通过/失败判据（P50 ≤ 30s、P95 ≤ 120s，NFR §一）；§3.5 磁盘增长补判据（10 万条 ≤ 2GB/≤500MB、50GB/10GB 磁盘预算、年增长 ≤ 2GB，NFR §二/§四）；新增 §3.10 启动时间基准方法（标准模式 ≤ 10s，NFR §三）。 |
 | 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：新增 §3.11 基准设计红线——经验来源与验证数据分离（评测泄漏防护，四条红线规则 + 适用场景界定）。 |
 | 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：新增 §3.12 六梯度消融实验方法论（分类整理 × 内容修改两轴六梯度分离归因，外部实证：文件系统记忆论文 VID-56）；新增 §3.13 检索回归基准建议 InMind 125 任务（隐式关联，外部实证：PAPER-02，2026）。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§3.8 判据引用改指 NFR §一；新增 §3.14 任务感知评分评估流程（承接 detailed-design §10.2）。 |
+| 0.0.44 | 2026-08-08 | 外部理念吸收落地批次（changelog 0.0.44）：§3.13 补间接查询入测注记（PAPER-02 信任悖论——验收不得只测直接查询）+ 长上下文问答基准参考注记（PAPER-03/05：LoCoMo/HotpotQA 448K 改造、LongMemEval 92%/LoCoMo 93.2% 参考值非门槛、latency/token 效率/context-rot 抗性三维度缺口补录）。 |

@@ -8,8 +8,8 @@ tags:
   - deployment
   - ops
 created: 2026-07-18
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -38,7 +38,7 @@ status: draft
 | **元认知层** | — | — | 完整监测器族 |
 | **宪法主权面** | 简化（仅外部校准端口 + 必选宪法约束，架构 §0.5 内核级） | 舍弃（架构 §0.5 标准级；外部校准端口为不可裁剪最小承载） | 完整（外部校准 + 宪法修订端口 + 监督平面） |
 | **推理皮层** | — | — | 完整（架构 §0.5 全量级组成） |
-| **适用场景** | 个人开发、试用心 | 正式生产 | 全功能部署 |
+| **适用场景** | 个人开发、试用 | 正式生产 | 全功能部署 |
 
 三种模式下 API 兼容，核心记忆操作（写入/检索）均可用。**遗忘能力注记**：遗忘调度器在竖切（v0.1.0-slice）内显式启用；完整系统形态下 `KAIROS_FEATURE_FORGETTING_ENGINE` 默认 OFF（仅基础 TTL 清理），需在配置中显式开启（见 [configuration.md](configuration.md) §11 特征标志与架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8）。差异在于元认知层监测深度（全量模式有完整监测器族）和跨层协调能力——轻量模式为独立进程，标准/全量模式支持 Docker 编排。切换只需要更改配置文件中的数据源指向和部署方式。
 
@@ -101,7 +101,7 @@ status: draft
 轻量模式：
 ```bash
 kairos serve              # 默认 SQLite 模式轻量
-# PostgreSQL 模式：kairos serve --pg（等价于设置 KAIROS_LITE_MODE=false，--pg 覆盖环境变量中的 LITE_MODE 值）
+# PostgreSQL 模式：kairos serve --pg（等价于设置 KAIROS_LITE_MODE=false，--pg 覆盖环境变量中的 LITE_MODE 值；规划扩展命令，CLI 表见 api-spec §3）
 kairos health             # 健康检查
 ```
 
@@ -219,33 +219,10 @@ Kairos 输出结构化 JSON 日志到 stdout（容器部署模式）；本地运
 
 ## 八、版本升级
 
-```bash
-# 轻量模式
-pip install --upgrade kairos
-kairos db migrate       # 执行数据库迁移
+> 版本升级/降级完整步骤（轻量/标准模式命令、`kairos db migrate` / `kairos db migrate rollback`、升级前备份要求）以 [runbook.md](runbook.md) §3 升级与降级为权威——本文仅保留指针，不重复步骤。
 
-# 标准模式
-docker compose pull kairos
-docker compose up -d    # 自动重建
-kairos db migrate       # 执行数据库迁移
-```
-
-升级前建议先备份数据库。降级步骤：
-> **路径说明**：轻量模式运行时数据库与 backup/restore 路径统一为 `~/.kairos/kairos.db`。安全规格（security-spec [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4）的默认配置目录 `~/.kairos/` 为所有数据文件的根目录，包含数据库、日志、迁移文件等。
-
-
-```bash
-# 轻量模式
-pip install kairos==<旧版本>
-kairos db migrate rollback  # 回滚数据库迁移
-
-# 标准模式
-docker compose pull kairos  # 确保拉取的是旧镜像/或通过 tag 切换
-docker compose up -d        # 使用旧镜像重建
-kairos db migrate rollback  # 回滚数据库迁移
-```
-
-## 九、进程级隔离演进路径（Marvis 建议 R-2）
+---
+## 九、进程级隔离演进路径（外部建议 R-2）
 
 > **背景**：架构 §2.2 已声明单进程部署下 ME-1/ME-2/ME-3（监测/治理/自观察）为逻辑隔离而非故障隔离——"治理不影响监测"的承诺在单进程下有漏洞。本节定义从单进程到进程级隔离的演进路径与各阶段部署形态。
 
@@ -271,6 +248,7 @@ kairos db migrate rollback  # 回滚数据库迁移
 | 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：KAIROS_LLM_API_KEY 必填口径与 user-guide 对齐。 |
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：遗忘能力口径注记（FORGETTING_ENGINE 默认 OFF）、行号引用改章节引用。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：KAIROS_SEARCH_DEFAULT_LIMIT 附录登记勘误；轻量模式校准能力注记（保留外部校准端口，不暴露 health 组件）。 |
-| 0.0.17 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.17，Marvis 建议 R-2 落地）：新增 §九 进程级隔离演进路径——已隔离项（宪法解释层/监督平面）+ v0.1.0.x 候选（ME-1/2/3 分离）+ v1.1 目标（全组件容器化）+ 生产部署建议 + 降级兼容。 |
+| 0.0.17 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.17，外部建议 R-2 落地）：新增 §九 进程级隔离演进路径——已隔离项（宪法解释层/监督平面）+ v0.1.0.x 候选（ME-1/2/3 分离）+ v1.1 目标（全组件容器化）+ 生产部署建议 + 降级兼容。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：全量模式启动时间 ~15 秒补「扩展设计值」注记（NFR 仅定义标准模式启动 ≤10s，§一 部署模式表与 §五 compose 说明两处）；`KAIROS_LLM_ENDPOINT` 必填口径与 `KAIROS_LLM_API_KEY` 对齐（标准/全量 ✅，轻量 ❌）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：全量模式与架构 kairos-full 配置集对齐（补宪法主权面/推理皮层维度）；日志字段统一 logger；轻量模式启动时间补扩展设计值注记。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§八 版本升级压缩为指针（runbook §3 权威）；--pg 规划扩展注记；「试用」笔误。 |

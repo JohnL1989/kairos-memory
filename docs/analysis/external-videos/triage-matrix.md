@@ -8,8 +8,8 @@ tags:
   - external-videos
   - triage
 created: 2026-08-07
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-08
+last_reviewed: 2026-08-08
 status: draft
 ---
 
@@ -21,7 +21,7 @@ status: draft
 
 > **素材边界**：视频素材分三级（A 字幕匹配 / B whisper 转写 / C 降级），见 [README.md](README.md) 素材边界声明。C 级素材不产生 EV 条目。
 
-## 分诊统计（截至 2026-08-07，基于 42/100 份视频笔记 + 10 份仓库笔记）
+## 分诊统计（截至 2026-08-07，基于 102 份视频笔记 + 15 份仓库笔记 + 9 份论文笔记）
 
 | 分诊 | 数量 | 占比 | 说明 |
 |:--|:--|:--|:--|
@@ -70,7 +70,7 @@ status: draft
 | EV-20 | 混合检索（语义+BM25+实体）多源独立实现 | REPO-05 Mem0 / VID-16 OpenClaw / VID-05 Hansight | 已覆盖（强印证） | [架构](../../foundation/architecture-v0.1.0.md) §7.3a | 三信号检索独立实证（4×独立实现） | 印证记录 |
 | EV-21 | 意图检测先验→检索加权（7 类意图） | REPO-03 Memorix | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §3.2 预测器 | 与预测器职责同域 | **AP-11** |
 | EV-22 | 任务内跨轮状态传递（轨迹压缩为状态传给下轮） | VID-62 @ 02:13 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §3 策略层 | 未建模任务内循环记忆粒度 | **AP-06** |
-| EV-23 | 主题感知写入切分（内容边界替代窗口边界） | VID-61 @ 03:04 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §7.3 写入管线 | 切分粒度增量 | 建议态 |
+| EV-23 | 主题感知写入切分（内容边界替代窗口边界） | VID-61 @ 03:04 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §7.3 写入管线 | 切分粒度增量 | 关联 AP-30（0.0.44 已落地） |
 
 ### D. 遗忘与巩固
 
@@ -81,7 +81,7 @@ status: draft
 | EV-26 | 间隔重复复习时刻表 | VID-25 @ 05:00 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §9 注意力调度器 | 与遗忘调度器互补 | **AP-09** |
 | EV-27 | sleep-time compute / 梦境 / 离线全局回顾（低峰期批量巩固） | VID-14 / VID-39 / VID-12 / VID-52 | 已覆盖 | [架构](../../foundation/architecture-v0.1.0.md) §5 升华管道 | 升华管道外部实证 | 印证记录 |
 | EV-28 | 处理完降温（热度更新后主动降温防自我强化） | REPO-04 MemoryOS | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §5.5 | 防陡升假阳性 | **AP-10** |
-| EV-29 | 保留期参数化+免疫规则+可解释保留原因 | REPO-03 Memorix | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §5 遗忘调度器 | 保留原因显式化 | 建议态 |
+| EV-29 | 保留期参数化+免疫规则+可解释保留原因 | REPO-03 Memorix | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §5 遗忘调度器 | 保留原因显式化 | 关联 AP-31（0.0.44 已落地） |
 | EV-30 | 显式间隔复习 vs 频率驱动 | VID-25 | 张力 | [认知基础](../../foundation/cognitive-foundation.md) §2.1 | 复习计划 vs 使用驱动 | 建议态 |
 
 ### E. 记忆归属与边界
@@ -89,11 +89,11 @@ status: draft
 | 编号 | 外部理念 | 出处 | 分诊 | Kairos 证据 | 第一性原理评估 | 处置建议 |
 |:--|:--|:--|:--|:--|:--|:--|
 | EV-31 | 记忆跟着项目走（项目级锚定） | VID-28 @ 01:46 / REPO-03 | 张力 | [架构](../../foundation/architecture-v0.1.0.md) §1 | Kairos 以主体为边界；关联 T-002 | AT-05/AP-13 |
-| EV-32 | 五维独立轴记忆模型（kind/scope/state/source/portability+状态机） | REPO-03 Memorix | 可吸收 | [认知基础](../../foundation/cognitive-foundation.md) §1.1 | 五轴正交性独立印证（治理轴集） | 建议态（强） |
+| EV-32 | 五维独立轴记忆模型（kind/scope/state/source/portability+状态机） | REPO-03 Memorix | 可吸收 | [认知基础](../../foundation/cognitive-foundation.md) §1.1 | 五轴正交性独立印证（治理轴集） | 关联 AP-32（0.0.44 已落地） |
 | EV-33 | 可推导信息绝不存（代码即权威来源） | VID-06 @ 07:05 / VID-10 @ 03:35 | 已覆盖 | [认知基础](../../foundation/cognitive-foundation.md) §1.3 编码门控 | 支撑编码门控准则 D.6 | 印证记录 |
 | EV-34 | 决策理由（推理记忆）显式化为记忆类型 | VID-28 @ 03:49 | 已覆盖 | [认知基础](../../foundation/cognitive-foundation.md) §1.1 认知完整性轴 | 认知完整性承载 | 印证记录 |
-| EV-35 | 操作轨迹记忆（改文件/跑命令/踩坑）为一等记忆类型 | VID-20 @ 00:57 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆 | 记忆类型增量 | 建议态 |
-| EV-36 | 约束记忆带 applies_to 作用域+覆盖式保守更新 | VID-46 @ 13:17 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §3.7 契约 | 呼应契约运行时投影 | 建议态 |
+| EV-35 | 操作轨迹记忆（改文件/跑命令/踩坑）为一等记忆类型 | VID-20 @ 00:57 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆 | 记忆类型增量 | 关联 AP-33（0.0.44 已落地） |
+| EV-36 | 约束记忆带 applies_to 作用域+覆盖式保守更新 | VID-46 @ 13:17 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §3.7 契约 | 呼应契约运行时投影 | 关联 AP-34（0.0.44 已落地） |
 
 ### F. 写入链路与工程
 
@@ -103,7 +103,7 @@ status: draft
 | EV-38 | 幂等+乐观锁事务提交（事实源/日志/Outbox 三分） | VID-34 @ 09:49 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §5 | 与 ADD-only 同向 | **AP-04** |
 | EV-39 | 索引是派生视图可重建 | VID-34 @ 10:43 / REPO-02 OptMem | 已覆盖（强印证） | [架构](../../foundation/architecture-v0.1.0.md) §5.2 | 影子副本可重建性外部实证 | 印证记录 |
 | EV-40 | 八阶段 ADD 管线（单次 LLM 调用提取，prompt 明示 sole operation is ADD） | REPO-05 Mem0 | 已覆盖 | [架构](../../foundation/architecture-v0.1.0.md) §7.3g | ADD-only 最强工程实证 | 印证记录 |
-| EV-41 | 压缩/重置边界作为主动知识转移事件（Flush Memories） | VID-03 @ 13:52 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §3.7 | 生命周期事件显式化 | 建议态 |
+| EV-41 | 压缩/重置边界作为主动知识转移事件（Flush Memories） | VID-03 @ 13:52 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §3.7 | 生命周期事件显式化 | 关联 AP-35（0.0.44 已落地） |
 | EV-42 | 固定条数摘要压缩（纯启发式） | VID-24 / VID-45 | 张力 | [认知基础](../../foundation/cognitive-foundation.md) §2.2 硬约束一 | 启发式 vs 可审计压缩 | AT 记录 |
 
 ### G. 治理与监控
@@ -113,17 +113,17 @@ status: draft
 | EV-43 | 记忆成熟度评估清单（原始事实/视图/读写决策/审计/回放五问） | VID-47 @ 05:20 / VID-31 @ 15:29 | 可吸收 | [质量](../../quality/acceptance-criteria.md) | 验收工具增量 | **AP-07** |
 | EV-44 | write/search 比监控指标（0.84=只写不读） | VID-11 @ 00:13 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §10.5 指标族 | 低成本高诊断价值 | **AP-08** |
 | EV-45 | 记忆是认知技能非存储模块（先查后写可训练） | VID-11 @ 01:57 | 张力 | [架构](../../foundation/architecture-v0.1.0.md) §8 S-12 | 记忆操作混入动作空间 vs 探索边界 | AT-05 |
-| EV-46 | 三笔账分离（容量/存储/模型实际看见） | VID-44 @ 01:50 | 可吸收 | [认知基础](../../foundation/cognitive-foundation.md) §1.1 | D-313 可及性轴立项论据 | **AP 参考** |
+| EV-46 | 三笔账分离（容量/存储/模型实际看见） | VID-44 @ 01:50 | 可吸收 | [认知基础](../../foundation/cognitive-foundation.md) §1.1 | 债务 D-313 可及性轴立项论据 | 关联 AP-37（0.0.44 已落地） |
 | EV-47 | 后台 Review 兜底（连续 10 轮无写入触发复盘） | VID-03 @ 17:47 | 已覆盖 | [架构](../../foundation/architecture-v0.1.0.md) §2.6.3 防抖反射执行器 | 印证 | 印证记录 |
-| EV-48 | 谁测的（第三方验证原则）：评测罗生门警示 | VID-8 @ 05:15 | 已覆盖 | [架构](../../foundation/architecture-v0.1.0.md) §1.7 审计庭 | 与 Kairos 外部审计经验同构 | 印证记录 |
-| EV-49 | MetaLLM 审查+门控脚手架自动迭代 | VID-11 @ 03:40 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §10.14 | 元认知层增量 | 建议态 |
+| EV-48 | 谁测的（第三方验证原则）：评测罗生门警示 | VID-08 @ 05:15 | 已覆盖 | [架构](../../foundation/architecture-v0.1.0.md) §1.7 审计庭 | 与 Kairos 外部审计经验同构 | 印证记录 |
+| EV-49 | MetaLLM 审查+门控脚手架自动迭代 | VID-11 @ 03:40 | 可吸收 | [架构](../../foundation/architecture-v0.1.0.md) §10.14 | 元认知层增量 | 关联 AP-36（0.0.44 已落地） |
 
-### H. 论文深读（2026 论文批次，[papers/](papers/) PAPER-01~09）
+### H. 论文深读（2026 论文批次，[papers/](papers/) PAPER-01~10）
 
 | 编号 | 外部理念 | 出处 | 分诊 | Kairos 证据 | 第一性原理评估 | 处置建议 |
 |:--|:--|:--|:--|:--|:--|:--|
 | EV-50 | LLM 整合制造错误记忆（54% 失败率；episodic-only 胜过整合式） | PAPER-01 持续更新衰退 | 已覆盖（强实证支撑） | [架构](../../foundation/architecture-v0.1.0.md) §5.5 / [认知基础](../../foundation/cognitive-foundation.md) §2.2 | 整合步骤本身是错误来源——支撑防御取向；挑战「整合即自演化」叙事 | 关联 AP-19 |
-| EV-51 | 检索假设被证伪：查询语义相似≠所需记忆（84% vs 14.4%） | PAPER-02 InMind | 张力 | [认知基础](../../foundation/cognitive-foundation.md) §2.1 间接度 / D-313 | 支撑间接度排序位与可及性轴立项；挑战查询驱动检索唯一入口 | 关联 AP-22 |
+| EV-51 | 检索假设被证伪：查询语义相似≠所需记忆（84% vs 14.4%） | PAPER-02 InMind | 张力 | [认知基础](../../foundation/cognitive-foundation.md) §2.1 间接度 / 债务 D-313 | 支撑间接度排序位与可及性轴立项；挑战查询驱动检索唯一入口 | 关联 AP-22 |
 | EV-52 | 零 token 记忆操作：轨迹为源+图扩散+时间层级+确定性校准 | PAPER-03 Zero-Mem | 已覆盖（强印证）+ 可吸收增量 | [架构](../../foundation/architecture-v0.1.0.md) §7.3a / §7.3g / §7.3f | 轨迹为源/非 LLM 索引/三信号独立实证 | 关联 AP-27 |
 | EV-53 | 证据-修订配对技能演进 + 评估侧隔离 | PAPER-04 SkillHone | 已覆盖（支撑） | [架构](../../foundation/architecture-v0.1.0.md) §5.5 / §8 S-14 | 见证锚定技能层实证；评估侧隔离=S-14 结构性隔离 | 关联 AP-24/26 |
 | EV-54 | 成本-保真三 regime：粗摘要悬崖=无声丢失代价形式化 | PAPER-05 ACM | 已覆盖（支撑+互为印证） | [认知基础](../../foundation/cognitive-foundation.md) §2.2 硬约束一 / §1.9 CRI | validated compaction=可审计压缩成本论证；CRI 被列为未解决维度 | 关联 AP-25 |
@@ -131,8 +131,9 @@ status: draft
 | EV-56 | GRAM 知识开关：路由而非抹除，物理移除优于抑制 | PAPER-07 GRAM | 可吸收（机制类比） | [架构](../../foundation/architecture-v0.1.0.md) §5.2 检索路径抑制器 / §8 S-19 | 与抑制器同一设计模式两层实现；呼应遗忘复发警示 | 关联 AP-23 |
 | EV-57 | 遗忘三样本相对检验：遗忘须在双副本两层都生效 | PAPER-08 遗忘审计 | 可吸收（统计方法论） | [架构](../../foundation/architecture-v0.1.0.md) §1.7 审计庭 / §8 S-19 | 黑盒审计实证化；「内容不可恢复≠行为无痕」边界声明 | 关联 AP-23 |
 | EV-58 | Δ-Mem 增量存储：仅存增量而非全量（0.12% 参数开销） | PAPER-09 Δ-Mem | 可吸收（存储模式） | [架构](../../foundation/architecture-v0.1.0.md) §5 记忆版本管理 | 写放大对齐；须过 P6 门禁（可重建+无无声丢失） | 关联 AP-28 |
+| EV-59 | 三层图记忆（交互→查询→洞察）+ 双向遍历 + 洞察支撑集溯源 | PAPER-10 G-Memory | 已覆盖（支撑+互证）+ 可吸收增量 | [架构](../../foundation/architecture-v0.1.0.md) §5.2 升华管道 / §3.9 检索深度分级 / §0.4 社会性校准占位 | 层级抽象=升华管道同构实证（原文消融：去洞察层掉 4.47%/3.82%）；支撑集引用=见证锚定互证；任务后自动演化与升华默认 OFF 取向冲突 | 关联 AP-29 |
 
-> **勘误**：用户映射分析（`outputs/kairos-papers-mapping.md`）称「KAIROS_RETRIEVAL_LINK_WEIGHTS 尚未定义」已过时（`configuration.md` 0.0.34 已回填默认值）；D-23 位于 `adr.md` 决策批次表内。
+> **勘误**：用户映射分析（`outputs/kairos-papers-mapping.md`）称「KAIROS_RETRIEVAL_LINK_WEIGHTS 尚未定义」已过时（`configuration.md` 0.0.34 已回填默认值）；决策 D-23 位于 `adr.md` 决策批次表内。
 
 ---
 
@@ -143,9 +144,9 @@ status: draft
 | 观察维度 | 本批次实例 |
 |:--|:--|
 | 来源分类 | 视频（科普/论文解读/产品演示/官方发布）× 仓库（README 口径/源码实证）——来源异质性高 |
-| 断言强度 | 视频声称（弱，需源码验证）< README 口径（中）< 源码实证（强）——本批次 10 个仓库中源码级验证 8 个 |
+| 断言强度 | 视频声称（弱，需源码验证）< README 口径（中）< 源码实证（强）——本批次 15 个仓库中源码级验证 8 个 |
 | 可信度标注 | 串台字幕（65%）→ 降级；whisper 转写（中，谐音错字）；字幕匹配（高）；源码（最高）——四级可信度体系在实践中自然形成 |
-| 唯一性证明成本 | 每条 EV 的「Kairos 无对应物」断言需人工核实（门禁 check 无法验证缺失）；本批次 49 条 EV 中约 10 条涉及缺失断言，均经人工比对 |
+| 唯一性证明成本 | 每条 EV 的「Kairos 无对应物」断言需人工核实（门禁 check 无法验证缺失）；本批次 59 条 EV（EV-01~59）中约 10 条涉及缺失断言，均经人工比对 |
 | 时效性 | 视频多为 2025-2026 产物，论文类时效性高（ICML/ACL/WWW 2026），框架类迭代快（Letta legacy、Zep 弃用社区版）——外部校准源需要时效标注 |
 | 结论 | 外部校准源的「一等公民化」需要：来源分类、断言强度标注、可信度分级、时效字段、缺失断言核验流程——本批次实践为此积累了实例基础 |
 
@@ -153,4 +154,6 @@ status: draft
 
 | 版本 | 日期 | 摘要 |
 |:-----|:-----|:-----|
-| 0.0.1 | 2026-08-07 | 基于 42/100 份视频笔记 + 10 份仓库笔记的首批 49 条 EV 分诊；T-002 实例样本节建立；剩余视频笔记完成后补充 |
+| 0.0.1 | 2026-08-07 | 视频+仓库阶段分诊（早期 49 条 EV）；0.0.2：论文批次（PAPER-01~09）增量 EV-50~58，统计口径更新为 102 笔记 / 15 仓库 / 9 论文 / 58 EV |
+| 0.0.42 | 2026-08-07 | 0.0.2（0.0.42 批次）审计修复：统计口径更新（102 笔记/15 仓库/9 论文/58 EV）；决策 D-23 前缀补标；VID-08 编号统一。 |
+| 0.0.44 | 2026-08-08 | 0.0.44 批次：PAPER-10（G-Memory）增量 EV-59（统计口径更新为 10 论文 / 59 EV）；EV-23/29/32/35/36/41/46/49 处置建议列更新（建议态 → 关联 AP-30~37，已落地）。 |

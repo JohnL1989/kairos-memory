@@ -8,8 +8,8 @@ tags:
   - development
   - setup
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-04
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -65,7 +65,7 @@ kairos init --init-key
 kairos init --db sqlite:///$HOME/.kairos/kairos.db
 
 # 标准模式（需要 Docker PostgreSQL）
-# 开发专用：密码经 ${KAIROS_DB_PASSWORD} 注入（本地开发先 export 该变量）；生产部署见 deployment.md §五 环境变量注入
+# 开发专用：密码经 ${KAIROS_DB_PASSWORD} 注入（本地开发先 export 该变量）；生产部署与环境变量注入见 deployment.md §三
 docker run -d --name db -p 5432:5432 \
   -e POSTGRES_USER=kairos \
   -e POSTGRES_PASSWORD=${KAIROS_DB_PASSWORD} pgvector/pgvector:pg16
@@ -139,3 +139,4 @@ kairos serve --port 8010 --reload
 | 0.0.1 | 2026-07-31 | 开发环境搭建：前置条件、初始化、测试与 IDE 配置（设计目标，CLI 未构建）。 |
 | 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：frontmatter 与版本记录同步（第二轮全库深度审计修复批次）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：Docker 密码硬编码改为 ${KAIROS_DB_PASSWORD} 注入。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：部署引用改指 deployment §三；frontmatter 审查日期同步。 |

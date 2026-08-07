@@ -8,8 +8,8 @@ tags:
   - user
   - guide
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-05
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -25,65 +25,24 @@ status: draft
 
 ## 一、快速上手
 
-### 1.1 安装
+> **定位说明**：本文解决「怎么用」——安装、部署细节（环境变量全表、密钥引导流程、Docker 等）以 [deployment.md](../ops/deployment.md) 与 [quick-start.md](quick-start.md) 为权威，此处仅保留最小入口。
+
+### 1.1 安装与启动
 
 ```bash
-# 标准模式（需要 PostgreSQL）
 pip install kairos
-kairos init --db postgresql://localhost:5432/kairos
-
-# 轻量模式（SQLite，开箱即用）
-pip install kairos
-kairos init --db sqlite:///$HOME/.kairos/kairos.db
-```
-
-### 1.2 首次部署（Key 引导流程）
-
-S-01 要求无有效 Key 拒绝启动。首次部署时需先生成密钥，打破「先有 Key 才能启动」的循环：
-
-```bash
-# 1. 初始化密钥（生成全部四个密钥并写入环境文件）
-kairos init --init-key
-
-# 2. 初始化数据库
-kairos init --db sqlite:///$HOME/.kairos/kairos.db
-
-# 3. 启动服务
+kairos init --init-key   # 首次部署：生成四密钥并初始化（S-01 要求无有效 Key 拒绝启动；重复执行幂等）
+kairos init --db sqlite:///$HOME/.kairos/kairos.db   # 轻量模式（SQLite 开箱即用）；标准模式用 postgresql:// DSN
 kairos serve --port 8010
 ```
 
-> **注（澄清）**：第 1、2 步为同一 `kairos init` 命令的两个子项——首次执行一次即可完成密钥与数据库初始化；重复执行幂等（不覆盖既有密钥，仅补缺失项）。
+> 完整部署步骤、环境变量全表（`KAIROS_DB_DSN` / `KAIROS_LLM_API_KEY` / `KAIROS_DAILY_BUDGET_FEN` 等）与三级部署规模见 [deployment.md](../ops/deployment.md) §一~§三；两分钟最小闭环见 [quick-start.md](quick-start.md)。
 
-`--init-key` 生成以下密钥并写入 `~/.kairos/.env`（与 quick-start 一致）：
-- `KAIROS_API_KEY` — API 鉴权
-- `KAIROS_SECRET_KEY` — 数据加密
-- `KAIROS_AUDIT_HMAC_KEY` — 审计链 HMAC
-- `KAIROS_SALT` — Salt 密钥（S-05 要求）
+### 1.2 密钥（S-01）
 
-> **注意**：`--init-key` 生成全部四个密钥（含 `KAIROS_SALT`）。这四个密钥是首次启动的必要条件——缺少任意一个均拒绝启动。
-
-### 1.3 环境变量
-
-| 变量 | 必填 | 默认值 | 说明 |
-|:----|:----|:-------|:-----|
-| `KAIROS_SALT` | ✅ | — | Salt 密钥（S-05 要求无 Salt 拒绝启动） |
-| `KAIROS_API_KEY` | ✅ | — | API Key（read/write/admin 三级） |
-| `KAIROS_SECRET_KEY` | ✅ | — | 数据加密密钥 |
-| `KAIROS_AUDIT_HMAC_KEY` | ✅ | — | 审计链 HMAC 密钥 |
-| `KAIROS_DB_DSN` | 标准模式 ✅ / 轻量模式 ❌ | — | 数据库连接串（轻量模式 SQLite 自动创建，不需配置） |
-| `KAIROS_LLM_API_KEY` | 标准/全量模式 ✅ / 轻量模式 ❌ | — | LLM Provider API Key（轻量模式使用本地 BGE-M3 嵌入，不需 LLM。详见 [system-context.md](../specification/system-context.md) 可选声明） |
-| `KAIROS_LLM_ENDPOINT` | 标准/全量模式 ✅ / 轻量模式 ❌ | — | LLM Provider 端点（升华/嵌入调用地址）。轻量模式使用本地模型（BGE-M3 嵌入 + 本地小模型），不需 LLM 端点（同 `KAIROS_LLM_API_KEY` 模式限定） |
-| `KAIROS_DAILY_BUDGET_FEN` | ❌ | 20000 | LLM 日预算（分，20000分=200元） |
-
-### 1.4 启动
-
-```bash
-kairos serve --port 8010
-# 输出：Kairos started on http://localhost:8010
-```
+`--init-key` 生成四个密钥并写入 `~/.kairos/.env`——`KAIROS_API_KEY`（API 鉴权）、`KAIROS_SECRET_KEY`（数据加密）、`KAIROS_AUDIT_HMAC_KEY`（审计链 HMAC）、`KAIROS_SALT`（S-05 加盐）。四个密钥均为首次启动必要条件，缺少任意一个拒绝启动（S-01）。
 
 ---
-
 ## 二、核心操作
 
 ### 2.1 写入记忆
@@ -204,7 +163,7 @@ KAIROS_SEED_PATH=~/.kairos/seeds/   # 可选。未设置则使用内置默认种
 | 单次检索返回条数 | ≤ 100 | 分页（offset/limit） |
 | 并发写入 | ≤ 60/min（≈1 ops/s，单客户端令牌桶限流） | 队列缓冲。写入容量目标 ≥100 ops/s（多客户端并行），检索吞吐验收目标 ≥180 ops/s（含 10% 余量；200 ops/s 为 100 并发的理论峰值容量口径——见 [nfr-specification.md](../specification/nfr-specification.md)）。详见 [ops/configuration.md](../ops/configuration.md) §7 |
 | 单 API Key 分级 | 三级权限预置 | 多 Key 轮换 |
-| 外部校准中断持续 | 超过配置阈值（DEGRADATION_PERIOD）周期进入安全休眠 | 恢复校准信号自动退出 |
+| 外部校准中断持续 | 超过配置阈值（`KAIROS_DEGRADATION_PERIOD_N/M`，经保守静默 → 受限交叉验证逐级降级，见架构 §10.9）周期进入安全休眠 | 恢复校准信号自动退出 |
 
 ---
 ## 版本记录
@@ -221,3 +180,4 @@ KAIROS_SEED_PATH=~/.kairos/seeds/   # 可选。未设置则使用内置默认种
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：检索吞吐 200→180 ops/s 口径；LLM_ENDPOINT 模式限定；kairos read 参数语义注记；SDK source 参数映射注记。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §三→§3 引用联动。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：路径空间统一下划线命名。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§一 快速上手压缩为简版+指针（部署细节归 deployment/quick-start）；DEGRADATION_PERIOD 参数名修正。 |

@@ -91,7 +91,7 @@ status: draft
 | OP-048 | 热度衰减 | 自动（Light 模式） | — | — | α=0.95 |
 | OP-049 | 冗余合并 | 自动（Light 模式） | — | S-14 | cos > 0.92 合并 |
 | OP-050 | 实体提取 | 自动（Deep 模式） | — | — | LLM 批量提取 |
-| OP-051 | TMT 补扫 | 自动（Deep 模式） | — | — | L2→L3→L4 逐级 |
+| OP-051 | 蒸馏补扫 | 自动（Deep 模式） | — | — | L2→L3→L4 逐级 |
 | OP-052 | P6 合规扫描 | 自动（Deep 模式） | — | — | 压缩比余量监控 |
 | OP-053 | 事实新鲜度过期扫描 | 自动（Deep 模式） | — | — | valid_until→expired→stale |
 | OP-054 | 记忆归档 | POST /v1/memories/{id}/archive | — | — | 竖切功能 M-05（已注册）；须满足遗忘调度器（架构 §5）freshness 阈值条件或经宪法解释层批准；is_identity=true 记忆不可归档（见证豁免） |

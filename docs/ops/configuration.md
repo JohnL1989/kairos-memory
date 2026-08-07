@@ -33,7 +33,7 @@ status: draft
 | `KAIROS_VIRTUAL_CALIBRATION_CONFIDENCE_CAP` | 0.3 | [0,1] | 重启生效 | 虚拟校准信号的置信度上限（架构定义：预设上限 0.3 且不可用于修宪）。**动态衰减**：生效置信度 = `0.3 × exp(-λ × 静默天数)`，见 `KAIROS_CALIBRATION_DECAY_LAMBDA` |
 | `KAIROS_CALIBRATION_DECAY_LAMBDA` | 0.02 | >0 浮点 | 重启生效 | 虚拟校准置信度时间衰减速率常数（建议一）——`virtual_confidence = 0.3 × exp(-λ × days)`，λ=0.02 约每 35 天减半（架构 §1.2 虚拟校准生成器） |
 | `KAIROS_CALIBRATION_DECAY_FLOOR` | 0.05 | [0,0.3] | 重启生效 | 虚拟校准置信度下限（建议一），衰减不低于此值 |
-| `KAIROS_CALIBRATION_AUTO_DORMANT_DAYS` | 60 | ≥1 整数 | 重启生效 | 外部校准静默达此天数时自动切换休眠态（建议一）——运营可视化 dorman 态阈值，实际休眠切换仍由 §10.9 降级状态机周期阈值驱动 |
+| `KAIROS_CALIBRATION_AUTO_DORMANT_DAYS` | 60 | ≥1 整数 | 重启生效 | 外部校准静默达此天数时自动切换休眠态（建议一）——运营可视化 dormant 态阈值，实际休眠切换仍由 §10.9 降级状态机周期阈值驱动 |
 | `KAIROS_VIRTUAL_CALIBRATION_TIMEOUT` | 900 | ≥0 整数 | 重启生效 | 外部校准端口静默超过此时长（秒）后生成虚拟校准信号。**触发口径（勘误）**：实际触发由校准调度器联动逻辑承载（[detailed-design.md](../specification/detailed-design.md) §5）——`KAIROS_CALIBRATION_TIMEOUT`（默认 300s）每次超时静默计数 +1，计数 > `KAIROS_CALIBRATION_SILENT_COUNT`（默认 6 次）即 6×300=1800s 触发生成。本参数 900s 为架构 §11 术语表的简化表述（对应 3 次静默），不作为独立生效参数——实现与配置核对以校准调度器联动逻辑与 `KAIROS_CALIBRATION_*` 三参数为准 |
 | `KAIROS_VIRTUAL_CALIBRATION_SIMILARITY_THRESHOLD` | 0.7 | [0,1] | 重启生效 | 虚拟校准与见证锚定比对的相似度阈值 |
 | `KAIROS_VIRTUAL_CALIBRATION_CONFLICT_THRESHOLD` | 3 次 | 见说明约束 | 重启生效 | 连续冲突次数超过此值触发拟真校准失稳告警（对应 observability 拟真校准失稳告警）。**与 `KAIROS_CALIBRATION_CONFLICT_THRESHOLD` 的区分（注记）**：本参数为**次数阈值**（连续冲突 N 次 → 告警，架构 §1.2 虚拟校准生成器）；后者为**单次冲突判定的相似度阈值**（cosine 距离 ≥0.35 判定为冲突，[detailed-design.md](../specification/detailed-design.md) §5 校准调度器）——两者是同一冲突检测链的两个环节（单次判定 + 连续计数），非同一参数 |
@@ -46,7 +46,7 @@ status: draft
 | --- | --- | --- | --- | --- |
 | `KAIROS_BLIND_SPOT_PROXIMITY_RADIUS` | 0.3（余弦距离） | 见说明约束 | 重启生效 | 盲区标注「几何邻近」的半径 |
 | `KAIROS_BLIND_SPOT_SEMANTIC_DIVERGENCE_THRESHOLD` | 0.6（余弦距离） | [0,1] | 重启生效 | 盲区标注「语义迥异」的阈值 |
-| `KAIROS_EMOTIONAL_VAD_DEVIATION_SIGMA` | 1.5σ | [0,1] | 重启生效 | 情感 VAD 偏移背离标准差倍数，超过此值情感提升权重衰减至零 |
+| `KAIROS_EMOTIONAL_VAD_DEVIATION_SIGMA` | 1.5σ | [0,1] | 重启生效 | 情感 VAD 偏移背离标准差倍数，超过此值情感提升权重衰减至零（架构 §3.2）；另一用途：情感流形监测器超 σ 触发外部校准告警（[vad-coordinate-algorithm.md](../references/vad-coordinate-algorithm.md) §三） |
 | `KAIROS_EMOTIONAL_VAD_WEIGHT_BASE` | 0.15 | [0,1] | 重启生效 | VAD 情感在综合评分中的基础权重系数（0=不使用VAD，1=VAD完全主导）。实际参与权重 = base × (1 - deviation/deviation_sigma)，超出 sigma 时降为 0 |
 | `KAIROS_META_AUDIT_ENTROPY_SURGE_THRESHOLD` | 3× 基线标准差 | ≥0（按语义标定） | 重启生效 | 决策熵异常飙升的判定阈值（相对于基线偏差倍数） |
 | `KAIROS_META_AUDIT_ENTROPY_MEASUREMENT_WINDOW` | 10 个调度周期 | ≥1 周期 | 重启生效 | 决策熵测量的滑动窗口长度 |
@@ -444,7 +444,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_META_EVENT_DROP_MONITOR` | `true` | ME-1/ME-2 故障传播 | 是否启用元认知事件丢弃计数器——由审计庭直接监控（不经 ME-1 路径），记录 `monitor_event_dropped` 事件数的单调度周期变化量。`true`=启用独立计数器，输出至监督平面专用信道 |
 | `KAIROS_EXPLORATION_QUALITY_BASELINE` | `0.15` | 探索固定窗口盲区 | 固定窗口（默认 100ms）内探索候选被采纳的比例基线。低于此值说明固定窗口不足以为 P5 提供有效探索——触发告警并建议 v0.1.0.x 缩小窗口或切换至认知状态触发模式 |
 
-**关联风险登记**：以上参数对应的完整风险分析见 [governance/debt-collection.md](../governance/debt-collection.md) D-024~D-027。首次实现时须将 `KAIROS_NARRATIVE_AUDIT_CYCLE_MAX` 和 `KAIROS_META_EVENT_DROP_MONITOR` 纳入启动校验——未通过则阻断启动。
+**关联风险登记**：以上参数对应的完整风险分析见 [governance/debt-collection.md](../governance/debt-collection.md) 债务 D-024~债务 D-027。首次实现时须将 `KAIROS_NARRATIVE_AUDIT_CYCLE_MAX` 和 `KAIROS_META_EVENT_DROP_MONITOR` 纳入启动校验——未通过则阻断启动。
 
 ### §0.11 核心度量代理参数（编号为历史遗留：本节位于 §11 之后）
 
@@ -452,11 +452,11 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 | 参数 | 默认值 | 度量域 | 说明 |
 |:-----|:-------|:-------|:-----|
-| `KAIROS_CRI_WEIGHTS` | `[0.3, 0.5, 0.2]` | CRI | 依次为注意力熵、有效信息利用率、任务成功率的权重，三者之和须为 1.0（启动校验）。有效信息利用率权重最高（最直接的腐烂证据），任务成功率最低（代理最弱，见 D-024） |
+| `KAIROS_CRI_WEIGHTS` | `[0.3, 0.5, 0.2]` | CRI | 依次为注意力熵、有效信息利用率、任务成功率的权重，三者之和须为 1.0（启动校验）。有效信息利用率权重最高（最直接的腐烂证据），任务成功率最低（代理最弱，见 债务 D-024） |
 | `KAIROS_CRI_WINDOW_TURNS` | `20` | CRI | 滑动采样窗口的交互轮次数。每调度周期重算一次 CRI |
 | `KAIROS_CRI_COLD_START_MIN_TURNS` | `5` | CRI | 冷启动下限——窗口内轮次低于此值时 CRI 强制取 0 且不触发任何降级，避免小样本误降级 |
 | `KAIROS_CRI_RENORM_ON_MISSING_SIGNAL` | `true` | CRI | 窗口内无任何任务成功/失败信号时，是否将任务成功率权重置 0 并把其余两项重规范化为 `0.375 / 0.625`。`false`=以 0 值参与计算（会使 CRI 系统性虚高 0.2） |
-| `KAIROS_INTEGRITY_WEIGHTS` | `[0.4, 0.3, 0.3]` | 认知完整性 | 依次为反例覆盖度、路径禁区标注密度、组合约束连通性的权重，对应 D-016 公式 `S = 0.4×coverage + 0.3×dead_end + 0.3×connectivity` |
+| `KAIROS_INTEGRITY_WEIGHTS` | `[0.4, 0.3, 0.3]` | 认知完整性 | 依次为反例覆盖度、路径禁区标注密度、组合约束连通性的权重，对应 债务 D-016 公式 `S = 0.4×coverage + 0.3×dead_end + 0.3×connectivity` |
 | `KAIROS_ACCESSIBILITY_PROXY_WEIGHTS` | `[0.5, 0.3, 0.2]` | 可及性轴 | 依次为检索命中位次、路径竞争降权幅度、路径密度的权重。合成值仅用于告警与人工审查提示，**不参与遗忘裁决** |
 
 > **代理性质警告**：本节六项参数调节的是**代理指标**而非原度量本身。三项代理各自的认知局限已在 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1（认知完整性闭集分母系统性偏高、可及性轴以结果代理机制）与 §1.9（CRI 弱信号项）中显式声明。调参可改变灵敏度，**不能**消除代理与原定义之间的语义偏离。
@@ -486,11 +486,11 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_API_KEY_HASH` | —（必填，轻量模式单 Key 校验场景；文件权限 600） | `security-specification.md §2.1 API Key 生命周期` |
 | `KAIROS_AUDIT_HMAC_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_BATCH_TRANSACTION_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
-| `KAIROS_BENCHMARK_OFF_BY_ONE_SCORE` | `0.80` | `acceptance-criteria.md §文档检查` |
-| `KAIROS_BENCHMARK_OFF_BY_TWO_SCORE` | `0.50` | `acceptance-criteria.md §文档检查` |
-| `KAIROS_BENCHMARK_SAME_CHAIN_SCORE` | `0.30` | `acceptance-criteria.md §文档检查` |
-| `KAIROS_BENCHMARK_TASK_SCORE_WEIGHTS` | `[0.40, 0.30, 0.20, 0.10]` | `acceptance-criteria.md §文档检查` |
-| `KAIROS_BENCHMARK_TEMPORAL_GRANULARITY` | `day` | `acceptance-criteria.md §文档检查` |
+| `KAIROS_BENCHMARK_OFF_BY_ONE_SCORE` | `0.80` | `acceptance-criteria.md §三 时序基准参数` |
+| `KAIROS_BENCHMARK_OFF_BY_TWO_SCORE` | `0.50` | `acceptance-criteria.md §三 时序基准参数` |
+| `KAIROS_BENCHMARK_SAME_CHAIN_SCORE` | `0.30` | `acceptance-criteria.md §三 时序基准参数` |
+| `KAIROS_BENCHMARK_TASK_SCORE_WEIGHTS` | `[0.40, 0.30, 0.20, 0.10]` | `acceptance-criteria.md §三 时序基准参数` |
+| `KAIROS_BENCHMARK_TEMPORAL_GRANULARITY` | `day` | `acceptance-criteria.md §三 时序基准参数` |
 | `KAIROS_CALIBRATION_CONFLICT_THRESHOLD` | `0.35`（cosine） | `specification/detailed-design.md` §5 校准；单次冲突判定阈值，与正文 `KAIROS_VIRTUAL_CALIBRATION_CONFLICT_THRESHOLD`（连续次数阈值）为同一冲突检测链的两个环节 |
 | `KAIROS_CALIBRATION_MERGE_THRESHOLD` | `0.15`（cosine） | `specification/detailed-design.md` §5 校准 |
 | `KAIROS_CALIBRATION_SILENT_COUNT` | `6 次` | `specification/detailed-design.md` §5 校准 |
@@ -548,7 +548,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_FTS5_TOKENIZER` | `unicode61` | `foundation/architecture-blueprint-v1.1.md §P3-21 FTS5 全文搜索——contentless-external 模式` |
 | `KAIROS_FUSE_GAIN_THRESHOLD` | `0.15` | `specification/detailed-design.md` §1 融合 |
 | `KAIROS_FUSE_SUPPRESSION_FACTOR` | `0.3` | `specification/detailed-design.md` §1 融合 |
-| `KAIROS_USER_ALIASES` | 见正文 §8.4（JSON 示例） | 本文 §8.4（与正文 §8.4 同一参数） |
+| `KAIROS_USER_ALIASES` | 见正文 §8.4（JSON 示例） | 本文 §8.4（与正文 §8.4 同一参数；附录收录例外：正文定义但附录保留索引以便检索，0.0.42 注记） |
 | `KAIROS_IMPORT_MAX_SIZE_BYTES` | `1073741824` | `specification/detailed-design.md §11.4 可移植备份格式（.kairos 协议）` |
 | `KAIROS_IMPORT_TRANSACTION_TIMEOUT` | `600` | `specification/detailed-design.md §11.4 可移植备份格式（.kairos 协议）` |
 | `KAIROS_INFERENCE_FALSE_POSITIVE_THRESHOLD` | `0.15` | `architecture-v0.1.0.md §5.2 组件` |
@@ -653,3 +653,4 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：附录 A「待定义」计数 12→11（0.0.34 已回填 `KAIROS_RETRIEVAL_LINK_WEIGHTS`）；`KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` OFF 行为补竖切例外注记（竖切内监督平面部分启用——审计庭快照校验/审计日志比对，见 slice-implementation-guide 组件 6）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：§11 特征标志补 KAIROS_FEATURE_CONNECTORS（11→12）；KAIROS_SDK_PYTHON_MIN_VERSION 统一 3.10；身份映射参数名统一为 KAIROS_USER_ALIASES；正文 224 + 附录 A 146 = 370 计数核定；附录/§0.10 格式注记；动态调参约束注记。 |
 | 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：§0.11 补 CRI 触发压缩外部参考值注记（压缩触发阈值 0.5 / 压缩目标 0.2 / 保护最近 20 条，外部实证：Hermes VID-45）——注记形式落地，未新增参数，参数计数不变（正文 224 + 附录 A 146 = 370）。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：KAIROS_BENCHMARK_* 来源列指正（§三）；σ 双用途互注（VAD 告警+权重衰减）；dormant 笔误；附录 USER_ALIASES 收录例外注记。 |

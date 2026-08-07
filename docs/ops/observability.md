@@ -8,8 +8,8 @@ tags:
   - ops
   - monitoring
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -38,7 +38,7 @@ status: draft
 | `kairos_event_bus_queue_depth` | Gauge | 事件总线队列深度 | priority |
 | `kairos_sublimation_stage` | Gauge | 升华管道各阶段计数 | stage |
 | `kairos_forgetting_score` | Gauge | 遗忘得分分布 | bucket |
-| `kairos_stale_call_ratio` | Gauge | 过时调用率——被选中进入输出的检索结果中 status=stale/expired（或 fact_freshness 过期）者占比（Deep 模式日频聚合，指标定义见 [acceptance-criteria.md](../quality/acceptance-criteria.md) §一a） | user_id |
+| `kairos_stale_call_ratio` | Gauge | 过时调用率——被选中进入输出的检索结果中 status=stale/expired（或 fact_freshness 过期）者占比（Deep 模式日频聚合，指标定义见 [acceptance-criteria.md](../quality/acceptance-criteria.md) §一a；**v1.1+ 设计目标**，非 v0.1.0 交付指标） | user_id |
 | `kairos_task_success_rate` | Gauge | 任务成功率（集成场景）——三态对比：完整上下文 / 仅检索记忆 / 无记忆（反事实检验，见 [test-strategy.md](../quality/test-strategy.md) §2.7） | mode |
 | `kairos_budget_remaining_fen` | Gauge | LLM 日预算剩余（分） | provider |
 | `kairos_calibration_last_arrival` | Gauge | 距上次校准信号到达的秒数 | source |
@@ -96,7 +96,7 @@ status: draft
 |:---------|:---------|:---------|
 | **单请求追踪** | 入口生成 `trace_id`，贯穿存储/WM/策略各层日志 | 写入/检索/校准请求全链路 |
 | **异步链路追踪** | 升华/遗忘等后台任务使用独立 `trace_id`，在事件日志中通过 `parent_trace_id` 关联 | 后台批量操作 |
-| **跨服务追踪** | [P] 模式下通过 HTTP `X-Trace-Id` 头传递 | 对外 API（v1.1 目标） |
+| **跨服务追踪** | [P] 模式（定义见 [security-specification.md](../security/security-specification.md) S-04 同机绑定）下通过 HTTP `X-Trace-Id` 头传递 | 对外 API（v1.1 目标） |
 
 **可观测性四支柱**：指标（§一）+ 日志（§二）+ 追踪（本节）+ 告警（§四）。v0.1.0 以日志关联追踪为主，v1.1 目标引入 OpenTelemetry SDK 实现自动插桩。
 
@@ -149,3 +149,4 @@ status: draft
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：/metrics 端点断言式陈述弱化为设计目标（标注「端点待定义，api-spec §1.8 登记前为设计目标」）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：configuration 章节引用修正（§2→§4）。 |
 | 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：运行时指标补 `kairos_stale_call_ratio` / `kairos_task_success_rate`（记忆质量评估，指标定义见 acceptance-criteria §一a）；告警规则补「过时调用率超阈」。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：过时调用率指标补 v1.1+ 设计目标注记；[P] 模式补定义指针。 |

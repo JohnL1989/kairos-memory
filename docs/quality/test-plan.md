@@ -8,8 +8,8 @@ tags:
   - quality
   - testing
 created: 2026-07-21
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -38,7 +38,7 @@ status: draft
 
 - UI 测试（无图形界面）
 - 性能基准（由 [benchmark-plan.md](benchmark-plan.md) 覆盖）
-- v1.1+ 功能（社会性校准等）——定向遗忘的安全红线验证（S-16/S-19）归入 §3.8 红线测试，不视为功能级定向遗忘测试
+- v1.1+ 功能（社会性校准等）——定向遗忘的安全红线验证（S-16/S-19）归入 §3.8 红线测试，不视为功能级定向遗忘测试（功能级显式遗忘用例见 §3.5a TC-M03-001）
 
 ---
 
@@ -59,6 +59,7 @@ status: draft
 | ID | 用途 | 补充时机 |
 |:---|:-----|:--------|
 | TC-GOLD-001~ | 黄金集回归（Judge 漂移检测，来源 [threat-model.md](../security/threat-model.md) §三 Judge 漂移行）——黄金集非功能清单项，独立前缀 GOLD 与功能前缀（W/R/M/SF/CAL）区分 | 代码启动后补充 |
+| TC-CF-001~004 | 反事实检验（三态对比：full_context / retrieval_only / no_memory，定义见 [test-strategy.md](../quality/test-strategy.md) §2.7；非功能清单项，独立前缀 CF）——前置条件：任务成功率回传契约（integration-design §五a）实现；未实现时用例标记 skipped 不影响竖切验收 | 代码启动后补充（依赖任务成功率回传契约） |
 | TC-M02-001~ | 契约变更（M-02，[feature-list.md](../specification/feature-list.md)） | 代码启动后补充 |
 | TC-M06-001~ | 记忆导出（M-06，GET /v1/memories/{id}/export） | 代码启动后补充 |
 | TC-A02-001~ | 配置查看/修改（A-02） | 代码启动后补充 |
@@ -212,3 +213,4 @@ seeds = [
 | 0.0.33 | 2026-08-06 | round12/round13 深度审计修复批次（changelog 0.0.33）：预留编号表补 TC-GOLD-001~ 黄金集回归占位（Judge 漂移检测）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：TC-M03-001 对齐 api-spec 显式遗忘语义（`kairos forget` 标记遗忘候选入队列，S-16 留痕断言按 S-16 适用范围调整）；TC-MEMV-001 回滚参数改 body `target_version`（对齐 api-spec §1.4）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：预留表补 M-02/M-06/A-02/A-03/A-05/A-06 六项占位。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：预留用例编号表补 TC-CF-001~004（反事实检验）；§1 不覆盖补功能级用例指针。 |

@@ -8,8 +8,8 @@ tags:
   - ops
   - reliability
 created: 2026-07-18
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -46,7 +46,7 @@ pg_dump -d kairos -f ~/.kairos/backups/kairos-$(date +%Y%m%d-%H%M%S).sql
 
 ### 1.3 数据可靠性设计
 
-写入路径设计见架构文档 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4「存储层（缓冲写入）」。核心原则：写入确认基于内存缓冲收讫而非落盘确认，缓冲层有持久化兜底。
+写入路径设计见 [detailed-design.md](../specification/detailed-design.md) §2 存储引擎「数据流：写入路径」。核心原则：写入确认基于内存缓冲收讫而非落盘确认，缓冲层有持久化兜底。
 
 ### 1.4 异常状态管理
 
@@ -125,3 +125,4 @@ pg_dump -d kairos -f ~/.kairos/backups/kairos-$(date +%Y%m%d-%H%M%S).sql
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-01 三环不变量引用 §6/§10.3→§10.3。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：`error_log`/`events` 表改指真实承载（写入审计日志（使用事件总线）；升华恢复改 sublimation_queue 表 status=pending/processing，见 data-model）；备份容量换算口径修正（100 万条≈2GB 级 → 10 万条≈2GB 级 NFR 口径，原表述与 NFR 冲突）；30 天保留 vs NFR 50GB 磁盘预算核算注记。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：轻量档 LLM 超时取值适用前提注记；版本标记收敛。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：写入路径引用改指 detailed-design §2（原误指架构 §4）。 |

@@ -81,7 +81,7 @@ status: draft
 | Collection vs Profile 双存储模式（无界文档 vs 单文档最新状态，`conceptual_guide.md`） | 张力 | 契约是运行时投影（认知基础 §2.2）+ 双副本（[架构](../../../foundation/architecture-v0.1.0.md) §5.5） | **张力**：Profile 模式「新信息更新现有文档」是**覆盖式**记忆（旧信息丢失）——与 Kairos ADD-only 叠加模式（§7.3g）**直接冲突**；LangMem 以「只要最新状态」为由接受覆盖，Kairos 以「禁止无声丢失」为由拒绝覆盖 | 值得记入张力清单：外部主流实现（Profile/更新单文档）vs Kairos 结构性不覆盖——Kairos 需要持续论证覆盖的代价（LangMem 是反例的工程实证，证明覆盖在工程上是常见且可用的） |
 | MemoryManager 多轮 insert/update/delete 迭代（max_steps + Done 工具，extraction.py:239-243） | 已覆盖 | ADD-only 提取协议（[架构](../../../foundation/architecture-v0.1.0.md) §7.3g）+ 差异检验（§5.5） | 支撑：多轮迭代是 LLM 侧的对账机制；Kairos 以结构性协议替代 | 注意：LangMem 的 delete 是显式 LLM 决策，Kairos 不覆盖但允许差异检验裁决——机制差异值得对照 |
 | 提示词优化三优化器（Gradient/Metaprompt/PromptMemory，prompts/optimization.py） | 可吸收 | 升华管道·behavior 阶段（[认知基础](../../../foundation/cognitive-foundation.md) §1.10）+ 宪法主权面（[认知基础](../../../foundation/cognitive-foundation.md) §1.8） | 支撑：「记忆→行为」通道（提取成功模式回写系统提示词）与 Kairos behavior 阶段同题；**张力**：LangMem 让 LLM 直接改写系统提示词（agent 自改行为），Kairos 由宪法主权面约束行为变更——需对照「行为自进化」的边界治理 | 这是与 Kairos 宪法/身份面最相关的增量 |
-| RunningSummary 增量摘要（summarized_message_ids 追踪，summarization.py:53-60） | 已覆盖 | 升华管道·item 阶段（[认知基础](../../../foundation/cognitive-foundation.md) §1.10）+ 时间轴（§1.1） | 支撑：running summary 是短期记忆巩固的标准形态；Kairos 会话级巩固可对照 | 与  等短期记忆机制分诊同族 |
+| RunningSummary 增量摘要（summarized_message_ids 追踪，summarization.py:53-60） | 已覆盖 | 升华管道·item 阶段（[认知基础](../../../foundation/cognitive-foundation.md) §1.10）+ 时间轴（§1.1） | 支撑：running summary 是短期记忆巩固的标准形态；Kairos 会话级巩固可对照 | 与「记忆操作混入统一动作空间」等短期记忆机制分诊同族 |
 | per-user namespace 作用域（`{langgraph_user_id}` 占位符，tools.py:117-125） | 已覆盖 | 分域真理路由（[认知基础](../../../foundation/cognitive-foundation.md) §C.6）+ 路径空间硬过滤（[架构](../../../foundation/architecture-v0.1.0.md) §7.3a） | 支撑：namespace = 运行时作用域绑定，与 Kairos 路径前缀同构 | 增量：运行时占位符解析机制（config 注入 → namespace 物化） |
 | 记忆指令中的「SNR 最大化」「避免冗词」（extraction.py:197） | 可吸收 | 使用价值轴·信息密度（[认知基础](../../../foundation/cognitive-foundation.md) §1.1）+ 可审计压缩（认知基础 §2.2） | 支撑：信息密度作为提取标准与 Kairos 压缩纪律同向 | 增量：提取提示词的密度指令措辞 |
 | 记忆管理工具默认触发指令（preference/request/context/outdated 四类，tools.py:27-33） | 已覆盖 | 探索预算独立（认知基础 §2.2）+ 使用价值驱动（§2.1） | 支撑：显式触发条件是「何时值得记」的工程形态 | Kairos 有更结构化的价值评估；LangMem 是启发式指令 |
@@ -107,3 +107,4 @@ status: draft
 | 版本 | 日期 | 摘要 |
 |:-----|:-----|:-----|
 | 0.0.1 | 2026-08-07 | 外部视频分析批次初始化（素材抓取/转写/精读） |
+| 0.0.42 | 2026-08-07 | 0.0.2（0.0.42 批次）审计修复：引用占位补全。 |

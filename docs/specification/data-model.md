@@ -25,6 +25,8 @@ status: draft
 > - `extinction_status`（知识生命周期）：active → extinct（知识不再有效）→ fossilized（保留为历史化石）。独立于运行时可见性——已灭绝但 active 的记忆仍可检索。仅影响认知层的知识可信度评估。
 >
 > 三者正交：一条记忆可同时为 `status=active`（可检索）、`extinction_status=extinct`（知识无效）、`memory_states.state=active`（当前态）。详见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 遗忘调度器与 extinction 关系。
+>
+> **DDL 承载说明（审计报告 F7，changelog 0.0.43）**：本文档描述逻辑数据模型（表/列/索引/约束），**不含内联 `CREATE TABLE` DDL**——DDL 集中在 [schema-slice.sql](schema-slice.sql)（竖切示例 DDL，14 张表；全量 57 张物理表的建表语句随实现阶段由 Alembic 迁移脚本承载）。此分离为有意为之（文档层描述结构、迁移层承载 DDL），非遗漏。
 
 > **物理分库取向注记（外部理念吸收 0.0.41；外部实证：OpenClaw VID-16）**：外部实现采用「每 agent 物理分库」的隔离取向——每个 agent 独立数据库实例，故障域与备份粒度天然隔离。Kairos 采用**逻辑域隔离**——单库多租户，隔离由 `kairos://_user/{id}/` 路径域 + `permission_acl` 路径级授权（§11）承载。评估记录：逻辑域隔离以零额外运维成本支撑 v0.1.0 单机/轻量模式起步，且与端云同步（`sync_queue`）共用同一事务域；物理分库的故障隔离、单租户恢复与租户级备份优势，在标准模式多租户场景下作为 v1.1+ 演进选项（与 blueprint TeamScope P3-17 多租户隔离衔接，见 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-17）——v0.1.0 维持逻辑域隔离，不引入物理分库。
 
@@ -135,7 +137,7 @@ status: draft
 **索引**：`idx_knowledge_evolution_target` ON `target_id`（反向查询「谁演化自谁」）。
 **自引用防护**：写入时校验 target_id ≠ source_id，防止自引用演化记录。
 
-> **触发机制**：写入 `memories` 表后，后台触发 Jaccard 相似度计算（对比新内容与已有知识的前 500 chars），候选集门槛与各关系类型的语义判定规则**以架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 知识演化追踪为权威定义**（replaces = Jaccard > 0.7 且语义矛盾；enriches = 0.5-0.7 无矛盾；confirms = >0.7 语义一致；challenges = 同领域低相似度+质疑模式）——本节仅承载表结构，不再复述判定阈值。检测结果写入本表，relation_type=replaces 时自动将 source_id 对应的记忆标记为 `superseded`。**与 Flag 系统的共享**：上述 Jaccard 粗筛阶段（相似度 > 0.7）同时服务于 contradiction Flag 的触发——进入候选集的对会额外经过极性判定（LLM 标注核心主张的正向/负向/中立），极性相反则挂载 contradiction Flag（详见 `memory_flags` 表）。
+> **触发机制**：写入 `memories` 表后，后台触发 Jaccard 相似度计算（对比新内容与已有知识的前 500 chars），候选集门槛与各关系类型的语义判定规则（replaces / enriches / confirms / challenges 各自的阈值与语义条件）**以架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 知识演化追踪为权威定义**——本节仅承载表结构，不再复述判定阈值。检测结果写入本表，relation_type=replaces 时自动将 source_id 对应的记忆标记为 `superseded`。**与 Flag 系统的共享**：Jaccard 粗筛阶段（相似度 > 0.7，阈值见架构 §5.2）同时服务于 contradiction Flag 的触发——进入候选集的对会额外经过极性判定（LLM 标注核心主张的正向/负向/中立），极性相反则挂载 contradiction Flag（详见 `memory_flags` 表）。
 
 ### memory_flags（Flag 标记表）
 
@@ -492,8 +494,8 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 | `kairos.retrieval.bm25.k1_base` | FLOAT | 1.2 | [0.5, 3.0] | 自适应 BM25 | k1 基值（中长查询使用） |
 | `kairos.retrieval.bm25.b_base` | FLOAT | 0.75 | [0.1, 1.0] | 自适应 BM25 | b 基值（中性长度归一化） |
 | `kairos.retrieval.bm25.lemmatize` | BOOLEAN | true | true/false | BM25 词形归并 | 写入/检索时的词形归并开关 |
-| `kairos.retrieval.entity.boost_per_match` | FLOAT | 0.10 | [0.01, 0.50] | 实体加成 | 每个匹配实体的加成幅度 |
-| `kairos.retrieval.entity.boost_max` | FLOAT | 1.50 | [1.0, 3.0] | 实体加成 | 实体加成的上限倍率 |
+| ~~`kairos.retrieval.entity.boost_per_match`~~ | — | — | — | 实体加成（已废止） | 乘性实体加成参数，RC-03 已废止（实体信号统一为加性交集比例，α_e 由 `KAIROS_HYBRID_ENTITY_WEIGHT` 单一承载，见 [configuration.md](../ops/configuration.md) 与架构 §7.3a） |
+| ~~`kairos.retrieval.entity.boost_max`~~ | — | — | — | 实体加成（已废止） | 同上 |
 | `kairos.retrieval.gspo.enabled` | BOOLEAN | true | true/false | GSPO 聚类去重 | GSPO 全阶段总开关 |
 | `kairos.retrieval.gspo.similarity_threshold` | FLOAT | 0.85 | [0.7, 0.99] | GSPO 聚类去重 | 聚类语义相似度阈值（余弦相似度） |
 | `kairos.retrieval.gspo.cv_threshold` | FLOAT | 0.15 | [0.05, 0.50] | GSPO 聚类去重 | 组内变异系数激活阈值 |
@@ -711,7 +713,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 
 ### 8.12 知识管理扩展表
 
-> **定位**：技能管理系统（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 技能管理系统）、三链路知识图谱（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 三链路知识图谱）和四层记忆质量层次（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2）的数据承载表。以下表均以 PostgreSQL + pgvector 为设计基准。
+> **定位**：技能管理系统（[architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（技能管理系统））、三链路知识图谱（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 三链路知识图谱）和四层记忆质量层次（[architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（四层记忆质量层次））的数据承载表。以下表均以 PostgreSQL + pgvector 为设计基准。
 
 ### 8.13 skills（技能注册表）
 
@@ -1015,19 +1017,8 @@ HAVING SUM(CASE WHEN is_false_positive THEN 1 ELSE 0 END) * 1.0 / COUNT(*) > 0.1
 
 ## §10 注册表结构
 
-注册表不是 SQL 表，而是由编译器维护的树形键值对空间。其逻辑结构如下：
+注册表不是 SQL 表，而是由编译器维护的树形键值对空间（五个根键域 HKLA/HKCU/HKLM/HKCS/HKCSY、写入权限分离、一源一写规则等**完整定义以架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) 注册表为权威**）——本文仅承载 SQL 表结构，不重复注册表键值空间定义。
 
-| 根键 | 路径 | 值类型 | 写入权限 | 说明 |
-|:----|:----|:------|:--------|:-----|
-| HKLA | identity/agent_name | TEXT | 初始化 | Agent 显示名称 |
-| HKLA | identity/agent_id | UUID | 初始化 | Agent 全局唯一 ID |
-| HKLA | soul/core_tone | ENUM | 宪法修订端口 | 核心语气（professional/concise/friendly） |
-| HKCU | profile/name | TEXT | 编译器 | 当前用户名称 |
-| HKCU | preferences/code_style | TEXT | 编译器 | 代码风格偏好 |
-| HKLM | hardware/cpu/cores | INTEGER | 系统 | CPU 核心数 |
-| HKLM | network/status | ENUM | 系统 | 网络状态（online/offline/restricted） |
-| HKCS | current_task/id | UUID | 编译器 | 当前任务 ID |
-| HKCS | current_task/phase | TEXT | 编译器 | 当前任务阶段 |
 ---
 
 ## §11 P3 基础设施表（v0.1.0 交付）
@@ -1397,3 +1388,5 @@ SQLite 无时区类型，故：
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：rl_weights 归一化口径统一（初始化不归一化/更新投影强制 Σ=1）；实体类型存储枚举映射注记；配置键名映射示例修正；表标题 v0.1.0 交付口径；零版本标记收敛。 |
 | 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：encoding_context 补 `conditions` 子结构约定（条件性经验适用范围显式化）。 |
 | 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：memories 表新增显式时效字段 `valid_until`/`expiration_date`（时间轴结构互补；`superseded_by` 为既有字段，不重复添加），并同步 schema-slice.sql 补列（6.13 门禁联动）；§0 补物理分库取向注记（外部实证：OpenClaw VID-16 评估记录——Kairos 维持逻辑域隔离，物理分库为 v1.1+ 演进选项）。表数不变（57）。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：实体加成乘性参数废止标注（RC-03 口径）；知识演化触发机制括注阈值收敛为指针；§8.12 技能/质量层次引用改指 blueprint；§10 注册表压缩为指针（架构权威）；D-311 债务前缀补标。 |
+| 0.0.43 | 2026-08-07 | 文档审计修复批次（changelog 0.0.43）：补 DDL 承载说明（DDL 集中于 schema-slice.sql，文档层仅描述逻辑模型，审计报告 F7）；门禁 6.13 DDL<->data-model 字段集比对 0 差异。 |

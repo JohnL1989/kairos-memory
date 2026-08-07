@@ -7,8 +7,8 @@ tags:
   - governance
   - changelog
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-08
+last_reviewed: 2026-08-08
 status: draft
 ---
 
@@ -286,7 +286,7 @@ status: draft
 
 > 用户需求：对开源 AI 认知架构项目做源码级对比分析后，借鉴吸收其优秀设计理念与功能完善 Kairos。吸收前完成源码级深挖（提取 21 条实证参数/规则），仅吸收 Kairos 真实缺口（已有等价物不重复吸收）。
 
-- **热度体系实证参考基线**（吸收外部热引擎与时间蒸馏实证）：认知基础 §1.1 新增「热度体系实证参考基线声明」（热度组合公式 `1.0+频次×2+新近×10+重要性加分`、层级衰减 ×0.985/0.975/0.965/0.95、父传播 `max×0.6+mean×0.3+一致性×0.1`，附 P6 边界声明与可证伪判据）；usage-load-algorithm 三.5 K-063 注记补参考基线段；detailed-design 补热度体系参考参数表。
+- **热度体系实证参考基线**（吸收外部热引擎与时间蒸馏实证）：认知基础 §1.1 新增「热度体系实证参考基线声明」（热度组合公式 `1.0+频次×2+新近×10+重要性加分`、层级衰减 ×0.985/0.975/0.965/0.95、父传播 `max×0.6+mean×0.3+一致性×0.1`，附 P6 边界声明与可证伪判据）；usage-load-algorithm 3.5 K-063 注记补参考基线段；detailed-design 补热度体系参考参数表。
 - **摄入侧情绪爆发→整轮保护**（吸收外部情绪爆发检测实证）：认知基础 D.12 新增「摄入侧情绪爆发→整轮保护声明」（D-019(a) 情感调制的摄入侧扩展——输入侧情绪信号触发整轮保护通道 + 升温抑制，可证伪判据）；架构 §5.2 新增摄入侧情绪保护组件；配置新增 `KAIROS_EMOTIONAL_BURST_KEYWORDS`/`KAIROS_EMOTIONAL_BURST_PROTECTION_ENABLED`。
 - **摄取噪音规则库**（吸收外部纯正则噪音过滤实证）：架构 §7.3 捕获门控后补「噪音规则库层」（四类纯正则规则 + 重要性加分表，命中不计轮数不升温，P6 边界）；detailed-design 补噪音规则参考清单与加分表；配置新增 `KAIROS_INGEST_NOISE_FILTER_ENABLED`。
 - **时间粒度层级实证对照**（吸收外部五级时间蒸馏实证）：认知基础 §1.1 开放简化声明补「时间粒度层级实证对照声明」（五级离散层级与去语境化连续谱的映射关系，不闭合开放简化）；detailed-design §7 层级蒸馏管道补时间粒度层级蒸馏形态对照。
@@ -582,6 +582,18 @@ status: draft
 
 ---
 
+## 0.0.39（2026-08-06）— 外部理念吸收批次（2026-07）
+
+**批次定位**：外部理念吸收（2026-07）落地 6 项借鉴——① 记忆质量评估指标（[acceptance-criteria.md](../quality/acceptance-criteria.md) §一a 新增过时调用率 / 任务成功率改善，v1.1+ 设计目标）；② 反事实检验测试模式（[test-strategy.md](../quality/test-strategy.md) §2.7 三态对比 + TC-CF-001~004）；③ encoding_context `conditions` 子结构约定（data-model，条件性经验适用范围显式化）；④ 高相似 × 过时联合惩罚（架构 §7.3a 排序调制，stale ×0.7 / expired ×0.5）；⑤ 记忆四动作失败模式排障表（troubleshooting §二a）；⑥ 基准设计红线——经验来源与验证数据分离（[benchmark-plan.md](../quality/benchmark-plan.md) §3.11 评测泄漏防护）。
+
+**配套**：observability 指标 2 项 + 告警 1 条；integration-design §五a 任务成功率回传契约（`task_outcome` 经 `use_event` payload 标记承载，v0.1.0 落 usage_events 表不新增端点——0.0.42 勘误后口径）。
+
+**登记**：无债务登记、无新文档（7 份现有文档修订）。
+
+**门禁**：门禁验证通过。
+
+---
+
 ## 0.0.40（2026-08-07）— 外部视频分析批次（100 视频 + 15 仓库对照分析）
 
 **批次定位**：B站 AI Agent 记忆系统视频（100 个，用户提供 + B站 搜索精选补充）与 GitHub 热门记忆项目仓库（15 个，含补充深读 cognee/graphiti/OpenMemory/BasicMemory/langmem）的对照分析批次。**产出独立目录 [docs/analysis/external-videos/](../analysis/external-videos/README.md)，零改动核心设计文档**（foundation/specification 未修订），全部吸收建议止于「建议态」。
@@ -654,6 +666,98 @@ status: draft
 **计数与治理**：表数 57 不变（字段级扩展）；参数计数 224+146=370 不变（4 处新阈值如实标注「参数待登记」，未引入未登记 KAIROS_* 参数名）；受改 10 份文档版本记录统一 0.0.41（2026-08-07）；全部新增标注「外部理念吸收 0.0.41」与外部实证来源（REPO/VID/PAPER 编号）。
 
 **门禁**：doc-audit.py 18 类全绿（联合验证）。
+## 0.0.42（2026-08-07）— 全库文档审计修复批次（逻辑一致性/连贯性/定位符合性）
+
+**批次定位**：全库文档审计（9 组并行，语义级：逻辑一致性 + 阅读连贯性 + 定位符合性）修复批次——机器门禁基线全绿，本次修复 doc-audit 无法检测的语义级问题。
+
+**高严重级（13 条全部闭环）**：
+- 帕累托参与口径统一（usage-load §三 改写为架构 §3.3 三轴+硬过滤权威口径）
+- 叙事线响应状态枚举修正（api-spec `"open"` → `"active"`，对齐 data-model）
+- 实体加成乘性参数废止标注（data-model §7，RC-03 已废止口径残留）
+- 知识演化阈值括注收敛为指针（data-model §1「不再复述」后复述问题）
+- implementation-map 参数总数 371→370（0.0.22 旧口径残留）
+- 蓝图 §5.5 全文副本剥离为摘要+指针（架构 §5.5 唯一权威，0.0.40 漂移消除）
+- 六级链 D-006 认知关节修订（默认时序优先与宪法链序一致，废除「默认值优先」矛盾表述；debt-collection 同步）
+- slice S-04 误用修正（路径隔离为架构 §8 声明，S-04=本地回环绑定）
+- integration-design task_outcome 改 use_event payload 标记承载（不新增全局事件类型，枚举保持 10 类，与架构 §10.10 注册门禁及检索侧维度丢失先例一致）
+- troubleshooting 错误码镜像修正（ERR-CAL-001/002 503→400；ERR-CTR-002 审计痕迹口径）
+- analysis README 素材统计对齐实际（102 视频：27 字幕 + 75 whisper；C 级仅 VID-91/97 全降级 + VID-54 部分降级；25 份重转写成功笔记升 B 级）
+
+**定位剥离（重点）**：
+- 蓝图 §5.5 副本 → 架构 §5.5（摘要+指针）
+- glossary 六处词条公式/阈值/加分表剥离为语义+指针（遗忘调度器/检索深度分级/热度层级衰减/并行审查/噪音规则库/审计链）
+- data-model §10 注册表键值空间 → 架构注册表权威（指针）
+- detailed-design §10.5 恢复契约六属性验收判据 → acceptance-criteria §三a
+- detailed-design §10.2 基准测试集成流程 → benchmark-plan §3.14
+- claim-matrix「版本边界」治理规则 → documentation-governance §6.1
+- user-guide §一 部署细节压缩为指针（deployment/quick-start）
+- deployment §八 版本升级步骤压缩为指针（runbook §3）
+- threat-model 密钥轮换参数 → security-spec §5
+- 架构外部实证标注收敛为简注（机制描述纯机制化；豁免 2 修订为双轨口径）
+
+**引用/编号/计数**：决策/债务编号前缀全库补标（决策 15 处 + 债务 120+ 处，含 D-23 消歧 5 处）；feature-list/claim-matrix/data-model 悬空引用修正（blueprint §一 技能类落点）；benchmark-plan NFR 引用 §二→§一；configuration 时序基准参数（KAIROS_BENCHMARK_* 系列）来源列指正；concept-tiers 68→69；README 分析目录 129→131；changelog 0.0.39 版本记录乱序修复 + 叙述节补齐；架构双括号嵌套链接修复 23 处；笔误批量（dormant/试用心/后天维护/追诉窗口等）。
+
+**保留观察项**（低严重级，未改动）：data-model §0 物理分库取向评估记录（与 0.0.41 版本记录联动）；data-model §8.19/8.21 监控 SQL 示例（与表结构上下文强关联）；debt-collection §七 62 条评估基数口径；social-calibration M2 触发条件表述；traceability-map G-01 与 gap 文档互注（0.0.20 已确认刻意同步口径）。
+
+**门禁**：doc-audit.py 18 类全绿（含决策编号 WARN 清零）。
+
+## 0.0.43（2026-08-07）— 文档审计报告（F1–F9）闭环修复批次
+
+**批次定位**：依用户指令「修复所有问题」，对 [2026-08-07-document-audit-report.md](../../2026-08-07-document-audit-report.md) 所标识的 9 项问题（F1–F9）执行闭环修复；修复过程中引入的门禁回归已逐项清零并复验。
+
+**F1【中】零版本标记收敛（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md)）**：移除正文 23 处 changelog 残留批次标记（0.0.40×22 + 0.0.39×1，形如「外部理念吸收，changelog 0.0.40」），版本记录叙述（documentation-governance §6 豁免 1）保留；与 0.0.38 零版本标记口径一致。
+
+**F2【中】MCP Tool 计数口径统一（[technology-stack.md](../development/technology-stack.md)）**：同文档「12 规范操作集」与「15 个工具」矛盾——统一为「15 个 MCP Tool（基础工具集 12 + 关系管理 3）」，修正 L95/L114 及 L106–L108。
+
+**F3【中】AP 系列声明补登（[claim-implementation-matrix.md](../specification/claim-implementation-matrix.md)）**：补「外部理念吸收声明（AP 系列，0.0.41 落地）」追踪节，AP-01/02/03/05/06/19/22/28 八项认知层声明与 C-01~C-37 并列单一事实源；注明 AP 与 C 系列关系待 cognitive-foundation 显式编号对齐后并入总口径。
+
+**F4【中】参数待登记追缴补登（[debt-collection.md](debt-collection.md)）**：补登 D-422~D-425 共 4 条「参数待登记」阈值追缴（候选集集中度 / 升华整合门控证据充足性 / 处理完降温衰减 / 间隔重复复习间隔序列），五段式格式，落实追缴门禁（§2.3）。
+
+**F5【中】机器可读契约新增（specification/api-contract/）**：新增 `openapi.yaml`（OpenAPI 3.1 骨架，由 [api-spec.md](../specification/api-spec.md) 自动生成，81 路径 / 88 操作，与审计 88 端点口径一致）与 `mcp-tools.json`（15 工具，占位 inputSchema）；README 总计数 yaml 2→3（核心文档 55→56）。契约头部标注 skeleton 非成品。
+
+**F6【低】technology-stack 版本记录补齐**：版本记录补 0.0.39~0.0.42 占位行 + 0.0.43 条目，frontmatter updated/last_reviewed 同步 2026-08-07。
+
+**F7【低】data-model DDL 承载说明**：补「DDL 承载说明」注记——逻辑数据模型不含内联 `CREATE TABLE` DDL，DDL 集中于 schema-slice.sql（14 表示例）+ 实现阶段 Alembic 迁移；意图性分离（文档层描述结构、迁移层承载 DDL）。门禁 6.13 DDL<->data-model 字段集比对 0 差异。
+
+**F8【低】README 分析目录边界说明**：补「分析文档」目录边界说明——`docs/analysis/` 为外部视频分析产物目录，随仓库分发、不随审计材料归档，计入 `docs/` 全量 md 统计但不计入核心文档权威子集。
+
+**F9【低】架构单文件超限（复核无动作）**：3952 行导航/锚点复核——门禁 [15/18] 锚点链接检查仅 1 处受检且有效，全库零断锚；治理 §4.2 存量超限已豁免追溯拆分，维持现状。
+
+## 0.0.44（2026-08-08）— 外部理念吸收补落地批次（AP-29~37 + PAPER-01~09 增量未覆盖项全量落库）
+
+> 承接 0.0.41（AP-01~28 全量落库）与 0.0.40（外部视频分析批次），本批次将**剩余全部「可吸收」条目补落地**（用户决策：所有对项目有帮助的外部理念分析均须具体落地）——① AP-29（PAPER-10 G-Memory，用户直发链接 + 原文 PDF 核验）；② EV 处置建议列「建议态」条目 8 条补齐为 AP-30~37；③ PAPER-01~09 笔记「可吸收增量」中未被 AP-19~28 覆盖的条目，按注记/债务形态落地。
+
+**认知基础（[cognitive-foundation.md](../foundation/cognitive-foundation.md)，2 条参考注记）**：
+- AP-32 治理轴集参考注记（§1.1，REPO-03 Memorix 五维轴模型——source/portability 与见证价值轴/可移植备份格式同构，不新增维度，轴扩展门禁不变）
+- AP-37 三笔账分离参考（§1.1，VID-44——容量/存储/模型实际看见三分，并入 D-313 可及性轴立项论据）
+
+**系统架构（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md)，14 处注记）**：
+- AP-29 §3.9 双向遍历检索评估注记（PAPER-10：R2 双方向遍历候选，1-hop 扩展限幅，差异检验拦截无证据污染）+ §5.2 升华管道支撑集引用（PAPER-10：升华产物显式记录支撑记忆集引用，与质检三查来源可溯合并）+ 蓝图 §5.7 多 Agent 参考注记（v1.1 参考材料，自动演化不吸收）
+- AP-30 §7.3 主题感知写入切分评估注记（VID-61，LLM 依赖降级回窗口边界）
+- AP-31 §5.2 遗忘调度器保留期参数化+免疫规则+可解释保留原因评估注记（REPO-03，保留原因字段 v1.1 候选）
+- AP-33 §3.2 操作轨迹记忆评估注记（VID-20，v0.1.0 三型承载，独立类型 v1.1）
+- AP-34/35 §3.7 约束作用域 + Flush Memories 生命周期事件评估注记（VID-46/03，不新增字段/事件类型）
+- AP-36 §10.15 MetaLLM 审查+门控脚手架评估注记（VID-11，LLM 产物须过差异检验+宪法边界）
+- PAPER-02 §5.2 实体知识图谱知识桥通路注记（隐式关联依赖世界知识桥，桥接边写入过差异检验）
+- PAPER-04 §1.7 审计庭评估资产访问边界注记（与 S-14 同族）
+- PAPER-07 §5.2 检索路径抑制器遗忘后回归验证钩子 + 多实现注册注记；§8 S-19 知识控制三位置路由粒度对照表注记
+- PAPER-08 §1.7 外部审计演练注记 + §5.5 差异检验分级阈值参数化评估注记
+- PAPER-03 §7.3a 查询级路由系数 ρ 评估注记（与意图先验互补，v1.1 检索参数化评估）+ §5.12 DFA 确定性校准阶段注记
+- PAPER-01 §5.2 升华管道调度形态声明 + 整合回归测试注记；PAPER-04 技能仓库级落地单元注记
+
+**规格/质量层（3 份文档 + 债务 2 条）**：
+- [benchmark-plan.md](../quality/benchmark-plan.md)：§3.13 补间接查询入测注记（PAPER-02 信任悖论——验收不得只测直接查询）+ 长上下文问答基准参考注记（PAPER-03/05：LoCoMo/HotpotQA 448K 改造、LongMemEval 92%/LoCoMo 93.2% 参考值非门槛、latency/token 效率/context-rot 抗性三维度缺口补录）
+- [test-strategy.md](../quality/test-strategy.md)：新增 §四a 契约验证方法论（PAPER-06 REMIT——39 格故障矩阵 + 属性独立性 + 版本固定纪律）
+- [debt-collection.md](../governance/debt-collection.md)：补登 D-426（remit-contract 外部依赖评估，PAPER-06，须过外部依赖安全审查）与 D-427（记忆饱和与支撑集漂移研究议程，PAPER-09/10，基准立项时纳入）
+
+**登记与治理**：absorption-proposals 新增四b（AP-30~37）/四c（PAPER 增量未覆盖项落地清单）节；triage-matrix 8 条 EV 处置建议列更新为「已落地」；受改 9 份文档版本记录统一 0.0.44（2026-08-08）；全部新增标注「外部理念吸收 0.0.44」与外部实证来源（REPO/VID/PAPER 编号）；参数计数不变（全部注记形态，未新增参数）。
+
+**门禁**：doc-audit.py 全类验证（见批次收尾检查清单）。
+
+**修复回归清零**：修复过程中引入 4 类门禁回归已逐项修复——① debt-collection 4 处裸 `configuration.md` 引用改链接；② claim-matrix 18 处裸 `cognitive-foundation.md` 引用改链接；③ README yaml 总数 2→3（核心文档 55→56）与计数口径同步；④ [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) CRLF 行尾残留（3952 行）归一为 LF。doc-audit.py 18 类 + 14a + 6.13~6.19 复验全绿、退出码 0。
+
+**门禁**：doc-audit.py 18 类 + 14a + 6.13~6.19 全绿（退出码 0）；配置文件索引 370/370、债务闭环、锚点 0 断链。
+
 ## 版本记录
 
 > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
@@ -698,6 +802,9 @@ status: draft
 | 0.0.36 | 2026-08-06 | 第三方分析分诊批次：20 项交叉核实判定（10 互为印证 / 7 有意设计差异 / 1 反面教材——含「拥抱冗余」哲学互为印证：去重不删本体、重复进热度频次）；落地规格修正 2 项——R-02 升华产物 verbatim 拒绝护栏（detailed-design §4，`sublimation_invalid` 审计事件 + 重试一次）、R-03 使用权重影子副本可重建性声明（架构 §3.3，use_event 事件流重放重建 + 恢复四步 + 防线不变）；无债务登记。 |
 | 0.0.37 | 2026-08-06 | round15 全面深度审计修复批次：45 项问题闭环（1 高/19 中/25 低）——M-03 三义统一（feature-list 语义为锚）；否决权「默认优先级+判例出口」口径全库 4 处统一（认知基础 §2.1/架构 §0.4.1/glossary/HTML 图）；三信号/四链路管线关系声明与术语消歧（架构 §7.3a）；意图契约第五契约说明（架构 §3.7）；MCP 12→15、CLI 24→25（api-spec 补注册 degradation switch）、术语 67→68（glossary 补准见证锚定）、OP 53→66、traceability-map 四种→六种、api_keys read-only→read、待定义 12→11 计数联动；conversation_messages parts 列与 journal_entries node_episode_index_map 列补录；竖切 REST 20→21 补 restore；troubleshooting 命令状态表失实修正；reliability 改指 sublimation_queue；P3-19~25 债务补登 D-415~D-421；差距表 G-01/G-07 互引；D-402 改引 ARC-D-004；S-19 汇总表收敛；版本注记纪律收敛（勘误类去版本号、外部产品名收敛）；benchmark-plan 判据补齐（升华/磁盘/启动）；门禁 18 类 + 14a + 6.8a/6.12a/6.13~6.16 + 6.17/6.18/6.19 全绿。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次：全面审计 113 项（3 高/64 中/46 低）全部闭环——P0 三项【高】（推论幽灵引用、帕累托维度三重口径、零版本标记全库收敛）；P1 约 30 项【中】（幽灵引用清理、WM 唯一化、rl_weights 归一化矛盾、多模态档位、错误码口径、CLI 契约盘点等）；P2 其余（路径下划线统一、§10.24 补 D-322~338、参数计数 224+146=370、[AGENTS.md](../../AGENTS.md) 刷新等）；计数变化：glossary 68→69、参数 371→370、标志 11→12；门禁 18 类 + 14a + 6.8a/6.12a/6.13~6.16 + 6.17/6.18/6.19 全绿。 |
+| 0.0.39 | 2026-08-06 | 外部理念吸收批次（2026-07）：落地 6 项借鉴——① 记忆质量评估指标（acceptance-criteria §一a 新增过时调用率 / 任务成功率改善，v1.1+ 设计目标）；② 反事实检验测试模式（test-strategy §2.7 三态对比 + TC-CF-001~004）；③ encoding_context `conditions` 子结构约定（data-model，条件性经验适用范围显式化）；④ 高相似 × 过时联合惩罚（architecture §7.3a 排序调制，stale ×0.7 / expired ×0.5）；⑤ 记忆四动作失败模式排障表（troubleshooting §二a）；⑥ 基准设计红线——经验来源与验证数据分离（benchmark-plan §3.11 评测泄漏防护）；配套：observability 指标 2 项 + 告警 1 条、integration-design §五a 任务成功率回传契约（task_outcome 事件，v0.1.0 落 usage_events 不新增端点）；无债务登记、无新文档（7 份现有文档修订）；门禁验证通过。 |
 | 0.0.40 | 2026-08-07 | 外部视频分析批次：100 视频 + 15 仓库对照分析（详见上文 0.0.40 主体章节）——新建 [docs/analysis/external-videos/](../analysis/external-videos/README.md) 独立目录（索引 + 分诊矩阵 + 原理评审 + 吸收建议 + N 份视频笔记 + 15 份仓库笔记 + 抓取流程记录）；实测 B站 AI 字幕串台问题；脚本入库 2 个；零改动核心设计文档；无债务/ADR/风险登记（全部建议态）；门禁验证见批次记录。 |
 | 0.0.41 | 2026-08-07 | 外部理念吸收落地批次：AP-01~28 全量落库（详见上文 0.0.41 主体章节）——认知基础 8 条声明 + 架构 22 条机制 + 规格层 7 份文档 + schema-slice 联动；表数 57 不变、参数 370 不变（4 处新阈值标注「参数待登记」）；受改 10 份文档版本记录统一 0.0.41；门禁 18 类全绿。 |
-| 0.0.39 | 2026-08-06 | 外部理念吸收批次（2026-07）：落地 6 项借鉴——① 记忆质量评估指标（acceptance-criteria §一a 新增过时调用率 / 任务成功率改善，v1.1+ 设计目标）；② 反事实检验测试模式（test-strategy §2.7 三态对比 + TC-CF-001~004）；③ encoding_context `conditions` 子结构约定（data-model，条件性经验适用范围显式化）；④ 高相似 × 过时联合惩罚（architecture §7.3a 排序调制，stale ×0.7 / expired ×0.5）；⑤ 记忆四动作失败模式排障表（troubleshooting §二a）；⑥ 基准设计红线——经验来源与验证数据分离（benchmark-plan §3.11 评测泄漏防护）；配套：observability 指标 2 项 + 告警 1 条、integration-design §五a 任务成功率回传契约（task_outcome 事件，v0.1.0 落 usage_events 不新增端点）；无债务登记、无新文档（7 份现有文档修订）；门禁验证通过。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42，见本文件 0.0.42 叙述节）。 |
+| 0.0.43 | 2026-08-07 | 文档审计报告（F1–F9）闭环修复批次（changelog 0.0.43，见本文件 0.0.43 叙述节）。 |
+| 0.0.44 | 2026-08-08 | 外部理念吸收补落地批次（changelog 0.0.44，见本文件 0.0.44 叙述节）：AP-29~37 + PAPER-01~09 增量未覆盖项全量落库（认知基础 2 注记 + 架构 14 处注记 + 蓝图 1 注记 + 基准/测试 2 注记 + 债务 2 条）；吸收管线闭环（本批次全部「可吸收」条目已落地）；参数计数不变；门禁全类验证。 |

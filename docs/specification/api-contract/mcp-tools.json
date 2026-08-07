@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kairos MCP Tool Registry (SKELETON)",
+  "description": "AUTO-GENERATED from docs/specification/api-spec.md §6.8 MCP Bridge tool table (changelog 0.0.43, 审计报告 F5). 15 tools = 基础工具集 12 + 关系管理 3。inputSchema 为占位，需补全。",
+  "version": "0.0.43-skeleton",
+  "toolCount": 15,
+  "tools": [
+    {
+      "name": "kairos_store_memory",
+      "description": "存储记忆",
+      "mapsTo": "POST /v1/memories",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_search_memories",
+      "description": "三信号混合检索",
+      "mapsTo": "POST /v1/memories/search",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_get_hot_memories",
+      "description": "热度最高记忆",
+      "mapsTo": "GET /v1/memories/heat-top",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_search_graph",
+      "description": "图谱检索",
+      "mapsTo": "POST /v1/graph/search",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_extract_entities",
+      "description": "实体提取",
+      "mapsTo": "POST /v1/entities/extract",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_get_memory_traces",
+      "description": "记忆生命周期历史",
+      "mapsTo": "MCP-only — 操作目录 §3（REST 不单独开放）",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_feedback_memory",
+      "description": "可信度反馈",
+      "mapsTo": "POST /v1/memories/{id}/feedback",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_calibrate",
+      "description": "校准信号",
+      "mapsTo": "POST /v1/calibrate",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_get_stats",
+      "description": "记忆库报告",
+      "mapsTo": "GET /v1/memories/stats",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_search_sessions",
+      "description": "会话搜索",
+      "mapsTo": "GET /v1/sessions",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_tree",
+      "description": "路径浏览",
+      "mapsTo": "GET /v1/path/tree",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_delete_memory",
+      "description": "软删除记忆",
+      "mapsTo": "DELETE /v1/memories/{id}",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_link",
+      "description": "创建两条记忆间的有向关系边（from_uri→uris，支持批量；必填 reason，可选 relation_type 基础六值+语义标记扩展、confidence）",
+      "mapsTo": "MCP-only — 关系管理 API（架构 §7.1a，无独立公开 REST 端点）",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_unlink",
+      "description": "移除两条记忆间的指定关系边（按 relation_type 精确匹配或 relation_type=* 全删；软删除保留审计追溯）",
+      "mapsTo": "MCP-only — 关系管理 API（架构 §7.1a）",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "kairos_relations",
+      "description": "查询某记忆的所有关系边（{inbound,outbound}，支持 relation_type 过滤与 direction 限定）",
+      "mapsTo": "MCP-only — 关系管理 API（架构 §7.1a）",
+      "inputSchema": {
+        "type": "object",
+        "description": "SKELETON — define real parameters in Phase 0",
+        "properties": {},
+        "required": []
+      }
+    }
+  ]
+}

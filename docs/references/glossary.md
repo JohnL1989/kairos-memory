@@ -8,8 +8,8 @@ tags:
   - references
   - glossary
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -41,13 +41,13 @@ status: draft
 | 多重记忆 | Multiple Memory | 同一经验可同时编码为情景/语义/程序三类（叙事自洽度通过 `identity_relevance` 参数而非独立类型承载），三类间有因果/独立/层级/竞争关系 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.2 |
 | 潜伏势能 | Latent Potential | 零使用价值记忆的保留依据，由元认知层盲区探测触发重估 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | 升华管道 | Sublimation Pipeline | raw→item→strategy→behavior 四阶段渐进提纯，空闲驱动 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
-| 遗忘调度器 | Forgetting Scheduler | v0.1.0 以单曲线指数衰减实现（`freshness = 2^(-days_since_last_access / HALF_LIFE)`，阈值判定 active/stale/archived）计算遗忘得分，触发归档；v1.1 升级为二维遗忘曲面（去语境化程度×年龄，使用频率为调制因子） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
+| 遗忘调度器 | Forgetting Scheduler | v0.1.0 以单曲线指数衰减计算遗忘得分触发归档；v1.1 升级为二维遗忘曲面（去语境化程度×年龄，使用频率为调制因子）。衰减公式、半衰期与 active/stale/archived 阈值判定见架构 §5.2 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | 路径空间 | Path Space | 确定性检索手段，`kairos://` 格式，为第一检索入口，向量搜索退居辅助 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | 关系索引 | Relation Index | 四类记忆关系（因果/部分独立/弱层级/竞争）+ 粒度关系（部分-整体）+ 派生关系（derived_from）的独立索引空间 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | 双时态 | Bitemporal | 记忆记录区分事件时间（occurred_at——事实实际发生时间）与事务时间（created_at——记录写入系统时间）双轨；「纠正而不遗忘」由 superseded_by + 版本链 + 知识演化承载；`as_of(ts)` 时间点查询回答「该时点系统已知的事实状态」 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 双时态声明 |
 | 构造性生成 | Constructive Generation | 检索即重建的机制延伸——检索线索的表征痕迹不足/缺失/需跨模式组合时，以痕迹为约束、以当前上下文为目标构造缺失表征；产物入模拟隔离区（S-13），转正走沙箱验证环，永不直接注入见证锚定主副本 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.3 构造性生成声明 |
 | 结构性记忆 | Structural Memory | 持有结构性内容与压缩轨迹的记忆（`structural_value`/`structural_value_reasons`/`structural_value_updated_at`/`compression_trail` 字段族）——与普通语义记忆区分，受 `is_structure ↔ structural_value` 双向 CHECK 约束 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 结构性记忆 / schema-slice.sql |
-| 检索深度分级 | Retrieval Depth Grading | 按任务复杂度与运行时 CRI 状态分级的检索深度——R0 浅层 / R1 中层 / R2 深层；策略层依据当前 CRI 值主动降级（CRI>0.4 降 R1、CRI>0.6 降 R0） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.9 |
+| 检索深度分级 | Retrieval Depth Grading | 按任务复杂度与运行时 CRI 状态分级的检索深度——R0 浅层 / R1 中层 / R2 深层，策略层依据当前 CRI 值主动降级（分级阈值见架构 §3.9） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.9 |
 
 ## 三、契约与激活 Contracts & Activation
 
@@ -60,8 +60,8 @@ status: draft
 | 激活-存储解耦 | Activation-Storage Decoupling | 契约决定激活策略而非存储位置——所有记忆统一管理，激活/检索/衰减策略因契约而异 | 认知基础 P3 |
 | 意图契约 | Intention Contract | 前瞻记忆专用——位于 `kairos://_system/intentions/`，不受遗忘调度器评估 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆段（`kairos://` 意图契约） |
 | 归档 | Archived | 系统被动——升华产物/低使用记忆从主存储移至冷存储，可复兴（关联检索触发） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
-| 抑制 | Suppressed | 归档子态——用户主动定向遗忘操作，将记忆标记为 suppressed（软删除，抑制检索但保留数据，可撤销），位于 Archived 状态空间内 | [api-spec.md](../specification/api-spec.md) §3 |
-| 硬删除 | Delete | 用户主动——物理删除数据，仅用于临时契约，不可恢复（清理前写入审计日志 `expiry_cascade_delete`，见架构 §5.2 forgetAfter） | [api-spec.md](../specification/api-spec.md) §3 |
+| 抑制 | Suppressed | 归档子态——用户主动定向遗忘操作，将记忆标记为 suppressed（软删除，抑制检索但保留数据，可撤销），位于 Archived 状态空间内 | [api-spec.md](../specification/api-spec.md) §1.5（POST /v1/memories/{id}/suppress；CLI 见 §3） |
+| 硬删除 | Delete | 用户主动——物理删除数据，仅用于临时契约，不可恢复（清理前写入审计日志 `expiry_cascade_delete`，见架构 §5.2 forgetAfter） | [api-spec.md](../specification/api-spec.md) §1.5（DELETE 契约删除语义；CLI 见 §3） |
 
 ## 四、价值体系 Value System
 
@@ -74,15 +74,15 @@ status: draft
 | 可及性轴 | Accessibility Axis | 五轴之一——记忆被当前任务可访问/可用的程度；v0.1.0 以工程代理承载（路径竞争降权幅度与路径密度监测联合指标、路径注册表检索深度度量），完整维度见认知基础 §1.1/E.6a | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 |
 | 价值独立性公理 | Value Independence Axiom | "好用≠真实"——使用权重与见证锚定结构性冲突，非默认和谐 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.5（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
 | 记忆压力 | Memory Pressure | 系统对自身记忆资源状态的主动感知与压力驱动行动——四类压力信号（上下文预算利用率/检索失败率/冗余率/遗忘队列积压）触发主动话题/重组/归档建议（保守倾向，不直接执行） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) D.7 记忆压力声明 |
-| 热度层级衰减 | Tiered Heat Decay | 使用价值/时间轴的实证参考基线（noah-gen3-type2，MIT 许可）——热度组合公式 `热度=1.0+频次×2+新近×10+重要性加分`、层级衰减 ×0.985/0.975/0.965/0.95、父节点传播 `max×0.6+mean×0.3+一致性×0.1`；参考基线非默认值，仅作捕获门控与影子副本置信度累积速率参考（P6 禁止聚合单标量裁决） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 热度体系实证参考基线声明 |
-| 摄入侧情绪保护 | Ingest-side Emotional Burst Protection | 输入信号（用户/环境消息）命中情绪爆发模式时，该轮输入整体进入保护通道（生命周期豁免+升温抑制）；为 D-019(a) 情感调制（记忆自身 VAD）的摄入侧扩展；关键词表由外部校准维护、不自动学习 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) D.12 摄入侧情绪爆发→整轮保护声明 |
+| 热度层级衰减 | Tiered Heat Decay | 使用价值/时间轴的实证参考基线（外部实证参考）——热度组合公式、层级衰减系数与父节点传播系数见 [usage-load-algorithm.md](usage-load-algorithm.md) §3.5 参考基线段（认知基础 §1.1 声明）；参考基线非默认值，仅作捕获门控与影子副本置信度累积速率参考（P6 禁止聚合单标量裁决） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 热度体系实证参考基线声明 |
+| 摄入侧情绪保护 | Ingest-side Emotional Burst Protection | 输入信号（用户/环境消息）命中情绪爆发模式时，该轮输入整体进入保护通道（生命周期豁免+升温抑制）；为 债务 D-019(a) 情感调制（记忆自身 VAD）的摄入侧扩展；关键词表由外部校准维护、不自动学习 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) D.12 摄入侧情绪爆发→整轮保护声明 |
 | 辞典式排序 | Lexicographic Ordering | 六级辞典式排序链（探索>宪法>校准>认知完整性>时间>间接度）+ 身份面否决权，宪法级不变量 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.3 |
 | 见证锚定 | Witness Anchor | 存储层主副本——强一致性，不可篡改，含叙事自洽度字段 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1-5.2（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
 | 使用权重 | Usage Weight | 存储层影子副本——最终一致性，可演化，异步合并 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1-5.2（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
 | 差异检验 | Differential Check | 使用权重陡升时触发，判断是否需要更新见证锚定 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.5（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.5 补充） |
 | 准见证锚定 | Quasi-Anchoring | 外部校准中断（受限交叉验证模式）期间，经 ≥3 种记忆类型互证赋予的降级期可信度标记（`quasi_anchored`）；外部校准恢复后经差异检验升级为正式见证锚定或降级（`quasi_revoked`） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.9 / 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §三 |
 | 分域真理观 | Situational Truth Routing | 常规操作→实用论，更新合并→融贯论，冲突校准→符合论；跨域冲突→辞典式排序在不可支配集上标记默认项（决策 D-01） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 |
-| 并行审查 | Parallel Review | 探索→宪法的执行时序模型（收录，替代原「时序优先」术语）：探索候选产生后进入宪法审查窗口（可配置，默认 100ms），通过后执行；窗口超时未获审查结果默认拒绝执行（fail-close）——探索不被事前审批阻塞，产物的采纳受宪法否决权约束 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 / 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.3 |
+| 并行审查 | Parallel Review | 探索→宪法的执行时序模型（收录，替代原「时序优先」术语）：探索候选产生后进入宪法审查窗口，通过后执行；窗口超时未获审查结果默认拒绝执行（fail-close）——探索不被事前审批阻塞，产物的采纳受宪法否决权约束（窗口默认时长见架构 §0.3） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 / 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.3 |
 | 保守倾向 | Conservative Bias | 平局→NO-OP，不确定→默认保守，跨域回退→规范真理 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 |
 
 ## 五、认知与演进 Cognitive & Evolution
@@ -108,7 +108,7 @@ status: draft
 | WM调度预处理器（推理皮层） | Reasoning Cortex | WM 子模块（架构 §4 核心层组件）——常设最小推理内核，仅用于前瞻监控/事件排序/候选裁剪三类操作，非通用推理引擎；「推理皮层」为全库正文两称之一（WM调度预处理器为主称，同义别名非更名完成态，见架构 §4） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4 / §6 |
 | 健康计数器 | Health Counter | 元认知层独立旁路——仅监测环延迟/死锁/解释衰减，唯一权限触发降级信号 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.2 |
 | 注意力调度器 | Attention Scheduler | 横切组件——统一管理全系统注意力资源分配、容量限制、动态调权 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §9 |
-| 噪音规则库 | Noise Rule Library | 摄取门禁的纯正则规则集（单字/短确认、语气词、元命令、分隔符与纯标点行，零 LLM 成本），命中不计轮数、不触发使用权重升温；重要性加分表（未完成 5/纠正 4/决策 3/情绪 3/路径变更 2/工具结果 1/寒喧 0/保护 ∞）作编码深度分配参考 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 噪音规则库层 |
+| 噪音规则库 | Noise Rule Library | 摄取门禁的纯正则规则集（单字/短确认、语气词、元命令、分隔符与纯标点行，零 LLM 成本），命中不计轮数、不触发使用权重升温；重要性加分表（作编码深度分配参考，见架构 §7.3 噪音规则库层） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 噪音规则库层 |
 | SOUL.md | Agent Persona File | 宿主 Agent 的人格声明文件——承载「我是谁/我偏好什么」的身份与最高行为准则。Kairos 作为 Agent 记忆系统经编译管线读取并注入 LLM 上下文，但不拥有、不自动修改该文件（SOUL 是人与 Agent 的契约，不是系统的产物） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4.3 / [adr.md](../governance/adr.md) ADR-008 |
 | 编译器 | Compiler | 编译管线的架构层实现组件——将感知缓冲区原始信息编译为结构化通信单元（L1/L2 净化 + 组装），位于注意力调度器与 WM 层之间；L1 失效可降级（`degraded_L1`/`passthrough`） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 |
 | 结构化通信单元 | Structured Communication Unit | 编译管线的产出单元——结构化后的通信/记忆内容载体，携带净化标记与组装元数据 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 |
@@ -122,7 +122,7 @@ status: draft
 |:----|:-----|:-----|:-----|
 | 安全红线 | Security Redlines | S-01~S-19 共 19 条不可降级的硬约束，违反即拒绝+审计日志记录 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §8 |
 | 语境自指禁令（S-14） | Contextual Self-Reference Prohibition | 内部信号不得作为见证锚定真实性的证据来源——使用权重不可无声改写见证锚定 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §8 |
-| 审计链 | Audit Chain | 双字段链式审计日志——`(a)` 明文链 `prev_content_hash`（供按内容追踪），`(b)` HMAC-SHA256 完整性签名 `hmac = HMAC-SHA256(hmac_key, timestamp + operator + action + content_hash + prev_hmac)`（5 项输入，公式权威定义见 [threat-model.md](../security/threat-model.md) HMAC 审计链；details 等可变信息以 SHA256 摘要并入 content_hash 参与链计算，不单独作为链输入）。同时支持精确定位篡改记录和整体完整性校验 | [threat-model.md](../security/threat-model.md) HMAC 审计链（架构 §10.10 事件总线承载写入，公式定义在 threat-model） |
+| 审计链 | Audit Chain | 双字段链式审计日志——明文链 `prev_content_hash`（供按内容追踪）+ HMAC-SHA256 完整性签名（5 项输入，公式与链计算规则见 [threat-model.md](../security/threat-model.md) HMAC 审计链）。同时支持精确定位篡改记录和整体完整性校验 | [threat-model.md](../security/threat-model.md) HMAC 审计链（架构 §10.10 事件总线承载写入，公式定义在 threat-model） |
 | 证伪响应 | Falsification Response | 体系聚合可证伪性的架构承载——耦合计监测器 + VAD 独立性测试器 + 聚合审计器 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 |
 
 ---
@@ -147,3 +147,4 @@ status: draft
 | 0.0.31 | 2026-08-06 | 第十一轮全库深度审计修复批次（changelog 0.0.31）：WM调度预处理器条目补「推理皮层」中文别名与架构 §4 定位（计数不变 67）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：身份面词条补宪法否决默认优先级口径（附录 C.6）；新增「准见证锚定」术语条目（67→68 条）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：补可及性轴词条（68→69）；双副本分离补三称别名注记。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：六处词条公式/阈值/加分表剥离为语义+指针（遗忘调度器/检索深度分级/热度层级衰减/并行审查/噪音规则库/审计链）；抑制/硬删除来源改指 §1.5。 |

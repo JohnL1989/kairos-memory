@@ -8,8 +8,8 @@ tags:
   - development
   - engineering
 created: 2026-08-06
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -27,7 +27,7 @@ status: draft
 |:----|:----|:--------|:-----|
 | `main` | 主分支 | 常驻 | 唯一长期分支；始终处于可发布状态（门禁全绿）；历史提交即里程碑 |
 | `develop` | 集成分支 | 常驻 | 功能分支合并目标；doc 批次与开发批次在 develop 上集成 |
-| `feature/<编号>-<主题>` | 功能分支 | 短生命 | 从 `develop` 切出，按功能/审计批次创建；编号关联 issue/批次（如 `feature/d-403-compaction`、`feature/round11-c01-mcp`） |
+| `feature/<编号>-<主题>` | 功能分支 | 短生命 | 从 `develop` 切出，按功能/审计批次创建；编号关联 issue/批次（如 `feature/d-415-file-graph`、`feature/round11-c01-mcp`） |
 | `release/<版本>` | 发布分支 | 短生命 | 从 `develop` 切出（release-guide §3 发布步骤），仅做发布阻断级修复；合并回 `main` 与 `develop` |
 
 **规则**：
@@ -60,7 +60,7 @@ status: draft
 
 进入开发阶段后，CI 流水线必过步骤（按序执行，任一失败即阻断合并）：
 
-1. `python scripts/doc-audit.py` —— 18 类 + 14a + 6.13 + 6.14 + 6.15 + 6.12a + 6.8a + 6.16 + 6.17 + 6.18 + 6.19 门禁全绿（exit 0）；
+1. `python scripts/doc-audit.py` —— 18 类 + 14a + 6.8a + 6.12a + 6.13 + 6.14 + 6.15 + 6.16 + 6.17 + 6.18 + 6.19 门禁全绿（exit 0）；
 2. `python scripts/deep-audit.py` —— 链接/出入度/数字声明/占位盘点无阻断项（exit 0）；
 3. 代码检查（代码就绪后）：lint + 类型检查 + 单元测试 + 集成测试（测试矩阵见 [test-plan.md](../quality/test-plan.md) 与 [slice-implementation-guide.md](slice-implementation-guide.md) 竖切验收标准）；
 4. 安全扫描：依赖漏洞扫描 + 密钥扫描（防密钥入库）。
@@ -88,3 +88,4 @@ status: draft
 | 0.0.1 | 2026-08-06 | 工程流程文档（第十轮深度审计 D-01/M-12 闭环）：分支策略、PR 流程、提交规范、CI 门禁、发布流程。 |
 | 0.0.2 | 2026-08-06 | round12/round13 深度审计修复批次（changelog 0.0.33）：§四 CI 门禁清单补 6.8a + 6.16；§三 提交规范新增「批次收尾检查清单」。 |
 | 0.0.3 | 2026-08-06 | round14 深度审计修复批次（changelog 0.0.34）：§四 CI 门禁清单补 6.17 + 6.18 + 6.19（治理面计数一致性 / 检索权重公式唯一性 / §10.24 关联债索引完整性）。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：门禁序号重排（6.8a/6.12a 归位）；分支示例债务编号更正。 |

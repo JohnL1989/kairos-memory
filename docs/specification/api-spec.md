@@ -8,8 +8,8 @@ tags:
   - design
   - api
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -317,7 +317,7 @@ status: draft
 ```
 
 **GET /v1/proactive/topics** — 查询待处理主动话题（A-17）
-> 机制：话题由后台维护引擎 Deep 模式驱动生成（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 主动话题生成器，含压力信号族扩展 D-324）；Agent 通过 `on_turn_start` hook 检查高优先级（priority ≥ 0.7）未确认话题并注入上下文。
+> 机制：话题由后台维护引擎 Deep 模式驱动生成（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 主动话题生成器，含压力信号族扩展 债务 D-324）；Agent 通过 `on_turn_start` hook 检查高优先级（priority ≥ 0.7）未确认话题并注入上下文。
 
 | 参数 | 类型 | 说明 |
 |:----|:----|:-----|
@@ -1067,7 +1067,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 }
 ```
 
-**响应** `201`：`{"id": "uuid", "name": "...", "status": "open", "type": "linear", "created_at": "ISO8601"}`
+**响应** `201`：`{"id": "uuid", "name": "...", "status": "active", "type": "linear", "created_at": "ISO8601"}`
 
 ### POST /v1/narrative/threads/{id}/members — 添加记忆至叙事线（v0.1.0 子集）
 
@@ -1089,7 +1089,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 **响应** `200`：
 ```json
 {
-  "thread": {"id": "uuid", "name": "...", "status": "open"},
+  "thread": {"id": "uuid", "name": "...", "status": "active"},
   "members": [{"memory_id": "uuid", "memory_summary": "2026-04 决策:引入 RabbitMQ", "occurred_at": "ISO8601", "added_at": "ISO8601"}],
   "total": 3
 }
@@ -1626,5 +1626,6 @@ v1.1 规划：
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题风格统一——「N、」改「§N」（18 个大章并入 §N 数字序形态，引用零联动）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：§4 事件优先级口径改写（当前已使用 0（校准/降级）/3（use_event）/6（latent_trigger），0-2 不被背压阻塞）；§3 CLI 表补注册 `kairos degradation switch`（CLI 24→25，对齐竖切实现指南与 test-plan 使用）；§8 叙事线已完结拒新成员错误 400→409（状态冲突，无新错误码）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：端点计数口径去版本化；batch/import 冲突策略枚举互引注记；图片语义向量版本边界（v0.1.0 仅存储）；degradation_switch 接收者按架构 §10.10 收敛；竖切 M-05 注册注记去版本号；路径空间统一下划线命名；RL 初始化注记。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：叙事线响应 status "open"→"active"（对齐 data-model 枚举）；§1.2 检索响应示例修正（虚拟校准 ceiling/active_mode）；§6.8 MCP 引用格式；任务感知评分流程指 benchmark-plan §3.14。 |
 
 > **端点计数口径（决策 D-13 核定）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（注册 `archive`/`restore` 两个竖切端点后 78→80；补 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §健康检查）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §9），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。

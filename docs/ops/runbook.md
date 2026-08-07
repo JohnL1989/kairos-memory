@@ -8,8 +8,8 @@ tags:
   - ops
   - runbook
 created: 2026-07-21
-updated: 2026-08-06
-last_reviewed: 2026-08-04
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -208,7 +208,7 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 
 | 操作 | 命令 |
 |:----|:-----|
-| 查看升华状态 | `kairos status --sublimation` |
+| 查看升华状态 | `kairos status --sublimation`（规划扩展命令，CLI 权威表见 api-spec §3） |
 | 触发升华轮次 | `kairos sublimation trigger` |
 | 查看升华进度 | `kairos sublimation progress` |
 
@@ -231,3 +231,4 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：错误码速查表补充子集声明与 ERR-LLM-002 废弃标注、备份命令统一目录与时间戳命名、CLI 命令状态声明。 |
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：备份保留期引用修正（§1.1/§三 + 参数化）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：§5 故障排查精简为值班速查子集+指针（与 troubleshooting 双向互链）。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：kairos status --sublimation 补规划扩展注记；frontmatter 审查日期同步。 |

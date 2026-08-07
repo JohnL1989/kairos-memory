@@ -8,8 +8,8 @@ tags:
   - development
   - slice
 created: 2026-07-31
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -63,7 +63,7 @@ status: draft
 | 14 | `memories_fts` | 3 | FTS5 全文索引（BM25 信号） |
 | 15 | `schema_version` | 9 | schema 版本管理 |
 
-**竖切外主要表及排除理由**：升华管道 7 张（sublimation_queue / journal_entries / session_summaries / daily_reports / weekly_packs / user_profiles / sublimation_outputs——升华不在竖切）；同步与对话（sync_queue / conversation_messages——端云同步/对话持久化不在竖切）；实体图谱扩展（memory_chunks / entity_communities / skills / skill_versions / playbooks / playbook_versions / procedural_playbooks_fts / causal_links / memory_semantic_knn——分块/社区/技能/图谱遍历不在竖切）；维护与新鲜度（fact_freshness / freshness_inference_log / debounced_tasks / memory_flags / knowledge_evolution——后台维护扩展不在竖切）；权限与加工区（permission_acl / solution_branches / extinction_fossils——P3-25/知识加工区不在竖切）；密钥管理（api_keys——多 Key 轮换/吊销属平台模式，v0.1.0 轻量模式采用 `KAIROS_API_KEY_HASH` 单 Key 环境变量校验（密钥哈希口径，文件权限 600），见 [security-specification.md](../security/security-specification.md) §2.1 的 L/P 适用标注）；上下文块与查询增强（memory_blocks / memory_block_versions / query_analysis_cache / query_time_buckets——编译管线/QueryAnalyzer 不在竖切）；图谱分析（narrative_threads / compaction_snapshots / world_model_rules / prompt_dependencies）；基础设施日志（training_checkpoints / stmt_cache_metrics）；图片（image_blobs——竖切 W-04 仅记录 VAD 元数据，无图片摄取）。
+**竖切外主要表及排除理由**：升华管道 7 张（sublimation_queue / journal_entries / session_summaries / daily_reports / weekly_packs / user_profiles / sublimation_outputs——升华不在竖切）；同步与对话（sync_queue / conversation_messages——端云同步/对话持久化不在竖切）；实体图谱扩展（memory_chunks / entity_communities / skills / skill_versions / procedural_playbooks / playbook_versions / procedural_playbooks_fts / causal_links / memory_semantic_knn——分块/社区/技能/图谱遍历不在竖切）；维护与新鲜度（fact_freshness / freshness_inference_log / debounced_tasks / memory_flags / knowledge_evolution——后台维护扩展不在竖切）；权限与加工区（permission_acl / solution_branches / extinction_fossils——P3-25/知识加工区不在竖切）；密钥管理（api_keys——多 Key 轮换/吊销属平台模式，v0.1.0 轻量模式采用 `KAIROS_API_KEY_HASH` 单 Key 环境变量校验（密钥哈希口径，文件权限 600），见 [security-specification.md](../security/security-specification.md) §2.1 的 L/P 适用标注）；上下文块与查询增强（memory_blocks / memory_block_versions / query_analysis_cache / query_time_buckets——编译管线/QueryAnalyzer 不在竖切）；图谱分析（narrative_threads / compaction_snapshots / world_model_rules / prompt_dependencies）；基础设施日志（training_checkpoints / stmt_cache_metrics）；图片（image_blobs——竖切 W-04 仅记录 VAD 元数据，无图片摄取）。
 
 ---
 
@@ -100,7 +100,7 @@ status: draft
 
 ## 四、逐组件实现规格
 
-### 组件 1：记忆 CRUD + 双副本分离（W3）
+### 组件 1：记忆 CRUD + 双副本分离
 
 - **职责**：记忆写入/读取/更新/软删除；见证锚定（主副本，强一致）与使用权重（影子副本，最终一致）分离；S-14 隔离防线（差异检验不进入降级路径）。
 - **架构**：§5.1-5.2（双副本/差异检验）、§7.3 摄取验证门禁（捕获门控：琐碎文本/上下文标记/秘密文本/长度）、§8 S-14。
@@ -110,15 +110,15 @@ status: draft
 - **测试**：TC-W01-001~003、TC-W02-001、TC-W04-001、TC-W07-001；S-14 单测（使用权重写回见证锚定被拒绝）。
 - **验收**：E2E-01（写入→检索）；双副本分离判据。
 
-### 组件 2：路径空间（W4）
+### 组件 2：路径空间
 
 - **职责**：`kairos://` 前缀索引与树状浏览；路径边界确定性隔离（跨路径污染率 0%）。
 - **架构**：§5.2 路径空间（B-tree 前缀索引）、§3.4 域路由（竖切仅实现通用路径 + `_user/_project/_session/_scratch/_system` 前缀约束）。
 - **表**：memories.path 索引（idx_memories_path）。
 - **API**：GET /v1/path、GET /v1/path/tree。
-- **测试**：TC-R01-001~003；S-04 路径隔离验证。
+- **测试**：TC-R01-001~003；路径隔离验证（跨路径污染率 0%，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §8 路径隔离声明；S-04 为本地回环绑定红线，非路径隔离）。
 
-### 组件 3：三信号混合检索（W5）
+### 组件 3：三信号混合检索
 
 - **职责**：语义（sqlite-vec 余弦）+ BM25（FTS5）+ 实体加成三信号加权融合（α_s=0.50 / α_b=0.35 / α_e=0.15）。GSPO/MMR/Cross-encoder 不在竖切（对应标志 OFF）。
 - **架构**：§7.3a 三信号混合检索；实体加成简化方案——实体提取用关键词/规则匹配（详细设计 §9.3 spaCy 简化版），不启用 LLM 实体提取（Deep 模式不在竖切）。
@@ -129,7 +129,7 @@ status: draft
 - **首迭代增强（决策）**：QueryAnalyzer（架构 §2.6.1）定位为竖切后**首迭代实现优先级**——本组件竖切交付仅原生检索;首迭代补 QueryAnalyzer 意图分类（规则优先+模型兜底,意图枚举以架构 §2.6.1 五+1 类为权威）与时间锚定（相对/绝对/事件/会话四类解析,含 fallback_query 字段）,作为查询前置增强检索意图理解。事件锚定与 fallback_query 规格见架构 §2.6.1。
 - **验收**：1 万条 SQLite 基准语义检索 P50 ≤100ms。
 
-### 组件 4：遗忘调度器 + 潜伏势能重估（W6）
+### 组件 4：遗忘调度器 + 潜伏势能重估
 
 - **职责**：单曲线指数衰减遗忘得分（freshness = 2^(-days/HALF_LIFE)）、潜伏势能重估（latent_trigger 事件驱动）、复兴加速。
 - **架构**：§5.2 遗忘调度器/潜伏势能重估端口；§10.17 降级契约（skip_forgetting 仅标记不处理）；`KAIROS_FEATURE_FORGETTING_ENGINE` 竖切内 ON。
@@ -139,7 +139,7 @@ status: draft
 - **测试**：TC-F01-001、TC-F02-001、TC-F03-001。
 - **验收**：E2E-02（写入→遗忘→复兴）。
 
-### 组件 5：身份注册表（构造论，W7）
+### 组件 5：身份注册表（构造论）
 
 - **职责**：is_identity 初始赋予（见证锚定写入触发，冷启动锚点）；identity_confidence 双向更新（叙事自洽度结构性上升→提升；持续下降→宪法解释层判例降级）；见证豁免（S-10）；身份面否决权经预提交总线承载（§1.8）。
 - **架构**：§5.2 身份注册表（动态建构）、§1.8 预提交总线/身份总线监听器（三态状态机）、§8 S-10/S-16。
@@ -148,7 +148,7 @@ status: draft
 - **测试**：S-10 单测（见证豁免不可绕过）；identity_demotion 审计可追溯。
 - **验收**：G-03 v0.1.0 判据（双向更新可观测、审计可追溯）。
 
-### 组件 6：审计日志（HMAC 链，W8）
+### 组件 6：审计日志（HMAC 链）
 
 - **职责**：审计记录 + 双字段链（明文 content_hash 链 + HMAC-SHA256 完整性链）；审计庭独立感知通道（原始事件流）。
 - **架构**：§1.7 监督平面（审计庭）、§10.10 审计与可追溯性、§8 S-16。
@@ -157,7 +157,7 @@ status: draft
 - **测试**：E2E-06（写入→修改→删除→审计链验证）。
 - **监督平面注记**：竖切内监督平面部分启用（审计庭快照校验/审计日志比对）；完整监督平面随 `KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` 启用（configuration 同口径）。
 
-### 组件 7：事件总线（4 类，W4）
+### 组件 7：事件总线（4 类）
 
 - **职责**：events 表（usage_events）发布/订阅/背压/优先级；4 类事件：use_event / calibration_signal / degradation_switch / latent_trigger；优先级 0-2 不被背压阻塞；trace_id 全链路可审计。
 - **架构**：§10.10 事件枚举与流控；[ADR-002](../governance/adr.md)（数据库表而非消息队列）。
@@ -165,7 +165,7 @@ status: draft
 - **测试**：事件发布/订阅/ACK/背压/优先级集成测试。
 - **验收**：4 类事件全链路可用，trace_id 可审计。
 
-### 组件 8：外部校准 + 降级状态机（W8）
+### 组件 8：外部校准 + 降级状态机
 
 - **职责**：外部校准端口（admin Key 鉴权）；降级状态机（保守静默→受限交叉验证→安全休眠，校准时延驱动）；强制冻结/解冻。
 - **架构**：§1.2 外部校准端口/强制冻结、§10.9 降级状态机、§8 S-11。
@@ -174,7 +174,7 @@ status: draft
 - **测试**：TC-CAL01-001、TC-CAL03-001、TC-CAL04-001（勘误：原 TC-C01-001 前缀已废弃，统一为 TC-CALxx-00x，见 [test-plan.md](../quality/test-plan.md) §3 命名约定）。
 - **验收**：E2E-04/05/08。
 
-### 组件 9：CLI/API 接入与冷启动（W1-W2）
+### 组件 9：CLI/API 接入与冷启动
 
 - **职责**：REST（Litestar）、CLI（Click/Typer）、配置加载、冷启动种子注入、健康检查、数据库迁移。
 - **架构**：§7.1 三种接入方式；[api-spec.md](../specification/api-spec.md) 竖切端点。
@@ -228,3 +228,4 @@ W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-07 存活探针端点 GET /v1/health→GET /health。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：REST 20→21（补 `POST /v1/memories/{id}/restore` 行，M-05 恢复端点）；DELETE 行 M-03 标注修正（软删除语义，M-03 显式遗忘经 CLI `kairos forget` 承载）；组件 6 补监督平面部分启用注记；CLI 全量 24→25 联动（api-spec §3 补注册）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：configuration 章节引用修正（§1→§4/§0.10）；轻量模式认证环境变量统一为 KAIROS_API_KEY_HASH；决策注记去版本号。 |
+| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：组件标题（Wx）标注按 implementation-map 勘误口径去除；S-04 误用修正（路径隔离为架构 §8 声明）；playbooks 表名更正为 procedural_playbooks。 |
