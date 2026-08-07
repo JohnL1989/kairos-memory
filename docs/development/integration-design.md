@@ -8,8 +8,8 @@ tags:
   - design
   - integration
 created: 2026-07-20
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-08
+last_reviewed: 2026-08-08
 status: draft
 ---
 
@@ -90,7 +90,7 @@ Kairos 支持通过 Webhook 或事件轮询向 Agent 通知异步事件。Webhoo
 
 ## 五a、任务成功率回传契约（Task Outcome Feedback）
 
-> **外部理念吸收配套**（changelog 0.0.39）：本契约为 [test-strategy.md](../quality/test-strategy.md) §2.7 反事实检验（TC-CF-001~004）与 [acceptance-criteria.md](../quality/acceptance-criteria.md) §一a「任务成功率改善」指标提供数据来源——评价记忆系统不能只看召回率，任务成功率是「记忆是否让 Agent 变强」的直接测量。
+> **外部理念吸收配套**：本契约为 [test-strategy.md](../quality/test-strategy.md) §2.7 反事实检验（TC-CF-001~004）与 [acceptance-criteria.md](../quality/acceptance-criteria.md) §一a「任务成功率改善」指标提供数据来源——评价记忆系统不能只看召回率，任务成功率是「记忆是否让 Agent 变强」的直接测量。
 
 **契约形态**：宿主 Agent（Hermes）在任务结束后，通过事件总线回传任务结果（无需新增 REST 端点）。**事件类型复用 `use_event`**（事件类型枚举见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10——任务结果以 `use_event` 的 payload 标记 `task_outcome` 承载，不新增全局事件类型，枚举保持 10 类不变；同 retrieval_dimension_loss / reflect_agentic_loop 先例）：
 
@@ -181,3 +181,4 @@ SDK 集成示例见 `src/access/mcp/bridge.py`。MCP 工具与 REST API 的等�
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：ERR-DB-* 返回口径按 api-spec §7 收敛；路径空间统一下划线命名。 |
 | 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：新增 §五a 任务成功率回传契约——`task_outcome` 事件（三态 mode 字段），承载反事实检验数据源，v0.1.0 落 usage_events 表不新增端点。（0.0.42 勘误：`task_outcome` 改为 `use_event` payload 标记承载——不新增全局事件类型，枚举保持 10 类，见架构 §10.10） |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§五a task_outcome 事件改 use_event payload 标记承载（不新增全局事件类型，枚举保持 10 类，架构 §10.10）；版本记录补勘误注记。 |
+| 0.0.46 | 2026-08-08 | 文档审计修复批次（changelog 0.0.46）：§五a 去除正文散落批次标记「（changelog 0.0.39）」，溯源归版本记录。 |

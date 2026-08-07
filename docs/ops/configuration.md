@@ -8,8 +8,8 @@ tags:
   - ops
   - configuration
 created: 2026-07-18
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-08
+last_reviewed: 2026-08-08
 status: draft
 ---
 
@@ -578,7 +578,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_PROMPT_DEPENDENCY_STRATEGY` | —（待定义） | `architecture-blueprint-v1.1.md §P3-15 Prompt 依赖关系图` |
 | `KAIROS_QUERY_ANALYSIS_CACHE_TTL` | `300 秒` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
 | `KAIROS_QUERY_ANALYZER_ENABLED` | `true` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
-| `KAIROS_RETRIEVAL_LINK_WEIGHTS` | `{"semantic": 0.50, "cooc": 0.20, "knn": 0.10, "causal": 0.20}` | `architecture-v0.1.0.md §5.2 三链路融合与检索扩展（唯一权威）` |
+| `KAIROS_RETRIEVAL_LINK_WEIGHTS` | `{"semantic": 0.50, "cooc": 0.20, "knn": 0.10, "causal": 0.20}` | `architecture-v0.1.0.md §5.2 链路融合与检索扩展（唯一权威）` |
 | `KAIROS_SALT` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_SCHEDULER_INTERVAL` | `300s` | `ops/deployment.md §三 环境变量` |
 | `KAIROS_SCHEMA_STRICT_MODE` | `true` | `foundation/architecture-blueprint-v1.1.md §P3-23 Schema 前向版本保护` |
@@ -649,8 +649,9 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：附录 A 引言正文参数计数 210→223（2-02，口径补注 0.0.16/0.0.22 增长链）；「12 项待定义」核验仍准确。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-01 三环不变量引用 §6/§10.3→§10.3；M-11 附录 A KAIROS_SEED_PATH 来源行号 189→192。 |
 | 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：附录 A「来源」列 136 处硬行号引用整体废除（C-03/F-01）——改为「文档 §章节」语义引用（含权威落点核查：38 处原引用文档无定义、落点修正至 detailed-design/blueprint 等权威段；KAIROS_PATH 标注待定义）。 |
-| 0.0.34 | 2026-08-06 | 第十四轮全库深度审计修复批次（changelog 0.0.34）：`KAIROS_RETRIEVAL_LINK_WEIGHTS` 由「—（待定义）」补填默认值 `{"semantic": 0.50, "cooc": 0.20, "knn": 0.10, "causal": 0.20}`，来源列指向架构 §5.2 三链路融合与检索扩展（唯一权威）。 |
+| 0.0.34 | 2026-08-06 | 第十四轮全库深度审计修复批次（changelog 0.0.34）：`KAIROS_RETRIEVAL_LINK_WEIGHTS` 由「—（待定义）」补填默认值 `{"semantic": 0.50, "cooc": 0.20, "knn": 0.10, "causal": 0.20}`，来源列指向架构 §5.2 链路融合与检索扩展（唯一权威）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：附录 A「待定义」计数 12→11（0.0.34 已回填 `KAIROS_RETRIEVAL_LINK_WEIGHTS`）；`KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` OFF 行为补竖切例外注记（竖切内监督平面部分启用——审计庭快照校验/审计日志比对，见 slice-implementation-guide 组件 6）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：§11 特征标志补 KAIROS_FEATURE_CONNECTORS（11→12）；KAIROS_SDK_PYTHON_MIN_VERSION 统一 3.10；身份映射参数名统一为 KAIROS_USER_ALIASES；正文 224 + 附录 A 146 = 370 计数核定；附录/§0.10 格式注记；动态调参约束注记。 |
 | 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：§0.11 补 CRI 触发压缩外部参考值注记（压缩触发阈值 0.5 / 压缩目标 0.2 / 保护最近 20 条，外部实证：Hermes VID-45）——注记形式落地，未新增参数，参数计数不变（正文 224 + 附录 A 146 = 370）。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：KAIROS_BENCHMARK_* 来源列指正（§三）；σ 双用途互注（VAD 告警+权重衰减）；dormant 笔误；附录 USER_ALIASES 收录例外注记。 |
+| 0.0.46 | 2026-08-08 | 文档审计修复批次（changelog 0.0.46）：`KAIROS_RETRIEVAL_LINK_WEIGHTS` 来源列与版本记录中小节名「三链路融合与检索扩展」→「链路融合与检索扩展」（唯一权威口径同步）。 |

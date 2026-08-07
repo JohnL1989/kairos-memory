@@ -8,8 +8,8 @@ tags:
   - design
   - technology
 created: 2026-07-20
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-08
+last_reviewed: 2026-08-08
 status: draft
 ---
 
@@ -78,6 +78,8 @@ status: draft
 | 可观测性（指标） | Prometheus | ≥ 2.45 | 拉取式指标采集与告警规则；v0.1.0 经 prometheus_client 直出 `/metrics` 端点（observability 暴露协议——**端点待定义**，在 api-spec §1.8 登记前为设计目标），v1.1 引入 OpenTelemetry 后切换 exporter |
 | 可观测性（可视化） | Grafana | ≥ 10.0 | 指标/追踪看板与告警面板 |
 
+> **CI/CD 工具链**：本表列开发与测试组件；持续集成/交付的具体工具（GitHub Actions 等）与门禁流水线定义见 [engineering-workflow.md](../development/engineering-workflow.md) §四——技术选型视角此处不重复承载，避免与开发流程规范双源。
+
 ## 六、版本兼容矩阵
 
 | Python | PostgreSQL | pgvector | Litestar | Uvicorn | 说明 |
@@ -92,7 +94,7 @@ Kairos 作为记忆基础设施，通过标准化协议和官方 SDK 降低集�
 
 **MCP（Model Context Protocol）集成战略**：
 
-Kairos 对外暴露符合 MCP 规范的 Tool 接口，将 15 个 MCP Tool（基础工具集 12——含 create/search/delete 三个规范操作直接映射与检索/维护/治理类 9 个——另加关系管理 3 工具；构成口径见 [架构 §7.1a](../foundation/architecture-v0.1.0.md)）映射为 MCP Tool。Agent 通过 MCP Client 发现并调用 Kairos 的记忆工具，无需理解内部存储模型。
+Kairos 对外暴露符合 MCP 规范的 Tool 接口，将 [12 规范操作集](../foundation/architecture-v0.1.0.md)（架构 §7.3.1）中的 create/search/delete 直接映射为 MCP Tool，连同检索/维护/治理类 9 个与关系管理 3 个，共暴露 15 个 MCP Tool（构成口径见 [架构 §7.1a](../foundation/architecture-v0.1.0.md)）。Agent 通过 MCP Client 发现并调用 Kairos 的记忆工具，无需理解内部存储模型。
 
 - **MCP Server 实现（勘误）**：MCP Server 作为**独立子进程**运行（stdio 传输），由 Agent 的 MCP Client 启动，与 Kairos 主进程通过 localhost HTTP 通信（进程模型与 [integration-design.md](../development/integration-design.md) §七、api-spec §6.8 一致——非主进程内嵌）。Server 端实现完整治理门禁（L1 权限 + L2 宪法约束 + L3 身份否决）
 - **Tool 命名规范**：`kairos_<operation>`（如 `kairos_store_memory`、`kairos_search_memories`），完整工具清单（15 个：基础工具集 12——含 create/search/delete 三个规范操作直接映射与检索/维护/治理类 9 个——另加关系管理 3 工具，构成口径见架构 §7.1a）见 [架构 §7.1a MCP Bridge 实现](../foundation/architecture-v0.1.0.md) 与 [api-spec §6.8](../specification/api-spec.md)
@@ -148,3 +150,4 @@ File Graph 是 Kairos 路径空间的图论增强层——将 `kairos://` 路径
 | 0.0.41 | 2026-08-07 | （合并占位：changelog 0.0.41 外部理念吸收落地批次 AP-01~28——认知基础 8 声明 + 架构 22 机制 + 规格层 7 文档，未变更本文档技术选型） |
 | 0.0.42 | 2026-08-07 | （合并占位：changelog 0.0.42 文档审计修复批次——§6 豁免 2 修订、§6.1 声明承载矩阵版本边界剥离，未变更本文档技术选型） |
 | 0.0.43 | 2026-08-07 | 文档审计修复批次（changelog 0.0.43）：§七 MCP/SDK 工具数口径统一为「15 个 MCP Tool（基础工具集 12 + 关系管理 3）」（原「12 规范操作集」与同文档「15 个工具」矛盾，审计报告 F2）；updated 同步至 2026-08-07。 |
+| 0.0.46 | 2026-08-08 | 文档审计修复批次（changelog 0.0.46）：§五 补 CI/CD 工具链交叉引用（定义见 engineering-workflow §四），技术选型视角不重复承载。 |

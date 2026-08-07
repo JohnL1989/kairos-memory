@@ -26,7 +26,7 @@ status: draft
 >
 > 三者正交：一条记忆可同时为 `status=active`（可检索）、`extinction_status=extinct`（知识无效）、`memory_states.state=active`（当前态）。详见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 遗忘调度器与 extinction 关系。
 >
-> **DDL 承载说明（审计报告 F7，changelog 0.0.43）**：本文档描述逻辑数据模型（表/列/索引/约束），**不含内联 `CREATE TABLE` DDL**——DDL 集中在 [schema-slice.sql](schema-slice.sql)（竖切示例 DDL，14 张表；全量 57 张物理表的建表语句随实现阶段由 Alembic 迁移脚本承载）。此分离为有意为之（文档层描述结构、迁移层承载 DDL），非遗漏。
+> **DDL 承载说明**：本文档描述逻辑数据模型（表/列/索引/约束），**不含内联 `CREATE TABLE` DDL**——DDL 集中在 [schema-slice.sql](schema-slice.sql)（竖切示例 DDL，14 张表；全量 57 张物理表的建表语句随实现阶段由 Alembic 迁移脚本承载）。此分离为有意为之（文档层描述结构、迁移层承载 DDL），非遗漏。
 
 > **物理分库取向注记（外部理念吸收 0.0.41；外部实证：OpenClaw VID-16）**：外部实现采用「每 agent 物理分库」的隔离取向——每个 agent 独立数据库实例，故障域与备份粒度天然隔离。Kairos 采用**逻辑域隔离**——单库多租户，隔离由 `kairos://_user/{id}/` 路径域 + `permission_acl` 路径级授权（§11）承载。评估记录：逻辑域隔离以零额外运维成本支撑 v0.1.0 单机/轻量模式起步，且与端云同步（`sync_queue`）共用同一事务域；物理分库的故障隔离、单租户恢复与租户级备份优势，在标准模式多租户场景下作为 v1.1+ 演进选项（与 blueprint TeamScope P3-17 多租户隔离衔接，见 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-17）——v0.1.0 维持逻辑域隔离，不引入物理分库。
 
@@ -78,7 +78,7 @@ status: draft
 | `valid_until` | TIMESTAMPTZ | — | **显式时效字段（外部理念吸收 0.0.41：时间轴结构互补）**——知识有效期截止：该记忆所承载事实/知识的有效期限，到期后知识不再主张有效性，由遗忘调度器/freshness 生命周期评估（转 stale/extinct）处理。与 `expires_at`（temporary 契约的存储清理语义）分工：valid_until 到期**不硬删除**，仅退出知识主张；可为 NULL（无显式有效期，按既有遗忘曲线评估）。与 `fact_freshness.valid_until`（事实新鲜度粒度）互补：本列为记忆粒度显式时效 |
 | `expiration_date` | TIMESTAMPTZ | — | **显式时效字段（外部理念吸收 0.0.41：时间轴结构互补）**——数据保留期限：明确的数据时间轴管理字段（治理/合规视角），可为 NULL（无显式保留期限）。与 `valid_until` 分工：valid_until 管知识有效性（语义过期），expiration_date 管数据保留（存储治理）；二者可分别设置，互不替代 |
 | `locked_until` | TIMESTAMPTZ | — | 锁定保护截止时间（`POST /v1/memories/{id}/lock` 设置，到期自动解锁） |
-| `encoding_context` | JSONB | — | 编码情境（时空上下文/任务目标/关联记忆ID）。**`conditions` 子结构约定（外部理念吸收，changelog 0.0.39）**：条件性经验（「适用于什么场景/哪个用户/哪个网站或工具版本」的经验）应在 encoding_context 中记录显式 `conditions` 子结构——`{applies_to: ["<用户/网站/工具版本标识>"], prerequisites: ["<前提条件>"], exceptions: ["<不适用场景>"]}`。用途：(a) 写入时约束经验固化——无条件约束的经验不得在升华管道中被去语境化为通用规律（对应「一条经验是否携带适用范围」的写入判定）；(b) 检索时按当前环境匹配 conditions——环境不匹配的候选在排序中降权（v1.1 落地为独立过滤维度，v0.1.0 作为 encoding_context 的约定子结构，不新增列）。与 `domain`（领域路由标签）互补：domain 是粗粒度领域分类，conditions 是细粒度适用条件。v0.1.0 仅要求写入时填充（升华管道 L1 阶段识别条件性表述时录入），检索侧不做强制过滤 |
+| `encoding_context` | JSONB | — | 编码情境（时空上下文/任务目标/关联记忆ID）。**`conditions` 子结构约定**：条件性经验（「适用于什么场景/哪个用户/哪个网站或工具版本」的经验）应在 encoding_context 中记录显式 `conditions` 子结构——`{applies_to: ["<用户/网站/工具版本标识>"], prerequisites: ["<前提条件>"], exceptions: ["<不适用场景>"]}`。用途：(a) 写入时约束经验固化——无条件约束的经验不得在升华管道中被去语境化为通用规律（对应「一条经验是否携带适用范围」的写入判定）；(b) 检索时按当前环境匹配 conditions——环境不匹配的候选在排序中降权（v1.1 落地为独立过滤维度，v0.1.0 作为 encoding_context 的约定子结构，不新增列）。与 `domain`（领域路由标签）互补：domain 是粗粒度领域分类，conditions 是细粒度适用条件。v0.1.0 仅要求写入时填充（升华管道 L1 阶段识别条件性表述时录入），检索侧不做强制过滤 |
 | `occurred_at` | TIMESTAMPTZ | — | **事件时间**——记忆所描述的事实实际发生的时间（区别于 `created_at` 事务时间：写入时间）。由轻量级时间戳后处理（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 event_time 提取）回填，可空（无法判定事件时间的记忆不填）。双时态模型（认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 双时态声明）：事件时间归逻辑-因果轴/物理轴输入，事务时间由衰减子轴承载。竖切 v0.1.0-slice 落列为可空字段 |
 | `created_at` | TIMESTAMPTZ | NOT NULL | 创建时间（**事务时间**——记录写入系统的时间，与 `occurred_at` 事件时间区分） |
 | `updated_at` | TIMESTAMPTZ | NOT NULL | 最后更新时间 |

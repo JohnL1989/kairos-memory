@@ -17,7 +17,7 @@ status: draft
 
 > **定位**：本文是认知基础文档中每个核心声明的承载状态追踪表，记录该声明对应的架构层承载版本和验证条件。防止「认知层完整声明、架构层简化实现」的版本错位债务。
 >
-> **计数口径**：本表登记认知基础 37 项声明（C-01~C-37，其中 C-23 已废弃、由否决权正交模型替代，活跃声明 36 项；C-23 保留以追踪废弃状态）。另见文末「外部理念吸收声明（AP 系列）」节（0.0.41 落地，AP-01/02/03/05/06/19/22/28 共 8 项认知层声明，与 C 系列并列追踪）。
+> **计数口径**：本表登记认知基础 37 项声明（C-01~C-37，其中 C-23 已废弃、由否决权正交模型替代，活跃声明 36 项；C-23 保留以追踪废弃状态）。另见文末「外部理念吸收提案（AP 系列）」节——AP 为 `docs/analysis/external-videos/absorption-proposals.md` 的吸收提案编号（非认知声明编号），本矩阵仅作交叉指针，定义以该文件为源。
 >
 > **状态声明**：下方「✅ 完整承载」标记表示该认知声明在架构文档中已有完整描述和组件对应（架构层已就绪）。✅ **不表示代码已实现**（全系统尚无运行代码，见 changelog/project-plan）。「⚠️ 部分承载」为架构层覆盖不完整、「🔜 v1.1 待实现」为当前版本范围外。
 >
@@ -102,22 +102,13 @@ C-02 潜伏势能、C-03 多重记忆、C-04 关系索引、C-05 编码门控、
 | C-36（对齐） | 动机性遗忘机制对齐 | 评估是否需要"主动抑制"机制 |
 
 ---
-## 外部理念吸收声明（AP 系列，0.0.41 落地）
+## 外部理念吸收提案（AP 系列）
 
-> **定位**：0.0.41 批次引入 AP-01~28 外部理念吸收落地编号，与 C-01~C-37 并列作为认知层声明追踪系列。本矩阵原仅登记 C 系列（37 项），现补 AP 系列追踪以满足单一事实源要求（审计报告 F3，changelog 0.0.43）。
+> **定位**：AP-01~37 为 `docs/analysis/external-videos/absorption-proposals.md` 的**外部理念吸收提案编号**（Absorption Proposal），用于追踪外部理念的吸收/落地状态，属 analysis 目录内部编号，**非认知层声明编号**、不构成 C 系列并列体系。权威文档引用外部理念落地时以机制名 + 架构 § 章节 表述（如架构版本记录 0.0.41/0.0.44 行），不得依赖 AP 编号作为事实源。
 >
-> **计数口径**：C-01~C-37 为原认知层声明（37 项，活跃 36，C-23 废弃）；AP-01~28 为 0.0.41 外部理念吸收落地编号，其中 **AP-01/02/03/05/06/19/22/28 为认知基础层声明**，已落地 [cognitive-foundation.md](../foundation/cognitive-foundation.md)（详见该文档 0.0.41 版本记录）；其余 AP 条目为架构机制（见 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) 对应章节）。AP 系列与 C 系列的关系（是否为新增或子集）待 cognitive-foundation 显式编号对齐后并入总口径；当前全库「37 声明」指 C-01~C-37。
+> **计数口径**：C-01~C-37 为认知层声明（37 项，活跃 36，C-23 废弃），是全库「37 声明」的唯一口径。AP-01~37 为吸收提案编号（定义见 `absorption-proposals.md`），其中 AP-01/02/03/05/06/19/22/28 经吸收后并入认知基础既有 C- 系列声明（见 cognitive-foundation 0.0.41 版本记录）、AP-29~37 等并入架构机制（见架构 0.0.44 版本记录）——AP 本身不另立声明体系。
 
-| 编号 | 认知层声明 | 来源 | 承载版本 | 承载文档/组件 | 状态 |
-|:----|:----------|:----|:--------|:-------------|:-----|
-| AP-01 | 认知层声明（详见 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 0.0.41 版本记录） | 外部理念吸收批次 0.0.41 | v0.1.0 | [cognitive-foundation.md](../foundation/cognitive-foundation.md) | ✅ 架构就绪 |
-| AP-02 | 认知层声明（详见 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 0.0.41 版本记录） | 外部理念吸收批次 0.0.41 | v0.1.0 | [cognitive-foundation.md](../foundation/cognitive-foundation.md) | ✅ 架构就绪 |
-| AP-03 | 认知层声明（详见 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 0.0.41 版本记录） | 外部理念吸收批次 0.0.41 | v0.1.0 | [cognitive-foundation.md](../foundation/cognitive-foundation.md) | ✅ 架构就绪 |
-| AP-05 | 认知层声明（详见 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 0.0.41 版本记录） | 外部理念吸收批次 0.0.41 | v0.1.0 | [cognitive-foundation.md](../foundation/cognitive-foundation.md) | ✅ 架构就绪 |
-| AP-06 | 认知层声明（详见 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 0.0.41 版本记录） | 外部理念吸收批次 0.0.41 | v0.1.0 | [cognitive-foundation.md](../foundation/cognitive-foundation.md) | ✅ 架构就绪 |
-| AP-19 | 认知层声明（详见 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 0.0.41 版本记录） | 外部理念吸收批次 0.0.41 | v0.1.0 | [cognitive-foundation.md](../foundation/cognitive-foundation.md) | ✅ 架构就绪 |
-| AP-22 | 认知层声明（详见 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 0.0.41 版本记录） | 外部理念吸收批次 0.0.41 | v0.1.0 | [cognitive-foundation.md](../foundation/cognitive-foundation.md) | ✅ 架构就绪 |
-| AP-28 | 认知层声明（详见 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 0.0.41 版本记录） | 外部理念吸收批次 0.0.41 | v0.1.0 | [cognitive-foundation.md](../foundation/cognitive-foundation.md) | ✅ 架构就绪 |
+> AP-01~37 提案定义、吸收状态与架构/认知落点见 [`analysis/external-videos/absorption-proposals.md`](../analysis/external-videos/absorption-proposals.md)；本矩阵不对其作独立声明追踪——AP 为过程提案编号，非权威事实源，权威引用以机制名 + 架构 § 章节 表述。
 
 ---
 

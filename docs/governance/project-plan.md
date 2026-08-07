@@ -41,7 +41,7 @@ status: draft
 | 周 | 里程碑 | 交付物 | 验证 |
 |:--|:------|:-------|:-----|
 | W1 | 项目骨架 | pyproject + uv 环境、CLI 入口（Click/Typer）、配置加载、git 仓库初始化、`scripts/doc-audit.py` 接入 | `kairos --version`；doc-audit 全绿 |
-| W2 | 数据库与 CI | SQLite 初始化 + schema 迁移（竖切表子集 15 张，清单见 slice-implementation-guide）、pytest/ruff/mypy 管线 | 迁移可回滚；CI 通过 |
+| W2 | 数据库与 CI | SQLite 初始化 + schema 迁移（竖切表子集 15 张，清单见 slice-implementation-guide）、pytest/ruff/mypy 管线、**接口契约骨架补全**（`openapi.yaml` 通过 lint 零 error + `mcp-tools.json` inputSchema 补全，见债务 D-428） | 迁移可回滚；CI 通过；`redocly lint` 零 error |
 
 ### Phase 1：核心存储与检索（第 3–6 周）
 

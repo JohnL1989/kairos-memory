@@ -65,6 +65,7 @@ kairos-memory/
 ├── docs/            # 文档体系（10 个内容目录 + README 索引，见 docs/README.md）
 │   ├── foundation/  # 为什么+是什么（架构/认知基础/理念关系/蓝图）
 │   ├── specification/ # 具体长什么样（168 能力/57 表/API/数据模型/映射）
+│   │   ├── api-contract/ # 机器可读契约骨架（openapi.yaml / mcp-tools.json，待补全见债务 D-428）
 │   ├── development/ # 怎么开发（技术栈/环境/规范/集成/竖切）
 │   ├── governance/  # 规则与债务（debt-collection 等）
 │   ├── quality/     # 验证方法
@@ -120,7 +121,7 @@ kairos-memory/
 
 ### 4.1 文档体系职责（docs/ 10 个内容目录，详见 docs/README.md 索引）
 - foundation = 为什么 + 是什么（设计权威所在层）
-- specification = 具体长什么样（功能/数据/接口/实现/需求/NFR）
+- specification = 具体长什么样（功能/数据/接口/实现/需求/NFR）；其下 `api-contract/` 子目录承载机器可读契约骨架（`openapi.yaml` / `mcp-tools.json`，以 `api-spec.md` 为权威描述，契约 schema 待补全见债务 D-428）
 - development = 怎么上手开发
 - governance = 规则与债务追踪
 - quality = 验证方法与门禁

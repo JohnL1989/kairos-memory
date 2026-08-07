@@ -1,1695 +1,2347 @@
 # Kairos Memory API — OpenAPI 3.1 SKELETON
-# AUTO-GENERATED from docs/specification/api-spec.md (changelog 0.0.43, 审计报告 F5).
+# AUTO-GENERATED from docs/specification/api-spec.md.
 # WARNING: 本文件为开发就绪骨架，路径/方法提取自 api-spec.md 的真实端点清单，
-#          但 request/response schema 均为占位（SkeletonResponse），须在 Phase 0 补全。
+#          但 request/response schema 均为占位（SkeletonResponse / SkeletonRequest），须在 Phase 0 补全。
 #          切勿将其当作已完成契约；以 api-spec.md 为权威描述，本文件为其机器可读索引。
 openapi: 3.1.0
 info:
   title: Kairos Memory API
-  version: 0.0.43-skeleton
-  description: >-
-    文档设计阶段（无运行代码）的机器可读接口契约骨架。路径与方法提取自
-    docs/specification/api-spec.md；request/response 体为占位 schema，需补全。
-    SKELETON — not a finished contract.
+  version: 0.0.45-skeleton
+  description: 文档设计阶段（无运行代码）的机器可读接口契约骨架。路径与方法提取自 docs/specification/api-spec.md；request/response 体为占位 schema，需补全。 SKELETON — not a finished contract.
 servers:
-  - url: http://localhost:8000
-    description: local dev (placeholder)
-tags: []
+- url: http://localhost:8000
+  description: local dev (placeholder)
+tags:
+- name: audit
+- name: health
+- name: v1
 paths:
-  "/audit/compression":
+  /audit/compression:
     get:
       operationId: get_audit_compression_1
-      summary: "逐记忆压缩审计查询（建议七）"
-      tags: ["audit"]
+      summary: 逐记忆压缩审计查询（建议七）
+      tags:
+      - audit
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/audit/compression/summary":
+  /audit/compression/summary:
     get:
       operationId: get_audit_compression_summary_2
-      summary: "压缩审计全局摘要（建议七）"
-      tags: ["audit"]
+      summary: 压缩审计全局摘要（建议七）
+      tags:
+      - audit
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/health":
+  /health:
     get:
       operationId: get_health_3
-      summary: "健康检查（A01）"
-      tags: ["health"]
+      summary: 健康检查（A01）
+      tags:
+      - health
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/admin/compaction/rollback/{snapshot_id}":
+  /v1/admin/compaction/rollback/{snapshot_id}:
     post:
       operationId: post_v1_admin_compaction_rollback_snapshot_id_4
-      summary: "展开压缩快照"
-      tags: ["v1"]
+      summary: 展开压缩快照
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/admin/compaction/run":
+      security:
+      - adminKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: snapshot_id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/admin/compaction/run:
     post:
       operationId: post_v1_admin_compaction_run_5
-      summary: "手动触发压缩"
-      tags: ["v1"]
+      summary: 手动触发压缩
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/admin/consistency-check":
+      security:
+      - adminKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/admin/consistency-check:
     post:
       operationId: post_v1_admin_consistency_check_6
-      summary: "手动触发一致性检查"
-      tags: ["v1"]
+      summary: 手动触发一致性检查
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/admin/export":
+      security:
+      - adminKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/admin/export:
     post:
       operationId: post_v1_admin_export_7
-      summary: "导出 .kairos 备份包"
-      tags: ["v1"]
+      summary: 导出 .kairos 备份包
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/admin/import":
+      security:
+      - adminKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/admin/import:
     post:
       operationId: post_v1_admin_import_8
-      summary: "导入 .kairos 备份包"
-      tags: ["v1"]
+      summary: 导入 .kairos 备份包
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/audit-log":
+      security:
+      - adminKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/audit-log:
     get:
       operationId: get_v1_audit_log_9
-      summary: "审计日志查询（CAL05）。以下参数为查询字符串参数："
-      tags: ["v1"]
+      summary: 审计日志查询（CAL05）。以下参数为查询字符串参数：
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/calibrate":
+  /v1/calibrate:
     post:
       operationId: post_v1_calibrate_10
-      summary: "发送外部校准信号（CAL01）"
-      tags: ["v1"]
+      summary: 发送外部校准信号（CAL01）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/causal":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/causal:
     post:
       operationId: post_v1_causal_11
-      summary: "手动标注因果链路"
-      tags: ["v1"]
+      summary: 手动标注因果链路
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/config":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/config:
     get:
       operationId: get_v1_config_12
-      summary: "查看配置（A02）"
-      tags: ["v1"]
+      summary: 查看配置（A02）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
     patch:
       operationId: patch_v1_config_13
-      summary: "修改运行时配置（A02）"
-      tags: ["v1"]
+      summary: 修改运行时配置（A02）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/connectors/register":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/connectors/register:
     post:
       operationId: post_v1_connectors_register_14
-      summary: "注册外部平台 Connector"
-      tags: ["v1"]
+      summary: 注册外部平台 Connector
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/constitution":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/constitution:
     post:
       operationId: post_v1_constitution_15
-      summary: "宪法级偏好管理（CAL02，需 admin Key）"
-      tags: ["v1"]
+      summary: 宪法级偏好管理（CAL02，需 admin Key）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/degradation/switch":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/degradation/switch:
     post:
       operationId: post_v1_degradation_switch_16
-      summary: "降级模式切换（CAL04，需 admin Key）"
-      tags: ["v1"]
+      summary: 降级模式切换（CAL04，需 admin Key）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/edge-types":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/edge-types:
     get:
       operationId: get_v1_edge_types_17
-      summary: "查询已注册边类型签名"
-      tags: ["v1"]
+      summary: 查询已注册边类型签名
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
     post:
       operationId: post_v1_edge_types_18
-      summary: "注册新边类型签名"
-      tags: ["v1"]
+      summary: 注册新边类型签名
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/edge-types/{type}":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/edge-types/{type}:
     put:
       operationId: put_v1_edge_types_type_19
-      summary: "更新边类型合法组合"
-      tags: ["v1"]
+      summary: 更新边类型合法组合
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/entities/extract":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: type
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/entities/extract:
     post:
       operationId: post_v1_entities_extract_20
-      summary: "从文本提取实体"
-      tags: ["v1"]
+      summary: 从文本提取实体
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/evolution/{id}":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/evolution/{id}:
     get:
       operationId: get_v1_evolution_id_21
-      summary: "查询知识演化链"
-      tags: ["v1"]
+      summary: 查询知识演化链
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/facts":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/facts:
     post:
       operationId: post_v1_facts_22
-      summary: "直接写入事实三元组"
-      tags: ["v1"]
+      summary: 直接写入事实三元组
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/falsification":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/falsification:
     get:
       operationId: get_v1_falsification_23
-      summary: "证伪信号查询（CAL06）。以下参数为查询字符串参数："
-      tags: ["v1"]
+      summary: 证伪信号查询（CAL06）。以下参数为查询字符串参数：
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/freeze":
+  /v1/freeze:
     post:
       operationId: post_v1_freeze_24
-      summary: "强制冻结（CAL03，需 admin Key）"
-      tags: ["v1"]
+      summary: 强制冻结（CAL03，需 admin Key）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/graph/render":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/graph/render:
     get:
       operationId: get_v1_graph_render_25
-      summary: "导出知识图谱可视化"
-      tags: ["v1"]
+      summary: 导出知识图谱可视化
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/graph/search":
+  /v1/graph/search:
     post:
       operationId: post_v1_graph_search_26
-      summary: "实体图谱多跳查询"
-      tags: ["v1"]
+      summary: 实体图谱多跳查询
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/halls/demote":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/halls/demote:
     post:
       operationId: post_v1_halls_demote_27
-      summary: "将记忆从验证区退回加工区"
-      tags: ["v1"]
+      summary: 将记忆从验证区退回加工区
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/halls/promote":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/halls/promote:
     post:
       operationId: post_v1_halls_promote_28
-      summary: "将记忆从加工区推进到验证区或正式库"
-      tags: ["v1"]
+      summary: 将记忆从加工区推进到验证区或正式库
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/halls/{hall}":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/halls/{hall}:
     get:
       operationId: get_v1_halls_hall_29
-      summary: "查询指定区域内的记忆列表"
-      tags: ["v1"]
+      summary: 查询指定区域内的记忆列表
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/health/calibration":
+    parameters:
+    - name: hall
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/health/calibration:
     get:
       operationId: get_v1_health_calibration_30
-      summary: "校准状态报告（建议一）"
-      tags: ["v1"]
+      summary: 校准状态报告（建议一）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/health/detail":
+  /v1/health/detail:
     get:
       operationId: get_v1_health_detail_31
-      summary: "聚合健康报告"
-      tags: ["v1"]
+      summary: 聚合健康报告
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/health/memory-pressure":
+  /v1/health/memory-pressure:
     get:
       operationId: get_v1_health_memory_pressure_32
-      summary: "记忆压力状态（建议四）"
-      tags: ["v1"]
+      summary: 记忆压力状态（建议四）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/maintenance/run":
+  /v1/maintenance/run:
     post:
       operationId: post_v1_maintenance_run_33
-      summary: "手动触发后台维护（Light/Deep）"
-      tags: ["v1"]
+      summary: 手动触发后台维护（Light/Deep）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/maintenance/status":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/maintenance/status:
     get:
       operationId: get_v1_maintenance_status_34
-      summary: "查看维护引擎运行状态"
-      tags: ["v1"]
+      summary: 查看维护引擎运行状态
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories":
+  /v1/memories:
     get:
       operationId: get_v1_memories_35
-      summary: "TODO"
-      tags: ["v1"]
+      summary: TODO
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
     post:
       operationId: post_v1_memories_36
-      summary: "TODO"
-      tags: ["v1"]
+      summary: TODO
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/batch":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/memories/batch:
     post:
       operationId: post_v1_memories_batch_37
-      summary: "批量导入（W03）"
-      tags: ["v1"]
+      summary: 批量导入（W03）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/heat-top":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/memories/heat-top:
     get:
       operationId: get_v1_memories_heat_top_38
-      summary: "热度最高记忆（heat_score 降序）"
-      tags: ["v1"]
+      summary: 热度最高记忆（heat_score 降序）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/merge":
+  /v1/memories/merge:
     post:
       operationId: post_v1_memories_merge_39
-      summary: "语义合并（保留见证锚定，受 S14 约束）"
-      tags: ["v1"]
+      summary: 语义合并（保留见证锚定，受 S14 约束）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/search":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/memories/search:
     post:
       operationId: post_v1_memories_search_40
-      summary: "三信号混合检索（语义 + BM25 + 实体加成）"
-      tags: ["v1"]
+      summary: 三信号混合检索（语义 + BM25 + 实体加成）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/stats":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/memories/stats:
     get:
       operationId: get_v1_memories_stats_41
-      summary: "记忆库报告（总量/按类型/按状态/增长率）"
-      tags: ["v1"]
+      summary: 记忆库报告（总量/按类型/按状态/增长率）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/{id}":
+  /v1/memories/{id}:
     get:
       operationId: get_v1_memories_id_42
-      summary: "TODO"
-      tags: ["v1"]
+      summary: TODO
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
     patch:
       operationId: patch_v1_memories_id_43
-      summary: "（内部实现为版本插入，修改历史可审计，详见 [datamodel.md](datamodel.md) `superseded_by` 链）"
-      tags: ["v1"]
+      summary: （内部实现为版本插入，修改历史可审计，详见 [datamodel.md](datamodel.md) `superseded_by` 链）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
     delete:
       operationId: delete_v1_memories_id_44
-      summary: "清除记忆"
-      tags: ["v1"]
+      summary: 清除记忆
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/{id}/archive":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/memories/{id}/archive:
     post:
       operationId: post_v1_memories_id_archive_45
-      summary: "归档记忆（竖切功能 M05）"
-      tags: ["v1"]
+      summary: 归档记忆（竖切功能 M05）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/{id}/expire":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/memories/{id}/expire:
     post:
       operationId: post_v1_memories_id_expire_46
-      summary: "标记过期（设 TTL，到期自动归档）"
-      tags: ["v1"]
+      summary: 标记过期（设 TTL，到期自动归档）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/{id}/export":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/memories/{id}/export:
     get:
       operationId: get_v1_memories_id_export_47
-      summary: "导出记忆（脱敏）"
-      tags: ["v1"]
+      summary: 导出记忆（脱敏）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/{id}/feedback":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/memories/{id}/feedback:
     post:
       operationId: post_v1_memories_id_feedback_48
-      summary: "可信度反馈"
-      tags: ["v1"]
+      summary: 可信度反馈
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/{id}/lock":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/memories/{id}/lock:
     post:
       operationId: post_v1_memories_id_lock_49
-      summary: "锁定保护（禁止修改/删除）"
-      tags: ["v1"]
+      summary: 锁定保护（禁止修改/删除）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/{id}/restore":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/memories/{id}/restore:
     post:
       operationId: post_v1_memories_id_restore_50
-      summary: "归档恢复（竖切功能 M05 配套）"
-      tags: ["v1"]
+      summary: 归档恢复（竖切功能 M05 配套）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/{id}/rollback":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/memories/{id}/rollback:
     post:
       operationId: post_v1_memories_id_rollback_51
-      summary: "回滚到指定版本"
-      tags: ["v1"]
+      summary: 回滚到指定版本
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/{id}/suppress":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/memories/{id}/suppress:
     post:
       operationId: post_v1_memories_id_suppress_52
-      summary: "定向遗忘（抑制检索，保留数据）"
-      tags: ["v1"]
+      summary: 定向遗忘（抑制检索，保留数据）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/memories/{id}/versions":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/memories/{id}/versions:
     get:
       operationId: get_v1_memories_id_versions_53
-      summary: "获取记忆版本历史"
-      tags: ["v1"]
+      summary: 获取记忆版本历史
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/narrative/threads":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/narrative/threads:
     post:
       operationId: post_v1_narrative_threads_54
-      summary: "创建叙事线（v0.1.0 子集）"
-      tags: ["v1"]
+      summary: 创建叙事线（v0.1.0 子集）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/narrative/threads/{id}/complete":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/narrative/threads/{id}/complete:
     post:
       operationId: post_v1_narrative_threads_id_complete_55
-      summary: "标记叙事线完结"
-      tags: ["v1"]
+      summary: 标记叙事线完结
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/narrative/threads/{id}/members":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/narrative/threads/{id}/members:
     post:
       operationId: post_v1_narrative_threads_id_members_56
-      summary: "添加记忆至叙事线（v0.1.0 子集）"
-      tags: ["v1"]
+      summary: 添加记忆至叙事线（v0.1.0 子集）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/narrative/threads/{id}/memories":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/narrative/threads/{id}/memories:
     get:
       operationId: get_v1_narrative_threads_id_memories_57
-      summary: "按叙事线检索记忆（v0.1.0 子集）"
-      tags: ["v1"]
+      summary: 按叙事线检索记忆（v0.1.0 子集）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/narrative/threads/{thread_id}/summarize":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/narrative/threads/{thread_id}/summarize:
     post:
       operationId: post_v1_narrative_threads_thread_id_summarize_58
-      summary: "生成叙事线摘要"
-      tags: ["v1"]
+      summary: 生成叙事线摘要
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/path":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: thread_id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/path:
     get:
       operationId: get_v1_path_59
-      summary: "路径下记忆列表"
-      tags: ["v1"]
+      summary: 路径下记忆列表
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/path/rebuild-index":
+  /v1/path/rebuild-index:
     post:
       operationId: post_v1_path_rebuild_index_60
-      summary: "路径索引重建（A06）"
-      tags: ["v1"]
+      summary: 路径索引重建（A06）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/path/suppress":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/path/suppress:
     post:
       operationId: post_v1_path_suppress_61
-      summary: "路径级检索抑制（S16/S17）"
-      tags: ["v1"]
+      summary: 路径级检索抑制（S16/S17）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/path/tree":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/path/tree:
     get:
       operationId: get_v1_path_tree_62
-      summary: "路径空间树状浏览"
-      tags: ["v1"]
+      summary: 路径空间树状浏览
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/playbooks":
+  /v1/playbooks:
     post:
       operationId: post_v1_playbooks_63
-      summary: "创建 Playbook candidate"
-      tags: ["v1"]
+      summary: 创建 Playbook candidate
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/playbooks/search":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/playbooks/search:
     get:
       operationId: get_v1_playbooks_search_64
-      summary: "搜索 Playbook"
-      tags: ["v1"]
+      summary: 搜索 Playbook
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/playbooks/{id}/feedback":
+  /v1/playbooks/{id}/feedback:
     post:
       operationId: post_v1_playbooks_id_feedback_65
-      summary: "记录 Playbook 使用反馈"
-      tags: ["v1"]
+      summary: 记录 Playbook 使用反馈
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/proactive/topics":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/proactive/topics:
     get:
       operationId: get_v1_proactive_topics_66
-      summary: "查询待处理主动话题（A17）"
-      tags: ["v1"]
+      summary: 查询待处理主动话题（A17）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/profile/schema":
+  /v1/profile/schema:
     put:
       operationId: put_v1_profile_schema_67
-      summary: "注册/更新自定义 Profile Schema"
-      tags: ["v1"]
+      summary: 注册/更新自定义 Profile Schema
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/reflect":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/reflect:
     post:
       operationId: post_v1_reflect_68
-      summary: "对现有记忆执行按需深度分析"
-      tags: ["v1"]
+      summary: 对现有记忆执行按需深度分析
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/scheduler/status":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/scheduler/status:
     get:
       operationId: get_v1_scheduler_status_69
-      summary: "调度器状态查询（A03）"
-      tags: ["v1"]
+      summary: 调度器状态查询（A03）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/search/explain":
+  /v1/search/explain:
     get:
       operationId: get_v1_search_explain_70
-      summary: "检索附带 recall funnel trace"
-      tags: ["v1"]
+      summary: 检索附带 recall funnel trace
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/seeds":
+  /v1/seeds:
     get:
       operationId: get_v1_seeds_71
-      summary: "种子状态查看（A05）"
-      tags: ["v1"]
+      summary: 种子状态查看（A05）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
     post:
       operationId: post_v1_seeds_72
-      summary: "种子锚点管理（需 admin Key）"
-      tags: ["v1"]
+      summary: 种子锚点管理（需 admin Key）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/sessions":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/sessions:
     get:
       operationId: get_v1_sessions_73
-      summary: "列出最近会话"
-      tags: ["v1"]
+      summary: 列出最近会话
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/sessions/{id}/messages":
+  /v1/sessions/{id}/messages:
     get:
       operationId: get_v1_sessions_id_messages_74
-      summary: "读取会话消息（支持游标分页）"
-      tags: ["v1"]
+      summary: 读取会话消息（支持游标分页）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
     post:
       operationId: post_v1_sessions_id_messages_75
-      summary: "批量写入会话消息（Hermes on_session_end 调用）"
-      tags: ["v1"]
+      summary: 批量写入会话消息（Hermes on_session_end 调用）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/skills":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/skills:
     get:
       operationId: get_v1_skills_76
-      summary: "搜索/列出技能"
-      tags: ["v1"]
+      summary: 搜索/列出技能
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/skills/{id}/reactivate":
+  /v1/skills/{id}/reactivate:
     post:
       operationId: post_v1_skills_id_reactivate_77
-      summary: "重新激活已归档技能"
-      tags: ["v1"]
+      summary: 重新激活已归档技能
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/skills/{id}/supersede":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/skills/{id}/supersede:
     post:
       operationId: post_v1_skills_id_supersede_78
-      summary: "标记技能被替代"
-      tags: ["v1"]
+      summary: 标记技能被替代
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/sublimation/process":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  /v1/sublimation/process:
     post:
       operationId: post_v1_sublimation_process_79
-      summary: "处理蒸馏结果（两阶段 API 第二阶段）"
-      tags: ["v1"]
+      summary: 处理蒸馏结果（两阶段 API 第二阶段）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/sublimation/prompt":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/sublimation/prompt:
     post:
       operationId: post_v1_sublimation_prompt_80
-      summary: "构建蒸馏提示词（两阶段 API 第一阶段）"
-      tags: ["v1"]
+      summary: 构建蒸馏提示词（两阶段 API 第一阶段）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/sublimation/status":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/sublimation/status:
     get:
       operationId: get_v1_sublimation_status_81
-      summary: "升华进度查询（SF04）"
-      tags: ["v1"]
+      summary: 升华进度查询（SF04）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/sublimation/trigger":
+  /v1/sublimation/trigger:
     post:
       operationId: post_v1_sublimation_trigger_82
-      summary: "手动触发升华（SF02）"
-      tags: ["v1"]
+      summary: 手动触发升华（SF02）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/sync/export":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/sync/export:
     post:
       operationId: post_v1_sync_export_83
-      summary: "导出完整数据快照（.kairos 格式）"
-      tags: ["v1"]
+      summary: 导出完整数据快照（.kairos 格式）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/sync/import":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/sync/import:
     post:
       operationId: post_v1_sync_import_84
-      summary: "导入数据快照"
-      tags: ["v1"]
+      summary: 导入数据快照
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/sync/pull":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/sync/pull:
     post:
       operationId: post_v1_sync_pull_85
-      summary: "拉取服务端增量变更"
-      tags: ["v1"]
+      summary: 拉取服务端增量变更
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/sync/push":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/sync/push:
     post:
       operationId: post_v1_sync_push_86
-      summary: "推送本地增量修改至服务端"
-      tags: ["v1"]
+      summary: 推送本地增量修改至服务端
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/unfreeze":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/unfreeze:
     post:
       operationId: post_v1_unfreeze_87
-      summary: "解冻"
-      tags: ["v1"]
+      summary: 解冻
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
-  "/v1/webhooks":
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
+  /v1/webhooks:
     post:
       operationId: post_v1_webhooks_88
-      summary: "注册 Webhook 事件订阅（v1.1 预留端点）"
-      tags: ["v1"]
+      summary: 注册 Webhook 事件订阅（v1.1 预留端点）
+      tags:
+      - v1
       responses:
-        "200":
+        '200':
           description: SKELETON — define response schema in Phase 0
           content:
             application/json:
-              schema: {"$ref": "#/components/schemas/SkeletonResponse"}
-        "400":
+              schema:
+                $ref: '#/components/schemas/SkeletonResponse'
+        '400':
           description: SKELETON — client error
-        "401":
+        '401':
           description: SKELETON — unauthorized
-        "403":
+        '403':
           description: SKELETON — forbidden (admin-key required)
-        "404":
+        '404':
           description: SKELETON — not found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkeletonRequest'
 components:
   schemas:
     SkeletonResponse:
       type: object
       description: SKELETON placeholder — replace with real response schema in Phase 0.
-      properties:
+      properties: &id001
         note:
           type: string
           example: TODO define real schema
+    SkeletonRequest:
+      type: object
+      description: SKELETON placeholder — replace with real response schema in Phase 0.
+      properties: *id001
   securitySchemes:
     apiKey:
       type: apiKey
@@ -1701,3 +2353,5 @@ components:
       in: header
       name: X-Kairos-Admin-Key
       description: SKELETON — admin operations (calibrate/constitution/freeze/seeds...)
+security:
+- apiKey: []

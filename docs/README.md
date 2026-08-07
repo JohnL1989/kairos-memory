@@ -18,7 +18,6 @@ status: draft
 
 > **快速入口：** [系统架构](foundation/architecture-v0.1.0.md) · [认知基础](foundation/cognitive-foundation.md) · [待实现债务清单](governance/debt-collection.md)
 
-> **分析产物目录说明（审计报告 F8，changelog 0.0.43）**：`docs/analysis/`（含 `external-videos/` 视频/仓库/论文分析产物，约 130+ 份）为外部理念吸收的**分析过程材料**，**不计入权威文档口径**——本文档各索引表与里程碑门禁（`scripts/doc-audit.py`）扫描均排除该目录，其文件数不计入「核心文档 55 份 / 185 md」等统计。该目录不随仓库强制分发，处置记录只进 changelog 批次条目。其与权威设计文档的边界以本说明为准。
 
 ---
 
@@ -47,6 +46,9 @@ status: draft
 | [`specification/use-cases.md`](specification/use-cases.md) | **使用场景** — 8 个典型交互场景 |
 | [`specification/rl-weight-spec.md`](specification/rl-weight-spec.md) | **RL 权重优化器规格** — 五维权重 + 学习算法 |
 | [`specification/operation-catalog.md`](specification/operation-catalog.md) | **操作目录** — 66 项标准操作（OP-001~OP-066），按 ENC/RET/STR 三阶段组织，标注安全红线 |
+| [`specification/schema-slice.sql`](specification/schema-slice.sql) | **竖切 DDL** — 14 张竖切表可执行建表语句（data-model 指定的 DDL 唯一承载，全量 57 表 DDL 随实现阶段由 Alembic 迁移承载） |
+| [`specification/api-contract/openapi.yaml`](specification/api-contract/openapi.yaml) | **REST 契约骨架** — OpenAPI 3.1，81 路径 / 88 操作（骨架，request/response schema 待补全，见债务 D-428） |
+| [`specification/api-contract/mcp-tools.json`](specification/api-contract/mcp-tools.json) | **MCP 工具契约** — 15 工具清单（inputSchema 待补全，见债务 D-428） |
 
 ## 开发文档（怎么上手开发）
 
@@ -123,7 +125,7 @@ status: draft
 
 ## 分析文档（外部理念对照批次，0.0.40）
 
-> **目录边界说明（审计报告 F8，changelog 0.0.43）**：`docs/analysis/` 为外部视频理念对照分析的**产物目录**（0.0.40 独立批次），随仓库分发、不随审计过程材料归档；其文档计入 `docs/` 全量 md 统计（含于总计 185 份 md），但**不计入「核心文档」权威子集（56 份）**，亦不参与架构/规格权威口径。
+> **目录边界说明**：`docs/analysis/` 为外部视频理念对照分析的**产物目录**（0.0.40 独立批次），随仓库分发、不随审计过程材料归档；其文档计入 `docs/` 全量 md 统计（含于总计 185 份 md），但**不计入「核心文档」权威子集（56 份）**，亦不参与架构/规格权威口径。
 
 | 路径 | 内容 |
 |:-----|:-----|
@@ -136,6 +138,8 @@ status: draft
 | [`analysis/external-videos/process/fetch-guide.md`](analysis/external-videos/process/fetch-guide.md) | 字幕抓取/转写流程记录（不含凭据） |
 
 总计：**185 份 md + 3 份 yaml**（= 核心文档 56 份【53 md + 3 yaml：foundation 4 + specification 13(12 md+1 yaml: api-contract/openapi.yaml) + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1】+ 外部视频分析批次 0.0.40 独立目录 [analysis/external-videos/](analysis/external-videos/README.md) 132 份【4 索引/报告 + 15 仓库笔记 + 102 视频笔记 + 10 论文笔记 + 1 流程记录】；审计过程材料不随仓库分发，处置记录见 changelog 各批次）。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
+
+> **附属资产计数政策**：上列「185 份 md + 3 份 yaml」为 md/yaml 核心口径；`specification/schema-slice.sql`（全量 DDL 承载）、`specification/api-contract/mcp-tools.json`（MCP 工具契约）、`diagrams/system-architecture.html`（架构总览图）等附属资产不计入该计数（openapi.yaml 已计入 3 yaml 之一）。
 
 ## 阅读建议
 
