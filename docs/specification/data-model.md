@@ -8,8 +8,8 @@ tags:
   - design
   - data-model
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -25,6 +25,8 @@ status: draft
 > - `extinction_status`（知识生命周期）：active → extinct（知识不再有效）→ fossilized（保留为历史化石）。独立于运行时可见性——已灭绝但 active 的记忆仍可检索。仅影响认知层的知识可信度评估。
 >
 > 三者正交：一条记忆可同时为 `status=active`（可检索）、`extinction_status=extinct`（知识无效）、`memory_states.state=active`（当前态）。详见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 遗忘调度器与 extinction 关系。
+
+> **物理分库取向注记（外部理念吸收 0.0.41；外部实证：OpenClaw VID-16）**：外部实现采用「每 agent 物理分库」的隔离取向——每个 agent 独立数据库实例，故障域与备份粒度天然隔离。Kairos 采用**逻辑域隔离**——单库多租户，隔离由 `kairos://_user/{id}/` 路径域 + `permission_acl` 路径级授权（§11）承载。评估记录：逻辑域隔离以零额外运维成本支撑 v0.1.0 单机/轻量模式起步，且与端云同步（`sync_queue`）共用同一事务域；物理分库的故障隔离、单租户恢复与租户级备份优势，在标准模式多租户场景下作为 v1.1+ 演进选项（与 blueprint TeamScope P3-17 多租户隔离衔接，见 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-17）——v0.1.0 维持逻辑域隔离，不引入物理分库。
 
 ---
 
@@ -71,6 +73,8 @@ status: draft
 | `decontextualization_level` | FLOAT | DEFAULT 0, [0,1] | 去语境化程度，升华时递增 |
 | `heat_score` | FLOAT | DEFAULT 1.0, [0,1] | 热度评分，用于排序权重调制 |
 | `expires_at` | TIMESTAMPTZ | — | 临时契约自动清除时间（仅 temporary 契约有效，到期后台 forgetAfter 硬删除——数据不可恢复。清理前写入审计日志（标记 `expiry_cascade_delete`，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 forgetAfter）——不留审计痕迹的场景仅限捕获阶段拒绝的输入。与 POST /v1/memories/{id}/expire 的「到期归档」不同：temporary 硬删除不可恢复，适用于明确的临时数据治理策略） |
+| `valid_until` | TIMESTAMPTZ | — | **显式时效字段（外部理念吸收 0.0.41：时间轴结构互补）**——知识有效期截止：该记忆所承载事实/知识的有效期限，到期后知识不再主张有效性，由遗忘调度器/freshness 生命周期评估（转 stale/extinct）处理。与 `expires_at`（temporary 契约的存储清理语义）分工：valid_until 到期**不硬删除**，仅退出知识主张；可为 NULL（无显式有效期，按既有遗忘曲线评估）。与 `fact_freshness.valid_until`（事实新鲜度粒度）互补：本列为记忆粒度显式时效 |
+| `expiration_date` | TIMESTAMPTZ | — | **显式时效字段（外部理念吸收 0.0.41：时间轴结构互补）**——数据保留期限：明确的数据时间轴管理字段（治理/合规视角），可为 NULL（无显式保留期限）。与 `valid_until` 分工：valid_until 管知识有效性（语义过期），expiration_date 管数据保留（存储治理）；二者可分别设置，互不替代 |
 | `locked_until` | TIMESTAMPTZ | — | 锁定保护截止时间（`POST /v1/memories/{id}/lock` 设置，到期自动解锁） |
 | `encoding_context` | JSONB | — | 编码情境（时空上下文/任务目标/关联记忆ID）。**`conditions` 子结构约定（外部理念吸收，changelog 0.0.39）**：条件性经验（「适用于什么场景/哪个用户/哪个网站或工具版本」的经验）应在 encoding_context 中记录显式 `conditions` 子结构——`{applies_to: ["<用户/网站/工具版本标识>"], prerequisites: ["<前提条件>"], exceptions: ["<不适用场景>"]}`。用途：(a) 写入时约束经验固化——无条件约束的经验不得在升华管道中被去语境化为通用规律（对应「一条经验是否携带适用范围」的写入判定）；(b) 检索时按当前环境匹配 conditions——环境不匹配的候选在排序中降权（v1.1 落地为独立过滤维度，v0.1.0 作为 encoding_context 的约定子结构，不新增列）。与 `domain`（领域路由标签）互补：domain 是粗粒度领域分类，conditions 是细粒度适用条件。v0.1.0 仅要求写入时填充（升华管道 L1 阶段识别条件性表述时录入），检索侧不做强制过滤 |
 | `occurred_at` | TIMESTAMPTZ | — | **事件时间**——记忆所描述的事实实际发生的时间（区别于 `created_at` 事务时间：写入时间）。由轻量级时间戳后处理（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 event_time 提取）回填，可空（无法判定事件时间的记忆不填）。双时态模型（认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 双时态声明）：事件时间归逻辑-因果轴/物理轴输入，事务时间由衰减子轴承载。竖切 v0.1.0-slice 落列为可空字段 |
@@ -1392,3 +1396,4 @@ SQLite 无时区类型，故：
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：api_keys.level 枚举统一为 read（含 CHECK 约束，与 api-spec §1 三级口径一致）；§8.1 conversation_messages 补 parts 列（对齐 api-spec §18.2 v0.1.0 交付承诺）；journal_entries 补 node_episode_index_map 列（架构 §5.2 Episode 归因索引）；api_keys 表补 v0.1.0 核心鉴权承载注记。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：rl_weights 归一化口径统一（初始化不归一化/更新投影强制 Σ=1）；实体类型存储枚举映射注记；配置键名映射示例修正；表标题 v0.1.0 交付口径；零版本标记收敛。 |
 | 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：encoding_context 补 `conditions` 子结构约定（条件性经验适用范围显式化）。 |
+| 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：memories 表新增显式时效字段 `valid_until`/`expiration_date`（时间轴结构互补；`superseded_by` 为既有字段，不重复添加），并同步 schema-slice.sql 补列（6.13 门禁联动）；§0 补物理分库取向注记（外部实证：OpenClaw VID-16 评估记录——Kairos 维持逻辑域隔离，物理分库为 v1.1+ 演进选项）。表数不变（57）。 |

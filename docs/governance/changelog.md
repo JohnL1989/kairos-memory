@@ -608,6 +608,52 @@ status: draft
 **治理**：无债务登记、无 ADR、无风险登记（全部建议态，落地走既有外部理念吸收流程）；脚本入库 2 个（[fetch_bilibili_subs.py](../scripts/fetch_bilibili_subs.py)、[transcribe_batch.py](../scripts/transcribe_batch.py)）；过程材料（原始字幕/音频/模型）不入库（video-work/ gitignored）；Cookie 凭据全程内存使用零落盘。
 
 **门禁**：见批次完成验证记录（doc-audit.py 运行）。
+
+---
+
+## 0.0.41（2026-08-07）— 外部理念吸收落地批次（AP-01~28 全量落库）
+
+> 承接 0.0.40 外部视频分析批次（[analysis/external-videos/](../analysis/external-videos/README.md) 分诊矩阵 EV-01~58 与吸收建议 AP-01~28），本批次将吸收建议**全量落地**到核心设计文档与规格层文档（用户决策：全部 28 条直接落库）。
+
+**认知基础（[cognitive-foundation.md](../foundation/cognitive-foundation.md)，8 条认知层声明）**：
+- AP-01 查询期重建产物治理声明（§2.1 价值独立性公理扩展）
+- AP-02 显式时效字段互补声明（§1.1 时间轴：结构字段 vs 度量衰减）
+- AP-03 遗忘决策懒求值声明（§2.2 硬约束二）
+- AP-05 候选集集中度信号声明（§1.3 检索深度分级）
+- AP-06 任务内跨轮状态传递声明（§2.2 软原则）
+- AP-19 升华整合门控声明（§1.10 升华管道，PAPER-01 实证）
+- AP-22 可及性轴实证注记（§1.1，InMind 基准）
+- AP-28 增量存储理念声明（§1.1，Δ-Mem）
+
+**系统架构（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md)，22 条机制落地）**：
+- AP-01 §5.5 查询期重建产物治理三步（来源标记 provenance=reconstruction/差异检验状态/未过检仅临时上下文）
+- AP-02 §7.3a 显式时效字段（valid_until/expiration_date/superseded_by）
+- AP-03 §5.2 遗忘决策懒求值（惰性评估+Light 周期兜底双轨）
+- AP-04 §5.2 写入管线三工程约束（Memory Key 规范化/幂等乐观锁/索引派生可重建）
+- AP-05 §3.9 候选集集中度第三类触发信号；AP-06 §3.1 任务内跨轮状态传递
+- AP-09 §9.2 间隔重复复习时刻表（1/3/7/30 天）；AP-10 §5.5 处理完降温防自激
+- AP-11 §3.2 意图先验检索加权；AP-12 §7.3a 时间检索维度评估注记
+- AP-13 §1 记忆归属单元注记（关联 T-002）；AP-16 §5.9 嵌入可插拔（v1.1 候选）
+- AP-18 §7.4c 无痕对话不记忆模式注记；AP-19 §5.2 升华整合显式门控+质检三查
+- AP-20 §2.6.3 恢复契约六属性验收标准；AP-21 §3.7 读路径门控
+- AP-22 §7.3a 可及性轴实证（InMind 84% vs 14.4%，关联 D-313）
+- AP-23 §8 S-19 遗忘生效三样本检验+双副本完备性+「内容不可恢复≠行为无痕」边界
+- AP-25 §5.2 Compaction 成本-保真三 regime；AP-26 §5.5 范围性回滚
+- AP-27 §7.3a 图激活传播+时间粒度检索评估注记；AP-28 §5.2 增量快照模式评估
+
+**规格层（7 份文档 + schema-slice 联动）**：
+- [data-model.md](../specification/data-model.md)：memories 表新增 `valid_until`/`expiration_date` 两列（AP-02）；物理分库评估注记（AP-17）
+- [detailed-design.md](../specification/detailed-design.md)：写入管线设计小节（AP-04）；Compaction 成本-保真三 regime（AP-25）；恢复契约六属性验收表（AP-20）
+- [configuration.md](../ops/configuration.md)：CRI 压缩参数外部参考值注记（AP-14：触发 0.5/目标 0.2/保护 20 条）
+- [acceptance-criteria.md](../quality/acceptance-criteria.md)：记忆系统成熟度五问评估清单（AP-07）
+- [benchmark-plan.md](../quality/benchmark-plan.md)：六梯度消融方法论 §3.12（AP-15）；InMind 检索回归基准建议 §3.13（AP-22）
+- [adr.md](../governance/adr.md)：决策历史条目四元组（AP-24）
+- [troubleshooting.md](../ops/troubleshooting.md)：记忆整合失效排查小节（PAPER-01 实证）
+- [schema-slice.sql](../specification/schema-slice.sql)：memories 表同步 valid_until/expiration_date 两列（6.13 门禁联动）
+
+**计数与治理**：表数 57 不变（字段级扩展）；参数计数 224+146=370 不变（4 处新阈值如实标注「参数待登记」，未引入未登记 KAIROS_* 参数名）；受改 10 份文档版本记录统一 0.0.41（2026-08-07）；全部新增标注「外部理念吸收 0.0.41」与外部实证来源（REPO/VID/PAPER 编号）。
+
+**门禁**：doc-audit.py 18 类全绿（联合验证）。
 ## 版本记录
 
 > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
@@ -653,4 +699,5 @@ status: draft
 | 0.0.37 | 2026-08-06 | round15 全面深度审计修复批次：45 项问题闭环（1 高/19 中/25 低）——M-03 三义统一（feature-list 语义为锚）；否决权「默认优先级+判例出口」口径全库 4 处统一（认知基础 §2.1/架构 §0.4.1/glossary/HTML 图）；三信号/四链路管线关系声明与术语消歧（架构 §7.3a）；意图契约第五契约说明（架构 §3.7）；MCP 12→15、CLI 24→25（api-spec 补注册 degradation switch）、术语 67→68（glossary 补准见证锚定）、OP 53→66、traceability-map 四种→六种、api_keys read-only→read、待定义 12→11 计数联动；conversation_messages parts 列与 journal_entries node_episode_index_map 列补录；竖切 REST 20→21 补 restore；troubleshooting 命令状态表失实修正；reliability 改指 sublimation_queue；P3-19~25 债务补登 D-415~D-421；差距表 G-01/G-07 互引；D-402 改引 ARC-D-004；S-19 汇总表收敛；版本注记纪律收敛（勘误类去版本号、外部产品名收敛）；benchmark-plan 判据补齐（升华/磁盘/启动）；门禁 18 类 + 14a + 6.8a/6.12a/6.13~6.16 + 6.17/6.18/6.19 全绿。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次：全面审计 113 项（3 高/64 中/46 低）全部闭环——P0 三项【高】（推论幽灵引用、帕累托维度三重口径、零版本标记全库收敛）；P1 约 30 项【中】（幽灵引用清理、WM 唯一化、rl_weights 归一化矛盾、多模态档位、错误码口径、CLI 契约盘点等）；P2 其余（路径下划线统一、§10.24 补 D-322~338、参数计数 224+146=370、[AGENTS.md](../../AGENTS.md) 刷新等）；计数变化：glossary 68→69、参数 371→370、标志 11→12；门禁 18 类 + 14a + 6.8a/6.12a/6.13~6.16 + 6.17/6.18/6.19 全绿。 |
 | 0.0.40 | 2026-08-07 | 外部视频分析批次：100 视频 + 15 仓库对照分析（详见上文 0.0.40 主体章节）——新建 [docs/analysis/external-videos/](../analysis/external-videos/README.md) 独立目录（索引 + 分诊矩阵 + 原理评审 + 吸收建议 + N 份视频笔记 + 15 份仓库笔记 + 抓取流程记录）；实测 B站 AI 字幕串台问题；脚本入库 2 个；零改动核心设计文档；无债务/ADR/风险登记（全部建议态）；门禁验证见批次记录。 |
+| 0.0.41 | 2026-08-07 | 外部理念吸收落地批次：AP-01~28 全量落库（详见上文 0.0.41 主体章节）——认知基础 8 条声明 + 架构 22 条机制 + 规格层 7 份文档 + schema-slice 联动；表数 57 不变、参数 370 不变（4 处新阈值标注「参数待登记」）；受改 10 份文档版本记录统一 0.0.41；门禁 18 类全绿。 |
 | 0.0.39 | 2026-08-06 | 外部理念吸收批次（2026-07）：落地 6 项借鉴——① 记忆质量评估指标（acceptance-criteria §一a 新增过时调用率 / 任务成功率改善，v1.1+ 设计目标）；② 反事实检验测试模式（test-strategy §2.7 三态对比 + TC-CF-001~004）；③ encoding_context `conditions` 子结构约定（data-model，条件性经验适用范围显式化）；④ 高相似 × 过时联合惩罚（architecture §7.3a 排序调制，stale ×0.7 / expired ×0.5）；⑤ 记忆四动作失败模式排障表（troubleshooting §二a）；⑥ 基准设计红线——经验来源与验证数据分离（benchmark-plan §3.11 评测泄漏防护）；配套：observability 指标 2 项 + 告警 1 条、integration-design §五a 任务成功率回传契约（task_outcome 事件，v0.1.0 落 usage_events 不新增端点）；无债务登记、无新文档（7 份现有文档修订）；门禁验证通过。 |

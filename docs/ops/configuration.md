@@ -8,8 +8,8 @@ tags:
   - ops
   - configuration
 created: 2026-07-18
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -461,6 +461,8 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 > **代理性质警告**：本节六项参数调节的是**代理指标**而非原度量本身。三项代理各自的认知局限已在 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1（认知完整性闭集分母系统性偏高、可及性轴以结果代理机制）与 §1.9（CRI 弱信号项）中显式声明。调参可改变灵敏度，**不能**消除代理与原定义之间的语义偏离。
 
+> **CRI 触发压缩外部参考值（外部理念吸收 0.0.41；外部实证：Hermes VID-45）**：上下文腐烂驱动的压缩行为参数可参考以下外部实证值——**压缩触发阈值 0.5**（CRI ≥ 0.5 时触发压缩）、**压缩目标 0.2**（压缩至 CRI ≈ 0.2）、**保护最近 20 条**（最近 20 条记忆/轮次豁免压缩，与 `KAIROS_CRI_WINDOW_TURNS` 默认 20 同量级）。v0.1.0 无独立参数承载——CRI 度量参数见本表（§0.11）与 §0.10，压缩执行参数见附录 A `KAIROS_COMPACTION_*` 组；上述三值作为实现期标定参考基线，不改变既有默认值口径（与 detailed-design §4 Compaction 成本-保真三 regime 的验证压缩策略联动）。
+
 ---
 
 
@@ -650,3 +652,4 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 0.0.34 | 2026-08-06 | 第十四轮全库深度审计修复批次（changelog 0.0.34）：`KAIROS_RETRIEVAL_LINK_WEIGHTS` 由「—（待定义）」补填默认值 `{"semantic": 0.50, "cooc": 0.20, "knn": 0.10, "causal": 0.20}`，来源列指向架构 §5.2 三链路融合与检索扩展（唯一权威）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：附录 A「待定义」计数 12→11（0.0.34 已回填 `KAIROS_RETRIEVAL_LINK_WEIGHTS`）；`KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` OFF 行为补竖切例外注记（竖切内监督平面部分启用——审计庭快照校验/审计日志比对，见 slice-implementation-guide 组件 6）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：§11 特征标志补 KAIROS_FEATURE_CONNECTORS（11→12）；KAIROS_SDK_PYTHON_MIN_VERSION 统一 3.10；身份映射参数名统一为 KAIROS_USER_ALIASES；正文 224 + 附录 A 146 = 370 计数核定；附录/§0.10 格式注记；动态调参约束注记。 |
+| 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：§0.11 补 CRI 触发压缩外部参考值注记（压缩触发阈值 0.5 / 压缩目标 0.2 / 保护最近 20 条，外部实证：Hermes VID-45）——注记形式落地，未新增参数，参数计数不变（正文 224 + 附录 A 146 = 370）。 |

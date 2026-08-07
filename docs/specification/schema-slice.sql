@@ -85,6 +85,8 @@ CREATE TABLE memories (
   decontextualization_level REAL    NOT NULL DEFAULT 0   CHECK (decontextualization_level BETWEEN 0 AND 1),
   heat_score                REAL    NOT NULL DEFAULT 1.0 CHECK (heat_score BETWEEN 0 AND 1),
   expires_at                TEXT,                                        -- 仅 temporary 契约；到期硬删除
+  valid_until               TEXT,                                        -- 显式时效字段（外部理念吸收 0.0.41：时间轴结构互补）——知识有效期截止，可空；到期不硬删除
+  expiration_date           TEXT,                                        -- 显式时效字段（外部理念吸收 0.0.41：时间轴结构互补）——数据保留期限，可空
   locked_until              TEXT,
   encoding_context          TEXT,                                        -- JSONB
   occurred_at               TEXT,                                        -- 事件时间（双时态，可空——无法判定时不填；轻量级时间戳后处理回填）

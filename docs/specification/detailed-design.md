@@ -9,8 +9,8 @@ tags:
   - design
   - implementation
 created: 2026-07-21
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -180,6 +180,16 @@ class StorageBackend(ABC):
     async def update_usage(self, memory_id: UUID, delta: UsageDelta): ...
 ```
 
+### 写入管线设计（外部理念吸收 0.0.41）
+
+写入路径（本节「数据流：写入路径」）的可靠性设计三项约束——承接「写入失败→积累垃圾」「巩固失败→矛盾规则」两类失败模式（troubleshooting §二a）的正面约束：
+
+**① 稳定 Memory Key 规范化策略**：同一事实的多次观测收敛到稳定写入键——Memory Key 由（用户域 + 规范化实体/主题锚点 + 路径前缀）确定性派生，规范化规则（大小写、别名、时态归一）在摄取门禁内统一执行；同 Key 的新观测按 ADD-only 协议（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3g）追加（relation_type=supplement）而非新建独立记忆，避免同一事实的多副本漂移；内容级去重由 `content_hash` 兜底（同哈希不新建记录，仅更新 usage_weight，见 [data-model.md](data-model.md) §8.3 冲突判定规则）。
+
+**② 幂等 + 乐观锁事务提交（事实源/日志/Outbox 三分）**：单次写入在单事务内三分提交——事实源（`memories` 主记录）、日志（`journal_entries` 原始轮次/审计链）、Outbox（事件总线持久化 `usage_events`）要么全部成功要么全部回滚（竖切事务开关 `KAIROS_BATCH_TRANSACTION_ENABLED`）；写入请求携带幂等键（客户端生成 request_id），重复提交按幂等键去重拒绝；并发更新经 `version` 乐观锁裁决（冲突返回 `ERR-DB-005`），冲突走版本链追加而非覆盖（版本链模型见 [data-model.md](data-model.md) §1 memories）。
+
+**③ 索引为派生视图可重建**：路径前缀树、FTS5 全文索引、向量索引、kNN 近邻表（`memory_semantic_knn`，见 [data-model.md](data-model.md) §8.16）均声明为事实源（`memories` 主记录）的**派生视图**——可由主记录确定性重建（重建与校验路径见 §11.5 一致性检查 C1~C8）；主记录是唯一事实源，任何索引损坏不损失数据、仅触发重建，禁止索引侧数据反写主记录。
+
 ---
 
 ## §3 遗忘引擎
@@ -290,6 +300,18 @@ behavior（自动化行为规则，不检索直接输出）
 **verbatim 拒绝**：strategy 阶段产物（抽象萃取/Reflect `done` 结论）与源 item 内容 verbatim 相同（或仅格式包装）时判定为**无效升华**——LLM 偷懒直接复制输入不产生抽象，收敛判据（§4.1，针对反思结论稳定性）无法拦截此失效模式。处理：拒绝该产物，标记 `sublimation_invalid` 审计事件（§10.10 事件总线），重试一次（重试输入附加「产物不得与源文本相同」指令）；重试仍 verbatim 相同则放弃本次升华，留待下个空闲周期（不进入 behavior 阶段，不触发人工确认门控）。
 
 > 设计来源：会话压缩器的 verbatim 检查（摘要与最后一条消息完全相同则拒绝）——同一「模型复制输入冒充产出」失效模式的护栏结构。Kairos 的 Reflect 收敛判据（§4.1）与 verbatim 检查为两个独立维度：前者防「结论不稳定」，后者防「产物无抽象」。
+
+### Compaction 成本-保真三 regime（外部理念吸收 0.0.41）
+
+> 权威定义：架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2「双模式 Compaction」（sliding_window / all），存储承载见 [data-model.md](data-model.md) §12 `compaction_snapshots`。双模式回答「何时压缩」，本 regime 框架回答「压缩成什么样、付出什么代价」。
+
+| Regime | 成本形态 | 保真形态 | 定位 |
+|:--|:--|:--|:--|
+| **朴素累积**（naive accumulation） | 不压缩、逐条累积——检索/回放成本随条目数**二次方**增长（O(n²)） | 全保真（原始事实无损） | 数据量小、访问频率低时兜底；不可规模化 |
+| **粗摘要**（coarse summary） | 摘要压缩成本**线性**（O(n)） | **准确性悬崖**——压缩比越过临界后关键细节（数值/决策/适用条件）批量丢失，准确性断崖式下降且无校验 | 仅作中间产物，不作为正式 regime |
+| **验证压缩**（verified compression） | 压缩成本**线性** + 保真验证开销 | 压缩后经保真校验（关键事实/决策/适用条件保持率 ≥ 阈值）通过才提交，保真可量化 | **v0.1.0 目标 regime**——压缩产物落 `compaction_snapshots` 且保留源记忆（30 天回滚窗口，见 [data-model.md](data-model.md) §1 `compacted` 列） |
+
+**选择规则**：默认验证压缩。压缩批量执行后进入观察窗口（`KAIROS_OBSERVATION_WINDOW_PERIODS`，见 [ops/configuration.md](../ops/configuration.md) §4）比对压缩前后检索质量指标（过时调用率/任务成功率改善，见 [quality/acceptance-criteria.md](../quality/acceptance-criteria.md) 记忆质量评估指标）——观察窗口内效用下降即回滚（`POST /v1/admin/compaction/rollback/{snapshot_id}`），并登记整合失败批次（见 [ops/troubleshooting.md](../ops/troubleshooting.md) 记忆整合失效排查）。
 
 ### 4.1 Reflect 反思循环
 
@@ -528,7 +550,7 @@ LAYER_DISTILL(session_id):
 蒸馏置信度低于 KAIROS_CAPTURE_CONFIDENCE_FLOOR（默认 0.6）的产物标记为待审，
 不自动进入上层。关系检测在 L1 阶段执行。
 
-> **TMT 形态对照（实证参考基线：TMT；债务 D-336）**：本管道与实战型开源记忆系统（外部实证参考：时间粒度层级蒸馏）的 L1 碎片→L2 会话→L3 每日→L4 每周→L5 画像五级蒸馏形态同构（蒸馏算子 Φᵢ:(Cᵢ,Hᵢ,Iᵢ)→{m⁽ⁱ⁾}，10 分钟/日/周/月节奏逐级压缩，见认知基础 §1.1 时间粒度层级实证对照声明）。对照价值：TMT 的节奏参数（10 分钟/日/周/月）与触发时点（日终/周终/月末）可作为本管道调度参数的参考基线，不改变 v0.1.0 既有口径。
+> **时间粒度层级蒸馏形态对照（实证参考基线；债务 D-336）**：本管道与实战型开源记忆系统（外部实证参考：时间粒度层级蒸馏）的 L1 碎片→L2 会话→L3 每日→L4 每周→L5 画像五级蒸馏形态同构（蒸馏算子 Φᵢ:(Cᵢ,Hᵢ,Iᵢ)→{m⁽ⁱ⁾}，10 分钟/日/周/月节奏逐级压缩，见认知基础 §1.1 时间粒度层级实证对照声明）。对照价值：该蒸馏的节奏参数（10 分钟/日/周/月）与触发时点（日终/周终/月末）可作为本管道调度参数的参考基线，不改变 v0.1.0 既有口径。
 
 ```text
 REASONING_LOOP(context):
@@ -1060,6 +1082,17 @@ $$\text{task\_score} = 0.40 \cdot \text{temporal\_precision} + 0.30 \cdot \text{
 | 数据损坏（检查点校验失败） | 回退至上一检查点 | 1（回退后续训） | 无退避——直接加载上一有效检查点 |
 | 外部校准中断 | 等待校准恢复后续训 | 无上限（阻塞等待） | 每 30s 轮询校准端口状态 |
 
+**恢复契约六属性（验收标准，外部理念吸收 0.0.41）**：持久化/防抖相关设计（断点续训检查点、防抖任务链 `debounced_tasks`、`journal_buffer` 回放）的恢复行为以下列六属性为验收标准——任一属性不满足即视为恢复契约违约：
+
+| 属性 | 验收判据 |
+|:--|:--|
+| **前缀延续**（Prefix Continuity） | 恢复从检查点进度游标继续，已完成前缀步骤不重放（幂等续训，见上文设计原则） |
+| **效果恰好一次**（Effect Exactly-Once） | 恢复/重放产生的副作用（写入、事件发出、外发动作）恰好一次——不重复、不遗漏 |
+| **分叉确定性**（Fork Determinism） | 同一检查点 + 同一输入序列的恢复结果唯一确定，无随机分叉 |
+| **检查点有效性**（Checkpoint Validity） | 恢复前校验检查点 checksum（`training_checkpoints.checksum`）——损坏检查点拒绝加载，回退最近有效检查点（对应上表「数据损坏」重试策略） |
+| **消费一次**（Consume-Once） | 待处理队列/防抖任务链条目恢复后消费一次——不重复执行、不静默丢弃（`debounced_tasks.status` 全程可追溯） |
+| **恢复确定性**（Recovery Determinism） | 恢复后的系统状态与未中断运行的等价状态一致（差异可验证，如基准重放比对） |
+
 > **配置参数**：断点续训与重试参数见 [ops/configuration.md](../ops/configuration.md) §8.7。
 
 ### 10.6 用户画像性能基准（P3-06）
@@ -1568,8 +1601,9 @@ Kairos 的存储层维护两套数据视图——**文件系统视图**（`memor
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：api-spec 章节引用 5 处修正、5D 排序表述清理、reflect 事件复用 sublimation_tick、遗忘伪代码两阶段对齐。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：§3 遗忘伪代码改为架构 freshness 单曲线权威口径（v1.1 二维曲面移出 v0.1.0 执行路径并标注目标段）；状态机图对齐架构四态（active/stale/archived + forgetAfter 分工）；SUPPRESSION_THRESHOLD 从 v0.1.0 路径移除。 |
 | 0.0.15 | 2026-08-05 | 全面深度审计修复批次（changelog 0.0.15，依 comprehensive-documentation-audit P4-01）：正文括号间双空格清理 1 处（「（降权检索）  （归档至冷存储）」→「（降权检索）（归档至冷存储）」）。 |
-| 0.0.22 | 2026-08-05 | 外部项目理念吸收批次（changelog 0.0.22）：新增「吸收承接注记」节（噪音规则库参考清单与重要性加分表 D-338、热度体系参考参数表 D-335）；§7 层级蒸馏管道补 TMT 形态对照（D-336）。 |
+| 0.0.22 | 2026-08-05 | 外部项目理念吸收批次（changelog 0.0.22）：新增「吸收承接注记」节（噪音规则库参考清单与重要性加分表 D-338、热度体系参考参数表 D-335）；§7 层级蒸馏管道补时间粒度层级蒸馏形态对照（D-336）。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec 中文序引用联动（§十四→§14 等 5 处）。 |
-| 0.0.36 | 2026-08-06 | 第三方分析分诊（BaiShou-Next 白守，changelog 0.0.36）：§4 升华管道新增「升华产物质量护栏（R-02）」——strategy 阶段产物与源 item verbatim 相同（或仅格式包装）判定无效升华，标记 `sublimation_invalid` 审计事件并重试一次，重试仍相同则放弃本次升华。 |
-| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：外部理念吸收表述收敛（R-02 护栏/verbatim 设计来源/TMT 形态对照去产品名，保留技术信息）；「吸收承接注记」标题去版本号前缀；5D 混合排序两处补历史沿用名注记（架构 §7.3a 术语口径）。 |
+| 0.0.36 | 2026-08-06 | 第三方分析分诊（changelog 0.0.36）：§4 升华管道新增「升华产物质量护栏（R-02）」——strategy 阶段产物与源 item verbatim 相同（或仅格式包装）判定无效升华，标记 `sublimation_invalid` 审计事件并重试一次，重试仍相同则放弃本次升华。 |
+| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：外部理念吸收表述收敛（R-02 护栏/verbatim 设计来源/时间粒度层级对照去产品名，保留技术信息）；「吸收承接注记」标题去版本号前缀；5D 混合排序两处补历史沿用名注记（架构 §7.3a 术语口径）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：遗忘伪代码删悬空 base_weight；实体提取输出→存储枚举映射注记；§2 写入路径三区流转改写；遗忘状态机补 Superseded 态注记；升华产物质量护栏来源收敛；路径空间统一下划线命名。 |
+| 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：§2 补写入管线设计（稳定 Memory Key 规范化 / 幂等+乐观锁三分提交 / 索引为派生视图可重建）；§4 补 Compaction 成本-保真三 regime（朴素累积二次方 → 粗摘要线性+准确性悬崖 → 验证压缩线性+保真）；§10.5 补恢复契约六属性（前缀延续/效果恰好一次/分叉确定性/检查点有效性/消费一次/恢复确定性）作为验收标准。 |

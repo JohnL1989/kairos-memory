@@ -8,8 +8,8 @@ tags:
   - ops
   - troubleshooting
 created: 2026-07-18
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -61,7 +61,7 @@ status: draft
 
 ## 二a、记忆循环四动作失败模式（写入/巩固/检索/遗忘）
 
-> **外部理念吸收注记**：本表吸收自「Agent Continual Learning」系列对记忆循环的失败模式分析（唐国梁Tommy，2026-07）——记忆循环（验证→写入→去重抽象→按条件检索→用后评估→更新或遗忘）的每一步都可能失败：写入失败积累垃圾、巩固失败产生互相矛盾的规则、检索失败在错误场景调用经验、遗忘失败让系统固守过时世界。下表将四类失败模式映射到 Kairos 已有监控信号，供排障时按「症状 → 失败环节 → 检查点」定位。
+> **外部理念吸收注记**：本表吸收自外部对记忆循环的失败模式分析（2026-07）——记忆循环（验证→写入→去重抽象→按条件检索→用后评估→更新或遗忘）的每一步都可能失败：写入失败积累垃圾、巩固失败产生互相矛盾的规则、检索失败在错误场景调用经验、遗忘失败让系统固守过时世界。下表将四类失败模式映射到 Kairos 已有监控信号，供排障时按「症状 → 失败环节 → 检查点」定位。
 
 | 失败模式 | 症状 | 对应监控信号（observability §一） | 检查点 |
 |:--------|:-----|:------------------------------|:------|
@@ -69,6 +69,22 @@ status: draft
 | **巩固失败→矛盾规则** | 同一主题存在互相矛盾的记忆条目；contradiction Flag 密度上升 | 事件总线 `contradiction_detected` 事件频率、knowledge_evolution 的 challenges 记录密度 | ① 升华管道蒸馏产物是否通过冲突检验（ERR-SUB-002）② 新信息冲突解决（补充/修正/重构）是否按语义内核相似度正确分流 ③ memory_flags 中 contradiction 的解析率（长期未解析=矛盾悬而未决） |
 | **检索失败→错误场景调用** | 过时经验被高频选中；任务成功率下降但检索延迟正常 | `kairos_stale_call_ratio`（过时调用率，见 acceptance-criteria §一a）、`kairos_task_success_rate` 三态对比 | ① 排序调制的「高相似 × 过时联合惩罚」是否生效（架构 §7.3a）② conditions/encoding_context 的环境匹配是否执行 ③ 检索路径是否越过了路径空间硬过滤边界 |
 | **遗忘失败→固守过时世界** | 陈旧记忆长期占活跃存储；freshness 分布异常 | `kairos_forgetting_score` 分布、遗忘队列积压比（`KAIROS_PRESSURE_BACKLOG_RATIO`） | ① 遗忘调度器是否运行（Light 模式心跳）② freshness.py 推断是否被 false_positive 调优抑制（假阳性率阈值 15%）③ 结构性守护/身份豁免是否误用了范围（`is_structure=true` 记忆过多=守护过度） |
+
+---
+
+## 二b、记忆整合失效排查（整合后效用下降）
+
+> **外部理念吸收注记**：本小节吸收自 PAPER-01（2026，持续更新衰退）——**整合步骤本身可能成为错误来源**：持续把新信息整合进既有记忆（升华蒸馏 / Compaction 压缩 / 知识演化合并），长期运行后记忆效用反而下降。Kairos 的整合动作启用或升级后，出现下述症状时按本小节排查。
+
+**症状**：整合/升华/压缩批量运行后，检索命中率或任务成功率下降（而非上升）；整合后的记忆与用户实际情况偏离（「记住了错的东西」）。
+
+| 排查点 | 症状特征 | 检查方法 | 处置 |
+|:--|:--|:--|:--|
+| **错误分组** | 不同主题/不同主体的内容被并入同一条记忆 | 检查 Compaction/升华的聚类合并是否跨域误并（GSPO/蒸馏分组结果）；检查 `knowledge_evolution` 的 replaces 记录是否误取代 | 30 天窗口内回滚压缩（`POST /v1/admin/compaction/rollback/{snapshot_id}`，见 [data-model.md](../specification/data-model.md) §12 `compaction_snapshots`） |
+| **过度泛化** | 经验被提炼成无条件通用的规则，错误套用于不适用场景 | 检查升华产物（strategy 级）是否携带适用条件——`encoding_context.conditions`（外部理念吸收 0.0.39 约定）；无条件约束的经验不得在升华管道中去语境化为通用规律 | 补录适用条件或降级回 item 级；conditions 不匹配的候选在检索排序中降权 |
+| **过拟合** | 整合偏向近期少数样本，长期稳定事实被短期高频话题覆盖 | 检查 L4 画像/RL 权重是否被短期话题主导（`user_profiles` 刷新、`rl_weights` 分布）；检查 `knowledge_evolution` confirms 密度异常 | 恢复基线权重；画像更新触发人工审查 |
+
+**预防闭环**：整合动作与效果评估解耦——整合批量执行后进入观察窗口（`KAIROS_OBSERVATION_WINDOW_PERIODS`，见 [configuration.md](../ops/configuration.md) §4），窗口内比对整合前后检索质量指标（过时调用率 / 任务成功率改善，见 acceptance-criteria 记忆质量评估指标，[acceptance-criteria.md](../quality/acceptance-criteria.md)）；窗口内效用下降即回滚该批次整合，并在 changelog 批次条目登记整合失败批次。
 
 ---
 
@@ -142,3 +158,4 @@ status: draft
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：CLI 命令定义状态表修正——`kairos db verify` / `kairos admin key rotate` 改为「已定义（api-spec §3）」，0 命中声明改「3 条命令（db repair/db restore/db migrate rollback）无定义」；安全事件排查表 key rotate 行引用同步。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：CLI 命令状态表全量盘点（10 条待定义子命令）；ERR-DB-*/ERR-SEC-001 返回口径按 api-spec §7 收敛。 |
 | 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：新增 §二a 记忆循环四动作失败模式表（写入/巩固/检索/遗忘 → 症状 → 监控信号 → 检查点）。 |
+| 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：新增 §二b 记忆整合失效排查（整合后效用下降——错误分组 / 过度泛化 / 过拟合三排查点 + 预防闭环，外部实证：PAPER-01 持续更新衰退 2026）。 |
