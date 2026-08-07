@@ -7,8 +7,8 @@ tags:
   - kairos
   - documentation
 created: 2026-07-18
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-07
+last_reviewed: 2026-08-07
 status: draft
 ---
 
@@ -119,7 +119,19 @@ status: draft
 | [`references/concept-tiers.md`](references/concept-tiers.md) | **概念分级速查表** — L1/L2/L3 三级概念归类 + 一句话类比 + 代码映射 + 依赖图 |
 | [`references/capability_matrix.yaml`](references/capability_matrix.yaml) | **认知维度承载能力矩阵** — 各版本对认知维度的承载程度与恢复债编号 |
 
-总计：55 份核心文档**（foundation 4 + specification 12 + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1 = 55，即 **53 份 md + 2 份 yaml**；含 `concept-tiers.md`、`capability_matrix.yaml` 与 `development/engineering-workflow.md`；审计过程材料（审计报告/审计历史摘要）不随仓库分发，处置记录见 changelog 各批次）**。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
+## 分析文档（外部理念对照批次，0.0.40）
+
+| 路径 | 内容 |
+|:-----|:-----|
+| [`analysis/external-videos/README.md`](analysis/external-videos/README.md) | **外部视频分析批次索引** — 100 视频素材边界声明（B站 AI 字幕串台问题实测）、视频清单、目录导航 |
+| [`analysis/external-videos/triage-matrix.md`](analysis/external-videos/triage-matrix.md) | **外部理念 × Kairos 分诊矩阵** — EV 条目（已覆盖/可吸收/张力/矛盾）+ T-002 实例样本 |
+| [`analysis/external-videos/first-principles-review.md`](analysis/external-videos/first-principles-review.md) | **第一性原理对照评审** — 八原理逐条「支撑/挑战/未触及」 |
+| [`analysis/external-videos/absorption-proposals.md`](analysis/external-videos/absorption-proposals.md) | **吸收建议清单** — AP-01~18 建议态 + AT-01~07 张力记录 |
+| [`analysis/external-videos/notes/`](analysis/external-videos/notes/) | 逐视频精读笔记（N 份） |
+| [`analysis/external-videos/repos/`](analysis/external-videos/repos/) | GitHub 仓库源码级深读笔记（REPO-01~15） |
+| [`analysis/external-videos/process/fetch-guide.md`](analysis/external-videos/process/fetch-guide.md) | 字幕抓取/转写流程记录（不含凭据） |
+
+总计：**184 份 md + 2 份 yaml**（= 核心文档 55 份【53 md + 2 yaml：foundation 4 + specification 12 + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1】+ 外部视频分析批次 0.0.40 独立目录 [analysis/external-videos/](analysis/external-videos/README.md) 129 份【4 索引/报告 + 15 仓库笔记 + 102 视频笔记 + 9 论文笔记 + 1 流程记录】；审计过程材料不随仓库分发，处置记录见 changelog 各批次）。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
 
 ## 阅读建议
 
@@ -155,23 +167,24 @@ status: draft
 | 0.0.13 | 2026-08-04 | 认知×架构交叉审计修复批次（决策 D-16~D-27）：本条目为 0.0.15 补登（原缺失，见 [changelog.md](governance/changelog.md) 0.0.13）。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次索引同步：术语计数 56→57（增补并行审查）；全库 31 份文档 0.0.14 条目登记（详见 [changelog.md](governance/changelog.md) 0.0.14）。 |
 | 0.0.15 | 2026-08-05 | 全面深度审计修复批次索引同步（依 comprehensive-documentation-audit）：0.0.13 版本批次补登；api-spec 注册归档/恢复端点（业务端点 78→80，物理总数 81）；端点计数口径注记；全库正文双空格清零。（0.0.25 勘误联动：现行口径为业务端点 85 + 3 无前缀 = 物理 88，见 api-spec 端点计数口径） |
-| 0.0.16 | 2026-08-05 | Marvis 建议落地批次索引同步：新增 [references/concept-tiers.md](references/concept-tiers.md) 与 [references/capability_matrix.yaml](references/capability_matrix.yaml)（核心文档 52→54）；决策记录入「审计与决策记录」索引（详见 [changelog.md](governance/changelog.md) 0.0.16）。 |
-| 0.0.17 | 2026-08-05 | Marvis 其余建议批次索引同步：R-1~R-10 处置（详见 [changelog.md](governance/changelog.md) 0.0.17）。 |
+| 0.0.16 | 2026-08-05 | 外部建议落地批次索引同步：新增 [references/concept-tiers.md](references/concept-tiers.md) 与 [references/capability_matrix.yaml](references/capability_matrix.yaml)（核心文档 52→54）；决策记录入「审计与决策记录」索引（详见 [changelog.md](governance/changelog.md) 0.0.16）。 |
+| 0.0.17 | 2026-08-05 | 外部建议其余批次索引同步：R-1~R-10 处置（详见 [changelog.md](governance/changelog.md) 0.0.17）。 |
 | 0.0.18 | 2026-08-05 | 审计归档批次索引同步：reviews 10 份报告归档为 1 份审计历史摘要（决策 D-01~D-27 迁移至 `adr.md`「审计决策迁移」节）;审计索引节 8 行合并为 1 行。 |
 | 0.0.19 | 2026-08-05 | 第四轮全库深度审计修复批次索引同步：blueprint 文件名 v1.1+ → v1.1（补登，原缺失）。 |
 | 0.0.20 | 2026-08-05 | 第五轮全库深度审计修复批次索引同步：阅读建议补用例/操作目录/算法文档入口行（详见 [changelog.md](governance/changelog.md) 0.0.20）。 |
 | 0.0.21 | 2026-08-05 | 系统架构总览图批次索引同步：阅读建议补 `diagrams/system-architecture.html` 入口（独立 HTML 版 §0.4.1 架构图，详见 [changelog.md](governance/changelog.md) 0.0.21）。 |
-| 0.0.22 | 2026-08-05 | 外部项目理念吸收批次索引同步（noah-gen3-type2）：配置参数计数同步（正文 220→223、附录 A 148 项不变、总计 368→371）；术语计数同步（glossary 57→60 条，增补热度层级衰减、摄入侧情绪保护、噪音规则库）；详见 [changelog.md](governance/changelog.md) 0.0.22。 |
+| 0.0.22 | 2026-08-05 | 外部项目理念吸收批次索引同步：配置参数计数同步（正文 220→223、附录 A 148 项不变、总计 368→371）；术语计数同步（glossary 57→60 条，增补热度层级衰减、摄入侧情绪保护、噪音规则库）；详见 [changelog.md](governance/changelog.md) 0.0.22。 |
 | 0.0.23 | 2026-08-05 | 内容架构全面审视批次索引同步：认知基础与系统架构结构修复（详见 [changelog.md](governance/changelog.md) 0.0.23）。 |
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次索引同步：implementation-map 索引行组件数 40+→70（3-02）；版本记录补登 0.0.19（2-04，详见 [changelog.md](governance/changelog.md) 0.0.24）。 |
 | 0.0.25~0.0.28 | 2026-08-06 | （合并占位：changelog 0.0.25~0.0.28 批次的变更未逐条登记于本文档，见 [changelog.md](governance/changelog.md) 全景——其中 0.0.25 含 api-spec 端点计数勘误 80/81 → 85/88，见版本记录 0.0.15 条目联动注记） |
 | 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：新增 [development/engineering-workflow.md](development/engineering-workflow.md)（核心文档 54→55、53 md + 2 yaml）；glossary 60→67 条同步。 |
 | 0.0.30 | 2026-08-06 | 仓库整洁化：审计过程材料移出仓库（reviews/ 目录与 audit-history-summary 移除、scripts/_deep_audit_out.json 纳入 .gitignore）；审计历史索引行移除。 |
 | 0.0.31 | 2026-08-06 | 第十一轮全库深度审计修复批次（changelog 0.0.31）：操作目录 53→66 项；术语表推理皮层别名（计数不变）。 |
-| 0.0.32 | 2026-08-06 | 第三方分析分诊（echomind）+ 全量债务 v0.1.0 可实现性评估批次（changelog 0.0.32，未触及本文档，占位登记）。 |
+| 0.0.32 | 2026-08-06 | 第三方分析分诊 + 全量债务 v0.1.0 可实现性评估批次（changelog 0.0.32，未触及本文档，占位登记）。 |
 | 0.0.33 | 2026-08-06 | round12/round13 深度审计修复批次（changelog 0.0.33）：删除「审计与决策记录（过程产物）」空节。 |
 | 0.0.34 | 2026-08-06 | 第十四轮全库深度审计修复批次（changelog 0.0.34）：治理面计数统一（§0.4.1 图题/结构原则 → 两个正交治理面 + HTML 图题同源联动）；治理输入表述修正；检索权重单一权威（三链路标历史配比、四链路 0.50/0.20/0.10/0.20 唯一默认，configuration 同步）；§10.24 补 D-006/D-008/D-016/D-019；§5.2 节内导航补 5 节点；健康接口/差异检验引用修正；门禁新增 6.17/6.18/6.19。 |
-| 0.0.35 | 2026-08-06 | 第三方分析分诊（dg-bc/note，changelog 0.0.35）：架构 §3.9 补检索深度分级 ↔ 内容读取层级映射注记（R-01，R0 指针/R1 摘要仅定位/R2 全文唯一可用）；无债务登记。 |
-| 0.0.36 | 2026-08-06 | 第三方分析分诊（BaiShou-Next 白守，changelog 0.0.36）：架构 §3.3 补使用权重影子副本可重建性声明（R-03）；detailed-design §4 补升华产物 verbatim 拒绝护栏（R-02）；无债务登记。 |
+| 0.0.35 | 2026-08-06 | 第三方分析分诊（changelog 0.0.35）：架构 §3.9 补检索深度分级 ↔ 内容读取层级映射注记（R-01，R0 指针/R1 摘要仅定位/R2 全文唯一可用）；无债务登记。 |
+| 0.0.36 | 2026-08-06 | 第三方分析分诊（changelog 0.0.36）：架构 §3.3 补使用权重影子副本可重建性声明（R-03）；detailed-design §4 补升华产物 verbatim 拒绝护栏（R-02）；无债务登记。 |
 | 0.0.37 | 2026-08-06 | round15 全面深度审计修复批次（changelog 0.0.37）：45 项问题闭环（1 高/19 中/25 低）——M-03 三义统一、MCP 15/术语 68/CLI 25 计数联动、conversation_messages parts 列与 journal_entries episode 归因列补录、P3-19~25 债务补登 D-415~D-421、否决权「默认优先级」口径全库统一、三信号/四链路管线关系声明、意图契约第五契约说明、版本注记纪律收敛、竖切 REST 21 与 CLI 补注册等。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：全面审计 113 项闭环（3 高/64 中/46 低）——推论幽灵引用闭环（认知基础 §2.1 补五条推论）、帕累托三轴口径统一、零版本标记全库收敛；路径空间统一下划线；参数计数 224+146=370、glossary 68→69；35 份文档版本记录同步。 |
+| 0.0.40 | 2026-08-07 | 外部视频分析批次（changelog 0.0.40）：新增「分析文档」索引节（[analysis/external-videos/](analysis/external-videos/README.md) 独立目录，100 视频 + 15 仓库对照分析，不纳入核心文档计数）；实测 B站 AI 字幕串台问题；脚本入库 2 个；核心设计文档零改动；详见 changelog 0.0.40。 |
