@@ -8,8 +8,8 @@ tags:
   - user
   - guide
 created: 2026-07-20
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-09
+last_reviewed: 2026-08-09
 status: draft
 ---
 
@@ -40,7 +40,7 @@ kairos serve --port 8010
 
 ### 1.2 密钥（S-01）
 
-`--init-key` 生成四个密钥并写入 `~/.kairos/.env`——`KAIROS_API_KEY`（API 鉴权）、`KAIROS_SECRET_KEY`（数据加密）、`KAIROS_AUDIT_HMAC_KEY`（审计链 HMAC）、`KAIROS_SALT`（S-05 加盐）。四个密钥均为首次启动必要条件，缺少任意一个拒绝启动（S-01）。
+`--init-key` 生成四个密钥并写入 `~/.kairos/.env`——`KAIROS_API_KEY`（API 鉴权）、`KAIROS_SECRET_KEY`（数据加密）、`KAIROS_AUDIT_HMAC_KEY`（审计链 HMAC）、`KAIROS_SALT`（S-05 加盐）。四个密钥均为首次启动必要条件；其中缺 `KAIROS_API_KEY` 拒绝启动（安全红线 S-01）、缺 `KAIROS_SALT` 拒绝启动（安全红线 S-05），`KAIROS_SECRET_KEY`/`KAIROS_AUDIT_HMAC_KEY` 为部署必填项（deployment §三），缺失时服务无法按设计运行。
 
 ---
 ## 二、核心操作
@@ -65,8 +65,8 @@ print(f"写入成功：{memory.id}")
 ```
 
 ```bash
-# 使用 CLI
-kairos write kairos://_session/abc123/ --content "用户偏好：暗色主题" --contract ondemand
+# 使用 CLI（--source 必填，缺失触发 S-15 → 422，见 api-spec §3 CLI 表）
+kairos write kairos://_session/abc123/ --content "用户偏好：暗色主题" --source user_input --contract ondemand
 ```
 
 ### 2.2 检索记忆
@@ -114,8 +114,10 @@ kairos calibrate --memory-id <uuid> --score 0.85
 查看当前校准状态：
 ```bash
 kairos status
-# 输出：校准状态: active | 距上次校准: 120s | 模式: 正常
+# 输出：校准状态: healthy | 距上次校准: 120s | 模式: 正常
 ```
+
+> **校准状态枚举**：`healthy` / `degraded` / `virtual` / `dormant` 四值，为运营可视化的粗粒度映射（7/14/30 天用户感知刻度）；实际降级模式切换由降级状态机按校准时延驱动，运营指示以状态机为准。字段规格见 [api-spec.md](../specification/api-spec.md) §6.5（`meta.calibration_status` 与 `GET /v1/health/calibration`）。
 
 ---
 
@@ -126,7 +128,7 @@ kairos status
 - 使用 `kairos://_project/{project_name}/sessions/` 组织项目级记忆
 - 使用 `kairos://_session/{session_id}/` 组织会话级临时记忆
 - 使用 `kairos://_user/{user_id}/preferences/` 存储用户偏好
-- 使用 `kairos://knowledge/` 存储全局知识库
+- 使用 `kairos://_user/{user_id}/knowledge/` 存储用户级全局知识库（`_user` 为用户持久域，跨会话保留，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.4 域路由表；`kairos://knowledge/` 通用路径为会话本地语义，不承载全局知识）
 
 ### 3.2 契约选择
 
@@ -146,9 +148,14 @@ kairos status
 
 ### 3.4 种子锚点
 
-首次启动时系统需要种子锚点作为冷启动参考。建议：
+首次启动时系统需要种子锚点作为冷启动参考。
+
+```bash
 # 种子路径设置
 KAIROS_SEED_PATH=~/.kairos/seeds/   # 可选。未设置则使用内置默认种子
+```
+
+建议：
 - 种子应尽量少而精确（最小化原则）
 - 系统会在运行中逐步退化为自产数据驱动
 
@@ -181,3 +188,6 @@ KAIROS_SEED_PATH=~/.kairos/seeds/   # 可选。未设置则使用内置默认种
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §三→§3 引用联动。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：路径空间统一下划线命名。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§一 快速上手压缩为简版+指针（部署细节归 deployment/quick-start）；DEGRADATION_PERIOD 参数名修正。 |
+| 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
+| 0.0.59 | 2026-08-08 | round26 全面深度审计修复批次（changelog 0.0.59）：U-03 §2.1 CLI write 示例补 `--source`（S-15 必填，与 api-spec §3 一致）；U-06 §2.4 `kairos status` 输出示例 `active`→`healthy` 并补四值枚举注记（api-spec §6.5）；U-07 §3.4 种子路径设置裸行加代码围栏（原被渲染为 H1 标题）。 |
+| 0.0.68 | 2026-08-09 | round34 全面深度审计修复批次（changelog 0.0.68）：§3.1 路径规划 `kairos://knowledge/` 改指 `kairos://_user/{user_id}/knowledge/`（用户持久域承载「全局知识库」语义；`kairos://knowledge/` 通用路径为会话本地，与架构 §3.4 域路由表对齐）。 |

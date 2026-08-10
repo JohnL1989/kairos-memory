@@ -8,8 +8,8 @@ tags:
   - user
   - quickstart
 created: 2026-07-20
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-09
+last_reviewed: 2026-08-09
 status: draft
 ---
 
@@ -17,7 +17,7 @@ status: draft
 
 > **状态声明**：本文描述的 CLI 命令（`kairos init`、`kairos serve` 等）为**设计目标**。CLI 工具尚未构建。
 
-> **定位**：约 2 分钟跑通 Kairos 最小闭环。无需 PostgreSQL，轻量模式（SQLite）开箱即用。
+> **定位**：约 2 分钟跑通 Kairos 最小闭环（**不含首次模型权重下载耗时**，见第四步）。无需 PostgreSQL，轻量模式（SQLite）开箱即用。
 >
 > **⚠ 草稿完善声明**：以下所有命令（`pip install kairos`、`kairos serve` 等）为目标示例。当前草稿完善阶段期无构建产物或可执行包，命令将在代码启动后交付。
 
@@ -66,16 +66,18 @@ kairos serve --port 8010
 
 看到输出 `Kairos started on http://localhost:8010` 即启动成功。
 
+> **首次启动注记**：轻量模式使用本地 BGE-M3 嵌入，权重在首次 `kairos serve` 时自动下载（见 [development-setup.md](../development/development-setup.md) §环境依赖）——该次下载耗时取决于网络带宽，不计入本文「约 2 分钟」口径；后续启动直接读取本地缓存。下载失败或中断的处置见 [troubleshooting.md](../ops/troubleshooting.md)。
+
 ## 第五步：写入一条记忆
 
 ```bash
-kairos write kairos://playground/ \
+kairos write kairos://_user/default/playground/ \
   --content "Kairos 快速入门测试记忆" \
   --contract ondemand \
   --source user_input
 ```
 
-> `--source` 为 CLI 参数名，对应 API 字段 `provenance`（来源标识，S-15 必填，缺失返回 422）——CLI 与 API 的命名映射见 [api-spec.md](../specification/api-spec.md) §3 CLI 表。
+> `--source` 为 CLI 参数名，对应 API 字段 `provenance`（来源标识，S-15 必填，缺失返回 422）——CLI 与 API 的命名映射见 [api-spec.md](../specification/api-spec.md) §3 CLI 表。路径使用用户持久域 `_user/default/`（域路由表见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.4；`default` 为零配置模式默认用户路径）。
 
 输出应类似：
 ```text
@@ -93,8 +95,8 @@ kairos search "快速入门" --limit 5
 ## 第七步：浏览路径空间
 
 ```bash
-kairos tree kairos://playground/ --depth 3
-kairos ls kairos://playground/
+kairos tree kairos://_user/default/playground/ --depth 3
+kairos ls kairos://_user/default/playground/
 ```
 
 ## 第八步：查看系统状态
@@ -109,7 +111,7 @@ kairos status
 
 ## 完成
 
-你已完成 Kairos 的最小闭环：写入 → 检索 → 路径浏览。全部操作约 2 分钟。
+你已完成 Kairos 的最小闭环：写入 → 检索 → 路径浏览。全部操作约 2 分钟（首次启动的 BGE-M3 权重下载时间另计）。
 
 > 下一步：阅读 [user-guide.md](user-guide.md) 了解核心操作。
 > 部署生产环境：使用标准模式（PostgreSQL + pgvector），见 [ops/deployment.md](../ops/deployment.md)。
@@ -127,3 +129,5 @@ kairos status
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：init 幂等澄清（两次 init 的关系）。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：--source 参数映射 provenance 注记。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §三→§3 引用联动（4-1）。 |
+| 0.0.59 | 2026-08-08 | round26 全面深度审计修复批次（changelog 0.0.59）：U-04「约 2 分钟」口径澄清为不含首次模型权重下载；第四步补首次启动 BGE-M3 权重下载注记与 development-setup / troubleshooting 指针。 |
+| 0.0.68 | 2026-08-09 | round34 全面深度审计修复批次（changelog 0.0.68）：第五/七步演示路径 `kairos://playground/` 改指 `kairos://_user/default/playground/`（用户持久域，对齐架构 §3.4 域路由表与 api-spec CLI 示例路径惯例）。 |

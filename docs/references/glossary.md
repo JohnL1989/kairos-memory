@@ -8,8 +8,8 @@ tags:
   - references
   - glossary
 created: 2026-07-20
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -27,6 +27,7 @@ status: draft
 |:----|:-----|:-----|:-----|
 | 外部治理接口 | External Governance Interface | 宪法主权面的同义别名（全库两称并存，非更名完成态）——接收外部校准信号、执行宪法修订与强制冻结，对内部环行使单向旁观 + 至高否决权。与监督平面（审计庭所在面）为**两个正交治理面，并未合并**。全库正文仍以「宪法主权面」为主要表述，两称指同一治理面（见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.4 治理面命名对照与 §1.7） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.7 |
 | 身份面 | Identity Plane | 独立正交治理面，以否决权而非排名介入辞典式排序。身份不在此链中（否决查询而非排序），与宪法主权面并列（宪法否决为默认优先级；身份危机例外经宪法解释层判例可临时覆盖，见认知基础附录 C.6） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 / 架构 §1 |
+| 身份面否决权 | Identity-Plane Veto | 身份面（独立正交治理面）以否决权而非排名介入辞典式排序——否决查询/写入而非排序位次；简称「身份否决权」。正式名「身份面否决权」与简称「身份否决权」在全库两称并存，指同一机制（非更名完成态）。经预提交总线承载（架构 §1.8），属宪法核（`NARRATIVE_IDENTITY`，正式部署须 ON）；语义边界见 §1.8（决策 D-19 D2） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 / 架构 §1.8 |
 | 元认知层 | Metacognition Layer | 监控、评估、调节下层行为。含检测器族（耦合计监测器、VAD 独立性测试器）、治理器族、自观察记忆 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2 |
 | 策略层 | Strategy Layer (PM) | 记忆路由与协调层——预测器、调节器、价值上下文管理器、路径注册表 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3 |
 | 存储层 | Storage Layer | 统一长期记忆（LTM），含双副本、路径空间、升华管道、遗忘调度器、关系索引 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 |
@@ -60,7 +61,7 @@ status: draft
 | 激活-存储解耦 | Activation-Storage Decoupling | 契约决定激活策略而非存储位置——所有记忆统一管理，激活/检索/衰减策略因契约而异 | 认知基础 P3 |
 | 意图契约 | Intention Contract | 前瞻记忆专用——位于 `kairos://_system/intentions/`，不受遗忘调度器评估 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆段（`kairos://` 意图契约） |
 | 归档 | Archived | 系统被动——升华产物/低使用记忆从主存储移至冷存储，可复兴（关联检索触发） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
-| 抑制 | Suppressed | 归档子态——用户主动定向遗忘操作，将记忆标记为 suppressed（软删除，抑制检索但保留数据，可撤销），位于 Archived 状态空间内 | [api-spec.md](../specification/api-spec.md) §1.5（POST /v1/memories/{id}/suppress；CLI 见 §3） |
+| 抑制 | Suppressed | `memories.status` 五值平级枚举之一（与 Archived 平级，非其子态）——用户主动定向遗忘操作，将记忆标记为 suppressed（抑制检索但保留数据，可经 restore 撤销；已执行 S-19 哈希净化者内容不可恢复） | [api-spec.md](../specification/api-spec.md) §1.5（POST /v1/memories/{id}/suppress、POST /v1/memories/{id}/restore；CLI 见 §3） |
 | 硬删除 | Delete | 用户主动——物理删除数据，仅用于临时契约，不可恢复（清理前写入审计日志 `expiry_cascade_delete`，见架构 §5.2 forgetAfter） | [api-spec.md](../specification/api-spec.md) §1.5（DELETE 契约删除语义；CLI 见 §3） |
 
 ## 四、价值体系 Value System
@@ -78,7 +79,7 @@ status: draft
 | 摄入侧情绪保护 | Ingest-side Emotional Burst Protection | 输入信号（用户/环境消息）命中情绪爆发模式时，该轮输入整体进入保护通道（生命周期豁免+升温抑制）；为 债务 D-019(a) 情感调制（记忆自身 VAD）的摄入侧扩展；关键词表由外部校准维护、不自动学习 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) D.12 摄入侧情绪爆发→整轮保护声明 |
 | 辞典式排序 | Lexicographic Ordering | 六级辞典式排序链（探索>宪法>校准>认知完整性>时间>间接度）+ 身份面否决权，宪法级不变量 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.3 |
 | 见证锚定 | Witness Anchor | 存储层主副本——强一致性，不可篡改，含叙事自洽度字段 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1-5.2（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
-| 使用权重 | Usage Weight | 存储层影子副本——最终一致性，可演化，异步合并 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1-5.2（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
+| 使用权重 | Usage Weight | 存储层影子副本——最终一致性，可演化，异步合并生效（并入激活调度基线与状态晋升决策，不写入见证锚定主副本内容） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1-5.2（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.3 补充） |
 | 差异检验 | Differential Check | 使用权重陡升时触发，判断是否需要更新见证锚定 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.5（蓝图 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.5 补充） |
 | 准见证锚定 | Quasi-Anchoring | 外部校准中断（受限交叉验证模式）期间，经 ≥3 种记忆类型互证赋予的降级期可信度标记（`quasi_anchored`）；外部校准恢复后经差异检验升级为正式见证锚定或降级（`quasi_revoked`） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.9 / 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §三 |
 | 分域真理观 | Situational Truth Routing | 常规操作→实用论，更新合并→融贯论，冲突校准→符合论；跨域冲突→辞典式排序在不可支配集上标记默认项（决策 D-01） | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.1 |
@@ -96,6 +97,7 @@ status: draft
 | P6 方法论保障 | P6 Principle | 禁止无声丢失维度信息——任何标量化操作须保留多维表征可回溯性 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §2.3 |
 | 身份条件与价值条件 | Identity vs Value Conditions | 记录的双轨约束——append-only 保障身份条件，使用权重决定价值条件 | 认知基础 B.1 |
 | 种子锚点 | Seed Anchors | 冷启动参考物——`kairos://_system/seeds/`，遵循最小化/可复审/可替换三项约束 | 认知基础 B.2 |
+| 上下文腐烂 | Context Rot | 随交互轮次累积，系统对有效信息的利用率系统性下降的现象——噪声锚定→噪声聚集→信息排斥三阶段动力学；CRI（Context Rot Index）为综合度量（注意力分布熵 + 有效信息利用率 + 任务成功率，值域 [0,1]，0=无腐烂 / 1=完全腐烂），由元认知层监测器量化追踪，超阈触发检索深度降级与保守倾向 | 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.9 |
 
 ## 六、工程组件 Engineering Components
 
@@ -115,6 +117,12 @@ status: draft
 | 编译净化 | Compilation Purification | 摄取验证门禁的编译环节——L1（原始层净化）与 L2（解析严格度）两级，L1 失效降级路径 `degraded_L1`/`passthrough` | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 摄取验证门禁 |
 | 命名配置集 | Named Configuration Set | 12 个特征标志组合空间中唯一受支持的三种配置集（`kairos-minimal`/`kairos-slice`/`kairos-full`）——未命名组合不是合法系统形态，启动时校验并拒绝启动（`invalid_flag_composition` 审计事件） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 命名配置集与组合约束 |
 | 竖切 | Vertical Slice（v0.1.0-slice） | v0.1.0 的首交付范围——统一 LTM + 路径空间 + 三信号混合检索 + 单曲线指数衰减遗忘 + 身份注册表 + 基础审计日志；分层关系「竖切 ⊂ v0.1.0 完整交付目标 ⊂ 认知基础完整愿景」 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 / [feature-list.md](../specification/feature-list.md) 竖切标注 |
+| 处理完降温 | Post-Processing Cooldown | 影子副本热度/使用权重更新完成后，对该记忆热度增量施加瞬时降温因子，防止高频访问经「升温→更高激活→更多访问」自激回路自我强化（与摄入侧情绪保护的防自激目标同构，作用于使用侧）；衰减系数参数待登记，债务 D-424 追踪 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.5 处理完降温 |
+| 间隔重复复习 | Spaced Repetition | 注意力调度器对「需要复习」记忆（重要用户偏好、高频引用事实、is_identity 相关）按递增间隔（1 天→3 天→7 天→30 天）周期性注意力注入，作为使用驱动巩固的补充；注入进入 WM 触发再巩固环，复习预算占用巩固预算而非检索预算；间隔序列参数待登记，债务 D-425 追踪 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §9.2 间隔重复复习 |
+| 支撑集引用 | Supporting-Set Reference | 升华产物（item/strategy/behavior 层）显式记录其推导所依据的原始记忆集（来源引用链的反向索引），任何升华产物须能回答「由哪些记忆推导而来」；支撑集随新证据演化更新（新增证据入集、证据失效出集并触发对应升华产物复核），与质检三查「来源可溯」合并承载 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 升华管道 |
+| 范围性回滚 | Scoped Rollback | 回退态（d）清除粒度细化——以「一次合并批次/一次升华整合/一次外部校准修正」为变更单元支持按单元回滚，同批次内未受影响的候选有效改动保留；回滚后目标单元影响写入审计日志，标记 `shadow_rollback_unit` | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.5 范围性回滚 |
+| 查询期重建产物治理 | Query-Time Reconstruction Governance | 查询期现造内容（重建上下文/生成补缺/优化上下文）进入使用副本前的三步治理——来源标记（`provenance=reconstruction`，经 S-15 校验）、差异检验状态检查（与见证锚定同向或经外部校准确认）、未过检产物仅作当次检索临时上下文不得合并回主副本；价值独立性公理在查询期的延伸 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.5 / 认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 查询期重建产物治理声明 |
+| 意图先验检索加权 | Intent-Prior Retrieval Weighting | QueryAnalyzer 意图分类（factual_lookup/temporal_query/exploratory_browse/decision_trace/instructional + general 兜底）输出升级为检索权重先验——不同意图类别对三信号融合施加先验权重偏移（factual_lookup 收窄 top-K、exploratory_browse 放宽并加强 MMR 多样性、temporal_query 强化时间过滤、decision_trace 提升关系/因果链路加权、instructional 偏程序记忆路径）；v0.1.0 以规则映射实现，v1.1 可升级为学习式先验 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 意图先验检索加权 |
 
 ## 七、安全红线 Security Redlines
 
@@ -148,3 +156,7 @@ status: draft
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：身份面词条补宪法否决默认优先级口径（附录 C.6）；新增「准见证锚定」术语条目（67→68 条）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：补可及性轴词条（68→69）；双副本分离补三称别名注记。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：六处词条公式/阈值/加分表剥离为语义+指针（遗忘调度器/检索深度分级/热度层级衰减/并行审查/噪音规则库/审计链）；抑制/硬删除来源改指 §1.5。 |
+| 0.0.61 | 2026-08-08 | 版本记录补登（changelog 0.0.61）：新增「身份面否决权 / Identity-Plane Veto」术语条目（69→70 条，原变更 round20 0.0.49 批次，漏登记于本文档版本记录）；抑制词条口径同步为五态平级（active/stale/archived/suppressed/superseded）。 |
+| 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
+| 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：补「上下文腐烂（Context Rot）」词条（76→77）。 |

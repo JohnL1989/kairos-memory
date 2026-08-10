@@ -7,8 +7,8 @@ tags:
   - reference
   - algorithm
 created: 2026-07-19
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -42,7 +42,7 @@ D_init = 0.3 × D_content + 0.3 × D_context + 0.4 × D_agency
 - `V_context` / `A_context` / `D_context`：当前推理上下文的情感状态（由 WM 层当前工作空间的情感基线提供）
 - `V_default`：默认效价中性值（默认 0.1，偏好轻微正面）。若所有分量均为默认值（内容/上下文不可用时），按公式计算 V_init = 0.3×0 + 0.4×0 + 0.3×0.1 = 0.03，此时向上取整至 0.1（工程简化——保留情感基线而非归零）
 - `A_novelty`：新异度——首次见到的实体/关系类型时取 0.3（未触发时取 0），以系数 0.2 加权计入 `A_init`
-- `D_agency`：主体性——系统主动决策生成的记忆取值 0.2（被动摄入取 0），以系数 0.4 加权计入 `D_init`
+- `D_agency`：主体性——系统主动决策生成的记忆取值 0.2（被动摄取取 0），以系数 0.4 加权计入 `D_init`
 - `A_init` / `D_init` 在无显式输入时允许归零——`V_init` 保留 0.03→0.1 的正效价基线豁免是设计选择：最小正效价基线避免全零向量在余弦检索中的退化；A/D 的归零不触发该豁免
 
 `V_init` / `A_init` / `D_init` 计算完成后均 clamp 至 [-1.0, 1.0]，超限值截断。
@@ -53,21 +53,21 @@ D_init = 0.3 × D_content + 0.3 × D_context + 0.4 × D_agency
 N_effective = N_base × (1 + A × modulation_factor)
 ```
 
-- `N_base`：更新势垒基准值（`WITNESS_UPDATE_BARRIER_N_DEFAULT`，默认 3）
+- `N_base`：更新势垒基准值（`KAIROS_WITNESS_UPDATE_BARRIER_N_DEFAULT`，默认 3）
 - `A`：记忆自身的 Arousal 值（归一化至 [0, 1] 范围——线性映射 `(A + 1) / 2`，输入 [-1,1] → 输出 [0,1]）
 - `modulation_factor`：默认 0.3——高唤醒记忆需更多证据方可改写
 
-### 2.3 提取阶段——情感基线提升（v1.1 待激活）
+### 2.3 提取阶段——情感基线提升（v0.1.0 条件激活）
 
-> **v0.1.0 状态**：本节描述的 VAD 检索提升为完整设计，v0.1.0 默认检索忽略 VAD（见 cognitive-architecture-gap G-02）。v0.1.0 仅记录 VAD 坐标作为元数据，不参与检索排序。以下算法在 v1.1+ 激活完整加权时启用。
+> **v0.1.0 状态**：本节算法是**情感基线提升通道**的规格——该通道为预测器子组件，属 v0.1.0 交付范围（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2）。v0.1.0 为**条件激活**形态：默认检索忽略 VAD，仅当上下文与记忆的 VAD 余弦相似度超阈值（`cos ≥ 0.5`，即下式 boost > 0）时注入排序权重；VAD 不独立成轴参与帕累托计算（架构 §1.4）。**全时参与**（VAD 作为一阶维度全程加权、进入帕累托前沿计算）为 v1.1 目标，受控简化定性与恢复条件见 [cognitive-architecture-gap.md](../governance/cognitive-architecture-gap.md) G-02 与声明 C-16。
 
-预测器在计算检索候选权重时，额外纳入当前上下文与记忆 VAD 向量的余弦相似度作为独立通道：
+预测器在计算检索候选权重时，额外纳入当前上下文与记忆 VAD 向量的余弦相似度作为独立通道（`VAD_context` 取自 WM 当前上下文，非 API 入参）：
 
 ```text
 boost = max(0, cos(VAD_context, VAD_memory) - 0.5) × 2.0
 ```
 
-当 `cos < 0.5` 时 boost 归零。boost 值直接增加记忆在预激活集中的排序权重。
+当 `cos < 0.5` 时 boost 归零——此归零即条件激活的门控：boost 为零时该记忆不受情感通道影响，等同「默认检索忽略 VAD」；boost 大于零时注入排序。boost 值直接增加记忆在预激活集中的排序权重。
 
 ### 2.4 情感去强化
 
@@ -75,7 +75,7 @@ boost = max(0, cos(VAD_context, VAD_memory) - 0.5) × 2.0
 
 ## 三、情感漂移检测
 
-情感流形监测器在每个调度周期对 VAD 空间中的记忆簇做拓扑扫描，计算每簇质心的三维坐标偏移量。若偏移量相对于基准点（最近一次外部校准时点的质心坐标）偏离超过 `EMOTIONAL_VAD_DEVIATION_SIGMA`（默认 1.5σ，σ 为该簇历史偏移量的标准差），触发外部校准告警。另：同一参数的另一用途——记忆 VAD 偏移与叙事自洽度背离超 σ 时情感提升权重衰减至零（架构 §3.2，参数登记见 [configuration.md](../ops/configuration.md)）。
+情感流形监测器在每个调度周期对 VAD 空间中的记忆簇做拓扑扫描，计算每簇质心的三维坐标偏移量。若偏移量相对于基准点（最近一次外部校准时点的质心坐标）偏离超过 `KAIROS_EMOTIONAL_VAD_DEVIATION_SIGMA`（默认 1.5σ，σ 为该簇历史偏移量的标准差），触发外部校准告警。另：同一参数的另一用途——记忆 VAD 偏移与叙事自洽度背离超 σ 时情感提升权重衰减至零（架构 §3.2，参数登记见 [configuration.md](../ops/configuration.md)）。
 
 ---
 ## 版本记录
@@ -87,3 +87,6 @@ boost = max(0, cos(VAD_context, VAD_memory) - 0.5) × 2.0
 | 0.0.1 | 2026-07-31 | VAD 情感坐标算法：编码/巩固/提取三阶段计算与情感漂移检测。 |
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：A/D 分量归零豁免说明（V 正效价基线豁免为设计选择注记）。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：σ 双用途互注（外部校准告警 + 情感提升权重衰减）。 |
+| 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
+| 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
+| 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|

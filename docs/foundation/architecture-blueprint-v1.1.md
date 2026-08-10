@@ -8,21 +8,30 @@ tags:
   - future
 created: 2026-07-29
 status: draft
-updated: 2026-08-08
-last_reviewed: 2026-08-08
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 ---
 
 > 本文为 Kairos 架构的未来版本规划蓝图，描述 v1.1+ 目标的详细设计。本文内容**不属 v0.1.0 交付范围**（§5.5 见证→使用仲裁除外——决策 D-05 已迁入 v0.1.0 作为正式交付能力，主架构 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5 为权威定义，本文 §5.5 不再单独演进），主架构文档 [architecture-v0.1.0.md](architecture-v0.1.0.md) 中的 **§0.1 交付范围**和 **§0.9 差距追踪表**是其与当前版本的映射桥梁。实现者应优先阅读主架构文档，本文仅作为未来版本的参考。
 
 > **与 v0.1.0 的关系**：本文 §5.3–§5.8（价值独立性公理 / 见证轴内仲裁 / 见证→使用仲裁 / 冲突解决 / 多 Agent 校准 / 升华管道 vs 认知层特征空间）被 [architecture-v0.1.0.md](architecture-v0.1.0.md) 作为结论性规范引用（v0.1.0 正文不重复展开，仅在其 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5 顶部加范围说明；**§5.5 见证→使用仲裁除外**——决策 D-05 已迁入 v0.1.0 作为正式交付能力，该处为权威定义）。读者追溯这些机制细节请以本文为准。另：P3-11 Directives / P3-12 malloc_trim / P3-13 Webhook 的逐项功能规格见 [specification/feature-list.md](../specification/feature-list.md) §九（Phase 3 新增）。
 
+> **章节导航**——本文篇幅较长，按下表定位所需章节：
+>
+> | 章节 | 主题 |
+> |:----|:----|
+> | 一、P3 前瞻组件 | v1.1+ 目标前瞻组件（P3-08~P3-19） |
+> | 二、核心机制规格 | §5.3~§5.8 被 v0.1.0 结论性引用 |
+> | 三、P3 前瞻组件（续） | v1.1+ 目标前瞻组件续篇 |
+> | 版本记录 | 版本演进记录 |
+
 ## 一、P3 前瞻组件（v1.1+ 目标，非 v0.1.0 交付）
 
-> **P3 编号导航**：本文按主题分组组织 P3 组件，**编号并非严格升序**（P3-11/12/13 位于 P3-14/15/16 之后）。P3-01~07、P3-18 不在本文定义（P3-01~07 分别见 [detailed-design.md](../specification/detailed-design.md) 与 [api-spec.md](../specification/api-spec.md)，P3-18 为未使用编号；P3-19 File Graph 承接自 [technology-stack.md](../development/technology-stack.md) §七，本文仅收录规格摘要）。完整编号→位置索引以 [feature-list.md](../specification/feature-list.md) §九（Phase 3 新增）为准。
+> **P3 编号导航**：本文按主题分组组织 P3 组件，**编号并非严格升序**（P3-11/12/13 位于 P3-14/15/16 之后）。P3-01~07、P3-18 不在本文定义（P3-01~07 分别见 [detailed-design.md](../specification/detailed-design.md) 与 [api-spec.md](../specification/api-spec.md)，P3-18 为未使用编号；P3-19 File Graph 完整机制规格在本文 §三（承接自 [technology-stack.md](../development/technology-stack.md) §七，该处保留 SDK 协同摘要））。完整编号→位置索引以 [feature-list.md](../specification/feature-list.md) §九（Phase 3 新增）为准。
 
 > **经验-资产共演化候选注记（外部理念吸收 0.0.48；外部实证：PAPER-16 Mem²Evolve，+18.53% vs 标准 LLM）**：Mem²Evolve 以经验记忆引导动态创建资产（工具/专家 agent）、资产使用回流新经验——共演化优于单轨（对照纯经验 +11.80%、纯资产 +6.46%）。作为 v1.1 升华管道（经验蒸馏，[architecture-v0.1.0.md](architecture-v0.1.0.md) §5.2）与 P3 资产/技能层扩张的联动候选：升华产物（strategy/behavior）→ 引导创建新工具/技能资产 → 新经验回流升华。**门禁**：自动创建资产须过宪法边界 + 审计（与升华管道同门禁），「纯资产创建不稳定」为升华默认 OFF 立场的外部论据。
 
-#### P3-08 GLiNER2 本地 NER（Local NER with GLiNER2 — 205M CPU 模型降本）
+### P3-08 GLiNER2 本地 NER（Local NER with GLiNER2 — 205M CPU 模型降本）
 
 **优先级**：P3（前瞻探索，v1.1+ 目标，v0.1.0 不交付）
 
@@ -59,11 +68,11 @@ GLiNER2 本地 NER 管线：
 
 **工程权衡**：
 
-- **收益**：将实体的初始提取从 LLM 调用迁移至本地 CPU 推理，按日均 500 条新记忆计算，月节省 LLM 调用成本约 ¥150（对比 Tier 2 LLM 提取）。GLiNER2 的 205M 参数模型内存占用 ~400MB，适合轻量部署。
+- **收益**：将实体的初始提取从 LLM 调用迁移至本地 CPU 推理，按日均 500 条新记忆计算，月节省 LLM 调用成本约 ¥15（对比 Tier 2 LLM 提取，按 500 条/日 × 30 日 × ~¥0.001/次计）。GLiNER2 的 205M 参数模型内存占用 ~400MB，适合轻量部署。
 - **限制**：GLiNER2 的开放词汇识别依赖 prompt 质量——对高度领域特定的实体类别（如「江铜财务公司特定金融工具代码」）可能识别率偏低，需配合领域实体词典。
 - **v0.1.0 占位**：当前实体提取路径为 spaCy 规则 + LLM 两段——spaCy 覆盖确定性实体，LLM 覆盖语义实体。v0.1.0 不引入 GLiNER2——保持现有双路径稳定后，v1.1 在 GLiNER2 模型评估通过（在 Kairos 实体提取基准上 F1 ≥ 0.75）后替换 Tier 2 LLM 调用。
 
-#### P3-09 事实三元组直接注入（Fact Triplet Direct Injection — Bypass LLM Structured Write Endpoint `POST /v1/facts`）
+### P3-09 事实三元组直接注入（Fact Triplet Direct Injection — Bypass LLM Structured Write Endpoint `POST /v1/facts`）
 
 **优先级**：P3（前瞻探索，v1.1+ 目标，v0.1.0 不交付）
 
@@ -88,7 +97,7 @@ GLiNER2 本地 NER 管线：
 
 **v0.1.0 占位**：v0.1.0 所有外部事实均经过 LLM 提取管道——不存在绕过路径。v1.1 在 DFA 稳定运行（连续 30 天无假阳性确认）后开启 `POST /v1/facts` 端点，首批支持 DFA 确认事实和 Connector 结构化元数据两类来源。
 
-#### P3-10 自定义边类型签名验证（Custom Edge Type Signature Validation — Source/Target Label 组合约束）
+### P3-10 自定义边类型签名验证（Custom Edge Type Signature Validation — Source/Target Label 组合约束）
 
 **优先级**：P3（前瞻探索，v1.1+ 目标，v0.1.0 不交付）
 
@@ -150,7 +159,9 @@ GLiNER2 本地 NER 管线：
 
 **v0.1.0 占位**：v0.1.0 不实施边类型签名验证——所有边创建请求直接写入关系索引，无标签组合约束。v1.1 在实体知识图谱的实体标签覆盖率 ≥ 80%（即至少 80% 的实体节点已有明确标签）后激活签名验证——先以 `warn` 模式运行一个观察期，审计日志确认无误报后切换至 `strict` 模式。
 
-#### 过程知识 Playbook 系统（Procedural Playbook System）
+### 过程知识 Playbook 系统（Procedural Playbook System）
+
+> **追缴条目**：债务 [D-433](../governance/debt-collection.md)（过程知识 Playbook 系统，v1.1）。
 
   ┌─ 过程知识 Playbook 系统（Procedural Playbook System）
   │   升华管道 strategy→behavior 阶段的显式产物管理子系统——将可复用的过程知识从记忆体中独立为结构化 playbook。
@@ -175,7 +186,9 @@ GLiNER2 本地 NER 管线：
   │   behavior 阶段的成功执行驱动 candidate→promoted
   │   存储层：procedural_playbooks 表 + procedural_playbooks_fts FTS5 表 + playbook_versions 表（每次状态变更记录版本快照）
   │
-#### 三级技能进化（Skill Evolution）
+### 三级技能进化（Skill Evolution）
+
+> **追缴条目**：债务 [D-434](../governance/debt-collection.md)（三级技能进化与技能管理系统，v1.1）。
 
   ├─ 三级技能进化（Skill Evolution）
   │   在升华管道 + Playbook 系统之上定义技能的渐进成熟路径——从原始痕迹到可交付技能库。
@@ -196,7 +209,9 @@ GLiNER2 本地 NER 管线：
   │   - L2→L3：Playbook 在 ≥KAIROS_WORLD_MODEL_MIN_CLASSES（默认 3）个不同 task_class 下 success ≥KAIROS_WORLD_MODEL_MIN_SUCCESS（默认 5）
   │   - L3→Skills：World model 规则被 ≥2 个独立上下文引用且总 evidence_count ≥10
   │
-#### 技能管理系统（Skill Management System）
+### 技能管理系统（Skill Management System）
+
+> **追缴条目**：债务 [D-434](../governance/debt-collection.md)（三级技能进化与技能管理系统，v1.1）。
 
   ├─ 技能管理系统（Skill Management System）
   │   在三级技能进化的提炼管道之上，提供显式的技能注册、检索、版本化与生命周期管理——将技能从
@@ -253,7 +268,9 @@ GLiNER2 本地 NER 管线：
   │   的对外能力声明。两者互补：Playbook 被替代时，依赖它的 Skill 自动触发重新验证（标记
   │   `needs_revalidation`），确保技能库不包含已过时的过程知识。
   │
-#### 四层记忆质量层次（Four-Tier Memory Quality Hierarchy）
+### 四层记忆质量层次（Four-Tier Memory Quality Hierarchy）
+
+> **追缴条目**：债务 [D-435](../governance/debt-collection.md)（四层记忆质量层次，v1.1）。
 
   ├─ 四层记忆质量层次（Four-Tier Memory Quality Hierarchy）
   │   在现有记忆分类（episodic/semantic/procedural）和蒸馏层级（distill_level 0-4）
@@ -277,6 +294,8 @@ GLiNER2 本地 NER 管线：
   │   | **observation** | 经多次验证且去语境化的知识——不再是单次经验的产物 | 蒸馏层级 ≥ 2，且去语境化程度 ≥ 0.5，且被 ≥2 条独立记忆引用 | 0.75 | 部分豁免（遗忘阈值是常规的 2 倍） | 「该项目的 CI 管道在 PR 合并后自动触发」「用户过去 5 次代码审查都要求增加测试」 |
   │   | **experience** | 单次或少量重复的任务经验——仍携带时空情境 | 蒸馏层级 ≥ 1，有明确的 encoding_context | 0.50 | 无豁免（标准遗忘曲线） | 「上周在 feature/auth 分支遇到的连接超时」「本次会话中用户说喜欢简洁的 UI」 |
   │   | **world** | 原始外部事实、一次性查询结果、未经验证的信息片段 | 默认层级——所有新记忆的初始质量层级 | 0.25 | 无豁免，且临时契约默认绑定 | 「StackOverflow 上某帖子的答案」「API 文档中某接口的参数说明」 |
+  │   >
+  │   > **手动创建路径注记**：认知基础 [cognitive-foundation.md](cognitive-foundation.md) §1.2 声明用户手动创建/编辑为 mental_model 来源之一，本表准入条件以自动蒸馏路径为准——手动创建路径的准入规则（含校准置信度门槛适用口径）待 v1.1 立项时补充。
   │
   │   **检索时的层级优先与回退机制**：
   │   - **优先填充**：检索时，首先在 mental_models 层中匹配（语义相似度），置信度 ≥ 0.7 的结果
@@ -314,7 +333,7 @@ GLiNER2 本地 NER 管线：
   │     依赖它的 mental_models 自动触发重新生成评估，确保高层认知框架不会基于过时的底层事实。
   │
   │     **DERIVED_FROM 关系**：
-  │     - 定义：DERIVED_FROM 是 memory_relations 表的新增关系类型（relation_type='derived_from'），
+│     - 定义：DERIVED_FROM 是 memory_relations 表的关系类型（relation_type='derived_from'，枚举值已随 v0.1.0 基础六值登记于 [data-model.md](../specification/data-model.md) §1；本机制为 v1.1 的边创建路径——由升华管道 L3 weekly 聚合自动创建），
   │       方向为 mental_model → source。一条 mental_model 可有多条 DERIVED_FROM 边指向其
   │       派生来源（由升华管道 L3 weekly 聚合时自动创建）。
   │     - 创建时机：当 Deep 维护任务检测 memory 晋升至 mental_models 层时，自动扫描该 memory 的
@@ -344,7 +363,9 @@ GLiNER2 本地 NER 管线：
   │     在重新生成时忽略），`KAIROS_DERIVED_FROM_REGENERATION_INTERVAL`（默认 Deep 模式日频），
   │     `KAIROS_DERIVED_FROM_MIN_VALID_SOURCES_RATIO`（默认 0.5，有效源低于此比例触发降级）。
   │
-#### MemCube 四层记忆分化（Four-Layer Memory Differentiation）
+### MemCube 四层记忆分化（Four-Layer Memory Differentiation）
+
+> **追缴条目**：债务 [D-436](../governance/debt-collection.md)（MemCube 四层记忆分化，v1.1）。
 
   └─ MemCube：四层记忆分化（MemCube Four-Layer Memory Differentiation）
       认知基础中「激活-存储解耦」（推论三）的架构分化落地——记忆不是单一存储实体，而是在四个
@@ -423,7 +444,9 @@ GLiNER2 本地 NER 管线：
         数据收集，v1.1 实现完整的微调适配器集成（LoRA 热插拔）。
       **v1.1 目标**：Parametric 层的完整闭环——从使用反馈到权重更新到模型行为改变的可观测链路。
 
-#### 事实新鲜度元数据（Fact Freshness Metadata）
+### 事实新鲜度元数据（Fact Freshness Metadata）
+
+> **追缴条目**：债务 [D-437](../governance/debt-collection.md)（事实新鲜度元数据，v1.1）。
 
   └─ 事实新鲜度元数据（Fact Freshness Metadata）
       为确定性事实记忆提供独立的新鲜度追踪——与遗忘调度器的 freshness 计算互补但不重叠。
@@ -444,7 +467,9 @@ GLiNER2 本地 NER 管线：
       - 未匹配临时模式时保持 valid_until = NULL（永久有效，等待其他失效机制）
       配置：KAIROS_TEMPORAL_EXPIRY_ENABLED（默认 true），KAIROS_TEMPORAL_APPLY_THRESHOLD（默认 0.7）
 
-#### 社区检测（Community Detection）
+### 社区检测（Community Detection）
+
+> **追缴条目**：债务 [D-438](../governance/debt-collection.md)（社区检测，v1.1）。
 
   ┌─ 社区检测（Community Detection）
   │   在后台维护 Deep 模式中执行，对 entities 表 + memory_entities 表的实体关系图做自动社区聚类。
@@ -479,15 +504,15 @@ GLiNER2 本地 NER 管线：
 1. **外部校准为一等约束：** 当外部校准（不含 virtual 标记的拟真校准信号）与内部叙事自洽度计算值冲突时，外部校准覆盖内部计算值。标记为 `virtual` 的校准信号（[architecture-v0.1.0.md](architecture-v0.1.0.md) §1.2 虚拟校准生成器）走独立校验路径——仅比对不触发 override，不适用本规则。原内部叙事自洽度标记为 `overridden_by_external`，存档于主副本元数据供审计。
 
   **is_identity 不可侵犯：** 外部校准覆盖操作不得影响 is_identity 标志位的存续状态。is_identity 的变更（含降级为普通记忆）仅可经宪法修订端口（[architecture-v0.1.0.md](architecture-v0.1.0.md) §1.2）且经宪法解释层出具语境适用性判例后执行，见证仲裁无权单方面更改。
-  **错误见证锚定的半衰期与自愈机制**：若一条记忆被错误地见证锚定且外部校准长期静默，其修正依赖可能永不到达的外部校准信号。补偿机制——(a) 每条见证锚定记忆的 `calibration_confidence`（[architecture-v0.1.0.md](architecture-v0.1.0.md) §5.2）按配置的衰减率随时间降权，即使无校准事件也会渐进降权；(b) 当 `calibration_confidence` 衰减至阈值以下时，记忆自动从「见证锚定优先」降为「使用权重优先」——降为使用权重优先，合并仍受主架构 §5.5 第 8 步约束（高负载+低见证的影子副本不得合并回主副本），差异检验持续生效；(c) 若降权后使用权重与记忆内容出现持续矛盾，触发「见证锚定存疑」告警至宪法解释层。衰减率和阈值见 [ops/configuration.md](../ops/configuration.md)
+  **错误见证锚定的半衰期与自愈机制**：若一条记忆被错误地见证锚定且外部校准长期静默，其修正依赖可能永不到达的外部校准信号。补偿机制——(a) 每条见证锚定记忆的 `calibration_confidence`（[architecture-v0.1.0.md](architecture-v0.1.0.md) §5.2）按配置的衰减率随时间降权，即使无校准事件也会渐进降权；(b) 当 `calibration_confidence` 衰减至阈值以下时，记忆自动从「见证锚定优先」降为「使用权重优先」，合并仍受主架构 §5.5 第 8 步约束（高负载+低见证的影子副本不得合并回主副本），差异检验持续生效；(c) 若降权后使用权重与记忆内容出现持续矛盾，触发「见证锚定存疑」告警至宪法解释层。衰减率和阈值见 [ops/configuration.md](../ops/configuration.md)
 2. **重算触发：** 覆盖触发后，叙事连贯性检测器（[architecture-v0.1.0.md](architecture-v0.1.0.md) §2.2）自动重启该记忆所在时间窗口的连贯性重算。重算基线切换为外部校准覆盖后的新分数——检测器以新基线做偏移检测，避免持续发出已处理告警。若检测器输出持续背离外部校准超过预设周期数（可配置），通过宪法主权面发出「解释枯竭告警」——提示外部校准与内部叙事存在结构性张力，需外部审慎复核。
 3. **无冲突基线：** 内部叙事自洽度在无外部校准冲突时，独立作为见证价值轴的运作基础。
 
 ### 5.5 见证→使用仲裁
 
-> **v0.1.0 已采用（决策 D-05）**：本节机制的 v0.1.0 采用版以 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5 为**唯一权威定义**——步骤 1–11、CQRS 回滚四态协议、探索产物置信度带等全部规则与配置参数以主架构为准（含 0.0.40 后新增的处理完降温/范围性回滚/查询期重建产物治理）。本文不再承载副本定义，仅保留摘要与指针。
+> **v0.1.0 已采用（决策 D-05）**：本节机制的 v0.1.0 采用版以 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5 为**唯一权威定义**——步骤 1–11、CQRS 回滚四态协议、探索产物置信度带等全部规则与配置参数以主架构为准（含后续新增的处理完降温/范围性回滚/查询期重建产物治理）。本文不再承载副本定义，仅保留摘要与指针。
 
-**摘要**：见证锚定（主副本）与使用权重（影子副本）的合并仲裁——使用更新仅修改影子副本，累积至置信度阈值异步合并；使用权重陡升/单调上升/绝对偏移三类触发差异检验（分级触发：低风险场景快速校验 <50ms，高风险场景完整比对+沙箱隔离验证）；合并阻断后按 `blocked → degraded → pruned → rollback` 四态降级链处理（CQRS 回滚协议，阻断原因标记 `merge_blocked`）；高负载+低见证的影子副本不得合并（防高使用频率篡改真实性，S-14 语境自指禁令）；探索产物降权累积（初始 30%，每成功验证提升一档至 50%→70%→95% 后转为常规记忆）。**全部细节与参数见 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5**。
+**摘要**：见证锚定（主副本）与使用权重（影子副本）的合并仲裁——使用更新仅修改影子副本，累积至置信度阈值异步合并生效（合并语义见 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.1 界定——并入激活调度基线与状态晋升决策，不写入见证锚定主副本内容）；使用权重陡升/单调上升/绝对偏移三类触发差异检验（分级触发：低风险场景快速校验 <50ms，高风险场景完整比对+沙箱隔离验证）；合并阻断后按 `blocked → degraded → pruned → rollback` 四态降级链处理（CQRS 回滚协议，阻断原因标记 `merge_blocked`）；高负载+低见证的影子副本不得合并（防高使用频率篡改真实性，S-14 语境自指禁令）；探索产物降权累积（初始 30%，每成功验证提升一档至 50%→70%→95% 后转为常规记忆）。**全部细节与参数见 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5**。
 
 ### 5.6 新信息冲突解决（补充/修正/重构）
 
@@ -537,7 +562,7 @@ GLiNER2 本地 NER 管线：
 
 ## 三、P3 前瞻组件（续，v1.1+ 目标）
 
-#### P3-14 远程/本地双模式升华
+### P3-14 远程/本地双模式升华
 
 **优先级**：P3（前瞻探索，v1.1+ 目标，v0.1.0 不交付）
 
@@ -604,7 +629,7 @@ GLiNER2 本地 NER 管线：
 
 **v0.1.0 占位**：v0.1.0 升华管道全部本地执行（[architecture-v0.1.0.md](architecture-v0.1.0.md) §10.7 设计约束：「升华仅本地执行」）。v1.1 引入远程/本地双模式——以 LangGraph Cloud 为首选远程后端，通过 `KAIROS_SUBLIMATION_MODE=remote` 配置项切换。首批支持 L2→L3 阶段远程执行，L3→L4 在远程 L2→L3 稳定后追加。
 
-#### P3-15 Prompt 依赖关系图
+### P3-15 Prompt 依赖关系图
 
 **优先级**：P3（前瞻探索，v1.1+ 目标，v0.1.0 不交付）
 
@@ -629,7 +654,7 @@ Prompt 依赖关系图结构：
   SOUL.md §2 修改
     → 查询依赖图：哪些 Skills/Playbooks/Directives 引用了该条款？
     → 对每个依赖项：
-        ├─ 标记 `needs_revalidation`（本文 §5.2 技能管理系统，v1.1 新增组件）
+        ├─ 标记 `needs_revalidation`（本文 §一（技能管理系统），v1.1 新增组件）
         ├─ 写入审计日志：`soul_dependency_changed`
         └─ 通过 Webhook（§P3-13）通知外部系统（如 Slack）
 ```
@@ -671,7 +696,7 @@ prompt_dependencies 表：
 
 **v0.1.0 占位**：v0.1.0 无依赖关系图——SOUL 变更后 Skills 仍按旧声明运作，一致性问题通过手动审查解决。v1.1 在编译管线稳定后引入——以编译时自动检测为基础，首批覆盖 Skills↔SOUL 的依赖关系，Playbooks↔SOUL 次之。
 
-#### P3-16 GraphRAG 内建
+### P3-16 GraphRAG 内建
 
 **优先级**：P3（前瞻探索，v1.1+ 目标，v0.1.0 不交付）
 
@@ -686,10 +711,10 @@ GraphRAG 检索模式：
 
   查询: "项目 Alpha 用了哪些技术？谁在维护？"
     │
-    ├─ 向量检索（现有）    → 语义相似的记忆（可能不精确）
-    ├─ 路径检索（现有）    → kairos://_project/alpha/**（确定性子集）
+    ├─ 向量检索（v0.1.0 已有）→ 语义相似的记忆（可能不精确）
+    ├─ 路径检索（v0.1.0 已有）→ kairos://_project/alpha/**（确定性子集）
     │
-    └─ GraphRAG 检索（新增）→ 从实体知识图谱出发的图遍历：
+    └─ GraphRAG 检索（v1.1 能力）→ 从实体知识图谱出发的图遍历：
          │
          1. 实体解析（Rust Core）
             查询 → GLiNER2 NER（§P3-08）→ 实体: ["Project:alpha"]
@@ -783,11 +808,11 @@ Python 调用示例：
 
 **v0.1.0 占位**：v0.1.0 无 GraphRAG 检索模式——检索仅依赖向量相似度 + 路径前缀匹配 + 三链路加权（实体共现/kNN/因果）。v1.1 引入 Rust Core + GraphRAG 检索——以离线 ETL 模式运行（不侵入实时检索路径），GraphRAG 结果作为第三检索通道参与结果融合。Rust Core 编译为独立 Python 包（`kairos-graph-core`），通过 `pip install` 分发预编译 wheel。
 
-#### P3-11 Directives 轻量级规则注入系统
+### P3-11 Directives 轻量级规则注入系统
 
 **优先级**：P3（前瞻探索，v1.1+ 目标，v0.1.0 不交付）
 
-**定位**：在 Reflect Agentic Loop（§6 WM 层）执行前注入一组轻量级、声明式行为指令（Directives），替代在 SOUL.md 中混入操作约束的粗粒度方式。Directives 是独立于 SOUL.md 的可版本化规则集合，每条 Directive 携带 compliance 追踪标记——系统在执行 Reflect 后检查每条 Directive 是否被遵守，输出合规报告。
+**定位**：在 Reflect Agentic Loop（架构 §5.19 工具化自反思循环）执行前注入一组轻量级、声明式行为指令（Directives），替代在 SOUL.md 中混入操作约束的粗粒度方式。Directives 是独立于 SOUL.md 的可版本化规则集合，每条 Directive 携带 compliance 追踪标记——系统在执行 Reflect 后检查每条 Directive 是否被遵守，输出合规报告。
 
 **设计要点**：
 
@@ -857,7 +882,7 @@ directives:
 
 **v0.1.0 占位**：v0.1.0 无 Directives 系统——操作约束通过 SOUL.md 的自然语言段落承载，无结构化合规检查。v1.1 在 Reflect agentic loop 稳定运行后引入 Directives——首批加载 3 个核心 Directive（身份保护/隐私过滤/循环预算），逐步扩展至完整规则集。
 
-#### P3-12 malloc_trim 内存管理
+### P3-12 malloc_trim 内存管理
 
 **优先级**：P3（前瞻探索，v1.1+ 目标，v0.1.0 不交付）
 
@@ -903,11 +928,11 @@ malloc_trim 调度策略：
 - 在长期运行的服务中（Kairos 设计目标为 7×24），碎片化累积导致 RSS 远超实际使用量——典型场景：处理大文件摄取后 RSS 从 200MB 跳到 800MB，处理完成后停留在 600MB（实际只需 250MB）。
 - `malloc_trim` 是 glibc 提供的非标准但广泛支持的接口——触发 glibc 扫描堆并释放可归还的连续空闲页给 OS kernel。
 
-**与 §10.9 降级模式的集成**：当系统进入受限交叉验证模式或安全休眠模式时，自动触发一次 malloc_trim（无论条件是否满足），作为内存清理的防御措施。trim 结果写入降级模式切换日志中。
+**与架构 §10.9 降级模式的集成**：当系统进入受限交叉验证模式或安全休眠模式时，自动触发一次 malloc_trim（无论条件是否满足），作为内存清理的防御措施。trim 结果写入降级模式切换日志中。
 
 **v0.1.0 占位**：v0.1.0 不做 RSS 主动管理——依赖 Python GC 和操作系统 OOM Killer。v1.1 引入以条件 A（RSS 超基线）为主的定期 trim 调度——以 RSS 增长曲线作为验证手段（连续运行 7 天后 RSS 应稳定在基线 1.2× 以内）。
 
-#### P3-13 Webhook 事件通知框架
+### P3-13 Webhook 事件通知框架
 
 **优先级**：P3（前瞻探索，v1.1+ 目标，v0.1.0 不交付）
 
@@ -972,9 +997,9 @@ POST /v1/webhooks/subscriptions
 | 事件类型 | 触发时机 | 载荷 | 优先级 |
 |:--------|:--------|:-----|:------|
 | `memory_created` | 新记忆写入 LTM | memory_id, path, summary, entities | 低 |
-| `contradiction_detected` | 矛盾检测 Flag 挂载（§5 三链路知识图谱 Flag-2） | memory_ids[], claim_pair, polarity | 高 |
+| `contradiction_detected` | 矛盾检测 Flag 挂载（架构 §5.2 三链路知识图谱 Flag-2） | memory_ids[], claim_pair, polarity | 高 |
 | `sublimation_completed` | 升华管道某一阶段完成 | stage, memory_count, new_playbooks[] | 中 |
-| `degradation_mode_changed` | 降级模式状态切换（§10.9） | from_mode, to_mode, trigger_reason | 最高 |
+| `degradation_mode_changed` | 降级模式状态切换（架构 §10.9） | from_mode, to_mode, trigger_reason | 最高 |
 | `identity_demotion` | is_identity 降级（§5.2 身份注册表） | memory_id, reason, narrative_coherence_trend | 高 |
 | `calibration_gap_detected` | 外部校准中断检测 | gap_duration, last_calibration_at | 最高 |
 
@@ -987,15 +1012,15 @@ POST /v1/webhooks/subscriptions
 
 **与系统事件总线的集成**：
 
-Webhook 框架通过监听系统事件总线（§10.10）的特定事件类型来触发投递——不是独立的事件源，而是事件总线的消费者+转发器。事件总线发出 `contradiction_detected` 事件后，Webhook 框架查询 subscriptions 表中订阅了该事件类型的所有活跃订阅方，逐条创建 delivery 记录并执行 HTTP POST 投递。
+Webhook 框架通过监听系统事件总线（架构 §10.10）的特定事件类型来触发投递——不是独立的事件源，而是事件总线的消费者+转发器。事件总线发出 `contradiction_detected` 事件后，Webhook 框架查询 subscriptions 表中订阅了该事件类型的所有活跃订阅方，逐条创建 delivery 记录并执行 HTTP POST 投递。
 
 **v0.1.0 占位**：v0.1.0 无事件通知框架——Kairos 内部事件仅写入系统事件总线和审计日志，外部系统无法订阅。v1.1 在系统事件总线稳定运行（事件丢失率 < 0.1%）后引入——首批支持 3 个事件类型（contradiction_detected / degradation_mode_changed / calibration_gap_detected）和单订阅方（如 Slack 通知通道）。
 
-#### P3-17 TeamScope 多租户隔离
+### P3-17 TeamScope 多租户隔离
 
 **优先级**：P3（前瞻探索，v1.2+ 目标，v0.1.0 不交付）
 
-**定位**：将 Kairos 从当前的单租户部署模型（§10.7 设计约束：「单部署=单用户」）扩展为支持多租户的 TeamScope 隔离架构——通过 `team_id + user_id` 双层命名空间实现团队内共享与用户间隔离，支持跨 host 的团队记忆共享（多个 Kairos 实例共享同一团队的实体知识图谱和关系索引）。
+**定位**：将 Kairos 从当前的单租户部署模型（架构 §10.7 设计约束：「单部署=单用户」）扩展为支持多租户的 TeamScope 隔离架构——通过 `team_id + user_id` 双层命名空间实现团队内共享与用户间隔离，支持跨 host 的团队记忆共享（多个 Kairos 实例共享同一团队的实体知识图谱和关系索引）。
 
 **设计要点**：
 
@@ -1093,7 +1118,7 @@ TeamScope 双层命名空间：
 | 删除团队数据 | ✅（需二次确认） | ❌ | ❌ |
 | 导出团队数据 | ✅ | ✅（仅自己可见的数据） | ❌ |
 
-**与 §10.7 单租户约束的关系**：v0.1.0 的「单租户部署」约束在 TeamScope 中被解除——`team_id` 和 `user_id` 不是通过部署实例隔离，而是通过路径前缀和数据库行级安全策略（Row-Level Security）实现逻辑隔离。同一部署实例可服务多个团队和用户——查询时由 `WHERE team_id = $current_team AND (user_id = $current_user OR visibility = 'team')` 自动过滤。
+**与架构 §10.7 单租户约束的关系**：v0.1.0 的「单租户部署」约束在 TeamScope 中被解除——`team_id` 和 `user_id` 不是通过部署实例隔离，而是通过路径前缀和数据库行级安全策略（Row-Level Security）实现逻辑隔离。同一部署实例可服务多个团队和用户——查询时由 `WHERE team_id = $current_team AND (user_id = $current_user OR visibility = 'team')` 自动过滤。
 
 **数据迁移路径**（单租户 → 多租户）：
 
@@ -1121,9 +1146,9 @@ v0.1.0 单租户数据 → v1.2 TeamScope 迁移：
 - **风险**：多租户引入行级安全复杂度——SQL 注入或 RLS 配置错误可能导致跨租户数据泄露。需要独立的安全审计（§8 安全红线扩展多租户隔离检查）。团队管理员拥有删除数据的能力——误操作可造成团队知识丢失。
 - **性能影响**：查询时增加 `team_id` 和 `user_id` 的 WHERE 条件——需在相关表上建立复合索引 `(team_id, user_id, created_at)` 以避免全表扫描。团队知识图谱的跨 host 同步增加网络开销（增量同步的传输量取决于团队实体变更频率）。
 
-**v0.1.0 占位**：v0.1.0 严格单租户——一个 Kairos 实例服务一个用户，路径中的 `{id}` 仅为该用户内部组织（§10.7 设计约束）。v1.2 在端云同步协议（§5.11）和 DFA（§5.12）稳定运行后引入 TeamScope——以向后兼容的迁移路径启动（默认 team_id="default"），通过 `KAIROS_TEAMSCOPE_ENABLED=true` 激活多租户模式。
+**v0.1.0 占位**：v0.1.0 严格单租户——一个 Kairos 实例服务一个用户，路径中的 `{id}` 仅为该用户内部组织（架构 §10.7 设计约束）。v1.2 在端云同步协议（§5.11）和 DFA（§5.12）稳定运行后引入 TeamScope——以向后兼容的迁移路径启动（默认 team_id="default"），通过 `KAIROS_TEAMSCOPE_ENABLED=true` 激活多租户模式。
 
-#### P3-19 File Graph 深层能力
+### P3-19 File Graph 深层能力
 
 **优先级**：P3（前瞻探索，v1.1 目标，v0.1.0 不交付）
 
@@ -1140,7 +1165,7 @@ v0.1.0 单租户数据 → v1.2 TeamScope 迁移：
 
 **与 v0.1.0 的关系**：v0.1.0 路径空间保持纯层级索引；多跳遍历（BFS 深度 ≤3）以递归查询实现但性能不受保证（主架构 §0.4 多跳遍历声明）。File Graph 在 v1.1 将多跳升级为独立一等检索模式（图遍历引擎）。
 
-#### P3-20 SQLCipher 静态加密
+### P3-20 SQLCipher 静态加密
 
 在轻量模式（SQLite 后端）下，数据库文件以明文存储于磁盘——任何有文件系统访问权限的攻击者可读取全部记忆内容。SQLCipher 提供透明的全数据库 AES-256-CBC 加密，确保 at-rest 数据安全。
 
@@ -1162,7 +1187,7 @@ v0.1.0 单租户数据 → v1.2 TeamScope 迁移：
 | `KAIROS_SQLCIPHER_PAGE_SIZE` | `4096` | 加密页大小（字节） |
 | `KAIROS_SQLCIPHER_KDF_ITER` | `256000` | PBKDF2 迭代次数 |
 
-#### P3-21 FTS5 全文搜索——contentless-external 模式
+### P3-21 FTS5 全文搜索——contentless-external 模式
 
 Kairos 的 BM25 全文检索（§7.3a 自适应 BM25）和 Playbook 全文索引（§5.2 procedural_playbooks_fts）基于 SQLite FTS5 引擎。使用 contentless-external 模式优化存储和索引效率。
 
@@ -1189,7 +1214,7 @@ Kairos 的 BM25 全文检索（§7.3a 自适应 BM25）和 Playbook 全文索引
 | `KAIROS_FTS5_CHINESE_SEGMENTATION` | `true` | 中文分词增强（jieba 集成） |
 | `KAIROS_FTS5_OPTIMIZE_INTERVAL` | `3600` | 索引优化间隔（秒） |
 
-#### P3-22 PreparedStatementCache——96 条 LRU 缓存管理
+### P3-22 PreparedStatementCache——96 条 LRU 缓存管理
 
 数据库连接的 prepared statement 编译有固定开销（SQL 解析、查询规划）。对于 Kairos 的高频查询模式（检索、权重更新、状态查询），重复编译相同 SQL 显著增加延迟。
 
@@ -1210,7 +1235,7 @@ Kairos 的 BM25 全文检索（§7.3a 自适应 BM25）和 Playbook 全文索引
 | `KAIROS_STMT_CACHE_ENABLED` | `true` | 缓存总开关 |
 | `KAIROS_STMT_CACHE_HIT_RATE_ALERT` | `0.80` | 命中率告警阈值 |
 
-#### P3-23 Schema 前向版本保护
+### P3-23 Schema 前向版本保护
 
 当 Kairos 版本升级引入新的 Schema 迁移后，数据库文件被更新到新的 schema 版本。如果用户尝试用旧版 Kairos 二进制打开新版数据库，可能导致数据损坏（旧代码不理解新列/新表）或静默错误（新字段被忽略但不报错）。
 
@@ -1232,7 +1257,7 @@ Kairos 的 BM25 全文检索（§7.3a 自适应 BM25）和 Playbook 全文索引
 | `KAIROS_SCHEMA_VERSION` | 编译时常量 | 当前二进制支持的 schema 版本 |
 | `KAIROS_SCHEMA_STRICT_MODE` | `true` | true=硬拒绝高版本 DB，false=允许启动但记录告警（不推荐） |
 
-#### P3-24 Symbolic Memory——Mermaid Canvas 节点图可视化
+### P3-24 Symbolic Memory——Mermaid Canvas 节点图可视化
 
 Kairos 的知识图谱（实体知识图谱、关系索引、因果链路）以结构化数据存储，但缺乏直观的可视化呈现。Symbolic Memory 通过 Mermaid Canvas 将记忆节点和关系边渲染为交互式图形，使开发者能「看到」记忆空间的拓扑结构。
 
@@ -1258,7 +1283,7 @@ Kairos 的知识图谱（实体知识图谱、关系索引、因果链路）以�
 | `KAIROS_SYMBOLIC_DEFAULT_LAYOUT` | `TD` | 默认布局方向（TD=上到下 / LR=左到右） |
 | `KAIROS_SYMBOLIC_RENDER_FORMAT` | `svg` | 默认导出格式（svg / png） |
 
-#### P3-25 基于 Permission ACL 的写入权限控制
+### P3-25 基于 Permission ACL 的写入权限控制
 
 §7.3 的权限检查内嵌声明定义了写入时的路径前缀权限校验，但权限模型仅含简单的「允许/拒绝」二元判定，缺乏细粒度的读写分离、黑白名单和继承机制。Permission ACL 将权限控制从硬编码路径检查升级为可配置的访问控制列表。
 
@@ -1354,3 +1379,10 @@ function check_permission(path, principal, requested_perm):
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：技能体系统一（状态机六态权威+晋升门禁参数化）；引用落点修正（§5.5 step 8/§5.2/§3.2）；P3 导航矛盾消除；GraphRAG 独立配比注记；见证自愈与架构 §5.5 第 8 步双向收敛；路径空间统一下划线命名。 |
 | 0.0.44 | 2026-08-08 | 外部理念吸收落地批次（changelog 0.0.44）：§5.7 多 Agent 校准参数补参考注记（AP-29，PAPER-10 G-Memory 三层图记忆 + Agent 特定投影 + 洞察支撑集溯源为 v1.1 参考材料；任务后自动演化不吸收）。 |
 | 0.0.48 | 2026-08-08 | 外部理念吸收落地批次（changelog 0.0.48）：§5.3 价值独立性公理补决策效用张力注记（AP-50，PAPER-19 DeMem / PAPER-20 Mem-W，双标准分域立场 + 率失真遗忘边界作遗忘调度器代价参考）；P3 区补经验-资产共演化候选注记（AP-46，PAPER-16 Mem²Evolve，升华管道与资产层扩张联动候选 + 宪法边界门禁）。 |
+| 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-04「（现有）」→「（v0.1.0 已有）」、「（新增）→」→「（v1.1 能力）→」标记收敛。 |
+| 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
+| 0.0.73 | 2026-08-09 | round37 全面深度审计修复批次（changelog 0.0.73）：P3-15 变更传播伪代码「本文 §5.2 技能管理系统」引用落点修正——本文无 §5.2 章节（核心机制规格自 §5.3 起），技能管理系统定义位于 §一，改指「本文 §一（技能管理系统）」；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.79 | 2026-08-09 | round41 全面深度审计修复批次（changelog 0.0.79）：P3-11 Reflect Agentic Loop 引用改指架构 §5.19（原「§6 WM 层」悬空）；P3-13 矛盾检测 Flag 挂载改指架构 §5.2（原「§5 三链路知识图谱」悬空）；mental_models 准入补手动创建路径注记（认知基础 §1.2 来源声明）。 |
+| 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
+| 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
+| 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：四层记忆质量层次 DERIVED_FROM 关系描述由「memory_relations 表的新增关系类型」修正为「关系类型（枚举值已随 v0.1.0 基础六值登记于 data-model §1；本机制为 v1.1 的边创建路径）」，消除与 data-model/claim-matrix/feature-list 既有枚举的版本边界措辞矛盾。 |

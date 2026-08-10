@@ -8,8 +8,8 @@ tags:
   - development
   - conventions
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -84,7 +84,7 @@ kairos/
 | 层间传播 | 事件总线异常事件 | 发送 `use_event`（payload 标记错误）或按架构 §10.6 注册门禁新增事件类型，不抛异常出层 |
 | 输入验证 | 返回 4xx | API 层返回结构化错误响应 |
 | 不可恢复错误 | 记录日志 + 进入降级 | 健康计数器触发降级信号 |
-| 安全红线违反 | 拒绝 + 审计日志 | 调用 `audit_log.record()` + `return 403`。**注意**：S-01 启动缺 Key 为连接拒绝（非 HTTP 层），运行时缺 Token → 401（ERR-AUTH-001），红线违反 → 403（ERR-SEC-001） |
+| 安全红线违反 | 拒绝 + 审计日志 | 调用 `audit_log.record()`，状态码**按红线类型分派**（默认 403 `ERR-SEC-001`），不统一返回 403。**分派映射**：S-01 启动缺 Key 为连接拒绝（非 HTTP 层）；运行时缺 Token → 401（`ERR-AUTH-001`）；S-02 限流超限 → 429；S-03 超长输入 → 413（`ERR-INPUT-001`）；S-15 来源缺失 → 422；S-06 / S-08 越权与未授权管理访问 → 403；其余红线违反 → 403（`ERR-SEC-001`）。完整映射以 [security-specification.md](../security/security-specification.md) §1 安全需求表为权威，错误码语义见 [error-reference.md](../references/error-reference.md) |
 
 ## 四、日志规范
 
@@ -122,3 +122,4 @@ kairos/
 | 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：frontmatter 与版本记录同步（第二轮全库深度审计修复批次）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：层间传播错误事件改指真实事件类型——「发送 `error_event`」改「发送 `use_event`（payload 标记错误）或按架构 §10.6 注册门禁新增事件类型」。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：路径空间统一下划线命名。 |
+| 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：§三 错误处理红线违反 HTTP 映射分派（S-01 启动拒绝 / S-02→429 / S-03→413 / S-15→422 / S-06·S-08→403 / 其余→403 ERR-SEC-001），权威指向 security-specification §1；详见 changelog 0.0.83 叙述节。 |

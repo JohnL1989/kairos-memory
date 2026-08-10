@@ -7,8 +7,8 @@ tags:
   - kairos
   - documentation
 created: 2026-07-18
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -46,7 +46,7 @@ status: draft
 | [`specification/use-cases.md`](specification/use-cases.md) | **使用场景** — 8 个典型交互场景 |
 | [`specification/rl-weight-spec.md`](specification/rl-weight-spec.md) | **RL 权重优化器规格** — 五维权重 + 学习算法 |
 | [`specification/operation-catalog.md`](specification/operation-catalog.md) | **操作目录** — 66 项标准操作（OP-001~OP-066），按 ENC/RET/STR 三阶段组织，标注安全红线 |
-| [`specification/schema-slice.sql`](specification/schema-slice.sql) | **竖切 DDL** — 14 张竖切表可执行建表语句（data-model 指定的 DDL 唯一承载，全量 57 表 DDL 随实现阶段由 Alembic 迁移承载） |
+| [`specification/schema-slice.sql`](specification/schema-slice.sql) | **竖切 DDL** — 14 张物理竖切表可执行建表语句（另含 1 张 FTS5 虚拟表 `memories_fts`，合计 15 张；`slice-implementation-guide` 的「15 张表」即此口径）；data-model 指定的 DDL 唯一承载，全量 57 表 DDL 随实现阶段由 Alembic 迁移承载 |
 | [`specification/api-contract/openapi.yaml`](specification/api-contract/openapi.yaml) | **REST 契约骨架** — OpenAPI 3.1，81 路径 / 88 操作（骨架，request/response schema 待补全，见债务 D-428） |
 | [`specification/api-contract/mcp-tools.json`](specification/api-contract/mcp-tools.json) | **MCP 工具契约** — 15 工具清单（inputSchema 待补全，见债务 D-428） |
 
@@ -80,7 +80,7 @@ status: draft
 | 路径 | 内容 |
 |:-----|:-----|
 | [`ops/deployment.md`](ops/deployment.md) | **部署指南** — 三级部署规模（轻量/标准/全量）+ 三级能力梯度（全量/标准/内核），环境变量、Docker 参考 |
-| [`ops/configuration.md`](ops/configuration.md) | **配置参数参考** — 224 项参数（2026-08-06 核定；口径：表格行首为 `KAIROS_*` 的参数定义行；含附录 A 全库索引 146 项，总计 370 项）+ 动态调参规则 |
+| [`ops/configuration.md`](ops/configuration.md) | **配置参数参考** — 227 项参数（2026-08-10 核定；口径：表格行首为 `KAIROS_*` 的参数定义行；含附录 A 全库索引 147 项，总计 374 项）+ 动态调参规则 |
 | [`ops/reliability.md`](ops/reliability.md) | **可靠性策略** — RTO/RPO、备份、WAL 归档、LLM 熔断 |
 | [`ops/observability.md`](ops/observability.md) | **可观测性设计** — 指标/日志/告警/检测器可见性 |
 | [`ops/troubleshooting.md`](ops/troubleshooting.md) | **故障排查** — 常见问题与恢复命令 |
@@ -113,8 +113,8 @@ status: draft
 
 | 路径 | 内容 |
 |:-----|:-----|
-| [`references/glossary.md`](references/glossary.md) | **术语表** — 69 条中英文术语对照（7 个分类表），含热度层级衰减/摄入侧情绪保护/噪音规则库/编译器/结构化通信单元/编译净化/检索深度分级/命名配置集/竖切/结构性记忆/准见证锚定等词条 |
-| [`references/error-reference.md`](references/error-reference.md) | **错误参考** — 11 类 38 个错误码 |
+| [`references/glossary.md`](references/glossary.md) | **术语表** — 77 条中英文术语对照（7 个分类表），含热度层级衰减/摄入侧情绪保护/噪音规则库/编译器/结构化通信单元/编译净化/检索深度分级/命名配置集/竖切/结构性记忆/准见证锚定/身份面否决权/处理完降温/间隔重复复习/支撑集引用/范围性回滚/上下文腐烂等词条 |
+| [`references/error-reference.md`](references/error-reference.md) | **错误参考** — 11 类 43 个错误码 |
 | [`references/traceability-map.md`](references/traceability-map.md) | **需求可追溯性映射表** — 43 能力↔37 声明↔104 追踪项↔16 差距交叉映射 |
 | [`references/domain_keywords.yaml`](references/domain_keywords.yaml) | **领域关键词表** — 领域关键词路由表（中英对照；词频统计待代码启动后引入） |
 | [`references/usage-load-algorithm.md`](references/usage-load-algorithm.md) | **使用负载计量算法** |
@@ -123,21 +123,27 @@ status: draft
 | [`references/concept-tiers.md`](references/concept-tiers.md) | **概念分级速查表** — L1/L2/L3 三级概念归类 + 一句话类比 + 代码映射 + 依赖图 |
 | [`references/capability_matrix.yaml`](references/capability_matrix.yaml) | **认知维度承载能力矩阵** — 各版本对认知维度的承载程度与恢复债编号 |
 
-## 分析文档（外部理念对照批次，0.0.40）
-
-> **目录边界说明**：`docs/analysis/` 为外部视频理念对照分析的**产物目录**（0.0.40 独立批次），随仓库分发、不随审计过程材料归档；其文档计入 `docs/` 全量 md 统计（含于总计 196 份 md），但**不计入「核心文档」权威子集（56 份）**，亦不参与架构/规格权威口径。
+## 图表文档
 
 | 路径 | 内容 |
 |:-----|:-----|
-| [`analysis/external-videos/README.md`](analysis/external-videos/README.md) | **外部视频分析批次索引** — 100 视频素材边界声明（B站 AI 字幕串台问题实测）、视频清单、目录导航 |
+| [`diagrams/system-architecture.html`](diagrams/system-architecture.html) | **系统架构总览图** — 六层栈与核心组件交互的可视化总览（HTML 交互图） |
+
+## 分析文档（外部理念对照批次）
+
+> **目录边界说明**：`docs/analysis/` 为外部视频理念对照分析的**产物目录**（独立批次），随仓库分发、不随审计过程材料归档；其文档计入 `docs/` 全量 md 统计（含于总计 196 份 md），但**不计入「核心文档」权威子集（56 份）**，亦不参与架构/规格权威口径。
+
+| 路径 | 内容 |
+|:-----|:-----|
+| [`analysis/external-videos/README.md`](analysis/external-videos/README.md) | **外部视频分析批次索引** — 102 视频素材边界声明（B站 AI 字幕串台问题实测）、视频清单、目录导航 |
 | [`analysis/external-videos/triage-matrix.md`](analysis/external-videos/triage-matrix.md) | **外部理念 × Kairos 分诊矩阵** — EV 条目（已覆盖/可吸收/张力/矛盾）+ T-002 实例样本 |
 | [`analysis/external-videos/first-principles-review.md`](analysis/external-videos/first-principles-review.md) | **第一性原理对照评审** — 八原理逐条「支撑/挑战/未触及」 |
-| [`analysis/external-videos/absorption-proposals.md`](analysis/external-videos/absorption-proposals.md) | **吸收建议清单** — AP-01~18 建议态 + AT-01~07 张力记录 |
+| [`analysis/external-videos/absorption-proposals.md`](analysis/external-videos/absorption-proposals.md) | **吸收建议清单** — AP-01~52 吸收提案 + AT-01~09 张力记录 |
 | [`analysis/external-videos/notes/`](analysis/external-videos/notes/) | 逐视频精读笔记（N 份） |
 | [`analysis/external-videos/repos/`](analysis/external-videos/repos/) | GitHub 仓库源码级深读笔记（REPO-01~15） |
 | [`analysis/external-videos/process/fetch-guide.md`](analysis/external-videos/process/fetch-guide.md) | 字幕抓取/转写流程记录（不含凭据） |
 
-总计：**196 份 md + 3 份 yaml**（= 核心文档 56 份【53 md + 3 yaml：foundation 4 + specification 13(12 md+1 yaml: api-contract/openapi.yaml) + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1】+ 外部视频分析批次 0.0.40 独立目录 [analysis/external-videos/](analysis/external-videos/README.md) 143 份【4 索引/报告 + 15 仓库笔记 + 102 视频笔记 + 21 论文笔记 + 1 流程记录】；审计过程材料不随仓库分发，处置记录见 changelog 各批次）。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
+总计：**196 份 md + 3 份 yaml**（= 核心文档 56 份【53 md + 3 yaml：foundation 4 + specification 13(12 md+1 yaml: api-contract/openapi.yaml) + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1】+ 外部视频分析批次独立目录 [analysis/external-videos/](analysis/external-videos/README.md) 143 份【4 索引/报告 + 15 仓库笔记 + 102 视频笔记 + 21 论文笔记 + 1 流程记录】；审计过程材料不随仓库分发，处置记录见 changelog 各批次）。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
 
 > **附属资产计数政策**：上列「196 份 md + 3 份 yaml」为 md/yaml 核心口径；`specification/schema-slice.sql`（全量 DDL 承载）、`specification/api-contract/mcp-tools.json`（MCP 工具契约）、`diagrams/system-architecture.html`（架构总览图）等附属资产不计入该计数（openapi.yaml 已计入 3 yaml 之一）。
 
@@ -146,7 +152,8 @@ status: draft
 | 目标 | 路径 |
 |:-----|:-----|
 | 理解 Kairos 是什么 | 本文档（[docs/README.md](README.md) 索引）|
-| 理解认知基础 | [foundation/cognitive-foundation.md](foundation/cognitive-foundation.md) §一 → §二 |
+| 快速体验 | [user/quick-start.md](user/quick-start.md)（约 2 分钟最小闭环教程）→ [user/user-guide.md](user/user-guide.md) |
+| 理解认知基础 | [foundation/cognitive-foundation.md](foundation/cognitive-foundation.md) §1.1 → §2.1 |
 | 理解系统架构 | [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 全文 |
 | 查看待实现项 | [governance/debt-collection.md](governance/debt-collection.md) |
 | 部署运行 | [ops/deployment.md](ops/deployment.md) |
@@ -163,7 +170,7 @@ status: draft
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
 | 0.0.1 | 2026-07-31 | Kairos 文档索引：全库 52 份文档（51 md + 1 yaml）的分层索引、当前状态声明与阅读建议。 |
-| 0.0.2 | 2026-08-03 | 08-03 审计修复批次：全库 135 项修复与 15 项决策（D-01~D-15）的索引状态同步，新增 reviews/ 审计记录索引。 |
+| 0.0.2 | 2026-08-03 | 2026-08-03 审计修复批次：全库 135 项修复与 15 项决策（D-01~D-15）的索引状态同步，新增 reviews/ 审计记录索引。 |
 | 0.0.3 | 2026-08-04 | 配置参数计数同步（市场理念吸收）：192→193 项正文、总计 340→341 项。 |
 | 0.0.4 | 2026-08-04 | 术语计数同步（市场理念吸收）：glossary 53→56 条（增补双时态、构造性生成、记忆压力）。 |
 | 0.0.5 | 2026-08-04 | ADR 计数同步：10→12 项已采纳（ADR-011 迁移工具 / ADR-012 向量投影）。 |
@@ -198,3 +205,22 @@ status: draft
 | 0.0.40 | 2026-08-07 | 外部视频分析批次（changelog 0.0.40）：新增「分析文档」索引节（[analysis/external-videos/](analysis/external-videos/README.md) 独立目录，100 视频 + 15 仓库对照分析，不纳入核心文档计数）；实测 B站 AI 字幕串台问题；脚本入库 2 个；核心设计文档零改动；详见 changelog 0.0.40。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：分析目录计数 129→131 修正。 |
 | 0.0.43 | 2026-08-07 | 文档审计修复批次（changelog 0.0.43）：README 总计数口径修订（184 份 md + 3 份 yaml：新增 specification/api-contract/openapi.yaml 计入 yaml 总数，核心文档 55→56）；补「分析文档」目录边界说明（审计报告 F8）；详见 changelog 0.0.43。 |
+| 0.0.44 | 2026-08-08 | 外部理念吸收补落地批次（changelog 0.0.44）：README 计数口径同步（总计 185 份 md + 3 份 yaml、核心 56 份）。 |
+| 0.0.45~0.0.46 | 2026-08-08 | round18/round19 审计闭环批次（changelog 0.0.45/0.0.46）：README 计数/索引/零版本标记收敛。 |
+| 0.0.47 | 2026-08-08 | 外部论文分析批次（changelog 0.0.47）：分析目录索引与计数同步（132 份）。 |
+| 0.0.48~0.0.50 | 2026-08-08 | （合并占位：changelog 0.0.48~0.0.50 批次的变更未实质触及本文档索引/计数，见 [changelog.md](governance/changelog.md) 全景） |
+| 0.0.51 | 2026-08-08 | round22 审计修复批次（changelog 0.0.51）：错误参考计数 38→40（新增 ERR-SYS-006/007，对应启动校验审计事件）。 |
+| 0.0.52~0.0.56 | 2026-08-08 | （合并占位：changelog 0.0.52~0.0.56 批次的变更未实质触及本文档索引/计数，见 [changelog.md](governance/changelog.md) 全景） |
+| 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57，补登）：版本记录补登 0.0.44~0.0.50 / 0.0.52~0.0.56 段（版本记录链断裂修复），本文档索引/计数无实质变更。 |
+| 0.0.59 | 2026-08-08 | round26 全面深度审计修复批次（changelog 0.0.59，补登）：错误码计数 40→42（新增 ERR-CTR-003 / ERR-CTR-004，「11 类 40 个错误码」口径同步）。 |
+| 0.0.64 | 2026-08-08 | round30 全面深度审计修复批次（changelog 0.0.64，补登）：配置参数计数同步 370→373（正文 226 + 附录 A 147）。 |
+| 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.57/0.0.59/0.0.64 三行为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.79 | 2026-08-09 | round41 全面深度审计修复批次（changelog 0.0.79）：版本记录 0.0.2 行日期补年份（「08-03」→「2026-08-03」，格式统一）。 |
+| 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
+| 0.0.81 | 2026-08-10 | round43 全面深度审计修复批次（changelog 0.0.81，补登）：VAD 条件激活（G-02）权威落点收敛至架构 §3.2；安全规格 S-07/S-17 语义修正；债务章节导航补全。 |
+| 0.0.82 | 2026-08-10 | round44 门禁建议落实批次（changelog 0.0.82，补登）：新增 6.34 changelog 结构纪律 + 6.35 红线语义互斥词对检查。 |
+| 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83，补登）：intention 契约能力粒度切分、P6 监控基线增量制、备份容量满载口径等 3 高 4 中 4 低全闭环。 |
+| 0.0.84 | 2026-08-10 | round46 门禁建议落实批次（changelog 0.0.84，补登）：新增 6.36 版本归属互斥 / 6.37 表格范围词一致性 / 6.38 阈值监控自洽性（WARN 级软门禁首轮）。 |
+| 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：错误码 42→43（新增 ERR-CTR-005 幂等键冲突）——README §索引 错误参考行计数同步；另补登前序 0.0.81~0.0.84 四行（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-10。 |
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：术语计数 76→77（glossary 补「上下文腐烂」）+ 认知基础引用改数字（§一→§二 → §1.1→§2.1，小节号）。 |
+| 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：引用落点错位 5 处（feature-list R-23/R-24/R-27/SF-18 与 data-model QueryAnalyzer 的架构 §2.1→§2.6.x）+ blueprint DERIVED_FROM 版本边界措辞 + 分析批次过时计数 4 处 + concept-tiers 意图契约注记 + use-cases 场景 4 表述精确化；核心计数零漂移。 |

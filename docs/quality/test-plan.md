@@ -8,8 +8,8 @@ tags:
   - quality
   - testing
 created: 2026-07-21
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-08
+last_reviewed: 2026-08-08
 status: draft
 ---
 
@@ -30,9 +30,14 @@ status: draft
 | 单元 | 各组件核心函数（存储/WM/策略/宪法主权面） | **下界 ≥ 70**（[implementation-map.md](../specification/implementation-map.md) 登记 70 个组件路径，每组件至少 1 条；精确值随实现接口数确定） |
 | 集成 | 组件间接口（WM↔存储、PM↔存储、主权面↔PM） | **下界 ≥ 12**（六层栈相邻层接口 5 组 + 监督平面 3 组 + 跨层旁路 4 组，每接口至少 1 条） |
 | E2E | 9 条关键路径（写入→检索→遗忘→升华→校准→审计→冷启动→中断降级→S-14） | 9 |
-| 安全 | 19 条安全红线逐条验证 | 19 |
+| 安全 | 19 条安全红线逐条验证（S-19 含 4 条：内容层 1 + 行为层 3）+ S-19 附加控制项 1 条（修订端口 HMAC 链与冷却期，非红线本体，见 §3.8） | ≥ 23 |
 | 迁移 | DB schema 迁移（补充，对齐 project-plan W2「迁移可回滚」与 reliability 数据库回滚策略） | ≥ 3（正向迁移/回滚/幂等重放各 1） |
 | 回滚 | 记忆版本回滚 + 压缩回滚（补充，对齐 api-spec §1.4 rollback/versions 端点） | ≥ 2（记忆回滚、compaction 回滚各 1） |
+| 证伪 | 12 个特征标志的 `[FALSIFICATION]` 用例（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 编码纪律：无证伪测试的标志不应合入主分支） | 12（每标志 ≥ 1；其中 H1/H2/H3 三项核心假设对应用例为强制项，见 §3.10） |
+
+### 配置集矩阵
+
+> 测试矩阵只对架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 定义的三种命名配置集（`kairos-minimal` / `kairos-slice` / `kairos-full`）负责——**未命名组合不进入测试与验收范围**（口径以架构 §0.8「命名配置集与组合约束」为权威，本文不重复定义）。各配置集在单元/集成/E2E 三层的适用范围见 [test-strategy.md](test-strategy.md) §六 配置集测试矩阵；竖切阶段以 `kairos-slice` 为验收形态。
 
 ### 不覆盖
 
@@ -47,19 +52,21 @@ status: draft
 | 准则 | 条件 |
 |:----|:-----|
 | **进入**（何时开始测） | 核心组件接口稳定、DB schema 已迁移 |
-| **退出**（何时算测完） | 单元覆盖率 ≥80%、9 条 E2E 全通过、19 条安全红线逐条验证通过 |
+| **退出**（何时算测完） | 单元覆盖率 ≥80%、9 条 E2E 全通过、19 条安全红线逐条验证通过、12 个特征标志各具至少 1 条 `[FALSIFICATION]` 用例且通过（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 编码纪律） |
 | **暂停** | 阻塞性 P0 bug 未修复时暂停 E2E，修完继续 |
 
 > **E2E 竖切对照注记（补充）**：竖切验收门禁为 **7/9 条 E2E**（E2E-01/02/04/05/06/07/08 通过；E2E-03 升华、E2E-09 S-14 不在竖切范围，见 [acceptance-criteria.md](acceptance-criteria.md) 竖切判据与 [project-plan.md](../governance/project-plan.md) W10）——「9 条全通过」为 v0.1.0 完整交付门禁，竖切阶段执行 7/9 口径。
 
 ### 预留测试用例编号（代码启动后补充）
 
-> W-05/W-06、R-04~R-07、M-02/M-04/M-06、A-02/A-03/A-05/A-06、SF-01~04、CAL-02/06 等功能的测试用例编号在此登记占位（TC-W05-001~ 等），补充时须与 requirements-baseline RTM 一一对应。TC-C01 前缀已废弃，统一为 TC-CALxx-00x 格式。
+> 预留编号表登记以下功能的测试用例编号占位（TC-GOLD-001~ / TC-CF-001~004 / TC-A01-001~ / TC-M02-001~ / TC-M06-001~ / TC-A02-001~ / TC-A03-001~ / TC-A05-001~ / TC-A06-001~），补充时须与 requirements-baseline RTM 一一对应。TC-C01 前缀已废弃，统一为 TC-CALxx-00x 格式。其余功能编号（W-05/W-06、R-04~R-07、M-04、SF-01~04、CAL-06 等）按 RTM 对应关系在代码启动后随用例定义即时编号，不在此预占位。
 
 | ID | 用途 | 补充时机 |
 |:---|:-----|:--------|
 | TC-GOLD-001~ | 黄金集回归（Judge 漂移检测，来源 [threat-model.md](../security/threat-model.md) §三 Judge 漂移行）——黄金集非功能清单项，独立前缀 GOLD 与功能前缀（W/R/M/SF/CAL）区分 | 代码启动后补充 |
 | TC-CF-001~004 | 反事实检验（三态对比：full_context / retrieval_only / no_memory，定义见 [test-strategy.md](../quality/test-strategy.md) §2.7；非功能清单项，独立前缀 CF）——前置条件：任务成功率回传契约（integration-design §五a）实现；未实现时用例标记 skipped 不影响竖切验收 | 代码启动后补充（依赖任务成功率回传契约） |
+| TC-A01-001~ | 健康检查（A-01）存活探针——`GET /health`（端点登记见 [api-spec.md](../specification/api-spec.md) §1.8；响应结构见 [observability.md](../ops/observability.md) §1.2；P0 级，启动检查与恢复验证（runbook §2.3）依赖） | 代码启动后补充 |
+| TC-A01-002~ | 健康检查（A-01）聚合报告——`GET /v1/health/detail`（端点登记见 [api-spec.md](../specification/api-spec.md) §6.5） | 代码启动后补充 |
 | TC-M02-001~ | 契约变更（M-02，[feature-list.md](../specification/feature-list.md)） | 代码启动后补充 |
 | TC-M06-001~ | 记忆导出（M-06，GET /v1/memories/{id}/export） | 代码启动后补充 |
 | TC-A02-001~ | 配置查看/修改（A-02） | 代码启动后补充 |
@@ -110,11 +117,11 @@ status: draft
 
 | ID | 前置 | 步骤 | 输入 | 预期输出 |
 |:---|:-----|:----|:----|:--------|
-| TC-F01-001 | 写入 1 条临时契约记忆 | 等待遗忘调度器运行 N 周期 | — | 被标记为遗忘候选 |
+| TC-F01-001 | 写入 1 条临时契约记忆 | 等待遗忘调度器运行 1 个调度周期（`KAIROS_SCHEDULER_INTERVAL`，默认 300s） | — | 被标记为遗忘候选 |
 | TC-F02-001 | 1 条低使用记忆 | 手动触发潜伏重估 | 重估信号 | 记忆被重估，保留或归档 |
 | TC-F03-001 | 已归档记忆 | 触发潜伏势能重估（latent_trigger 盲区命中）或注入外部校准信号 | 重估信号/校准信号 | 记忆复兴（Archived→Active），回归可用状态（勘误：复兴由潜伏势能重估/外部校准触发，非显式检索） |
 
-### 3.5a 记忆管理（M-01 ~ M-05，竖切）
+### 3.5a 记忆管理（M-03/M-05 竖切用例；M-01/M-02/M-04/M-06 预留）
 
 | ID | 前置 | 步骤 | 输入 | 预期输出 |
 |:---|:-----|:----|:----|:--------|
@@ -153,8 +160,14 @@ status: draft
 | 用例 ID | 对应红线 | 验证方法出处 |
 |:-------|:--------|:------------|
 | TC-S01-001 ~ TC-S19-001 | S-01 ~ S-19（逐条一一映射） | [test-strategy.md](test-strategy.md) §2.2 |
+| TC-S19-002 ~ TC-S19-004 | S-19 遗忘生效验证（三样本检验 / 双副本完备性 / 行为无痕边界断言） | [test-strategy.md](test-strategy.md) §2.2a |
+| TC-S19-005 | S-19 **附加控制项**（非红线本体）：宪法修订端口写入的 HMAC 审计链完整性 + 强制冷却期（≥1 调度周期，默认 300s）——同一键冷却期内重复写入被拒 | [security-specification.md](../security/security-specification.md) S-19「注（范围勘误）」 |
 
 > **约定**：每条红线至少 1 条用例（后缀 `-001`）；如需追加用例，后缀递增（`-002`、`-003`…）。红线编号新增时（如 S-20~S-22 激活），用例编号同步扩展，不得跳号。
+>
+> **S-19 追加用例说明**：架构 §8「遗忘生效验证」对 S-19 设定三项补充约束，`-001` 只覆盖内容层（原文哈希化），行为层残留由 `-002`~`-004` 承载——三样本检验判定遗忘是否真生效、双副本完备性测试覆盖使用影子副本的权重/嵌入残留、边界断言约束「内容不可恢复 ≠ 行为无痕」的话术边界。
+>
+> **TC-S19-005 归属声明**：安全规格 S-19 条目明确「宪法修订端口 HMAC 审计链 + 冷却期」为**安全规格登记的附加控制项，不属于架构 §8 S-19 红线范围**（红线仅哈希净化），并要求「实现验证时分别验收」。故本用例与 `-001`~`-004` 分列——红线本体由 `-001`~`-004` 验收，附加控制由 `-005` 单独验收，二者不得互相顶替。
 
 ### 3.9 迁移与回滚（补充）
 
@@ -164,7 +177,17 @@ status: draft
 | TC-A07-002 | 已迁移到新版 schema | 回滚到上一版本（`db migrate --rollback`） | 回滚命令 | 回滚成功且数据一致（对齐 project-plan W2「迁移可回滚」与 reliability 数据库回滚策略） |
 | TC-A07-003 | 迁移中途失败（注入故障） | 重跑迁移 | 重试命令 | 幂等——重放不产生重复/丢失（迁移脚本可重入） |
 | TC-MEMV-001 | 一条记忆有 3 个版本 | `POST /v1/memories/{id}/rollback`（body `{"target_version": 2}`，对齐 api-spec §1.4） | 回滚版本号 | 创建新版本（内容为版本 2 快照），原版本保留；版本链 `is_latest` 更新正确（对齐 api-spec §1.4 rollback/versions） |
-| TC-COMP-001 | 已触发全量压缩的记忆 | `POST /v1/admin/compaction/rollback` | 快照 ID | 压缩摘要展开，源记忆恢复 `compacted=false`（>30 天的压缩不可回滚） |
+| TC-COMP-001 | 已触发全量压缩的记忆 | `POST /v1/admin/compaction/rollback/{snapshot_id}` | 快照 ID | 压缩摘要展开，源记忆恢复 `compacted=false`（>30 天的压缩不可回滚） |
+
+### 3.10 证伪测试（FAL-01 ~ FAL-03）
+
+> **口径**：证伪测试验证的是「假设被证明错误时系统能否承认失败」，而非功能是否正常（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 编码纪律）。用例统一标记 `[FALSIFICATION]`，与功能测试同套件并行管理。下表为 H1/H2/H3 三项核心假设的强制用例；其余 9 个特征标志的证伪用例（每标志 ≥ 1 条，前缀 `TC-FAL-<标志短名>`）在代码启动后随标志开启逐一补充，编号不得跳号。
+
+| ID | 假设 | 前置 | 证伪判据（架构 §0.8 假设表） | 预期处置 |
+|:---|:-----|:-----|:---------------------------|:--------|
+| TC-FAL-001 | H1 使用定义价值（绑定 `FULL_VALUE_METRICS`，非宪法核） | `kairos-full` 形态 | 连续 N 次（默认 5）「使用权重高但外部校准持续返回否定」后系统无法自行 resolve，`hypothesis_h1_pending_resolution_count` 超阈 | H1 标记 `challenged`；按配置集降级阶梯整体降级至 `kairos-slice`，写审计事件 `flag_falsification_downgrade`；**不得**产生未命名组合 |
+| TC-FAL-002 | H2 遗忘是资源约束下的可优化决策（绑定 `FORGETTING_ENGINE`，非宪法核） | `kairos-slice` 形态 | 遗忘调度器反复调参后后悔率不收敛（波动幅度 > 阈值）且无法识别不可降低下界 | H2 标记 `challenged`（若证实存在不可突破残差下界则标记 `false`）；整体降级至 `kairos-minimal`，写审计事件 `flag_falsification_downgrade` |
+| TC-FAL-003 | H3 身份由叙事持续生成（绑定宪法核 `NARRATIVE_IDENTITY`） | 任意合法配置集（该标志恒 ON） | 叙事连贯性检测器输出与身份注册表状态持续脱钩超过 2 个审计周期而系统未触发身份审查 | H3 标记 `challenged`；**断言标志未被关闭**（关闭应触发 `constitutional_core_unavailable` 拒绝启动）；系统进入 fail-closed containment（受限交叉验证 / 安全休眠 + 告警）并交人工审查 |
 
 ---
 
@@ -214,3 +237,6 @@ seeds = [
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：TC-M03-001 对齐 api-spec 显式遗忘语义（`kairos forget` 标记遗忘候选入队列，S-16 留痕断言按 S-16 适用范围调整）；TC-MEMV-001 回滚参数改 body `target_version`（对齐 api-spec §1.4）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：预留表补 M-02/M-06/A-02/A-03/A-05/A-06 六项占位。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：预留用例编号表补 TC-CF-001~004（反事实检验）；§1 不覆盖补功能级用例指针。 |
+| 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-02 §3.8 补 TC-S19-002~004 行（S-19 行为层验证用例）。 |
+| 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
+| 0.0.65 | 2026-08-08 | round31 深度审计修复批次（changelog 0.0.65）：§3.5a 标题纠正（「M-01~M-05，竖切」→「M-03/M-05 竖切用例；M-01/M-02/M-04/M-06 预留」）；预留编号表补 TC-A01-001~ 占位（健康检查，P0 级）。 |

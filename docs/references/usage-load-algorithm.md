@@ -7,8 +7,8 @@ tags:
   - reference
   - algorithm
 created: 2026-07-19
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -43,7 +43,7 @@ status: draft
 
 记忆经历的负载越重（系数越高），其置信度增长越慢——需要更长的观察窗口才能积累到合并阈值。
 
-**合并阈值**：`C ≥ MERGE_THRESHOLD`（默认 0.7，见 `SANDBOX_CONFIDENCE_INTEGRATION_THRESHOLD`） 时影子副本可异步合并至主副本。
+**合并阈值**：`C ≥ MERGE_THRESHOLD`（默认 0.7，见 `KAIROS_SANDBOX_CONFIDENCE_INTEGRATION_THRESHOLD`） 时影子副本可异步合并生效——合并结果并入激活调度基线与状态晋升决策，**不写入见证锚定主副本的内容事实**（合并语义界定见 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1，双副本隔离防线与 S-14 语境自指禁令）。
 
 ## 三、P6 合规声明
 
@@ -84,3 +84,5 @@ status: draft
 | 0.0.22 | 2026-08-05 | 外部项目理念吸收批次（changelog 0.0.22）：三.5 K-063 注记补热度体系实证参考基线段（D-335）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：小节编号三.5→3.5；实证参考基线标注规范。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§三 P6 合规声明按架构 §3.3 三轴+硬过滤口径改写；base_rate 补硬编码注记。 |
+| 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
+| 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|

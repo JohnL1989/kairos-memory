@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Kairos MCP Tool Registry (SKELETON)",
-  "description": "AUTO-GENERATED from docs/specification/api-spec.md §6.8 MCP Bridge tool table (changelog 0.0.43, 审计报告 F5). 15 tools = 基础工具集 12 + 关系管理 3。inputSchema 为占位，需补全。",
+  "description": "AUTO-GENERATED from docs/specification/api-spec.md §6.8 MCP Bridge tool table (changelog 0.0.43, 审计报告 F5). 15 tools = 基础工具集 12 + 关系管理 3。inputSchema 为占位，需补全。（债务 D-428 追踪补全）",
   "version": "0.0.43-skeleton",
   "toolCount": 15,
   "tools": [

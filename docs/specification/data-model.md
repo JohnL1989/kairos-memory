@@ -8,29 +8,47 @@ tags:
   - design
   - data-model
 created: 2026-07-20
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
 # Kairos 数据模型设计
 
-> **定位**：定义 Kairos 系统的核心数据存储结构。架构文档 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4 定义了存储层的行为约束，本文定义具体的 Schema 设计。
+> **定位**：定义 Kairos 系统的核心数据存储结构。架构文档 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 定义了存储层的行为约束，本文定义具体的 Schema 设计。
 >
 > **存储后端**：标准模式 PostgreSQL + pgvector，轻量模式 SQLite + sqlite-vec。
 >
 > **记忆生命周期权威状态机**：本文涉及三套记忆状态，三者描述不同维度的生命周期，互不冲突：
-> - `memories.status`（运行时生命周期）：active → stale → archived（含子态 suppressed）→ superseded。控制检索可见性——suppressed 不可检索但数据保留，superseded 被新版本取代。
+> - `memories.status`（运行时生命周期）：五值平级枚举 active / stale / archived / suppressed / superseded。控制检索可见性——archived 移入冷存储不参与常规检索，suppressed 被定向遗忘抑制检索但数据保留，二者共用出口 `POST /v1/memories/{id}/restore`；superseded 被新版本取代（版本链终态）。
 > - `memory_states.state`（状态变更审计轨迹）：值与 `memories.status` 相同，每次状态转换写入一行。`memories.status` 是当前态，`memory_states` 是历史变迁。
 > - `extinction_status`（知识生命周期）：active → extinct（知识不再有效）→ fossilized（保留为历史化石）。独立于运行时可见性——已灭绝但 active 的记忆仍可检索。仅影响认知层的知识可信度评估。
 >
 > 三者正交：一条记忆可同时为 `status=active`（可检索）、`extinction_status=extinct`（知识无效）、`memory_states.state=active`（当前态）。详见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 遗忘调度器与 extinction 关系。
 >
-> **DDL 承载说明**：本文档描述逻辑数据模型（表/列/索引/约束），**不含内联 `CREATE TABLE` DDL**——DDL 集中在 [schema-slice.sql](schema-slice.sql)（竖切示例 DDL，14 张表；全量 57 张物理表的建表语句随实现阶段由 Alembic 迁移脚本承载）。此分离为有意为之（文档层描述结构、迁移层承载 DDL），非遗漏。
+> **DDL 承载说明**：本文档描述逻辑数据模型（表/列/索引/约束），**不含内联 `CREATE TABLE` DDL**——DDL 集中在 [schema-slice.sql](schema-slice.sql)（竖切示例 DDL——14 张物理表 + 1 张 FTS5 虚拟表 `memories_fts`，合计 15 张；全量 57 张物理表的建表语句随实现阶段由 Alembic 迁移脚本承载）。此分离为有意为之（文档层描述结构、迁移层承载 DDL），非遗漏。
 
 > **物理分库取向注记（外部理念吸收 0.0.41；外部实证：OpenClaw VID-16）**：外部实现采用「每 agent 物理分库」的隔离取向——每个 agent 独立数据库实例，故障域与备份粒度天然隔离。Kairos 采用**逻辑域隔离**——单库多租户，隔离由 `kairos://_user/{id}/` 路径域 + `permission_acl` 路径级授权（§11）承载。评估记录：逻辑域隔离以零额外运维成本支撑 v0.1.0 单机/轻量模式起步，且与端云同步（`sync_queue`）共用同一事务域；物理分库的故障隔离、单租户恢复与租户级备份优势，在标准模式多租户场景下作为 v1.1+ 演进选项（与 blueprint TeamScope P3-17 多租户隔离衔接，见 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-17）——v0.1.0 维持逻辑域隔离，不引入物理分库。
 
 ---
+
+> **章节导航**——本文篇幅较长，按下表定位所需章节：
+>
+> | 章节 | 主题 |
+> |:----|:----|
+> | §1 核心记忆表 | memories / memory_entities / memory_relations 等核心表 |
+> | §2 记忆版本快照表 | 版本链快照 |
+> | §3 双副本存储 | 见证锚定主副本与使用权重影子副本 |
+> | §4 使用事件表 | usage_events 事件记录 |
+> | §5 调度与状态表 | 调度器与状态跟踪表 |
+> | §6 审计表 | 审计日志与差异检验记录 |
+> | §7 配置表 | 系统配置与检索增强配置 |
+> | §8 扩展表 | 知识演化/身份注册/图谱/叙事线等扩展表 |
+> | §9 解决方案谱系与知识灭绝 | 谱系与灭绝状态 |
+> | §10 注册表结构 | 注册表存储结构 |
+> | §11 P3 基础设施表（v0.1.0 交付） | P3 基础设施承载表 |
+> | §12 叙事线与压缩表 | 叙事线/压缩跟踪表 |
+> | §13 类型映射与 DDL 基准 | 枚举映射与 DDL 基准（RC-04）
 
 ## §1 核心记忆表
 
@@ -48,7 +66,7 @@ status: draft
 | `embedding` | VECTOR(1536) | —（向量检索时 NULL 记录被自动跳过） | 语义向量。标准模式 1536 维（text-embedding-3-small）；轻量模式 1536 维（BGE-M3，原生 1024 维线性投影至 1536），DDL 以 1536 为准 |
 | `memory_types` | JSONB | NOT NULL | JSON 数组：["episodic", "semantic", "procedural"] 可组合，一条记忆可同时属于多类型。叙事特殊规则由 `identity_relevance` 参数承载，非独立类型（认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.2） |
 | `identity_relevance` | FLOAT | DEFAULT 0, [0,1] | 身份关联程度参数——叙事记忆特殊规则（巩固速率自我参照调制/遗忘身份注册表保护/检索自洽偏向）的触发维度，非独立记忆类型（认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.2） |
-| `contract` | TEXT | NOT NULL, DEFAULT 'ondemand' | 契约类型：permanent / ondemand / environmental / temporary / intention（临时契约写回 LTM 带 TTL，到期自动清除；**intention 意图契约**为前瞻记忆专用——位于 `kairos://_system/intentions/`，激活优先级低于常驻但高于按需，不受遗忘调度器评估，意图完成/取消后降级为 ondemand，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆段）。**写时默认建议值语义**：本列值为写入时的默认建议（基于内容类型与路径推断），运行时由策略层预测器按激活权重覆盖（架构 §3.1/§3.7——契约是连续激活权重的离散投影，非写时绑定死标签） |
+| `contract` | TEXT | NOT NULL, DEFAULT 'ondemand' | 契约类型：permanent / ondemand / environmental / temporary / intention（临时契约写回 LTM 带 TTL，到期自动清除；**intention 意图契约**为前瞻记忆专用——位于 `kairos://_system/intentions/`，激活优先级低于常驻但高于按需，不受遗忘调度器评估，意图完成/取消后降级为 ondemand，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆段）。**写时默认建议值语义**：本列值为写入时的默认建议（基于内容类型与路径推断），运行时由策略层预测器按激活权重覆盖（架构 §3.1/§3.7——契约是连续激活权重的离散投影，非写时绑定死标签）。**两层默认值的分层**：DDL 层 `DEFAULT 'ondemand'` 仅在写入方未提供该字段时兜底；`/v1/ingest` 摄取端点在入库前按资源类型预填（url 类型填 `ondemand`、其余填 `environmental`，见 [api-spec.md](api-spec.md) §18 资源摄取与多模态），经摄取端点写入的记忆以 API 预填值为准、DDL 默认不生效——两处「默认」分属不同层，非口径冲突 |
 | `hall` | TEXT | DEFAULT 'processing' | 知识加工区：processing / validation / canonical |
 | `solution_branch_id` | UUID | — | 所属解决方案分支 ID（同一记忆的多种语境化表征） |
 | `distill_level` | INTEGER | DEFAULT 0, [0,4] | 蒸馏层级：0=碎片 / 1=会话 / 2=日总结 / 3=体系 / 4=元规则 |
@@ -58,16 +76,16 @@ status: draft
 | `lma_urn` | TEXT | — | 逻辑记忆地址 URN（MTL 二层映射的永久逻辑地址，格式：urn:kairos:lma:<uuid>），首次写入时分配，物理迁移不变 |
 | `sync_version` | INTEGER | DEFAULT 0 | 端云同步本地版本号 |
 | `provenance` | TEXT | NOT NULL | 来源：external_calibration / internal_inference / user_input / system_generated / exploration |
-| `status` | TEXT | NOT NULL, DEFAULT 'active' | active / stale / archived（含子态 suppressed）/ superseded。`suppressed` 为 `archived` 子态（被抑制路径不可检索，数据仍存在） |
+| `status` | TEXT | NOT NULL, DEFAULT 'active' | 五值**平级**枚举：active / stale / archived / suppressed / superseded（与 [schema-slice.sql](schema-slice.sql) `status` CHECK 约束一致，`suppressed` 不是 `archived` 的子态）。`archived` = 移入冷存储、常规检索不返回、可恢复；`suppressed` = 定向遗忘抑制检索、数据仍存在、可恢复（除非已执行 S-19 哈希净化）。**状态出口**：`archived` 与 `suppressed` 共用唯一出口 `POST /v1/memories/{id}/restore`（见 [api-spec.md](api-spec.md) §1.5），二者均非终态；`superseded` 为版本链终态（由 `superseded_by` 承载），不经 restore 回流 |
 | `is_identity` | BOOLEAN | DEFAULT FALSE | 身份注册表标记。v0.1.0 构造论实现：初始赋予由见证锚定写入触发（冷启动锚点），持续有效性由叙事连贯性检测器驱动双向更新（自洽度上升→置信度提升；持续下降→经宪法解释层判例降级）。使用权重永远无法将其置为 false（S-10 见证豁免） |
 | `identity_confidence` | FLOAT | DEFAULT 0.5, [0,1] | 身份建构置信度——初始赋予后由叙事自洽度时间序列驱动更新（加强建构/降级审查的输入） |
 | `identity_reviewed_at` | TIMESTAMPTZ | — | 最近一次身份重评时间（叙事连贯性检测器触发或宪法解释层审查） |
 | `identity_review_count` | INTEGER | DEFAULT 0 | 身份重评累计次数（审计与降级提案依据） |
 | `is_structure` | BOOLEAN | DEFAULT FALSE | 是否为结构性记忆（认知完整性轴）。**双向同步**：与 `structural_value` 同步——`is_structure=true` ↔ `structural_value=2`（写入时按 `structural_value` 判定结果同步，保持后向兼容） |
-| `structural_value` | INTEGER | DEFAULT 0 | 半定量结构标记（新增，0/1/2）：0=非结构 / 1=疑似结构 / 2=确认结构。判定条件与遗忘调度器分级行为见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 结构性记忆守护（L1：被 ≥2 条 causal 引用/路径高分叉/叙事线断裂风险；L2：外部校准标记/手动标注/L1+引用计数 ≥ 阈值）。v1.1 三维连续度量上线后降级为快速索引（D-311 衔接） |
-| `structural_value_reasons` | JSONB | DEFAULT '[]' | 升档原因列表（新增），如 `["causal_ref_count_ge_2", "external_calibration_tagged"]` |
-| `structural_value_updated_at` | TIMESTAMPTZ | — | 最近一次升/降档时间（新增） |
-| `is_deleted` | BOOLEAN | DEFAULT FALSE | 软删除标记，API 软删除操作设置此标记（保留审计痕迹） |
+| `structural_value` | INTEGER | DEFAULT 0 | 半定量结构标记（0/1/2）：0=非结构 / 1=疑似结构 / 2=确认结构。判定条件与遗忘调度器分级行为见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 结构性记忆守护（L1：被 ≥2 条 causal 引用/路径高分叉/叙事线断裂风险；L2：外部校准标记/手动标注/L1+引用计数 ≥ 阈值）。v1.1 三维连续度量上线后降级为快速索引（债务 D-311 衔接） |
+| `structural_value_reasons` | JSONB | DEFAULT '[]' | 升档原因列表，如 `["causal_ref_count_ge_2", "external_calibration_tagged"]` |
+| `structural_value_updated_at` | TIMESTAMPTZ | — | 最近一次升/降档时间 |
+| `is_deleted` | BOOLEAN | DEFAULT FALSE | 软删除标记，API 软删除操作设置此标记（保留审计痕迹）。**检索过滤语义**：所有检索/列表/路径浏览端点默认追加 `is_deleted = FALSE` 过滤条件，软删除记忆不进入候选集与权重计算；仅审计类查询（`GET /v1/audit-log`）与 admin 快照导出可见。与 `status` 正交——软删除标记独立于状态机（任一 status 的记忆均可被软删除），故不占用 `status` 枚举值 |
 | `calibration_confidence` | FLOAT | DEFAULT 0.5, [0,1] | 校准置信度 |
 | `vad_v` | FLOAT | DEFAULT 0, [-1,1] | 情感效价（Valence） |
 | `vad_a` | FLOAT | DEFAULT 0, [-1,1] | 情感唤醒度（Arousal） |
@@ -75,9 +93,9 @@ status: draft
 | `decontextualization_level` | FLOAT | DEFAULT 0, [0,1] | 去语境化程度，升华时递增 |
 | `heat_score` | FLOAT | DEFAULT 1.0, [0,1] | 热度评分，用于排序权重调制 |
 | `expires_at` | TIMESTAMPTZ | — | 临时契约自动清除时间（仅 temporary 契约有效，到期后台 forgetAfter 硬删除——数据不可恢复。清理前写入审计日志（标记 `expiry_cascade_delete`，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 forgetAfter）——不留审计痕迹的场景仅限捕获阶段拒绝的输入。与 POST /v1/memories/{id}/expire 的「到期归档」不同：temporary 硬删除不可恢复，适用于明确的临时数据治理策略） |
-| `valid_until` | TIMESTAMPTZ | — | **显式时效字段（外部理念吸收 0.0.41：时间轴结构互补）**——知识有效期截止：该记忆所承载事实/知识的有效期限，到期后知识不再主张有效性，由遗忘调度器/freshness 生命周期评估（转 stale/extinct）处理。与 `expires_at`（temporary 契约的存储清理语义）分工：valid_until 到期**不硬删除**，仅退出知识主张；可为 NULL（无显式有效期，按既有遗忘曲线评估）。与 `fact_freshness.valid_until`（事实新鲜度粒度）互补：本列为记忆粒度显式时效 |
-| `expiration_date` | TIMESTAMPTZ | — | **显式时效字段（外部理念吸收 0.0.41：时间轴结构互补）**——数据保留期限：明确的数据时间轴管理字段（治理/合规视角），可为 NULL（无显式保留期限）。与 `valid_until` 分工：valid_until 管知识有效性（语义过期），expiration_date 管数据保留（存储治理）；二者可分别设置，互不替代 |
-| `locked_until` | TIMESTAMPTZ | — | 锁定保护截止时间（`POST /v1/memories/{id}/lock` 设置，到期自动解锁） |
+| `valid_until` | TIMESTAMPTZ | — | **显式时效字段（外部理念吸收：时间轴结构互补）**——知识有效期截止：该记忆所承载事实/知识的有效期限，到期后知识不再主张有效性，由遗忘调度器/freshness 生命周期评估（转 stale/extinct）处理。与 `expires_at`（temporary 契约的存储清理语义）分工：valid_until 到期**不硬删除**，仅退出知识主张；可为 NULL（无显式有效期，按既有遗忘曲线评估）。与 `fact_freshness.valid_until`（事实新鲜度粒度）互补：本列为记忆粒度显式时效 |
+| `expiration_date` | TIMESTAMPTZ | — | **显式时效字段（外部理念吸收：时间轴结构互补）**——数据保留期限：明确的数据时间轴管理字段（治理/合规视角），可为 NULL（无显式保留期限）。与 `valid_until` 分工：valid_until 管知识有效性（语义过期），expiration_date 管数据保留（存储治理）；二者可分别设置，互不替代 |
+| `locked_until` | TIMESTAMPTZ | — | 锁定保护截止时间（`POST /v1/memories/{id}/lock` 设置，到期自动解锁）。**拒绝语义**：未到期期间 PATCH / DELETE / archive / suppress / merge 一律返回 `403`（`ERR-CTR-003`），只读操作不受影响；宪法强制冻结优先级高于本列（完整语义见 [api-spec.md](api-spec.md) §1.3 lock 端点） |
 | `encoding_context` | JSONB | — | 编码情境（时空上下文/任务目标/关联记忆ID）。**`conditions` 子结构约定**：条件性经验（「适用于什么场景/哪个用户/哪个网站或工具版本」的经验）应在 encoding_context 中记录显式 `conditions` 子结构——`{applies_to: ["<用户/网站/工具版本标识>"], prerequisites: ["<前提条件>"], exceptions: ["<不适用场景>"]}`。用途：(a) 写入时约束经验固化——无条件约束的经验不得在升华管道中被去语境化为通用规律（对应「一条经验是否携带适用范围」的写入判定）；(b) 检索时按当前环境匹配 conditions——环境不匹配的候选在排序中降权（v1.1 落地为独立过滤维度，v0.1.0 作为 encoding_context 的约定子结构，不新增列）。与 `domain`（领域路由标签）互补：domain 是粗粒度领域分类，conditions 是细粒度适用条件。v0.1.0 仅要求写入时填充（升华管道 L1 阶段识别条件性表述时录入），检索侧不做强制过滤 |
 | `occurred_at` | TIMESTAMPTZ | — | **事件时间**——记忆所描述的事实实际发生的时间（区别于 `created_at` 事务时间：写入时间）。由轻量级时间戳后处理（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 event_time 提取）回填，可空（无法判定事件时间的记忆不填）。双时态模型（认知基础 [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1 双时态声明）：事件时间归逻辑-因果轴/物理轴输入，事务时间由衰减子轴承载。竖切 v0.1.0-slice 落列为可空字段 |
 | `created_at` | TIMESTAMPTZ | NOT NULL | 创建时间（**事务时间**——记录写入系统的时间，与 `occurred_at` 事件时间区分） |
@@ -91,7 +109,7 @@ status: draft
 | `domain` | TEXT | DEFAULT 'general' | 领域标签（用于领域路由检索） |
 | `quality_tier` | TEXT | DEFAULT 'world' | 认知质量层级（四层记忆质量层次）：mental_models / observation / experience / world。决定检索优先级和遗忘豁免级别。**权威定义所在（引用勘误）**：[architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §四层记忆质量层次（v1.1+ 规划组件，v0.1.0 仅承载字段与默认值 'world'） |
 | `compacted` | BOOLEAN | DEFAULT FALSE | 压缩标记：该记忆是否已被压缩合并进精炼记忆（见 `compaction_snapshots` 表）。`POST /v1/admin/compaction/rollback/{snapshot_id}` 回滚时恢复为 FALSE；已过去 >30 天的压缩不可回滚（RC-07 补充） |
-| `compression_trail` | JSONB | DEFAULT '{}' | 逐记忆压缩审计日志（新增）：记录编码/巩固阶段被压缩的认知维度、压缩比、原因、恢复债编号与版本——结构 `{total_compression_ratio, compressed_dimensions: [{dimension, category, compressed_to, compression_ratio, reason, recovery_debt, recovery_version, compressed_at}], last_updated}`。为架构 §10.11 全局 P6 监控的逐记忆粒度展开；检索侧维度丢失不写本字段（记事件总线 `retrieval_dimension_loss`）。能力矩阵见 [capability_matrix.yaml](../references/capability_matrix.yaml) |
+| `compression_trail` | JSONB | DEFAULT '{}' | 逐记忆压缩审计日志：记录编码/巩固阶段被压缩的认知维度、压缩比、原因、恢复债编号与版本——结构 `{total_compression_ratio, compressed_dimensions: [{dimension, category, compressed_to, compression_ratio, reason, recovery_debt, recovery_version, compressed_at}], last_updated}`。为架构 §10.11 全局 P6 监控的逐记忆粒度展开；检索侧维度丢失不写本字段（记事件总线 `retrieval_dimension_loss`）。能力矩阵见 [capability_matrix.yaml](../references/capability_matrix.yaml) |
 | `compacted_at` | TIMESTAMPTZ | — | 压缩发生时间（用于判定 30 天回滚窗口） |
 
 **索引**：
@@ -112,9 +130,10 @@ status: draft
 | `id` | UUID | PK | |
 | `source_id` | UUID | FK → memories(id) | 源记忆 |
 | `target_id` | UUID | FK → memories(id) | 目标记忆 |
-| `relation_type` | TEXT | NOT NULL | 基础六值：causal / independent / hierarchical（=认知基础「弱层级关系」）/ competitive / part_whole / derived_from。前四类对应认知基础四类关系（因果/部分独立/弱层级/竞争），`part_whole` 为粒度组合关系（父子记忆组成关系，对应认知基础「记忆粒度性质」声明），`derived_from` 为派生关系（mental_model → source，追踪高层认知框架的底层事实来源，对应架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 Mental Model 基于源头的可刷新性）——后两类与前四类对等关系不同属一个分类轴。**语义标记扩展**：架构层 MCP 链接（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3.1 kairos_link）与 ADD-only 提取协议（§7.3g）使用的补充语义标记 `supplement / refutation / reference / contextual / temporal` 作为本列的扩展值同列存储（TEXT 类型，无 CHECK 约束），语义细节记于 `reason` 字段；其中 `temporal` 由轻量级时间戳后处理（架构 §5.2）写入时间关系边。检索按 relation_type 精确过滤，六值与语义标记扩展不互斥——同一对记忆可同时存在不同 relation_type 的关系边（UNIQUE 约束按三元组区分）。 |
+| `relation_type` | TEXT | NOT NULL | 基础六值：causal / independent / hierarchical（=认知基础「弱层级关系」）/ competitive / part_whole / derived_from。前四类对应认知基础四类关系（因果/部分独立/弱层级/竞争），`part_whole` 为粒度组合关系（父子记忆组成关系，对应认知基础「记忆粒度性质」声明），`derived_from` 为派生关系（mental_model → source，追踪高层认知框架的底层事实来源，对应 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一 Mental Model 基于源头的可刷新性）——后两类与前四类对等关系不同属一个分类轴。**语义标记扩展**：架构层 MCP 链接（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3.1 kairos_link）与 ADD-only 提取协议（§7.3g）使用的补充语义标记 `supplement / refutation / reference / contextual / temporal` 作为本列的扩展值同列存储（TEXT 类型，无 CHECK 约束），语义细节记于 `reason` 字段；其中 `temporal` 由轻量级时间戳后处理（架构 §5.2）写入时间关系边。检索按 relation_type 精确过滤，六值与语义标记扩展不互斥——同一对记忆可同时存在不同 relation_type 的关系边（UNIQUE 约束按三元组区分）。 |
 | `strength` | FLOAT | DEFAULT 1.0, [0,1] | 关系强度 |
 | `created_at` | TIMESTAMPTZ | NOT NULL | |
+| `deleted_at` | TIMESTAMPTZ | — | 软删除时间戳——`kairos_unlink`（架构 §7.1a）移除关系边时标记此列而非物理删除，保留审计追溯；检索默认过滤 `deleted_at IS NULL` 行 |
 **约束**：UNIQUE(source_id, target_id, relation_type) 防止同一对记忆之间的同类型关系重复插入。
 **索引**：`idx_memory_relations_target` ON `target_id`（反向查询「哪些记忆引用了我」）；`idx_memory_relations_type` ON `relation_type`（按关系类型检索）
 
@@ -392,7 +411,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 | `id` | BIGSERIAL | PK | |
 | `memory_id` | UUID | NOT NULL | 关联 memories.id |
 | `memory_type` | TEXT | NOT NULL | 记忆过程分类（映射至 storage/knowledge/experience/task）：knowledge=语义类（semantic），experience=情景类（episodic），task=程序类（procedural）。与 `memories.memory_types` 的多重认知分类（episodic/semantic/procedural）为不同分类轴——memory_type 是存储内部的过程管理分类，memory_types 是认知模型的记忆类型标记。两者映射关系：knowledge↔semantic，experience↔episodic，task↔procedural |
-| `state` | TEXT | NOT NULL | active / stale / archived（含子态 suppressed）/ superseded |
+| `state` | TEXT | NOT NULL | 五值平级枚举：active / stale / archived / suppressed / superseded（与 `memories.status` 同口径） |
 | `previous_state` | TEXT | DEFAULT '' | 转换前状态 |
 | `state_changed_at` | TIMESTAMPTZ | NOT NULL, DEFAULT now() | |
 | `reason` | TEXT | DEFAULT '' | 转换原因 |
@@ -482,7 +501,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 
 ### retrieval_enhancement_config（检索增强配置参数，v0.1.0 交付）
 
-以下参数控制三信号混合检索、GSPO 聚类去重、MMR 去重三个阶段的行为。所有参数存储在 `config` 表中，key 前缀为 `kairos.retrieval`。config 表键名 = `KAIROS_*` 环境变量名去掉 `KAIROS_` 前缀后转小写点分格式（如 `KAIROS_HYBRID_SEMANTIC_WEIGHT` → `kairos.retrieval.hybrid.semantic_weight`），与 [configuration.md](../ops/configuration.md) §1 环境变量一一对应。
+以下参数控制三信号混合检索、GSPO 聚类去重、MMR 去重三个阶段的行为。所有参数存储在 `config` 表中，key 前缀为 `kairos.retrieval`。config 表键名 = `KAIROS_*` 环境变量名去掉 `KAIROS_` 前缀后转小写点分格式（如 `KAIROS_HYBRID_SEMANTIC_WEIGHT` → `kairos.retrieval.hybrid.semantic_weight`），与 [configuration.md](../ops/configuration.md) §6.1（三信号混合检索）/ §6.2（GSPO 聚类去重）/ §6.3（MMR 去重）/ §6.9（检索递归与 Cross-encoder）四节环境变量一一对应——下表**活跃键**与该四节 `KAIROS_*` 参数互为满射，删除线标注的已废止键无环境变量对应物。
 
 | 参数键 | 值类型 | 默认值 | 范围/取值 | 所属阶段 | 说明 |
 |:------|:------|:------|:---------|:--------|:-----|
@@ -831,7 +850,7 @@ INDEX `idx_journal_status` ON `digest_status` — 按处理状态过滤。
 
 ### 8.18 query_analysis_cache（查询分析缓存表）
 
-QueryAnalyzer（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.1）的结构化查询描述符缓存。相同查询在短时间窗口内复用缓存结果，避免重复解析。
+QueryAnalyzer（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.6.1）的结构化查询描述符缓存。相同查询在短时间窗口内复用缓存结果，避免重复解析。
 
 | 列名 | 类型 | 约束 | 说明 |
 |:----|:----|:----|:-----|
@@ -1024,6 +1043,8 @@ HAVING SUM(CASE WHEN is_false_positive THEN 1 ELSE 0 END) * 1.0 / COUNT(*) > 0.1
 ## §11 P3 基础设施表（v0.1.0 交付）
 
 > **定位**：以下七张表为架构文档 P3-20 ~ P3-25 与 P3-05 的数据承载——覆盖 Schema 版本管理、断点续训检查点、PreparedStatementCache 命中率监测、FTS5 全文索引（memories_fts / skills_fts）、Permission ACL 权限控制、内部密钥表（api_keys，对应安全规格 [security-specification.md](../security/security-specification.md) §2.1）。所有表以 SQLite（轻量模式）为设计基准，PostgreSQL（标准模式）等价替换对应类型（**例外：FTS5 全文索引为 SQLite 独有虚拟表，PostgreSQL 无等价物，标准模式改用 pg_bigm / zhparser，见 `memories_fts` / `skills_fts` 节说明**）。
+>
+> **版本归属**：本节七张表的**结构**随 v0.1.0 数据模型落库；**消费组件**的版本归属以架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.20 与债务登记为准——`memories_fts` 的基础全文检索为 v0.1.0 轻量模式 BM25 承载，SQLCipher 静态加密（债务 D-416）/ PreparedStatementCache（债务 D-418）/ 受控前向兼容映射（债务 D-419）/ Permission ACL 引擎（债务 D-421）为 v1.1 组件，其数据承载先行落库。
 
 ### schema_version（Schema 版本号管理）
 
@@ -1104,7 +1125,7 @@ CREATE VIRTUAL TABLE memories_fts USING fts5(
 
 **约束**：
 - 外部内容表为 `memories`——通过 `content=` 声明关联。**FTS5 的 external content 模式不会自动同步索引**——必须显式建立三个同步触发器（AFTER INSERT / AFTER DELETE / AFTER UPDATE），可执行 DDL 见 [schema-slice.sql](schema-slice.sql) 第 14 节（对应 W2 schema 迁移直接输入）
-- 中文分词通过 jieba 自定义 tokenizer 实现——在 FTS5 注册时指定 `tokenize='jieba'`（需编译 jieba tokenizer 扩展）
+- 中文分词：v0.1.0 DDL 默认 `tokenize='unicode61'`（见上）；精细中文分词经 jieba 自定义 tokenizer 扩展实现——编译 jieba tokenizer 扩展后改 `tokenize='jieba'`，由 `KAIROS_FTS5_CHINESE_SEGMENTATION` 配置控制（默认 `true`，需扩展已编译方可生效）；轻量模式目标为 FTS5 + jieba 扩展（见本 § 决策 D-12 注记），与 [schema-slice.sql](schema-slice.sql) 第 14 节口径一致。
 - 索引优化：`INSERT INTO memories_fts(memories_fts) VALUES('optimize')` 每 `KAIROS_FTS5_OPTIMIZE_INTERVAL` 秒执行一次
 
 ### skills_fts（技能全文索引——FTS5 contentless-external）
@@ -1164,7 +1185,7 @@ CREATE VIRTUAL TABLE skills_fts USING fts5(
 
 ### api_keys（API 密钥表）
 
-安全规格 [security-specification.md](../security/security-specification.md) §2.1 密钥生命周期与 §2.2 权限分级的数据承载——即该节所述「内部密钥表」。与 `permission_acl` 的分工：本表管 **Key 的身份与生命周期**（谁持有、什么级别、是否有效），`permission_acl` 管 **路径粒度的授权**（该主体能访问哪些路径）；鉴权时先查本表解析出 `principal`，再以 `principal` 查 ACL。
+安全规格 [security-specification.md](../security/security-specification.md) §2.1 API Key 生命周期与 §2.2 权限分级的数据承载——即该节所述「内部密钥表」。与 `permission_acl` 的分工：本表管 **Key 的身份与生命周期**（谁持有、什么级别、是否有效），`permission_acl` 管 **路径粒度的授权**（该主体能访问哪些路径）；鉴权时先查本表解析出 `principal`，再以 `principal` 查 ACL。
 
 **注**：api_keys 为 v0.1.0 核心鉴权承载（对应安全规格 §2.1），非 P3 系蓝图组件，随本节点名保留（原归类注记不删，补此注即可）。
 
@@ -1390,3 +1411,16 @@ SQLite 无时区类型，故：
 | 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：memories 表新增显式时效字段 `valid_until`/`expiration_date`（时间轴结构互补；`superseded_by` 为既有字段，不重复添加），并同步 schema-slice.sql 补列（6.13 门禁联动）；§0 补物理分库取向注记（外部实证：OpenClaw VID-16 评估记录——Kairos 维持逻辑域隔离，物理分库为 v1.1+ 演进选项）。表数不变（57）。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：实体加成乘性参数废止标注（RC-03 口径）；知识演化触发机制括注阈值收敛为指针；§8.12 技能/质量层次引用改指 blueprint；§10 注册表压缩为指针（架构权威）；D-311 债务前缀补标。 |
 | 0.0.43 | 2026-08-07 | 文档审计修复批次（changelog 0.0.43）：补 DDL 承载说明（DDL 集中于 schema-slice.sql，文档层仅描述逻辑模型，审计报告 F7）；门禁 6.13 DDL<->data-model 字段集比对 0 差异。 |
+| 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-04 字段描述「（新增）」标记清除（tier/升档原因/升降档时间/压缩审计日志）。 |
+| 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
+| 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
+| 0.0.61 | 2026-08-08 | round27 深度审计修复批次（changelog 0.0.61）：§11 memories_fts 约束项中文分词口径对齐——v0.1.0 DDL 默认 `tokenize='unicode61'`，jieba 为需编译扩展的可选精细中文分词（由 `KAIROS_FTS5_CHINESE_SEGMENTATION` 配置控制），与 schema-slice §14 一致；消除「中文分词通过 jieba 实现」表述与自身 DDL 矛盾。 |
+| 0.0.63 | 2026-08-08 | round29 全面深度审计修复批次（changelog 0.0.63）：§11 定位补「版本归属」注记——七张表的结构随 v0.1.0 数据模型落库，消费组件版本归属以架构 §5.20 与债务登记为准（SQLCipher D-416 / PreparedStatementCache D-418 / 受控前向兼容 D-419 / Permission ACL D-421 为 v1.1 组件，数据承载先行落库），消除标题「（v0.1.0 交付）」的读解歧义。 |
+| 0.0.64 | 2026-08-08 | round30 全面深度审计修复批次（changelog 0.0.64，补登）：§配置键表补点分键 2 项——`kairos.retrieval.gspo.min_cluster_size`（GSPO 最小聚类规模）、`kairos.retrieval.cross_encoder.enabled`（Cross-encoder 总开关）；「与 configuration 一一对应」声明改为「与 configuration §6.1/§6.2/§6.3/§6.9 四节环境变量满射」表述。 |
+| 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.64 行（点分键 2 项 + 满射表述）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.74 | 2026-08-09 | round38 门禁建议落实批次（changelog 0.0.74）：api_keys 表定位段引用「安全规格 §2.1 密钥生命周期」→「API Key 生命周期」（security-specification §2.1 权威标题为「API Key 生命周期」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.75 | 2026-08-09 | round39 全面深度审计修复批次（changelog 0.0.75）：引用落点修正 2 处——定位段「架构 §4 定义了存储层的行为约束」→「架构 §5」（架构 §4 为推理皮层、§5 为存储层，章节错位）；memory_relations 表 `derived_from` 关系「架构 §5.2 Mental Model 基于源头的可刷新性」→「blueprint §一」（架构全文无 Mental Model 承载，权威在蓝图 §一；feature-list M-22 已于 round37 改指，本文为同源遗漏）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.79 | 2026-08-09 | round41 全面深度审计修复批次（changelog 0.0.79）：新增章节导航表（§1~§13）。 |
+| 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：memories.contract 两层默认值说明（DDL DEFAULT 'ondemand' 仅兜底，/v1/ingest 按资源类型预填以 API 预填为准，非口径冲突，链接 api-spec §18）；详见 changelog 0.0.83 叙述节。 |
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：L85「D-311 衔接」补「债务」前缀。 |
+| 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：§8.18 query_analysis_cache 定位段 QueryAnalyzer 引用架构 §2.1→§2.6.1（§2.6.1 为 QueryAnalyzer 查询理解层实际章节）。 |

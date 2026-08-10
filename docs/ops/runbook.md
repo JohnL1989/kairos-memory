@@ -8,8 +8,8 @@ tags:
   - ops
   - runbook
 created: 2026-07-21
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -20,6 +20,8 @@ status: draft
 > **⚠ 草稿完善声明**：以下 `kairos` 子命令为目标示例。当前文档草稿阶段，无运行代码，命令格式和可用性将在代码启动后最终确认。所有操作以当时版本 CLI 帮助为准。
 >
 > **CLI 命令状态**：本手册使用的 `kairos *` 子命令为设计目标命令；与 [troubleshooting.md](troubleshooting.md) 的命令定义状态表共用——标注"待定义"的命令在代码启动前以 `--help` 为准，启动后以 CLI 实现为准。
+>
+> **待定义命令追缴**：本手册直接使用的待定义命令包括 `kairos health --full`（§1.2 启动检查、§2.3 灾难恢复验证）、`kairos logs --level/--module/--since/--follow`（§1.3 日常操作、§5.2 故障排查）、`kairos config show`（§4.1 配置查看）、`kairos config reset`（§4.1 配置重置）、`kairos admin key revoke`（§4.2 密钥吊销）、`kairos admin key rotate --hmac`（§4.3 密钥轮换）、`kairos audit log`（§6.2/§6.4 审计查询）、`kairos audit approve-forgetting`（§6.2 遗忘审批）——全部纳入**债务 D-430** 追缴（api-spec §3 登记契约或从本手册移除），条目见 [debt-collection.md](../governance/debt-collection.md)。灾难恢复主链路命令（`db repair` / `db restore` / `db migrate rollback`）同属 D-430 范围。
 
 ---
 
@@ -60,10 +62,12 @@ kairos logs --follow                # 实时追踪（轻量模式）
 | 模式 | 备份命令 | 恢复命令 |
 |:----|:---------|:---------|
 | 轻量模式 | `kairos db backup`（默认路径 `~/.kairos/backups/`） | 复制备份文件至 `~/.kairos/kairos.db` |
-| 标准模式（Docker） | `docker exec db pg_dump -U kairos kairos > ~/.kairos/backups/kairos-<时间戳>.sql` | `cat backup.sql \| docker exec -i db psql -U kairos kairos` |
-| 标准模式（本地） | `pg_dump -h localhost -U kairos kairos > backup.sql` | `psql -h localhost -U kairos kairos < backup.sql` |
+| 标准模式（Docker） | `docker exec db pg_dump -U kairos kairos > ~/.kairos/backups/kairos-<时间戳>.sql` | ① 全量导入：`cat backup.sql \| docker exec -i db psql -U kairos kairos`；② WAL 回档（RPO ≤5 分钟关键步骤）：按 WAL 归档回放到崩溃点（`pg_restore`/replay 连续归档，恢复方式见 [reliability.md](reliability.md) §1.2「数据库意外丢失：每日全量备份 + WAL 归档恢复」） |
+| 标准模式（本地） | `pg_dump -h localhost -U kairos kairos > backup.sql` | ① 全量导入：`psql -h localhost -U kairos kairos < backup.sql`；② WAL 回档：回放 `~/.kairos/wal_archive/` 连续归档至崩溃点 |
 
-> **保留策略**：备份保留期 30 天（`KAIROS_BACKUP_RETENTION_DAYS`），见 [reliability.md](reliability.md) §1.1 与 §三。
+> **恢复 RPO 口径**：RPO ≤5 分钟（N-10）依赖 **WAL 归档持续启用**（`KAIROS_WAL_ARCHIVE_COMMAND`）与回档步骤；仅全量导入时实际 RPO 只能到最近全量备份点（每日 05:00 UTC），不满足 N-10。WAL 保留期见 [reliability.md](reliability.md) §三（`KAIROS_WAL_ARCHIVE_RETENTION_DAYS` 默认 7 天）。恢复后按 §2.3 执行验证。
+
+> **保留策略**：备份保留期 30 天（`KAIROS_BACKUP_RETENTION_DAYS`），见 [reliability.md](reliability.md) §三；常驻契约快照与升华快照的 30 天为基线硬编码值（参数化列入后续运维批次，追缴见 [debt-collection.md](../governance/debt-collection.md) 债务 D-442），见 [reliability.md](reliability.md) §1.1 参数化注记。
 
 ### 2.2 配置备份
 
@@ -145,7 +149,7 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 
 ## §5 故障排查
 
-> **口径**：本节为值班速查子集；完整排查步骤见 [troubleshooting.md](troubleshooting.md)（§二 症状排查表、§三 错误码速查 38 项全量），错误码权威定义见 [error-reference.md](../references/error-reference.md)。
+> **口径**：本节为值班速查子集；完整排查步骤见 [troubleshooting.md](troubleshooting.md)（§二 症状排查表、§三 错误码速查 43 项全量），错误码权威定义见 [error-reference.md](../references/error-reference.md)。
 
 ### 5.1 启动失败（速查）
 
@@ -154,6 +158,8 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 | 拒绝启动 | ① `KAIROS_API_KEY` 是否设置 ② `KAIROS_SALT` 是否设置 |
 | 数据库连接失败 | ① `KAIROS_DB_DSN` 是否正确 ② 数据库服务是否运行 |
 | 端口冲突 | `--port` 参数指定可用端口 |
+| 标志组合非法 | ① 检查 `KAIROS_FEATURE_*` 组合是否落入 `kairos-minimal`/`kairos-slice`/`kairos-full` 之一（否则 `ERR-SYS-006` 拒绝启动，见 [error-reference.md](../references/error-reference.md)） |
+| 宪法核不可用 | ① 检查宪法核组件装配与依赖（否则 `ERR-SYS-007` 拒绝启动，见 [error-reference.md](../references/error-reference.md)） |
 
 完整排查步骤见 [troubleshooting.md](troubleshooting.md) §二。
 
@@ -170,7 +176,7 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 
 ### 5.3 错误码索引（速查）
 
-> 本表为最常用子集；全量 38 项错误码及权威定义（含 HTTP 语义与响应体结构）见 [error-reference.md](../references/error-reference.md)。
+> 本表为最常用子集；全量 43 项错误码及权威定义（含 HTTP 语义与响应体结构）见 [error-reference.md](../references/error-reference.md)。
 
 | 错误码 | 说明 | 处理 |
 |:-------|:-----|:-----|
@@ -190,6 +196,7 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 |:----|:-----|:-----|
 | 日 | 健康检查 | `kairos health` |
 | 周 | 审计链完整性检查 | `kairos audit verify-chain` |
+| 月 | 恢复演练 | 系统调度器月度触发（从最近全量备份恢复至测试库 + 数据完整性校验，见 [reliability.md](reliability.md) §四） |
 | 月 | 数据库 VACUUM | `kairos db vacuum`（SQLite 模式）；PG 自动 VACUUM |
 | 月 | 重构建索引 | `kairos db reindex` |
 | 季度 | 安全红线复验 | 逐条执行 test-strategy §2.2 验收方法 |
@@ -216,9 +223,10 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 
 当系统触发核心命题证伪或轴耦合证伪时：
 1. `kairos status` 确认证伪信号类型
-2. `kairos audit log` 查看证伪信号负载
-3. 按架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 证伪响应路径处理
-4. 输出审查报告
+2. **确认遗忘调度器已暂停**（核心命题证伪响应路径首步，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 证伪信号类型表）——未暂停时手动执行 `kairos forget pause`（待定义命令，追缴同 D-430）或按当时 CLI 帮助处理
+3. `kairos audit log` 查看证伪信号负载
+4. 按架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 证伪响应路径处理
+5. 输出审查报告
 
 ---
 ## 版本记录
@@ -228,7 +236,16 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
 | 0.0.1 | 2026-07-31 | 运维手册：日常操作/备份恢复/升级降级/配置与密钥管理/故障排查。 |
-| 0.0.2 | 2026-08-04 | 全库深度审计修复：错误码速查表补充子集声明与 ERR-LLM-002 废弃标注、备份命令统一目录与时间戳命名、CLI 命令状态声明。 |
+| 0.0.2 | 2026-08-04 | 全库深度审计修复：错误码速查表补充子集声明与 ERR-LLM-002 废弃标注、备份命令统一目录与时间戳命名、CLI 命令状态声明（批次归因：错误码三清单对齐与 ERR-LLM-002 废弃标注实际落于 changelog 0.0.8，本行 0.0.2 为历史登记，见 [changelog.md](../governance/changelog.md) 0.0.8「引用修正」）。 |
+| 0.0.8 | 2026-08-04 | 补登（changelog 0.0.8 批次）：错误码三清单对齐（error-reference/api-spec/runbook，ERR-LLM-002 废弃标注、ERR-CAL-001/002 状态码 503→400）——原误归 0.0.2，按 changelog 叙述节为准。 |
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：备份保留期引用修正（§1.1/§三 + 参数化）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：§5 故障排查精简为值班速查子集+指针（与 troubleshooting 双向互链）。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：kairos status --sublimation 补规划扩展注记；frontmatter 审查日期同步。 |
+| 0.0.51 | 2026-08-08 | round22 审计修复批次（changelog 0.0.51）：§5.1 启动失败速查补「标志组合非法 / 宪法核不可用」两项（对应 ERR-SYS-006/007）；§5 口径 38→40。 |
+| 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-06 补待定义 CLI 命令清单块，指针「债务 D-430」。 |
+| 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
+| 0.0.59 | 2026-08-08 | round26 全面深度审计修复批次（changelog 0.0.59，补登）：错误码口径 40→42（两处，`ERR-CTR-003` 记忆已锁定 / `ERR-CTR-004` 意图契约未关闭）。 |
+| 0.0.65 | 2026-08-08 | round31 深度审计修复批次（changelog 0.0.65）：§2.1 补 WAL 回档恢复步骤与 RPO 口径注记（RPO ≤5 分钟依赖 WAL 归档持续启用）；§6.1 定期维护补「月：恢复演练」行；§6.4 证伪响应补「确认遗忘调度器已暂停」步骤。 |
+| 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.59 行（错误码 40→42）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：错误码计数 42→43（新增 ERR-CTR-005 幂等键冲突）两处口径同步。详见 changelog 0.0.85 叙述节。 |
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：快照保留期 30 天硬编码补债务 D-442 指针。 |

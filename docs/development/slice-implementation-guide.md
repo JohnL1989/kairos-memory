@@ -8,14 +8,27 @@ tags:
   - development
   - slice
 created: 2026-07-31
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
+
+> **章节导航**——按下表定位所需章节：
+>
+> | 章节 | 主题 |
+> |:----|:----|
+> | 一、竖切组件清单 | 首交付组件范围 |
+> | 二、竖切 Schema 清单 | 15 张表 DDL 指引 |
+> | 三、竖切端点清单 | REST 21 + CLI 15 |
+> | 四、逐组件实现规格 | 各组件实现细节 |
+> | 五、实现顺序与依赖 | 依赖图与实现顺序 |
+> | 六、开发者阅读路径 | 上手指引 |
+>
+
 ---
 
 # Kairos 竖切实现指南（v0.1.0-slice）
 
-> **定位**：竖切（v0.1.0-slice）实现者的唯一入口。按竖切组件聚合架构章节、数据模型、API 端点、配置参数、测试用例与验收判据，避免在 5000 行架构文档中逐节翻找。竖切范围与决策见 [feature-list 竖切标注](../specification/feature-list.md) 与 [project-plan 竖切范围](../governance/project-plan.md)。
+> **定位**：竖切（v0.1.0-slice）实现者的唯一入口。按竖切组件聚合架构章节、数据模型、API 端点、配置参数、测试用例与验收判据，避免在四千余行的架构文档中逐节翻找。竖切范围与决策见 [feature-list 竖切标注](../specification/feature-list.md) 与 [project-plan 竖切范围](../governance/project-plan.md)。
 >
 > **实现基线（2026-07-31 决策）**：身份模型=构造论（初始赋予 + 叙事驱动双向更新）；事件总线=4 类；存储后端=SQLite + sqlite-vec 优先（[ADR-001](../governance/adr.md) 实施顺序）；特征标志关系见架构 §0.8「竖切与特征标志的关系」。
 
@@ -126,7 +139,7 @@ status: draft
 - **API**：POST /v1/memories/search、GET /v1/memories?q=。
 - **配置**：三信号权重与候选池大小（[configuration.md](../ops/configuration.md) §6.1）。
 - **测试**：TC-R02-001~002、TC-R03-001~002。
-- **首迭代增强（决策）**：QueryAnalyzer（架构 §2.6.1）定位为竖切后**首迭代实现优先级**——本组件竖切交付仅原生检索;首迭代补 QueryAnalyzer 意图分类（规则优先+模型兜底,意图枚举以架构 §2.6.1 五+1 类为权威）与时间锚定（相对/绝对/事件/会话四类解析,含 fallback_query 字段）,作为查询前置增强检索意图理解。事件锚定与 fallback_query 规格见架构 §2.6.1。
+- **首迭代增强（决策）**：QueryAnalyzer（架构 §2.6.1）定位为竖切后**首迭代实现优先级**——本组件竖切交付仅原生检索；首迭代补 QueryAnalyzer 意图分类（规则优先+模型兜底，意图枚举以架构 §2.6.1 五+1 类为权威）与时间锚定（相对/绝对/事件/会话四类解析，含 fallback_query 字段）,作为查询前置增强检索意图理解。事件锚定与 fallback_query 规格见架构 §2.6.1。
 - **验收**：1 万条 SQLite 基准语义检索 P50 ≤100ms。
 
 ### 组件 4：遗忘调度器 + 潜伏势能重估
@@ -229,3 +242,5 @@ W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：REST 20→21（补 `POST /v1/memories/{id}/restore` 行，M-05 恢复端点）；DELETE 行 M-03 标注修正（软删除语义，M-03 显式遗忘经 CLI `kairos forget` 承载）；组件 6 补监督平面部分启用注记；CLI 全量 24→25 联动（api-spec §3 补注册）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：configuration 章节引用修正（§1→§4/§0.10）；轻量模式认证环境变量统一为 KAIROS_API_KEY_HASH；决策注记去版本号。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：组件标题（Wx）标注按 implementation-map 勘误口径去除；S-04 误用修正（路径隔离为架构 §8 声明）；playbooks 表名更正为 procedural_playbooks。 |
+| 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-08「5000 行架构文档」→「四千余行的架构文档」（实际 4031 行）。 |
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：补章节导航表。 |

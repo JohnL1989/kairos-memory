@@ -25,6 +25,107 @@ Kairos 文档一致性审计脚本 —— documentation-governance §2/§3 的�
     「历史配比」注记，四链路配比必须存在（R14-03 防复发）
   - 新增 §10.24 关联债索引完整性（6.19）：debt-collection §四 摘要表
     D-0xx 活跃债编号 ⊆ §10.24 第一组收录集合（R14-06 防复发）
+
+0.0.54 门禁扩展（round23 结构性建议 S23-1 落地）:
+  - 新增单一事实源反查（6.23）：架构/技术选型等权威文档正文引用的
+    HTTP 端点必须已在 api-spec 登记（api-spec 为端点单一事实源），
+    防 R23-01/R23-01b 类「端点漏 /v1 前缀、引用未登记端点」事实错误
+    复发（豁免：版本记录行、changelog、blueprint-v1.1 未来规划、
+    debt-collection 债务账目、analysis/ 外部对照产物、父路径引用、
+    多方法简写 GET/POST）
+
+0.0.56 门禁扩展（round24 结构性建议 S24-1/S24-2 落地）:
+  - 新增端点→章节锚点一致性（6.24）：权威文档同一行内「api-spec §X」
+    引用与已登记端点比对，章节号须与实际登记章节一致（或互为父子级），
+    防 R24-02/R24-03 类「端点正确但章节引用错位」事实错误复发
+    （豁免：api-spec/changelog/blueprint-v1.1/debt-collection/analysis、
+    版本记录行、未登记端点）
+  - 新增认知基础去版本化（6.25）：cognitive-foundation.md 正文不得散布
+    v0.1.0/v1.1 版本绑定声明（豁免：文件名链接、版本记录表行、
+    债务元数据版本槽位 D-xxx vX.Y 协议槽位），防 R24-01 类治理缺口复发
+
+0.0.58 门禁扩展（round25 结构性建议 S25-1/S25-2 落地）:
+  - 新增通用章节引用存在性与标题语义（6.26）：扫描全文「文档名 §X」
+    裸引用（无链接格式）与「§X『标题名』」引号标题引用，校验目标
+    文档存在对应章节（含中文数字↔阿拉伯数字双向映射、父级回退、
+    中文标题名匹配），防 R25-02/R25-07/R25-19 类「章节号错位」
+    事实错误复发（豁免：changelog/blueprint-v1.1/debt-collection/
+    analysis、版本记录行、§X.Y 占位符、编号迁移注记行）
+  - 新增 api-spec 章节版本标注完备性（6.27）：api-spec §11~§17 各节
+    标题或定位段必须声明版本边界（v0.1.0 交付 / v1.1 预留 / 端点预留 /
+    P3，v1.1+），防 R25-22 类「版本边界裸奔」治理缺口复发
+
+0.0.60 门禁扩展（round26 结构性建议 S26-1/S26-2/S26-3 落地）:
+  - 新增机器可读契约 ↔ api-spec 一致性反查（6.28）：openapi paths 的
+    (方法,路径) 集合 ≡ api-spec 登记端点（单一事实源，0.0.54 已立）；
+    servers 端口 ≡ 全库默认 8010；securitySchemes ≡ 单一 bearerAuth
+    (type http, scheme bearer)；mcp-tools.json 各 mapsTo ⊆ 登记端点
+    （MCP-only 工具豁免），防 R26 类「机器可读契约/索引与事实源漂移」
+    复发（响应码逐项⊇声明值为骨架近似，deferred，债务 D-428 追踪）
+  - 新增跨文档错误码集合一致性（6.29）：error-reference ≡ troubleshooting
+    全集合相等 + api-spec §7 ⊆ error-reference 子集（§7 为 HTTP 子集、
+    非全量，全量以 error-reference 为准），防 ERR-XXX 增删后三处表体
+    不同步复发
+  - 新增示例代码纪律（6.30）：围栏代码块内 `kairos write` 真实调用须含
+    `--source`（S-15 provenance 必填，api-spec §3）；`calibration_status`
+    赋值字面量须为规范四值（healthy/degraded/virtual/dormant，api-spec
+    §6.5），防「示例参数/枚举写错」事实错误复发（豁免：行内命令名列举、
+    blockquote 草稿声明、表格单元格示例）
+
+0.0.71 门禁扩展（round35 门禁建议落实，R35-01 防复发）:
+  - 新增治理执行记录覆盖性（6.32）：documentation-governance §3
+    「执行记录（设计阶段）」为自引用快照，须覆盖至 changelog 最新批次
+    （round33 立「含自身批次」纪律、round35 重演捕获——执行记录滞后于
+    最新 changelog 批次即 FAIL），防「治理执行记录过时」类治理缺口复发
+    （豁免：changelog 无版本记录行的异常态；执行记录引用块缺失本身即
+    FAIL——自引用快照不存在）
+
+0.0.74 门禁扩展（round38 门禁建议落实，round37 建议落地）:
+  - 新增 feature-list「对应架构组件」列引用落点全量校验（6.33）：
+    解析该列 `[文档](路径) §X 机制名`，校验目标文档存在、章节号存在
+    （含父级回退/中文数字/P3-21）、机制名关键词出现在目标文档该章节
+    文本块内（子串匹配）——拦截 R37-04~R37-09 类「章节号存在但所指
+    机制不在该章节」的悬空引用（round37 发现 feature-list 引用列 12 处
+    悬空/错位，根因为门禁 6.14 仅抽检 24 条映射、6.26 仅查章节号存在性）
+  - 扩展 6.26 档 4：链接格式「[文档](路径) §X 机制名」的机制名存在性
+    校验（候选词全文痕迹校验，WARN 级软提示不阻断 exit 0——全库存在
+    大量「§X 后接章节结构描述/自然语言」引用，无法可靠区分机制名与
+    描述语；真实悬空由 6.33 FAIL 级精准捕获，本档供人工审计辅助）
+0.0.76 门禁优化（round39 门禁补盲区建议落地）:
+  - 6.26 档 4 候选词提取优化：新增动词/描述性前缀剥离（「定义了跨层
+    三环不变量」→「跨层三环不变量」、「详述生效规则」→「生效规则」、
+    「只覆盖检索」→「检索」、「约束认知质量指标」→「认知质量指标」
+    等——round39 教训：WARN 噪声主要来自「§X 后接动词短语」，剥离
+    动词前缀后仅以名词短语作为机制名候选）；尾部后缀扩展（参数/状态机/
+    验收/确定/路径/过程/流程）；括号内 a-d 类字母段标注（「种子生命
+    周期追踪（a-d）」）回退取括号前文本。    效果：WARN 23→12 条（26→23
+    为 round39 修复 4 条真实问题）。突变测试验证：悬空引用「存储层
+    量子纠缠索引」仍可被精确捕获（标题行匹配恢复「整段连续中文段」
+    严格逻辑——曾尝试「任意 3+ 字子串滑动窗口」导致误放行：子串
+    「存储层」恰好命中 §5 标题，削弱捕获能力，已回退）。
+0.0.78 门禁优化（round40 改进建议落地）:
+  - 6.26 档 4 新增「3-6 字尾缀标题匹配」判定（zh_tails）：候选词
+    3-6 字**尾部窗口**在目标文档标题行出现即通过——收敛「修饰语+子节
+    标题」类 WARN（「特征标志编码纪律」尾缀「编码纪律」命中架构 §0.8
+    「#### 编码纪律」子节、「各条推论」尾缀「条推论」命中架构 §0.3
+    「### 0.3 五条推论」，WARN 12→10 条）。仅取尾部窗口非任意子串——
+    反例「存储层量子纠缠索引」尾缀不含「存储层」（前缀）不误放行；
+    3 字下限防「指标/纪律」类泛化误报。突变测试双验证：悬空捕获 +
+    描述放过。保守决策：「权重」未入尾部后缀剥离表（「三信号混合
+    检索权重参数」保留 WARN，措辞等价可忽略，避免误放行风险）。
+0.0.82 门禁扩展（round44 门禁建议落实，R43-3/S43-1 落地）:
+  - 新增 changelog 结构纪律（6.34）：叙述节版本号单调升序 + `## 版本记录`
+    标题紧邻版本表体（防 R43-09/10 类回归）。
+  - 新增红线语义互斥词对检查（6.35，S-14 试点）：维护「红线禁止短语 ↔
+    违例措辞」词对表，否定行跳过避免误报。
+0.0.84 门禁扩展（round46 结构性建议 S45-1/S45-2/S45-3 落地）:
+  - 新增版本归属互斥检查（6.36）：自举式倒排索引，实体（端点/契约值/事件
+    类型/表字段）跨文档/跨章节同时被标「已落地」与「未落地」即 WARN（首轮
+    软门禁，不阻断 exit 0）。
+  - 新增表格内容与引言范围词一致性（6.37）：仅对排他性「仅列/仅含 N 类/项」
+    触发，比对紧邻表格数据行数（首轮软门禁）。
+  - 新增阈值型监控规则自洽性（6.38）：「指标/阈值/触发动作」三列监控表当前
+    值越阈即 WARN（防交付态恒触发自毁，首轮软门禁）。
 """
 from __future__ import annotations
 
@@ -33,6 +134,48 @@ import re
 import sys
 
 SECTION_MARK = "\u00a7"  # §
+# 中文数字 ↔ 阿拉伯数字（章节引用双向映射，6.26 用）
+CN2AR = {"一": "1", "二": "2", "三": "3", "四": "4", "五": "5",
+         "六": "6", "七": "7", "八": "8", "九": "9", "十": "10"}
+AR2CN = {v: k for k, v in CN2AR.items()}
+# 中文文档名/别名 → 文件名（裸引用解析，6.26 用）
+DOC_NAME_MAP = {
+    "架构": "architecture-v0.1.0.md",
+    "认知基础": "cognitive-foundation.md",
+    "api-spec": "api-spec.md",
+    "configuration": "configuration.md",
+    "data-model": "data-model.md",
+    "technology-stack": "technology-stack.md",
+    "glossary": "glossary.md",
+    "蓝图": "architecture-blueprint-v1.1.md",
+    "test-strategy": "test-strategy.md",
+    "test-plan": "test-plan.md",
+    "acceptance-criteria": "acceptance-criteria.md",
+    "detailed-design": "detailed-design.md",
+    "deployment": "deployment.md",
+    "feature-list": "feature-list.md",
+    "security-specification": "security-specification.md",
+    "threat-model": "threat-model.md",
+    "runbook": "runbook.md",
+    "benchmark-plan": "benchmark-plan.md",
+    "quick-start": "quick-start.md",
+    "user-guide": "user-guide.md",
+    "observability": "observability.md",
+    "reliability": "reliability.md",
+    "troubleshooting": "troubleshooting.md",
+    "operation-catalog": "operation-catalog.md",
+    "rl-weight-spec": "rl-weight-spec.md",
+    "use-cases": "use-cases.md",
+    "system-context": "system-context.md",
+    "requirements-baseline": "requirements-baseline.md",
+    "nfr-specification": "nfr-specification.md",
+    "feature-list": "feature-list.md",
+    "claim-implementation-matrix": "claim-implementation-matrix.md",
+    "schema-slice.sql": "schema-slice.sql",
+    "implementation-map": "implementation-map.md",
+}
+# 6.26 豁免文档：历史叙述/未来规划/债务账目/外部对照产物
+SECTION_EXEMPT = {"changelog.md", "architecture-blueprint-v1.1.md", "debt-collection.md"}
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 TOKEN = r"[A-Za-z0-9_+./\-]+\.md"
@@ -557,20 +700,318 @@ def check_mechanism_sections() -> None:
     print(f"[6.14] 机制名→权威章节抽检: {len(MECH_SECTIONS)} 条映射，{bad} 项漂移")
 
 
+def _section_blocks(text: str) -> dict[str, str]:
+    """构建目标文档「章节号 → 章节文本块」映射。
+
+    每个标题（`## §5 存储层` / `### 5.2 ...` / `### P3-21 ...` / `### 一、...`）
+    到下一个同/上级标题之间的全部文本（含标题行）归为该章节文本块。
+    父级回退：章节 X 的文本块包含其后所有子章节内容（无独立子标题的
+    合并章节如架构 §5.2 亦然）。用于 6.33 机制名落点存在性校验。
+    """
+    lines = text.splitlines()
+    blocks: dict[str, list[str]] = {}
+    order: list[str] = []
+    stack: list[tuple[int, str]] = []  # (标题层级, 章节号)
+
+    for line in lines:
+        m = re.match(
+            r"^ {0,3}(#{2,6})\s+(?:%s)?([0-9A-Z一二三四五六七八九十]+(?:\.[0-9A-Za-z]+)*(?:-[0-9]+)?[a-z]?)[\s·：:]*(.*)$"
+            % SECTION_MARK,
+            line.strip(),
+        )
+        if m:
+            level, num = len(m.group(1)), m.group(2)
+            while stack and stack[-1][0] >= level:
+                stack.pop()
+            stack.append((level, num))
+            if num not in blocks:
+                blocks[num] = []
+                order.append(num)
+            blocks[num].append(line)
+            continue
+        if not stack:
+            continue
+        # 当前最深层章节追加内容行（父级同时享有——合并章节内容）
+        for _lvl, _num in stack:
+            blocks[_num].append(line)
+    return {k: "\n".join(v) for k, v in blocks.items()}
+
+
+def check_feature_list_refs() -> None:
+    """6.33 feature-list「对应架构组件」列引用落点全量校验（round37 建议落地）。
+
+    round37（0.0.73）发现 feature-list「对应架构组件」列 12 处引用落点
+    悬空/错位（R-05 时间索引、M-12 社区检测、M-13/A-16 事实新鲜度、
+    M-16 MemCube 等指向架构 §5.2 不存在的节点；W-09 语义错配）——根因
+    为门禁 6.14 仅抽检 24 条映射、6.26 仅查章节号存在性，未校验「引用
+    文本所指机制名是否真的在该章节内」。本检查将该列**全量**纳入机器
+    校验：
+
+      - 解析 feature-list 每行「对应架构组件」列 `[文档](路径) §X 机制名`
+      - 目标文档存在性（链接目标文件存在）
+      - 章节号存在性（§X 在目标文档标题中，含父级回退、中文数字映射、
+        P3-21 类带连字符章节号）
+      - 机制名关键词存在性：§X 后的关键词（中文/英文/混合，去括号与
+        修饰语）须出现在目标文档该章节的**文本块**中（子串匹配）——
+        拦截「章节号存在但所指机制不在该章节」的悬空引用
+
+    豁免：版本记录表行；引用列无「§X 关键词」形态（仅链接无章节号、
+    或章节号后无关键词、或关键词为通用措辞）。
+    """
+    fl = DOCS / "specification" / "feature-list.md"
+    if not fl.exists():
+        return
+    # 预构建目标文档章节文本块
+    blocks: dict[str, dict[str, str]] = {}
+    for p in md_files():
+        blocks[p.name] = _section_blocks(p.read_text(encoding="utf-8"))
+    bad = 0
+    sec_pat = re.compile(
+        r"§([0-9A-Z一二三四五六七八九十]+(?:\.[0-9A-Za-z]+)*(?:-[0-9]+)?[a-z]?)"
+    )
+    for ln_no, line in enumerate(fl.read_text(encoding="utf-8").splitlines(), 1):
+        if re.match(r"^\| *0\.0\.", line.lstrip()):
+            continue  # 版本记录表行
+        if "|" not in line:
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) < 4:
+            continue
+        ref_cell = cells[-1]
+        # 解析 `[标题](路径) §X 关键词`（可能多个，用 / 或 + 分隔）
+        for m in re.finditer(
+            r"\[([^\]]*)\]\(([^)]+\.md)\)(?=[^\)]*\s*§)\s*([^|/+,]*§[^|/+,]*)",
+            ref_cell,
+        ):
+            tgt = m.group(2).split("#")[0]
+            name = pathlib.Path(tgt).name
+            if name not in blocks:
+                fail(f"6.33 引用目标文档不存在：feature-list L{ln_no} -> {tgt}")
+                bad += 1
+                continue
+            after = m.group(3).strip()
+            sec_m = sec_pat.search(after)
+            if not sec_m:
+                continue
+            sec = sec_m.group(1)
+            # 章节号存在性（含父级回退、中文↔阿拉伯、P3-21）
+            ids = set(blocks[name].keys())
+            ok_sec = False
+            sec_parts = sec.split(".")
+            for i in range(len(sec_parts), 0, -1):
+                key = ".".join(sec_parts[:i])
+                if key in ids:
+                    ok_sec = True
+                    break
+                if key in CN2AR and CN2AR[key] in ids:
+                    ok_sec = True
+                    break
+                if key in AR2CN and AR2CN[key] in ids:
+                    ok_sec = True
+                    break
+            if not ok_sec:
+                fail(f"6.33 章节引用不存在：feature-list L{ln_no} -> {tgt} §{sec}")
+                bad += 1
+                continue
+            # 关键词：§X 之后的文字（去括号内容、去英文参数/命令名、去通用措辞）
+            tail = after[sec_m.end():].strip()
+            kw_raw = tail.split("（")[0].split("(")[0].strip()
+            kw_raw = re.sub(r"[`*\[\]]", "", kw_raw)
+            kw = kw_raw.strip()
+            if not kw:
+                continue
+            # 通用措辞豁免（非机制名的修饰语/动词短语）
+            if kw in ("的", "中", "等", "见", "如", "后", "处", "相关", "机制", "组件",
+                      "结构", "定义", "说明", "一节", "本章", "条目", "部分", "边界",
+                      "版本", "与", "及", "或", "并", "且", "（", "）"):
+                continue
+            if len(kw) < 2:
+                continue
+            block = blocks[name].get(sec, "")
+            # 去除 block 中的链接/代码形态后子串匹配
+            block_clean = re.sub(r"\[[^\]]*\]\([^)]*\)", "", block)
+            block_clean = re.sub(r"`[^`]*`", "", block_clean)
+            if kw not in block_clean:
+                fail(
+                    f"6.33 机制名「{kw}」不在 {tgt} §{sec} 章节内（feature-list L{ln_no}，引用「{ref_cell[:50]}…」）"
+                )
+                bad += 1
+    print(f"[6.33] feature-list 引用列全量校验: {bad} 项落点漂移")
+
+
+def _section_content_map(text: str) -> dict[str, list[str]]:
+    """构建目标文档「章节号 → 该章节下的机制名关键词」映射。
+
+    用于 6.33 机制名落点存在性校验：取每个标题（含 `### 5.2` 形态与
+    无编号子标题）的标题行与后续内容行，抽出其中的加粗机制名、列表项
+    首个名词与中文短语作为「该章节存在的机制名」候选。返回
+    {章节号(含父级回退): [关键词, ...]}。
+    """
+    lines = text.splitlines()
+    # 标题栈：记录 (层级, 章节号) —— 父级回退时子章节归属父级
+    stack: list[tuple[int, str]] = []
+    section_words: dict[str, set[str]] = {}
+
+    def _current() -> str | None:
+        return stack[-1][1] if stack else None
+
+    for line in lines:
+        m = re.match(
+            r"^ {0,3}(#{2,6})\s+(?:%s)?([0-9A-Z一二三四五六七八九十]+(?:\.[0-9]+)*[a-z]?)[\s·：:]*(.*)$"
+            % SECTION_MARK,
+            line.strip(),
+        )
+        if m:
+            level, num, title = len(m.group(1)), m.group(2), m.group(3).strip()
+            # 维护标题栈（相同或更高层级标题弹出栈顶）
+            while stack and stack[-1][0] >= level:
+                stack.pop()
+            stack.append((level, num))
+            cur = _current()
+            if cur is None:
+                continue
+            # 标题行中的机制名（括号前主名、加粗名、后续中文短语）
+            words = set()
+            for part in re.split(r"[（(]|[）)]|·|、|：", title):
+                part = part.strip().strip("*").strip()
+                if re.fullmatch(r"[\u4e00-\u9fa5A-Za-z][\u4e00-\u9fa5A-Za-z0-9_\-（）()· ]{1,18}", part):
+                    words.add(part)
+            for w in re.findall(r"\*\*([^*]{2,20})\*\*", title):
+                words.add(w.strip())
+            section_words.setdefault(cur, set()).update(w for w in words if len(w) >= 2)
+            continue
+        # 非标题行：加粗机制名与列表项首词
+        cur = _current()
+        if cur is None:
+            continue
+        for w in re.findall(r"\*\*([^*]{2,20})\*\*", line):
+            section_words.setdefault(cur, set()).add(w.strip())
+        lm = re.match(r"^\s*[|└├│ ]*[\-*]\s+\*\*?([\u4e00-\u9fa5A-Za-z][\u4e00-\u9fa5A-Za-z0-9_\-（）()· ]{1,18})\*\*?", line)
+        if lm:
+            section_words.setdefault(cur, set()).add(lm.group(1).strip())
+    # 父级回退：子章节关键词并入父级
+    flat: dict[str, set[str]] = {}
+    for num, words in section_words.items():
+        parts = num.split(".")
+        for i in range(1, len(parts) + 1):
+            key = ".".join(parts[:i])
+            flat.setdefault(key, set()).update(words)
+    return {k: sorted(v) for k, v in flat.items()}
+
+
+def check_feature_list_refs() -> None:
+    """6.33 feature-list「对应架构组件」列引用落点全量校验（round37 建议落地）。
+
+    round37（0.0.73）发现 feature-list「对应架构组件」列 12 处引用落点
+    悬空/错位（R-05 时间索引、M-12 社区检测、M-13/A-16 事实新鲜度、
+    M-16 MemCube 等指向架构 §5.2 不存在的节点；W-09 语义错配）——根因
+    为门禁 6.14 仅抽检 24 条映射、6.26 仅查章节号存在性，未校验「引用
+    文本所指机制名是否真的在该章节内」。本检查将该列**全量**纳入机器
+    校验：
+
+      - 解析 feature-list 每行「对应架构组件」列 `[文档](路径) §X 机制名`
+      - 目标文档存在性（链接目标文件存在）
+      - 章节号存在性（§X 在目标文档标题中，含父级回退）
+      - 机制名关键词存在性（机制名核心词须出现在目标文档该章节的
+        标题/正文机制名池中；空白机制名跳过）
+
+    豁免：版本记录表行；无「§X 机制名」形态的引用（仅链接无章节号、
+    或章节号后无关键词）。
+    """
+    fl = DOCS / "specification" / "feature-list.md"
+    if not fl.exists():
+        return
+    # 预构建目标文档章节机制名池
+    pool: dict[str, dict[str, list[str]]] = {}
+    for p in md_files():
+        pool[p.name] = _section_content_map(p.read_text(encoding="utf-8"))
+    bad = 0
+    for ln_no, line in enumerate(fl.read_text(encoding="utf-8").splitlines(), 1):
+        if re.match(r"^\| *0\.0\.", line.lstrip()):
+            continue  # 版本记录表行
+        if "|" not in line:
+            continue
+        # 提取「对应架构组件」列（最后一列）
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) < 4:
+            continue
+        ref_cell = cells[-1]
+        # 解析 `[标题](路径) §X 关键词`（可能多个，用 / 或 + 分隔）
+        for m in re.finditer(
+            r"\[([^\]]*)\]\(([^)]+\.md)\)\s*%s([0-9A-Z一二三四五六七八九十]+(?:\.[0-9]+)*[a-z]?)[\s·：:]*(.*?)(?=$|/|\+|\||\[|,|，)"
+            % SECTION_MARK,
+            ref_cell,
+        ):
+            tgt = m.group(2).split("#")[0]
+            name = pathlib.Path(tgt).name
+            if name not in pool:
+                fail(f"6.33 引用目标文档不存在：feature-list L{ln_no} -> {tgt}")
+                bad += 1
+                continue
+            sec = m.group(3)
+            # 章节号存在性（含中文数字↔阿拉伯、父级回退）
+            ids = set(pool[name].keys())
+            ok_sec = False
+            for i in range(len(sec.split(".")), 0, -1):
+                key = ".".join(sec.split(".")[:i])
+                if key in ids:
+                    ok_sec = True
+                    break
+                if key in CN2AR and CN2AR[key] in ids:
+                    ok_sec = True
+                    break
+                if key in AR2CN and AR2CN[key] in ids:
+                    ok_sec = True
+                    break
+            if not ok_sec:
+                fail(f"6.33 章节引用不存在：feature-list L{ln_no} -> {tgt} §{sec}")
+                bad += 1
+                continue
+            # 机制名关键词存在性：取 §X 后关键词（去括号/加粗/空格）
+            kw_raw = m.group(4).strip().strip("*").strip()
+            kw = re.split(r"[（(]", kw_raw)[0].strip()
+            kw = re.sub(r"[\u4e00-\u9fa5A-Za-z0-9_\-（）()· ]", "", kw)
+            if not kw:
+                continue
+            words = pool[name].get(sec, [])
+            if not any(kw in w or w in kw for w in words):
+                fail(
+                    f"6.33 机制名「{kw}」不在 {tgt} §{sec} 章节内（feature-list L{ln_no}）"
+                )
+                bad += 1
+    print(f"[6.33] feature-list 引用列全量校验: {bad} 项落点漂移")
+
+
 def check_hard_line_refs() -> None:
-    r"""6.15 硬行号引用禁令（0.0.28 补盲区，闭环第十轮审计 C-03/F-01）。
+    r"""6.15 硬行号引用禁令（0.0.28 补盲区，闭环第十轮审计 C-03/F-01；
+        0.0.69 扩展捕获 Lxx 缩写行号形态，闭环 round34 门禁建议 R34-04/R34-06）。
 
     语义化交叉引用是 documentation-governance §2 的规范（文档名+章节）；
     `path.md:行号` 引用随编辑必漂移（configuration 附录 A 曾 135/136 漂移），
-    整体废除。匹配 `[\w.\-/]+\.md:\d+` 即报错；reviews/ 为审计产物（证据需
-    引用原文行号）不在扫描范围（EXCLUDE_DIRS）。
+    整体废除。0.0.69 起同时捕获 `L\d{2,4}` 缩写行号形态（如「§1.1 L94」、
+    「L64/D.10」——0.0.68 round34 审计捕获此类漏网残留，原正则仅匹配
+    `[\w.\-/]+\.md:\d+` 全格式）。豁免范围：
+    - reviews/ 为审计产物（证据需引用原文行号）不在扫描范围（EXCLUDE_DIRS）；
+    - changelog.md 为历史批次记录（叙述节 52 处 Lxx 均为历史修复描述）；
+    - 版本记录表格行由 _scannable 剔除（历史摘要允许保留旧口径）；
+    - 测试用例编号 `TC-CAL01-001` 等（Lxx 前为字母 CAL，正则
+      `(?<![A-Za-z0-9])` 天然排除，非行号引用）。
     """
     bad = 0
+    lxx_re = re.compile(r"(?<![A-Za-z0-9])L\d{2,4}(?![A-Za-z0-9])")
     for p in md_files():
         text = p.read_text(encoding="utf-8")
+        # A. 全格式 file.md:行号（全库扫描）
         hits = re.findall(r"[\w.\-/]+\.md:\d+(?:-\d+)?", text)
         for h in hits:
             fail(f"硬行号引用禁令（6.15）: {p.relative_to(DOCS)} -> {h}（改「文档 §章节」语义引用）")
+            bad += 1
+        # B. Lxx 缩写形态（豁免 changelog 历史记录 + 版本记录表格行）
+        if p.name == "changelog.md":
+            continue
+        body = _scannable(text)
+        for m in lxx_re.finditer(body):
+            fail(f"硬行号引用禁令（6.15）: {p.relative_to(DOCS)} -> {m.group(0)}（改「文档 §章节」语义引用）")
             bad += 1
     print(f"[6.15] 硬行号引用禁令: {bad} 处残留")
 
@@ -1121,6 +1562,1278 @@ def check_debt_closure() -> None:
     )
 
 
+def check_feature_flag_count() -> None:
+    """6.20 特征标志计数一致性（round22 R22-09 补盲区）。
+
+    架构 §0.8 标志表行数 N 须与 configuration §11 一致；正文「N 个特征标志的
+    组合空间为 2^N 种」两数与表一致（2^N = 组合空间）；默认 OFF 计数两表一致，
+    且正文「M 个默认 OFF」与表内默认值统计一致。防「标志表增删未全库同步」
+    导致计数漂移（round22 R22-09）。
+    """
+    arch = (DOCS / "foundation" / "architecture-v0.1.0.md").read_text(encoding="utf-8")
+    cfg = (DOCS / "ops" / "configuration.md").read_text(encoding="utf-8")
+    bad = 0
+
+    # 架构 §0.8 标志默认表（介于表头与「所有特征标志的状态」说明之间）
+    i = arch.find("| 特征标志 | 默认 | 所涉组件 |")
+    if i == -1:
+        fail("6.20 架构 §0.8 特征标志表头未找到")
+        bad += 1
+        n_arch = off_arch = 0
+    else:
+        seg = arch[i: arch.find("\n所有特征标志的状态", i)]
+        arch_rows = re.findall(r"^\| *`(KAIROS_FEATURE_[A-Z0-9_]+)` *\| *(\w+)", seg, re.M)
+        n_arch = len(arch_rows)
+        off_arch = sum(1 for _, d in arch_rows if d.upper().startswith("OFF"))
+
+    # configuration §11 标志表
+    j = cfg.find("## §11")
+    if j == -1:
+        fail("6.20 configuration §11 特征标志节未找到")
+        bad += 1
+        n_cfg = off_cfg = 0
+    else:
+        seg_cfg = cfg[j: cfg.find("\n## ", j + 4)]
+        cfg_rows = re.findall(r"^\| *`(KAIROS_FEATURE_[A-Z0-9_]+)` *\| *(\w+)", seg_cfg, re.M)
+        n_cfg = len(cfg_rows)
+        off_cfg = sum(1 for _, d in cfg_rows if d.upper().startswith("OFF"))
+
+    if n_arch:
+        if f"{n_arch} 个特征标志" not in arch:
+            fail(f"6.20 架构 §0.8 未声明「{n_arch} 个特征标志」（与标志表行数不一致）")
+            bad += 1
+        space = 2 ** n_arch
+        if f"{space} 种" not in arch:
+            fail(f"6.20 架构 §0.8 未声明组合空间「{space} 种」（应为 2^{n_arch}）")
+            bad += 1
+        if f"{off_arch} 个默认 OFF" not in arch:
+            fail(f"6.20 架构 §0.8 未声明「{off_arch} 个默认 OFF」（与表内默认值统计不一致）")
+            bad += 1
+
+    if n_arch and n_cfg and n_arch != n_cfg:
+        fail(f"6.20 特征标志计数分歧：架构 {n_arch} 行 ≠ configuration §11 {n_cfg} 行")
+        bad += 1
+    elif n_cfg == 0:
+        fail("6.20 configuration §11 特征标志表未解析到行")
+        bad += 1
+    if n_arch and n_cfg and off_arch != off_cfg:
+        fail(f"6.20 默认 OFF 计数分歧：架构 {off_arch} ≠ configuration {off_cfg}")
+        bad += 1
+
+    print(f"[6.20] 特征标志计数一致性: 架构 {n_arch} 行/默认OFF {off_arch}，"
+          f"configuration {n_cfg} 行/默认OFF {off_cfg}，{bad} 项问题")
+
+
+def check_falsification_carry() -> None:
+    """6.21 证伪纪律与配置集承载一致性（round22 S21-1 补盲区）。
+
+    架构 §0.8 对质量层下达强制性约束：① 证伪测试以 `[FALSIFICATION]` 标记、
+    「无证伪测试的特征标志不应合入主分支」；② 测试矩阵只对三种命名配置集
+    （kairos-minimal / kairos-slice / kairos-full）负责。防 R22-01/R22-02 类
+    「上游下达约束、下游零承载」脱节复发。
+    """
+    q = DOCS / "quality"
+    bad = 0
+    # ① 证伪标记承载：test-plan / test-strategy 必须含 [FALSIFICATION]
+    for name in ("test-plan.md", "test-strategy.md"):
+        p = q / name
+        if not p.is_file() or "[FALSIFICATION]" not in p.read_text(encoding="utf-8"):
+            fail(f"6.21 质量层缺失 `[FALSIFICATION]` 承载：{name}（架构 §0.8 编码纪律）")
+            bad += 1
+    # ② 三配置集关键词在质量层至少出现（test-plan / test-strategy / acceptance-criteria）
+    text = ""
+    for name in ("test-plan.md", "test-strategy.md", "acceptance-criteria.md"):
+        p = q / name
+        if p.is_file():
+            text += p.read_text(encoding="utf-8")
+    for token in ("kairos-minimal", "kairos-slice", "kairos-full"):
+        if token not in text:
+            fail(f"6.21 质量层缺失命名配置集承载：未出现 `{token}`（架构 §0.8 命名配置集约束）")
+            bad += 1
+    print(f"[6.21] 证伪纪律与配置集承载一致性: {'全部承载' if bad == 0 else f'{bad} 项缺失'}")
+
+
+def check_self_imposed_gate_debt() -> None:
+    """6.22 自设硬门禁的债务追缴一致性（round22 S22-2 补盲区）。
+
+    扫描全库「X 前 + 须/必须」自设硬门禁句式（编码启动前 / 上线前 / 定稿前 /
+    发布前 / 合入主分支前等），校验每处有对应 debt-collection 条目——防 R22-04
+    类「文档自设硬门禁但无追缴」脱节复发。changelog 为历史叙述、debt-collection
+    为追缴登记本体，二者内句式不计入活动门禁。
+    """
+    pattern = re.compile(
+        r"(编码启动前|上线前|定稿前|发布前|合入主分支前|合入前|投产前)"
+        r"[^。；\n]{0,60}?(须|必须|必须于)"
+    )
+    debt = (DOCS / "governance" / "debt-collection.md").read_text(encoding="utf-8")
+    debt_bodies = [
+        b for _, b in re.findall(r"### (D-\d{3})[^\n]*\n((?:.|\n)*?)(?=\n### |\n## )", debt)
+    ]
+    bad = 0
+    for p in md_files():
+        rel = str(p.relative_to(DOCS)).replace("\\", "/")
+        if rel in ("governance/changelog.md", "governance/debt-collection.md"):
+            continue
+        text = p.read_text(encoding="utf-8")
+        for m in pattern.finditer(text):
+            ctx = text[max(0, m.start() - 80): m.end() + 20]
+            if re.search(r"D-\d{3}", ctx):
+                continue  # 行内已挂债务，已追缴
+            num = re.search(r"\d+\s*[项条个]", ctx)
+            if num:
+                tok = num.group(0)
+                if any(tok in b for b in debt_bodies):
+                    continue  # debt-collection 有对应条目
+                fail(f"6.22 自设硬门禁无对应债务追缴：{rel} 「…{ctx.strip()[:36]}…」含「{tok}」但 debt-collection 无对应条目")
+                bad += 1
+            elif not re.search(r"D-\d{3}", text):
+                fail(f"6.22 自设硬门禁无债务追缴体系：{rel} 「…{ctx.strip()[:36]}…」文档零债务引用")
+                bad += 1
+            else:
+                warn(f"6.22 自设硬门禁未挂精确债务（文档级参与）：{rel}")
+    print(f"[6.22] 自设硬门禁债务追缴一致性: {bad} 项未追缴")
+
+
+def check_endpoint_source() -> None:
+    """6.23 单一事实源反查（端点登记一致性；round23 S23-1 落地）。
+
+    api-spec.md 为 HTTP 端点的单一事实源。权威文档（架构/技术选型/质量/
+    运维等）正文引用的 `METHOD /path` 端点必须已在 api-spec 登记，且
+    `/v1` 前缀不得遗漏——防 R23-01/R23-01b 类「端点漏 /v1 前缀、引用
+    未登记端点」事实错误复发。
+
+    豁免（不计入引用集合）：
+      - 文档级：api-spec 自身、changelog（历史叙述）、blueprint-v1.1
+        （未来规划端点）、debt-collection（债务账目）、analysis/（外部
+        对照产物）、reviews/（审计产物）
+      - 行级：版本记录表行（`| 0.0.x |`）
+      - 匹配级：父路径引用（`POST /v1/admin/compaction/rollback` ⊆
+        登记的 `POST /v1/admin/compaction/rollback/{snapshot_id}`）、
+        多方法简写（`GET/POST /v1/skills` 只取首个 GET）。
+      注：架构组件树（├─ │ 围栏）为正文描述而非代码示例，不豁免。
+    """
+    api_path = DOCS / "specification" / "api-spec.md"
+    if not api_path.is_file():
+        fail("6.23 api-spec.md 不存在，无法反查端点登记")
+        return
+    api = api_path.read_text(encoding="utf-8")
+    registered: set[tuple[str, str]] = set()
+    for m in re.finditer(
+        r"^(?:\*{2}|###\s*)(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+([^\s*]+)",
+        api,
+        re.M,
+    ):
+        registered.add((m.group(1), m.group(2).split("?")[0].rstrip("/")))
+
+    # 文档级豁免：单一事实源自身 / 历史叙述 / 未来规划 / 债务账目 / 外部对照产物
+    skip_files = {"api-spec.md", "changelog.md", "architecture-blueprint-v1.1.md", "debt-collection.md"}
+    ref_pat = re.compile(
+        r"(?<![A-Za-z/])(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+"
+        r"(/[A-Za-z0-9_{}?=&.\-/]+)"
+    )
+    bad = 0
+    for p in md_files():
+        rel = str(p.relative_to(DOCS)).replace("\\", "/")
+        parts = set(p.relative_to(DOCS).parts)
+        if p.name in skip_files or "analysis" in parts:
+            continue
+        text = p.read_text(encoding="utf-8")
+        for ln_no, line in enumerate(text.splitlines(), 1):
+            s = line.lstrip()
+            if re.match(r"^\| *0\.0\.", s):  # 版本记录表行（历史叙述）
+                continue
+            for m in ref_pat.finditer(line):
+                meth, ref = m.group(1), m.group(2).split("?")[0].rstrip("/")
+                if (meth, ref) in registered:
+                    continue
+                # 父路径引用：同 METHOD 下存在登记端点以 ref + '/' 开头
+                if ref.count("/") >= 2 and any(
+                    mth == meth and rp.startswith(ref + "/") for mth, rp in registered
+                ):
+                    continue
+                # 缺 /v1 前缀：'/v1' + ref 已登记（R23-01 类）
+                if not ref.startswith("/v1/") and (meth, "/v1" + ref) in registered:
+                    fail(f"6.23 端点缺 /v1 前缀：{rel} L{ln_no} `{meth} {ref}`（api-spec 登记为 `{meth} /v1{ref}`）")
+                    bad += 1
+                    continue
+                fail(f"6.23 引用未登记端点：{rel} L{ln_no} `{meth} {ref}`（api-spec 无对应登记，见单一事实源）")
+                bad += 1
+    print(f"[6.23] 单一事实源反查（端点登记一致性）: {bad} 项未登记/前缀错误")
+
+
+def check_endpoint_section() -> None:
+    """6.24 端点→章节锚点一致性（round24 S24-1 落地）。
+
+    6.23 只校验 `METHOD /path` 端点是否登记，不校验正文给出的
+    「api-spec §X」章节引用是否正确——R24-02/R24-03 类「端点路径
+    正确但章节引用错位」事实错误因此漏网。本检查对权威文档同一行
+    内同时出现的「api-spec §X」引用与已登记端点做比对，要求引用
+    章节号与端点在 api-spec 的实际登记章节一致（或互为父子级）。
+
+    豁免（不计入比对）：
+      - 文档级：api-spec 自身、changelog（历史叙述）、blueprint-v1.1
+        （未来规划端点）、debt-collection（债务账目）、analysis/（外部
+        对照产物）、reviews/（审计产物）
+      - 行级：版本记录表行（`| 0.0.x |`）
+      - 匹配级：端点未在 api-spec 登记（待定义端点，如 /metrics）、
+        行内无「api-spec §数字」引用（软引用「见 §健康检查」不含
+        数字章节号，跳过）、「以 … 为准」句式（operation-catalog 中
+        「MCP 工具注册以 [api-spec.md](api-spec.md) §6.8 为准」指工具
+        注册表位置而非端点定义位置，跳过）
+    """
+    api_path = DOCS / "specification" / "api-spec.md"
+    if not api_path.is_file():
+        fail("6.24 api-spec.md 不存在，无法反查端点章节锚点")
+        return
+    api = api_path.read_text(encoding="utf-8")
+
+    # 1) 建立端点 → 实际登记章节号映射：维护当前大章（## §N）与当前小节（### N.x）
+    endpoint_section: dict[tuple[str, str], str] = {}
+    cur_big, cur_sub = "", ""
+    for line in api.splitlines():
+        m = re.match(r"^##\s*%s(\d+)\s+" % SECTION_MARK, line)
+        if m:
+            cur_big = m.group(1)
+            cur_sub = ""
+            continue
+        m = re.match(r"^###\s*(\d+(?:\.\d+)*)\s+", line)
+        if m:
+            cur_sub = m.group(1)
+            continue
+        m = re.match(r"^\*{2}(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+([^\s*]+)", line)
+        if m:
+            section = cur_sub or cur_big
+            if section:
+                endpoint_section[(m.group(1), m.group(2).split("?")[0].rstrip("/"))] = section
+
+    # 2) 扫描权威文档同一行「api-spec §X」引用 + 已登记端点
+    skip_files = {"api-spec.md", "changelog.md", "architecture-blueprint-v1.1.md", "debt-collection.md"}
+    ref_pat = re.compile(
+        r"(?<![A-Za-z/])(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+"
+        r"(/[A-Za-z0-9_{}?=&.\-/]+)"
+    )
+    sect_pat = re.compile(r"api-spec[^%s\n]{0,60}?%s(\d+(?:\.\d+)*)" % (SECTION_MARK, SECTION_MARK))
+    bad = 0
+    for p in md_files():
+        rel = str(p.relative_to(DOCS)).replace("\\", "/")
+        parts = set(p.relative_to(DOCS).parts)
+        if p.name in skip_files or "analysis" in parts:
+            continue
+        text = p.read_text(encoding="utf-8")
+        for ln_no, line in enumerate(text.splitlines(), 1):
+            s = line.lstrip()
+            if re.match(r"^\| *0\.0\.", s):  # 版本记录表行（历史叙述）
+                continue
+            sect_m = sect_pat.search(line)
+            if not sect_m:
+                continue
+            # 「以 … 为准」句式豁免：指工具注册表/权威清单位置，非端点定义位置
+            if "为准" in line:
+                continue
+            ref_section = sect_m.group(1)
+            for m in ref_pat.finditer(line):
+                meth, ref = m.group(1), m.group(2).split("?")[0].rstrip("/")
+                key = (meth, ref)
+                if key not in endpoint_section:
+                    continue  # 待定义/未登记端点不比对
+                actual = endpoint_section[key]
+                # 一致：章节号相等，或引用为实际的父级（§6 ⊆ §6.5），或实际为引用的父级
+                if (
+                    ref_section == actual
+                    or actual.startswith(ref_section + ".")
+                    or ref_section.startswith(actual + ".")
+                ):
+                    continue
+                fail(
+                    f"6.24 端点章节引用错位：{rel} L{ln_no} `{meth} {ref}` "
+                    f"引用 api-spec §{ref_section}，实际登记于 §{actual}"
+                )
+                bad += 1
+    print(f"[6.24] 端点→章节锚点一致性: {bad} 项章节引用错位")
+
+
+def check_cognitive_deprovision() -> None:
+    """6.25 认知基础去版本化（round24 S24-2 落地）。
+
+    认知基础定位为「版本无关的认知理论模型」（架构 §0.9）——正文不得
+    散布 v0.1.0/v1.1 版本绑定声明（R24-01 类治理缺口）。R21-07 曾人工
+    清理一轮仍有残留，本检查将其纳入机器可检测范围。
+
+    豁免（不计入命中）：
+      - 文件名链接：`architecture-v0.1.0.md` / `architecture-blueprint-v1.1.md`
+        （链接目标文件名中的版本号，非版本绑定声明）
+      - 版本记录表行：`| 0.0.x |`（历史记录）
+      - 债务元数据版本槽位：`D-xxx，v1.1 协议槽位`（债务定义的一部分）
+    """
+    path = DOCS / "foundation" / "cognitive-foundation.md"
+    if not path.is_file():
+        fail("6.25 cognitive-foundation.md 不存在")
+        return
+    text = path.read_text(encoding="utf-8")
+    version_pat = re.compile(r"v(?:0\.1\.0|1\.1)(?!\.md)")
+    # 债务元数据版本槽位豁免：D-328，v1.1 协议槽位 / **D-328**，v1.1 协议槽位（加粗）
+    debt_slot = re.compile(r"D-\d+\*{0,2}[^，。]*?，v(?:0\.1\.0|1\.1)\s*协议槽位")
+    bad = 0
+    for ln_no, line in enumerate(text.splitlines(), 1):
+        s = line.lstrip()
+        if re.match(r"^\| *0\.0\.", s):  # 版本记录表行
+            continue
+        for m in version_pat.finditer(line):
+            ctx = line[max(0, m.start() - 40): m.end() + 30]
+            if debt_slot.search(ctx):  # 债务元数据版本槽位豁免
+                continue
+            fail(f"6.25 认知基础版本绑定声明残留：L{ln_no} `…{ctx.strip()[:60]}…`")
+            bad += 1
+    print(f"[6.25] 认知基础去版本化: {bad} 处版本绑定声明残留")
+
+
+def check_section_refs() -> None:
+    """6.26 通用章节引用存在性与标题语义（round25 S25-1 落地）。
+
+    [2/18] 章节引用检查只覆盖「链接格式」`[文档](路径.md) §X`；对
+    **裸引用**（无链接的「架构 §X」「认知基础 §X」等中文文档名 + §数字）
+    与「§X『标题名』」引号标题引用不做存在性校验——R25-02（认知基础引
+    「架构 §0.6」实际机制在 §3.3）、R25-07（troubleshooting 引「架构
+    §7 安全红线」实际在 §8）、R25-19（认知基础引「架构 §监督平面」用
+    中文标题）类「章节号错位」事实错误因此漏网。本检查将其纳入机器
+    可检测范围。
+
+    三档校验：
+      - 档 1 裸数字引用存在性：`架构 §X` / `认知基础 §X`（无链接格式）
+        → 目标文档标题必须含 X（含中文数字↔阿拉伯数字双向映射、父级回退）
+      - 档 2 中文标题引用存在性：`架构 §监督平面` / `认知基础 §引论`
+        （§ 后为纯中文标题名）→ 目标文档标题行必须含该词
+      - 档 3 引号标题语义：`§X『标题名』` / `§X「标题名」` → 引号文字
+        必须出现在引用章节或其父级章节的标题行中（R25-07 类防复发）
+
+    豁免（不计入命中）：
+      - 文档级：changelog（历史叙述）、architecture-blueprint-v1.1
+        （未来规划）、debt-collection（债务账目）、analysis/（外部
+        对照产物）、reviews/（审计产物）
+      - 行级：版本记录表行（`| 0.0.x |`）、编号迁移注记行（含
+        「编号迁移」「并入」「保留编号空缺」——认知基础 §1.5/1.6 迁移
+        注记自述编号空缺）
+      - 匹配级：`§X.Y` 占位符（implementation-map「架构 §X.Y」指
+        引用约定示例）、已链接格式引用（由 [2/18] 覆盖）
+    """
+    # 1) 构建全库标题索引：文件名 → {编号 → 标题行}
+    heads: dict[str, dict[str, str]] = {}
+    for p in md_files():
+        num2title: dict[str, str] = {}
+        for line in p.read_text(encoding="utf-8").splitlines():
+            m = re.match(
+                r"^ {0,3}#{2,4}\s+(?:%s)?([0-9A-Z一二三四五六七八九十]+(?:\.[0-9]+)*[a-z]?)[\s·]*(.*)$"
+                % SECTION_MARK,
+                line.strip(),
+            )
+            if m:
+                num2title.setdefault(m.group(1), m.group(2).strip())
+                continue
+            # 纯中文标题（无编号前缀，如「## 引论」「## 持久化」）→ 以标题本身为 key
+            m2 = re.match(r"^ {0,3}#{2,4}\s+([\u4e00-\u9fa5]{2,20})$", line.strip())
+            if m2:
+                num2title.setdefault(m2.group(1), m2.group(1))
+                continue
+            # 无编号子标题（#### 命名配置集与组合约束）→ 归入父级章节的标题池
+            m3 = re.match(r"^ {0,3}#{4,6}\s+([\u4e00-\u9fa5A-Za-z（）()·\-]{2,20})$", line.strip())
+            if m3:
+                num2title.setdefault(m3.group(1), m3.group(1))
+        heads[p.name] = num2title
+
+    def _num_in_ids(num: str, ids: set[str]) -> bool:
+        """数字章节号存在性（含中文↔阿拉伯双向映射与父级回退）。"""
+        parts = num.split(".")
+        for i in range(len(parts), 0, -1):
+            key = ".".join(parts[:i])
+            if key in ids:
+                return True
+            # 中文数字 → 阿拉伯（目标标题为「三」时引用「3」）
+            if key in CN2AR and CN2AR[key] in ids:
+                return True
+            # 阿拉伯 → 中文（目标标题为「3」时引用「三」）
+            if key in AR2CN and AR2CN[key] in ids:
+                return True
+        return False
+
+    # 2) 预构建目标文档的编号集合（含中文数字别名与字母后缀归一）
+    ids_map: dict[str, set[str]] = {}
+    for name, num2title in heads.items():
+        ids = set(num2title.keys())
+        for t in list(num2title.keys()):
+            if t in CN2AR:
+                ids.add(CN2AR[t])
+            if len(t) > 1 and t[0] in CN2AR:  # 一a → 1a
+                ids.add(CN2AR[t[0]] + t[1:])
+        ids_map[name] = ids
+
+    # 3) 扫描全文
+    bad = 0
+    doc_alt = "|".join(re.escape(k) for k in DOC_NAME_MAP)
+    # 编号引用：数字/中文数字 + 可选点号层级 + 可选字母后缀（一a/二b/3.1/三）
+    bare_num_pat = re.compile(
+        r"(?<!\[)(%s)\s*%s([0-9A-Z一二三四五六七八九十]+(?:\.[0-9]+)*[a-z]?)"
+        % (doc_alt, SECTION_MARK)
+    )
+    # 中文标题引用：§ 后 2+ 汉字（排除编号分支已吃的数字）
+    bare_cn_pat = re.compile(
+        r"(?<!\[)(%s)\s*%s([\u4e00-\u9fa5]{2,14})" % (doc_alt, SECTION_MARK)
+    )
+    quote_pat = re.compile(
+        r"\[[^\]]*\]\(([^)]+\.md)\)[\s]*%s(\d+(?:\.\d+)*)[\s]*[「『]\s*([^」』]{1,16})[\s」』]"
+        % SECTION_MARK
+    )
+    for p in md_files():
+        rel = str(p.relative_to(DOCS)).replace("\\", "/")
+        parts = set(p.relative_to(DOCS).parts)
+        if p.name in SECTION_EXEMPT or "analysis" in parts:
+            continue
+        text = p.read_text(encoding="utf-8")
+        for ln_no, line in enumerate(text.splitlines(), 1):
+            s = line.lstrip()
+            if re.match(r"^\| *0\.0\.", s):  # 版本记录表行
+                continue
+            if "编号迁移" in line or "并入" in line or "保留编号空缺" in line:
+                continue  # 编号迁移注记行（认知基础 §1.5/1.6 空缺自述）
+            # 档 1：裸数字引用（含中文数字/字母后缀）
+            for m in bare_num_pat.finditer(line):
+                name_cn, cit = m.group(1), m.group(2)
+                # 排除已链接格式（链接内由 [2/18] 覆盖）
+                before = line[: m.start()]
+                if before.rstrip().endswith(("](", "](")):
+                    continue
+                if cit in ("X", "X.Y") or cit.startswith("X."):
+                    continue  # §X.Y 占位符（implementation-map 引用约定示例）
+                fname = DOC_NAME_MAP[name_cn]
+                if not _num_in_ids(cit, ids_map.get(fname, set())):
+                    fail(
+                        f"6.26 裸章节引用不存在：{rel} L{ln_no} "
+                        f"`{name_cn} §{cit}`（{fname} 无此章节）"
+                    )
+                    bad += 1
+            # 档 2：中文标题引用（§ 后为纯中文标题词）
+            for m in bare_cn_pat.finditer(line):
+                name_cn, title = m.group(1), m.group(2)
+                before = line[: m.start()]
+                if before.rstrip().endswith(("](", "](")):
+                    continue
+                if title in ("一致", "声明", "为准", "依赖", "界定", "布局", "架构方向"):
+                    continue  # 非标题引用的粘连词
+                fname = DOC_NAME_MAP[name_cn]
+                # 粘连词排除：§三的 / §三） 等（「三」为数字由档 1 捕获，档 2 只处理纯中文标题词）
+                if title[0] in CN2AR:
+                    continue
+                titles = list(heads.get(fname, {}).values())
+                # 双向前缀/包含匹配：标题行以引用词开头（引论方法论声明 → 引论）
+                # 或引用词是标题行子串（持久化 ⊆ ## 持久化）
+                if not any(
+                    t.startswith(title) or title in t or t in title
+                    for t in titles
+                ):
+                    fail(
+                        f"6.26 裸中文标题引用不存在：{rel} L{ln_no} "
+                        f"`{name_cn} §{title}`（{fname} 无含该词的标题行）"
+                    )
+                    bad += 1
+            # 档 3：引号标题语义（链接格式 §X「标题名」）
+            for m in quote_pat.finditer(line):
+                fname = pathlib.Path(m.group(1).split("#")[0]).name
+                if fname not in heads:
+                    continue
+                cit, quote = m.group(2), m.group(3)
+                num2title = heads.get(fname, {})
+                # 引号文字在目标文档全文出现（标题行、加粗机制名、列表项机制名等
+                # 均视为存在）——只报「章节号与标题名错位」类，不报「悬空」类
+                # （悬空判定易与节内机制名形式冲突，留人工）
+                cur = {n: t for n, t in num2title.items()
+                       if n == cit or n.startswith(cit + ".") or cit.startswith(n + ".")}
+                if not any(quote in t for t in cur.values()):
+                    hit_other = [
+                        n for n, t in num2title.items()
+                        if quote in t and not (n == cit or n.startswith(cit + ".") or cit.startswith(n + "."))
+                        # 排除无编号中文标题 key（#### 子标题归父章节，非独立章节）
+                        and not re.match(r"^[\u4e00-\u9fa5]{2,20}$", n)
+                    ]
+                    if hit_other:
+                        fail(
+                            f"6.26 引号标题章节错位：{rel} L{ln_no} "
+                            f"`{fname} §{cit}「{quote}」`（该标题位于 §{hit_other[0]}）"
+                        )
+                        bad += 1
+    # 档 4：链接格式「[文档](路径) §X 机制名」的机制名存在性兜底
+    # （round37 建议落地：6.26 扩展为「引用文本所指机制名在该章节内的
+    # 关键字存在性」校验——防 R37-04~R37-09 类「章节号存在但所指机制
+    # 不在该章节」的悬空引用复发；feature-list「对应架构组件」列由 6.33
+    # 全量覆盖，此处排除该文档并覆盖其余文档的链接格式引用）
+    #
+    # 判定策略（防误报收敛版，多级痕迹校验）：
+    #   1) 候选词（§X 后首个机制名词：连续中文段/英文词，遇「与及或和
+    #      的等为后中」等虚词截断，尾部虚词剥离）在目标文档全文出现 →
+    #      通过（机制存在于文档；「双副本」vs「见证锚定（主副本）与使用
+    #      权重（影子副本）分离」类措辞差异不误报）
+    #   2) 候选词去常用后缀（表/声明/结构/机制/组件/定义/说明/器/化/性/
+    #      注记/协议）的核心词在全文出现 → 通过
+    #   3) 候选词任意连续 3+ 字中文子串出现在目标文档标题行 → 通过
+    #      （「各条推论」→ 架构 §0.3 标题「五条推论」含「推论」）
+    #   4) 以上皆否 → 引用了一个目标文档中无任何痕迹的机制名
+    #      （FAIL——真实悬空，需人工修复引用）
+    sec_blocks: dict[str, dict[str, str]] = {}
+    sec_fulltext: dict[str, str] = {}
+    sec_heads: dict[str, str] = {}
+    for _p in md_files():
+        _text = _p.read_text(encoding="utf-8")
+        sec_blocks[_p.name] = _section_blocks(_text)
+        sec_fulltext[_p.name] = re.sub(r"\[[^\]\n]*\]\([^)\n]*\)", "", _text)  # [^\]]* 限行内（防跨行吞噬代码块内容，round48 修复）
+        sec_heads[_p.name] = "\n".join(
+            l for l in _text.splitlines()
+            if re.match(r"^ {0,3}#{2,6}\s+", l)
+        )
+    link_kw_pat = re.compile(
+        r"\[[^\]]*\]\(([^)]+\.md)\)[\s]*%s([0-9A-Z一二三四五六七八九十]+(?:\.[0-9A-Za-z]+)*(?:-[0-9]+)?[a-z]?)[\s]*([\u4e00-\u9fa5A-Za-z][\u4e00-\u9fa5A-Za-z0-9_\-（）()· ]{1,20})"
+        % SECTION_MARK
+    )
+    # 候选词提取：§X 后首个机制名词（round39 收敛优化）
+    #   1) 括号截断（「§一（社区检测）」→「社区检测」；「§X 机制名）…」→
+    #      「机制名」；括号内为 a-d 类字母段标注（「种子生命周期追踪
+    #      （a-d）」）时忽略括号，回退取括号前文本）
+    #   2) 动词/描述性前缀剥离（「定义了跨层三环不变量」→「跨层三环
+    #      不变量」；「详述生效规则」→「生效规则」；「只覆盖检索」→
+    #      「检索」；「登记契约」→「契约」；「保持规范一致」→「规范
+    #      一致」；「约束认知质量指标」→「认知质量指标」）——round39
+    #      教训：WARN 噪声主要来自「§X 后接动词短语」，剥离动词前缀后
+    #      仅以名词短语作为机制名候选
+    #   3) 虚词截断（「各条推论的认知层定义源」→「各条推论」；「三信号
+    #      混合检索经复审」→「三信号混合检索」）
+    #   4) 尾部虚词/后缀剥离（「配置集矩阵与」→「配置集矩阵」；
+    #      「三信号混合检索权重参数」→「三信号混合检索」；
+    #      「事件类型枚举表确定」→「事件类型枚举表」）
+    _kw_bracket_pat = re.compile(r"[（(]([^（）()]{2,16})[）)]")
+    _vword_split_pat = re.compile(r"(与|及|或|和|的|等|为|后|中|处|并|且|其|经|至|前|内|上|下|以|于|按|依|据)(?=[\u4e00-\u9fa5])")
+    _vword_tail_pat = re.compile(r"(与|及|或|和|的|等|为|后|中|处|并|且|其|经|至|前|内|上|下|以|于|按|依|据|表|声明|结构|机制|组件|定义|说明|器|化|性|注记|协议|参数|状态机|验收|确定|路径|过程|流程|为准)$")
+    # round39：动词/描述性前缀（§X 后常见「动词 + 名词短语」描述语）
+    _verb_prefix_pat = re.compile(
+        r"^(定义了|定义|详述|描述了|描述|登记|保持|约束|只覆盖|仅覆盖|覆盖|新增|预留|已修正|已修复|提供|给出|列出|规定|限制|确保|维持|遵循|符合|设置|实现|承载|指出|提及|记录|说明|负责|承担|描述性|涵盖|包含|涉及|影响|约束了|规定了|给出了|描述了|详述了|明确了|明确了|列出|展示)"
+    )
+
+    def _extract_kw(raw: str) -> str:
+        s = raw.strip()
+        # 0) 取括号内内容（「§一（社区检测）」→「社区检测」）；
+        #    括号内为 a-d 类字母段标注时忽略括号，回退取括号前文本
+        bm = _kw_bracket_pat.search(s)
+        if bm:
+            b_inner = bm.group(1)
+            if re.match(r"^[a-z]-[a-z]$", b_inner):
+                s = s[: bm.start()].strip()
+            else:
+                s = b_inner
+        # 1) 动词/描述性前缀剥离（仅剥离，剥离后剩余须 ≥2 字）
+        pm = _verb_prefix_pat.match(s)
+        if pm:
+            rest = s[pm.end():].strip()
+            if len(rest) >= 2 and re.match(r"[\u4e00-\u9fa5A-Za-z]", rest):
+                s = rest
+        # 2) 虚词截断（取首个虚词前）
+        parts = _vword_split_pat.split(s, 1)
+        if len(parts) == 3:
+            s = parts[0]
+        # 3) 取首个 token（中文连续段或英文词，允许中文·连字符）
+        tm = re.match(r"[\u4e00-\u9fa5·（）()A-Za-z0-9_-]+", s)
+        if not tm:
+            return ""
+        kw = tm.group(0).strip("（）()·")
+        # 4) 尾部虚词/后缀剥离
+        while len(kw) > 2 and _vword_tail_pat.search(kw):
+            kw = _vword_tail_pat.sub("", kw)
+        kw = kw.strip("（）()·")
+        # 5) 残留括号过滤（「g）追加（relation_type」→ 无效候选，返回空）
+        if re.search(r"[（）()]", kw):
+            return ""
+        return kw
+
+    for p in md_files():
+        rel = str(p.relative_to(DOCS)).replace("\\", "/")
+        parts = set(p.relative_to(DOCS).parts)
+        if p.name in SECTION_EXEMPT or p.name == "feature-list.md" or "analysis" in parts:
+            continue
+        text = p.read_text(encoding="utf-8")
+        for ln_no, line in enumerate(text.splitlines(), 1):
+            if re.match(r"^\| *0\.0\.", line.lstrip()):
+                continue
+            for m in link_kw_pat.finditer(line):
+                tgt = m.group(1).split("#")[0]
+                fname = pathlib.Path(tgt).name
+                if fname not in sec_blocks:
+                    continue
+                cit, kw_raw = m.group(2), m.group(3).strip()
+                cand = _extract_kw(kw_raw)
+                if len(cand) < 2:
+                    continue
+                fulltext = sec_fulltext.get(fname, "")
+                # 1) 原文全文出现 → 通过
+                if cand in fulltext:
+                    continue
+                # 2) 去常用后缀核心词 → 通过
+                core = re.sub(r"(表|声明|结构|机制|组件|定义|说明|器|化|性|注记|协议)$", "", cand).strip()
+                if len(core) >= 2 and core in fulltext:
+                    continue
+                # 3) 候选词连续中文段出现在目标文档标题行 → 通过
+                #    （round39 复核：曾改为「任意 3+ 字子串滑动窗口」——
+                #    引入误放行风险——「存储层量子纠缠索引」因含子串
+                #    「存储层」（恰好是 §5 标题）被放行，而「量子纠缠
+                #    索引」完全悬空；恢复「整段连续中文段匹配标题」的
+                #    严格逻辑，避免削弱审计捕获能力）
+                zh_segs = [s for s in re.findall(r"[\u4e00-\u9fa5]{2,}", cand) if len(s) >= 2]
+                heads = sec_heads.get(fname, "")
+                if any(seg in heads for seg in zh_segs):
+                    continue
+                # 3b) 候选词 3-6 字尾缀在目标文档标题行出现 → 通过
+                #    （round40 建议：收敛「修饰语+子节标题」类 WARN——
+                #    「特征标志编码纪律」→ 尾缀「编码纪律」命中「#### 编码
+                #    纪律」（架构 §0.8 L613）；「各条推论」→「条推论」命中
+                #    「### 0.3 五条推论」；「认知质量指标」→「量指标」命中
+                #    「### 10.5 量化指标」。仅取**尾部窗口**非任意子串——
+                #    反例「存储层量子纠缠索引」尾缀不含「存储层」（前缀），
+                #    不误放行；3 字下限防「指标/纪律」类泛化误报）
+                zh_tails = set()
+                for seg in re.findall(r"[\u4e00-\u9fa5]{3,}", cand):
+                    for L in range(3, min(len(seg), 7) + 1):
+                        zh_tails.add(seg[-L:])
+                if any(t in heads for t in zh_tails):
+                    continue
+                # 4) 无任何痕迹 → WARN（软提示，不阻断 exit 0）
+                #    注：全库存在大量「§X 后接章节结构描述/自然语言」的
+                #    链接引用（如「§一 竖切组件列按功能域记」「§10.3
+                #    定义了跨层三环不变量」），候选词提取无法可靠区分
+                #    「机制名」与「描述语」；R37 类真实悬空已由 6.33
+                #    （feature-list 全量，FAIL 级）精准捕获，本检查定位
+                #    为软提示供人工审计，避免误报破坏门禁。
+                warn(
+                    f"6.26 候选机制名「{cand}」未在 {fname} 找到痕迹（{rel} L{ln_no}，§{cit}；若为章节结构描述可忽略）"
+                )
+                bad += 1
+    print(f"[6.26] 通用章节引用存在性与标题语义: {bad} 处引用错位/不存在")
+
+
+def check_section_version_marks() -> None:
+    """6.27 api-spec 章节版本标注完备性（round25 S25-2 落地）。
+
+    api-spec §11~§17 混排 v1.1 预留端点（facts/edge-types/skills/
+    graph-render 等）与 v0.1.0 交付端点（Connectors/Profile/管理导入
+    导出），版本边界全靠各节自行标注——R25-22 中 §13~§17 缺失标注导致
+    「技能管理 API 被误读为 v0.1.0 交付」「graph/render 无承载」歧义。
+    本检查要求 §11~§17 各节标题或定位段（标题后 3 行内）必须出现
+    版本边界关键词之一：`v0.1.0 交付` / `v1.1 预留` / `端点预留` /
+    `P3，v1.1+` / `P3 前瞻` / `v0.1.0 不交付`，缺失即 FAIL。
+    """
+    api_path = DOCS / "specification" / "api-spec.md"
+    if not api_path.is_file():
+        fail("6.27 api-spec.md 不存在")
+        return
+    api = api_path.read_text(encoding="utf-8")
+    lines = api.splitlines()
+    marks = ("v0.1.0 交付", "v1.1 预留", "端点预留", "P3，v1.1+", "P3 前瞻", "v0.1.0 不交付")
+    bad = 0
+    for i, line in enumerate(lines, 1):
+        m = re.match(r"^##\s*%s(\d{2})\s+" % SECTION_MARK, line)
+        if not m:
+            continue
+        sec = m.group(1)
+        if not (11 <= int(sec) <= 17):
+            continue
+        window = "\n".join(lines[i - 1: i + 3])  # 标题 + 后续 3 行（定位段）
+        if not any(mk in window for mk in marks):
+            fail(f"6.27 api-spec §{sec} 缺版本边界标注（标题/定位段须含 "
+                 f"「v0.1.0 交付」/「v1.1 预留」/「端点预留」/「P3，v1.1+」之一）")
+            bad += 1
+    print(f"[6.27] api-spec 章节版本标注完备性: {bad} 节缺标注")
+
+
+def check_contract_consistency() -> None:
+    """6.28 机器可读契约 ↔ api-spec 一致性反查（round26 S26-1 落地）。
+
+    openapi.yaml（AUTO-GENERATED from api-spec.md）与 mcp-tools.json 是
+    api-spec 的机器可读索引，必须与 api-spec 单一事实源对齐；错位会令
+    代码生成 / MCP 注册基于错误契约。逐项反查：
+      ① openapi `paths` 的 (方法, 路径) 集合 ≡ api-spec 登记端点集合
+        （api-spec 为端点单一事实源，见 6.23）；
+      ② 每个 operation 成功响应码 ⊇ api-spec 声明值——骨架近似，
+        deferred（债务 D-428 追踪逐端点收敛），本检查仅 informational
+        注记，不 FAIL；
+      ③ `servers` 端口 ≡ 全库默认端口 8010（ops/deployment.md、
+        user/quick-start.md 口径）；
+      ④ `securitySchemes` ≡ 单一 bearerAuth（type http, scheme bearer），
+        与 api-spec §1 认证方式一致。
+    另：mcp-tools.json 各 `mapsTo` 端点 ⊆ api-spec 登记端点（MCP-only
+    工具豁免——无 REST 端点映射）。
+    """
+    api_path = DOCS / "specification" / "api-spec.md"
+    oa_path = DOCS / "specification" / "api-contract" / "openapi.yaml"
+    mcp_path = DOCS / "specification" / "api-contract" / "mcp-tools.json"
+    if not api_path.is_file():
+        fail("6.28 api-spec.md 不存在，无法反查契约一致性")
+        return
+    api = api_path.read_text(encoding="utf-8")
+    registered: set[tuple[str, str]] = set()
+    for m in re.finditer(
+        r"^(?:\*{2}|###\s*)(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+([^\s*]+)",
+        api, re.M,
+    ):
+        registered.add((m.group(1), m.group(2).split("?")[0].rstrip("/")))
+
+    oa_ops: set[tuple[str, str]] = set()
+    if not oa_path.is_file():
+        fail("6.28 openapi.yaml 不存在，无法反查契约一致性")
+    else:
+        oa = oa_path.read_text(encoding="utf-8")
+        cur_path = ""
+        in_paths = False
+        for line in oa.splitlines():
+            if re.match(r"^[a-zA-Z_]+:", line):  # 顶层键
+                in_paths = line.startswith("paths:")
+                continue
+            if not in_paths:
+                continue
+            mp = re.match(r"^  (/[^:\s][^:]*):\s*$", line)
+            if mp:
+                cur_path = mp.group(1).rstrip("/")
+                continue
+            mm = re.match(r"^    (get|post|put|patch|delete|head|options):", line, re.I)
+            if mm and cur_path:
+                oa_ops.add((mm.group(1).upper(), cur_path))
+        if oa_ops != registered:
+            for op in sorted(registered - oa_ops):
+                fail(f"6.28 openapi 缺 api-spec 登记端点：{op[0]} {op[1]}")
+            for op in sorted(oa_ops - registered):
+                fail(f"6.28 openapi 含未登记端点（api-spec 无对应）：{op[0]} {op[1]}")
+        # ③ servers 端口
+        port_m = re.search(r"url:\s*https?://[^:\s]+:(\d+)", oa)
+        if port_m:
+            if port_m.group(1) != "8010":
+                fail(f"6.28 openapi servers 端口 {port_m.group(1)} ≠ 全库默认 8010")
+        else:
+            fail("6.28 openapi servers 未声明端口（默认 8010）")
+        # ④ securitySchemes ≡ 单一 bearerAuth
+        sm = re.search(r"securitySchemes:(.*?)(?=^[a-zA-Z_]+:|\Z)", oa, re.S | re.M)
+        if not sm:
+            fail("6.28 openapi 缺 securitySchemes 段")
+        else:
+            block = sm.group(1)
+            if not re.search(r"^\s+bearerAuth:\s*$", block, re.M):
+                fail("6.28 openapi securitySchemes 缺 bearerAuth（须与 api-spec §1 单一 bearerAuth 一致）")
+            elif "type: http" not in block or "scheme: bearer" not in block:
+                fail("6.28 openapi bearerAuth 须 type: http + scheme: bearer（与 api-spec §1 一致）")
+        # ② deferred 注记（D-428）
+        if "SkeletonResponse" in oa:
+            print("[6.28] 响应码逐项⊇声明值：deferred（骨架近似，债务 D-428 追踪逐端点收敛，本检查不 FAIL）")
+
+    # mcp-tools.json mapsTo ⊆ registered
+    if mcp_path.is_file():
+        import json
+        mcp = json.loads(mcp_path.read_text(encoding="utf-8"))
+        for t in mcp.get("tools", []):
+            if "mapsTo" not in t:
+                continue  # MCP-only 工具豁免
+            mm = re.match(r"(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+(\S+)", t["mapsTo"])
+            if not mm:
+                if str(t["mapsTo"]).strip().lower().startswith("mcp-only"):
+                    continue  # 显式 MCP-only 豁免标记（无独立公开 REST 端点）
+                warn(f"6.28 mcp 工具 {t.get('name')} mapsTo 格式异常：{t['mapsTo']}")
+                continue
+            key = (mm.group(1), mm.group(2).rstrip("/"))
+            if key not in registered:
+                fail(f"6.28 mcp 工具 {t.get('name')} mapsTo 端点未登记于 api-spec：{key[0]} {key[1]}")
+    print(f"[6.28] 机器可读契约 ↔ api-spec 一致性反查: api-spec 端点={len(registered)} openapi 操作={len(oa_ops)}")
+
+
+def check_error_code_sets() -> None:
+    """6.29 跨文档错误码集合一致性（round26 S26-2 落地）。
+
+    错误码全集权威在 references/error-reference.md（42 个，11 类）。
+    ops/troubleshooting.md §三 错误码速查为同一全集的运维视图；
+    api-spec §7 声明为 HTTP 子集（非全量，全量以 error-reference 为准）。
+    故采用：error-reference ≡ troubleshooting 全集合相等 + api-spec §7 ⊆
+    error-reference 子集。任一差集非空即 FAIL（防 ERR-XXX 增删后三处表体
+    不同步的复发）。
+    """
+    err_ref_path = DOCS / "references" / "error-reference.md"
+    ts_path = DOCS / "ops" / "troubleshooting.md"
+    api_path = DOCS / "specification" / "api-spec.md"
+    if not (err_ref_path.is_file() and ts_path.is_file() and api_path.is_file()):
+        fail("6.29 错误码源文件缺失（error-reference/troubleshooting/api-spec）")
+        return
+    err_ref = err_ref_path.read_text(encoding="utf-8")
+    ts = ts_path.read_text(encoding="utf-8")
+    api = api_path.read_text(encoding="utf-8")
+    code_pat = r"ERR-[A-Z]{2,5}-\d{3}"
+    E = set(re.findall(code_pat, err_ref))
+    T = set(re.findall(code_pat, ts))
+    i7 = api.find("## " + SECTION_MARK + "7")
+    if i7 >= 0:
+        rest = api[i7:]
+        i8 = rest.find("## " + SECTION_MARK + "8")
+        sec7 = rest[:i8] if i8 >= 0 else rest
+    else:
+        sec7 = ""
+    S = set(re.findall(code_pat, sec7))
+    bad = 0
+    if E != T:
+        for c in sorted(E - T):
+            fail(f"6.29 错误码 {c} 在 error-reference 但不在 troubleshooting（两处全集须一致）")
+            bad += 1
+        for c in sorted(T - E):
+            fail(f"6.29 错误码 {c} 在 troubleshooting 但不在 error-reference（两处全集须一致）")
+            bad += 1
+    if not S <= E:
+        for c in sorted(S - E):
+            fail(f"6.29 错误码 {c} 在 api-spec §7 但不在 error-reference 全集（§7 须为子集）")
+            bad += 1
+    print(f"[6.29] 跨文档错误码集合一致性: error-reference={len(E)} troubleshooting={len(T)} api-spec§7={len(S)} 差集={bad}")
+
+
+def check_example_discipline() -> None:
+    """6.30 示例代码纪律（round26 S26-3 落地）。
+
+    文档纪律须覆盖示例代码（CLI/SDK）：示例命令的参数与枚举值须可追溯
+    api-spec，防「示例写错参数/枚举」类事实错误复发。
+      ① 围栏代码块内 `kairos write` 真实调用（write 后接非选项参数）须在同
+        一块内含 `--source`（S-15 provenance 必填，缺失返回 422；api-spec §3
+        CLI 表）——缺则 FAIL；
+      ② 围栏代码块内 `calibration_status` 字段赋值字面量须为规范四值
+        {healthy, degraded, virtual, dormant}（api-spec §6.5 / user-guide
+        枚举注记）——非规范值 FAIL。
+    豁免：行内命令名列举（如 `kairos write` 裸名）、blockquote 草稿声明、
+    表格单元格示例（非围栏块）不计入；围栏块外的提及不视为调用示例。
+    """
+    fence_re = re.compile(r"^\s*(```|~~~)")
+    cal_canon = {"healthy", "degraded", "virtual", "dormant"}
+    bad = 0
+    for p in md_files():
+        lines = p.read_text(encoding="utf-8").splitlines()
+        in_fence = False
+        buf = []
+        for line in lines:
+            m = fence_re.match(line)
+            if m:
+                if not in_fence:
+                    in_fence = True
+                    buf = []
+                else:
+                    txt = "\n".join(buf)
+                    if "kairos write" in txt and "--source" not in txt:
+                        for bl in buf:
+                            if re.search(r"kairos write\s+\S", bl) and not re.search(r"kairos write\s+--", bl):
+                                fail(f"6.30 围栏示例缺 --source：{p.name} `kairos write` 调用须含 --source（S-15 必填，api-spec §3）")
+                                bad += 1
+                                break
+                    for mm in re.finditer(r"calibration_status\s*[:=]\s*['\"]?([a-zA-Z_]+)['\"]?", txt):
+                        if mm.group(1) not in cal_canon:
+                            fail(f"6.30 围栏示例 calibration_status 非规范值：{p.name} `{mm.group(1)}`（须为 healthy/degraded/virtual/dormant，api-spec §6.5）")
+                            bad += 1
+                    in_fence = False
+            elif in_fence:
+                buf.append(line)
+    print(f"[6.30] 示例代码纪律: {bad} 处示例参数/枚举违规")
+
+
+def check_punctuation_discipline() -> None:
+    """6.31 中文正文半角标点纪律（round30 落地）。
+
+    中文正文须使用全角标点。检测紧邻中文字符的半角标点
+    （`, ; ! ?`），即 CJK[,;!?]CJK 形态，归一为全角。
+    排除（防误报）：
+      ① 围栏代码块（``` / ~~~）内不扫描；
+      ② 行内代码（`...`）相邻处不计入；
+      ③ ASCII 括号表达式内（如 `(100ms)`、元组/区间记法）不计入。
+    例外目录：analysis/（外部理念对照产物，含视频原文引号，非权威正文）。
+    """
+    CJK = "\u4e00-\u9fff"
+    MAP = {",": "，", ";": "；", "!": "！", "?": "？"}
+    PAT = re.compile(rf"(?<=[{CJK}])([,;!?])(?=[{CJK}])")
+    bad = 0
+    for p in md_files():
+        if "analysis" in p.relative_to(DOCS).parts:
+            continue
+        lines = p.read_text(encoding="utf-8").splitlines()
+        in_fence = False
+        for i, raw in enumerate(lines):
+            s = raw.strip()
+            if s.startswith("```") or s.startswith("~~~"):
+                in_fence = not in_fence
+                continue
+            if in_fence:
+                continue
+            # 行内代码哨兵：替换为非空白 \x00，避免与中文相邻误判
+            masked = []
+            in_code = False
+            for ch in raw:
+                if ch == "`":
+                    in_code = not in_code
+                    masked.append("\x00")
+                else:
+                    masked.append("\x00" if in_code else ch)
+            masked = "".join(masked)
+            for m in PAT.finditer(masked):
+                depth = 0
+                for ch in masked[: m.start()]:
+                    if ch in "([":
+                        depth += 1
+                    elif ch in ")]":
+                        depth = max(0, depth - 1)
+                if depth > 0:
+                    continue
+                fail(
+                    f"6.31 中文正文半角标点：{p.relative_to(DOCS)} 第 {i+1} 行 "
+                    f"含半角 {m.group(1)}（应全角 {MAP[m.group(1)]}）：{raw.strip()[:60]}"
+                )
+                bad += 1
+    print(f"[6.31] 中文正文半角标点纪律: {bad} 处违规")
+
+
+def check_gov_exec_record() -> None:
+    """6.32 治理执行记录覆盖性（0.0.71 补盲区，round35 R35-01 防复发）。
+
+    自引用快照纪律：documentation-governance §3「执行记录（设计阶段）」
+    是审计轮次的自引用快照，必须在每次 changelog 新批次后补记含最新批次
+    （round33 立「含自身批次」纪律、round35 重演捕获——执行记录滞后于
+    最新 changelog 批次即判 FAIL）。检查逻辑：
+      ① 取 changelog 版本记录表最新版本号（| 0.0.NN | 行最大值）；
+      ② 验证 documentation-governance 执行记录引用块包含该版本号。
+    豁免边界（防误报）：
+      - changelog 无版本记录行（异常态）时不判；
+      - 执行记录引用块缺失本身即 FAIL（自引用快照不存在）；
+      - 版本号以字符串包含匹配（0.0.NN 形态不会与更大版本号前缀混淆）。
+    """
+    changelog = DOCS / "governance" / "changelog.md"
+    gov = DOCS / "governance" / "documentation-governance.md"
+    cl_text = changelog.read_text(encoding="utf-8")
+    gv_text = gov.read_text(encoding="utf-8")
+    vers = re.findall(r"^\| (0\.0\.\d+) \|", cl_text, re.M)
+    if not vers:
+        print("[6.32] 治理执行记录覆盖性: changelog 无版本记录（跳过）")
+        return
+    latest = max(vers, key=lambda v: [int(x) for x in v.split(".")])
+    m = re.search(r"> \*\*执行记录（设计阶段）\*\*[^\n]*", gv_text)
+    if not m:
+        fail("6.32 治理执行记录缺失（documentation-governance §3 应含「执行记录（设计阶段）」自引用快照）")
+        print("[6.32] 治理执行记录覆盖性: 执行记录引用块缺失（FAIL）")
+        return
+    rec = m.group(0)
+    if latest not in rec:
+        fail(f"6.32 治理执行记录未覆盖最新 changelog 批次 {latest}（自引用快照须含最新批次，round35 R35-01 防复发）")
+    print(f"[6.32] 治理执行记录覆盖性: 最新批次 {latest}，执行记录{'已覆盖' if latest in rec else '滞后'}")
+
+
+def check_changelog_structure() -> None:
+    """6.34 changelog 结构纪律（0.0.82 落 round43 §四 4.4 S43-3，防 R43-09/10 复发）。
+
+    检查逻辑：
+      ① 叙述节版本号单调升序：changelog 正文 `## 0.0.N（...）` 按出现顺序提取 N，
+         必须严格递增（倒置即 FAIL）；
+      ② `## 版本记录` 标题须紧邻其表体——标题与首条 `| 版本 |` 表头之间
+         不得插入其它 `## X.Y.Z` 节（中间只允许空白行）。
+    豁免：changelog 无叙述节时不判。
+    """
+    cl = DOCS / "governance" / "changelog.md"
+    text = cl.read_text(encoding="utf-8")
+    nar = re.findall(r"^## (0\.0\.\d+)[（(]", text, re.M)
+    bad = 0
+    for i in range(1, len(nar)):
+        a = [int(x) for x in nar[i - 1].split(".")]
+        b = [int(x) for x in nar[i].split(".")]
+        if b < a:
+            fail(f"6.34 changelog 叙述节顺序倒置：{nar[i-1]} 在 {nar[i]} 之前出现（须升序，R43-09 防复发）")
+            bad += 1
+            break
+    m = re.search(r"^## 版本记录\s*$", text, re.M)
+    if m:
+        rest = text[m.end():]
+        nxt = re.search(r"^## ", rest, re.M)
+        seg = rest[: nxt.start()] if nxt else rest
+        if not re.search(r"^\| *版本 *\|", seg, re.M):
+            fail("6.34 changelog `## 版本记录` 标题未紧邻版本表体（中间插入了其它 `##` 节，R43-10 防复发）")
+            bad += 1
+    print(f"[6.34] changelog 结构纪律（S43-3）: 叙述节 {len(nar)} 个{'升序合规' if bad == 0 else '异常 ' + str(bad)}；版本记录邻接{'合规' if bad == 0 else '异常'}")
+
+
+def check_redline_mutex() -> None:
+    """6.35 红线语义互斥词对检查（0.0.82 落 round43 §四 4.4 S43-1 试点）。
+
+    维护「禁止性红线关键短语 ↔ 违例措辞」词对表；全库扫描违例措辞，
+    若某行出现该措辞且该行无否定词（不/未/无/禁/勿/避/免/否/拒/阻）则 FAIL。
+    试点仅含 S-14 一对：红线禁止「内部使用权重反向写回主副本」，违例措辞为
+    肯定式「合并回/至主副本」「写回主副本」「回写主副本」「回主副本」。
+    否定行（如「不得合并回主副本」描述规则本身）跳过以避免误报。
+    """
+    pairs = [
+        ("S-14", [r"合并[至回]主副本", r"写回主副本", r"回写主副本", r"回主副本"]),
+    ]
+    neg = re.compile(r"[不未无禁勿避免否拒阻]")
+    hits = 0
+    for p in pathlib.Path(DOCS).rglob("*.md"):
+        try:
+            lines = p.read_text(encoding="utf-8").split("\n")
+        except Exception:
+            continue
+        for i, line in enumerate(lines):
+            for _, pats in pairs:
+                for pat in pats:
+                    if re.search(pat, line) and not neg.search(line):
+                        fail(
+                            f"6.35 红线语义互斥（S-14）：{p.relative_to(DOCS)} 第 {i+1} 行 "
+                            f"含违例措辞「{pat}」且无否定词（内部信号不得写回主副本，S-14）"
+                        )
+                        hits += 1
+    print(f"[6.35] 红线语义互斥词对检查（S43-1 试点）: {hits} 处违例")
+
+
+# ---------------------------------------------------------------------------
+# 0.0.84 门禁扩展（round46 结构性建议 S45-1/S45-2/S45-3 落地）
+# ---------------------------------------------------------------------------
+# S45-1 版本归属互斥检查（6.36）
+_LANDED_RE = re.compile(r"已落地|已实现|已支持|已交付|已实施|首迭代实现")
+_UNLANDED_RE = re.compile(r"未落地|未实现|未支持|未交付|未实施|完全未实现|完全未落地")
+# 契约枚举值（data-model.md L69 / 架构 §3.x）：普通英文词，需词边界精准匹配
+_CONTRACT_VALUES = {"permanent", "ondemand", "environmental", "temporary", "intention"}
+_ENT_BACKTICK = re.compile(r"`([A-Za-z0-9_]+)`")
+_ENT_SNAKE = re.compile(r"(?<![A-Za-z0-9_])([a-z][a-z0-9]*(?:_[a-z0-9]+){1,})(?![A-Za-z0-9_])")
+_INTENTION_RE = re.compile(r"(?<![A-Za-z0-9_])intention(?![A-Za-z0-9_])")
+# 豁免：历史叙述 / 未来规划 / 债务账目 / 审计产物报告（差异描述是合规的）
+_S45_EXEMPT = {"changelog.md", "architecture-blueprint-v1.1.md", "debt-collection.md"}
+
+
+def _endpoint_registry(text: str) -> set[str]:
+    """从 api-spec 抽取端点登记（与 6.23/6.28 同口径）。"""
+    eps: set[str] = set()
+    for m in re.finditer(
+        r"^(?:\*{2}|###\s*)(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+([^\s*]+)",
+        text, re.M,
+    ):
+        eps.add(f"{m.group(1)} {m.group(2).split('?')[0].rstrip('/')}")
+    return eps
+
+
+def check_version_mutex() -> None:
+    """6.36 版本归属互斥检查（round46 S45-1 落地）。
+
+    对同一实体（端点 / 契约值 / 事件类型 / 表字段 / 通用命名实体），若其在
+    全库权威设计文档中同时被赋予「已落地/v0.1.0」与「未落地/v1.1+」两类显式
+    版本归属判断，则构成自相矛盾——直接对应 round45 两项高风险（R45-01 契约
+    能力粒度、R45-02 事件枚举范围）的共同根因「版本标签与规格内容脱节」。
+
+    机制：自举式倒排索引。仅对「同一行内同时含实体名与显式版本归属动词」的
+    位置建立 实体 → {landed, unlanded} 标签集合；同行内同时出现两标签（多为
+    「不是未落地，而是已落地」式澄清句）不计入；跨文档或同文档不同行出现两
+    标签即 WARN。
+
+    已晋升 FAIL（round46 首轮 WARN 观察一轮——round47 全库 0 违例，round48 晋升
+    FAIL，对齐报告 §4.4 S45-1 原始 FAIL 意图）。
+
+    豁免文档：changelog（历史叙述）、blueprint-v1.1（未来规划）、
+    debt-collection（债务账目）、analysis/（外部对照产物）、版本记录表行
+    （`| 0.0.x |`）——这些对 v0.1.0/v1.1+ 的差异描述是合规的，不构成矛盾。
+    """
+    api_path = DOCS / "specification" / "api-spec.md"
+    endpoints: set[str] = set()
+    if api_path.is_file():
+        endpoints = _endpoint_registry(api_path.read_text(encoding="utf-8"))
+
+    # 实体 → 文档 → {标签集合}
+    inv: dict[str, dict[str, set[str]]] = {}
+
+    def tag(entity: str, doc: str, kind: str) -> None:
+        inv.setdefault(entity, {}).setdefault(doc, set()).add(kind)
+
+    for p in md_files():
+        rel = str(p.relative_to(DOCS)).replace("\\", "/")
+        parts = set(p.relative_to(DOCS).parts)
+        if p.name in _S45_EXEMPT or "analysis" in parts:
+            continue
+        try:
+            text = p.read_text(encoding="utf-8")
+        except Exception:
+            continue
+        for line in text.split("\n"):
+            s = line.lstrip()
+            if re.match(r"^\| *0\.0\.", s):  # 版本记录表行（历史叙述）
+                continue
+            landed = _LANDED_RE.search(line)
+            unlanded = _UNLANDED_RE.search(line)
+            if landed and unlanded:
+                continue  # 同行澄清句，跳过
+            if not (landed or unlanded):
+                continue
+            found: set[str] = set()
+            for m in _ENT_BACKTICK.finditer(line):
+                found.add(m.group(1))
+            for m in _ENT_SNAKE.finditer(line):
+                found.add(m.group(1))
+            if _INTENTION_RE.search(line):
+                found.add("intention")
+            for ev in endpoints:
+                if ev in line:
+                    found.add(ev)
+            for ent in found:
+                if len(ent) < 3:
+                    continue
+                if landed:
+                    tag(ent, rel, "landed")
+                if unlanded:
+                    tag(ent, rel, "unlanded")
+
+    hits = 0
+    for ent, docs in inv.items():
+        kinds: set[str] = set()
+        for k in docs.values():
+            kinds |= k
+        if "landed" in kinds and "unlanded" in kinds:
+            where = "; ".join(f"{d}:{'/'.join(sorted(v))}" for d, v in docs.items())
+            fail(f"6.36 版本归属互斥：实体「{ent}」同时被标为已落地与未落地（{where}）")
+            hits += 1
+    print(f"[6.36] 版本归属互斥检查（S45-1）: {hits} 处实体跨文档/跨章节版本标签矛盾")
+
+
+def check_table_scope_consistency() -> None:
+    """6.37 表格内容与引言范围词一致性（round46 S45-2 落地）。
+
+    若某表格的紧邻引言含**排他性上限限定词**「仅列 / 仅含」并附带明确计数
+    「N 类/项/种/个/条」，而其后紧跟的表格数据行数 > N，则引言的范围限定
+    与表格实际内容不一致（典型如 round45 R45-02：引言写「仅列核心类型」却
+    表列全部 10 类）——WARN。
+
+    仅对排他性「仅列/仅含」触发；「核心 / 部分 / 首迭代 / 仅 N 项（其中）」
+    等描述「表中子集」或「另一张表」的软词不触发（此类计数本就不等于表体行
+    数，误报率高）。已晋升 FAIL（round46 首轮 WARN 观察一轮——round47 全库
+    0 违例，round48 晋升，保守口径维持不变）。
+    """
+    upper_qual = re.compile(
+        r"(仅列|仅含)\D{0,12}?(\d+)\s*(类|项|种|个|条)"
+    )
+    hits = 0
+    for p in md_files():
+        rel = str(p.relative_to(DOCS)).replace("\\", "/")
+        parts = set(p.relative_to(DOCS).parts)
+        if p.name in _S45_EXEMPT or "analysis" in parts:
+            continue
+        try:
+            lines = p.read_text(encoding="utf-8").split("\n")
+        except Exception:
+            continue
+        for i, line in enumerate(lines):
+            # 检测表格起始：当前行以 | 开头且下一行是表头分隔行
+            if not line.lstrip().startswith("|"):
+                continue
+            nxt = lines[i + 1].lstrip() if i + 1 < len(lines) else ""
+            if not re.match(r"^\|?[\s:|-]+\|[\s:|-]+\|", nxt):
+                continue
+            # 取表格前 1~3 个非空行作为引言
+            intro = ""
+            j = i - 1
+            cnt = 0
+            while j >= 0 and cnt < 3:
+                if lines[j].strip():
+                    intro = lines[j].strip() + " " + intro
+                    cnt += 1
+                j -= 1
+            m = upper_qual.search(intro)
+            if not m:
+                continue
+            claimed = int(m.group(2))
+            # 统计数据行：从表头分隔行之后算起，直到非 | 行
+            rows = 0
+            k = i + 2
+            while k < len(lines) and lines[k].lstrip().startswith("|"):
+                rows += 1
+                k += 1
+            if rows > claimed:
+                fail(
+                    f"6.37 表格范围词不一致：{rel} 引言称「{m.group(0)}」"
+                    f"但后续表格实有 {rows} 数据行（> {claimed}）"
+                )
+                hits += 1
+    print(f"[6.37] 表格内容与引言范围词一致性（S45-2）: {hits} 处引言范围限定与表体行数不符")
+
+
+def check_threshold_self_consistency() -> None:
+    """6.38 阈值型监控规则自洽性（round46 S45-3 落地）。
+
+    对「指标 / 阈值 / 触发动作」三列监控表，若同文档存在该指标的当前值声明
+    且当前值已越过阈值（监控规则在交付态即恒触发、自毁），则 WARN——对应
+    round45 R45-03「阈值型监控自毁」根因。
+
+    仅当阈值可解析为简单数值（可带 %）且同文档能定位到显式当前值声明
+    （当前/已达/已知/现状/为/＝ + 数值）时才判定，解析失败的模糊情形跳过
+    （保守，避免误报）。已晋升 FAIL（round46 首轮 WARN 观察一轮——round47
+    全库 0 违例，round48 晋升，保守口径维持不变）。
+    """
+    mon_header = re.compile(r"指标.*阈值.*触发|阈值.*指标.*触发|监控.*指标.*阈值")
+    num = r"(\d+(?:\.\d+)?)\s*%?"
+    cur_pat = re.compile(
+        r"(?:当前|已达|已知|现状|目前)\D{0,15}?(" + num + r")|"
+        r"([A-Za-z_一-龥]{1,20}?)\s*(?:为|＝|=|已达|当前)\s*(" + num + r")"
+    )
+    hits = 0
+    for p in md_files():
+        rel = str(p.relative_to(DOCS)).replace("\\", "/")
+        parts = set(p.relative_to(DOCS).parts)
+        if p.name in _S45_EXEMPT or "analysis" in parts:
+            continue
+        try:
+            text = p.read_text(encoding="utf-8")
+        except Exception:
+            continue
+        lines = text.split("\n")
+        for i, line in enumerate(lines):
+            if not line.lstrip().startswith("|"):
+                continue
+            nxt = lines[i + 1].lstrip() if i + 1 < len(lines) else ""
+            if not re.match(r"^\|?[\s:|-]+\|[\s:|-]+\|", nxt):
+                continue
+            if not mon_header.search(line):
+                continue
+            # 解析表头列位置
+            header = [c.strip() for c in line.strip().strip("|").split("|")]
+            try:
+                mi = header.index("指标")
+                ti = header.index("阈值")
+            except ValueError:
+                continue
+            k = i + 2
+            while k < len(lines) and lines[k].lstrip().startswith("|"):
+                cells = [c.strip() for c in lines[k].strip().strip("|").split("|")]
+                if len(cells) <= max(mi, ti):
+                    k += 1
+                    continue
+                metric = cells[mi]
+                thr = re.search(num, cells[ti])
+                if not metric or not thr:
+                    k += 1
+                    continue
+                try:
+                    threshold = float(thr.group(1))
+                except ValueError:
+                    k += 1
+                    continue
+                # 在同文档搜索该指标的当前值声明
+                cur_m = cur_pat.search(text)
+                # 仅当声明中出现的名词与指标名有足够重叠时才采信
+                if cur_m:
+                    val = cur_m.group(1) or cur_m.group(3)
+                    noun = cur_m.group(2) or ""
+                    if val and (metric[:2] in noun or noun[:2] in metric) and len(metric) >= 2:
+                        try:
+                            cur_val = float(val)
+                        except ValueError:
+                            k += 1
+                            continue
+                        if cur_val >= threshold:
+                            fail(
+                                f"6.38 阈值监控自洽性：{rel} 指标「{metric}」"
+                                f"当前值 {cur_val} 已 ≥ 阈值 {threshold}（交付态恒触发）"
+                            )
+                            hits += 1
+                k += 1
+    print(f"[6.38] 阈值型监控规则自洽性（S45-3）: {hits} 处监控规则交付态即越阈")
+
+
 def main() -> int:
     global DOCS
     if len(sys.argv) > 1:
@@ -1141,6 +2854,7 @@ def main() -> int:
     check_numeric()
     check_ddl_fields()
     check_mechanism_sections()
+    check_feature_list_refs()
     check_hard_line_refs()
     check_mcp_tool_rows()
     check_line_endings()
@@ -1159,6 +2873,24 @@ def main() -> int:
     check_changelog_sync()
     check_anchors()
     check_frontmatter()
+    check_feature_flag_count()
+    check_falsification_carry()
+    check_self_imposed_gate_debt()
+    check_endpoint_source()
+    check_endpoint_section()
+    check_cognitive_deprovision()
+    check_section_refs()
+    check_section_version_marks()
+    check_contract_consistency()
+    check_error_code_sets()
+    check_example_discipline()
+    check_punctuation_discipline()
+    check_gov_exec_record()
+    check_changelog_structure()
+    check_redline_mutex()
+    check_version_mutex()
+    check_table_scope_consistency()
+    check_threshold_self_consistency()
     print("-" * 60)
     for w in WARNS:
         print("[WARN]", w)

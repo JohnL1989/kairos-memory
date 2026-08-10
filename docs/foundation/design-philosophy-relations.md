@@ -7,8 +7,8 @@ tags:
   - 理念
   - 设计
 created: 2026-07-19
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-09
+last_reviewed: 2026-08-09
 status: draft
 ---
 
@@ -107,7 +107,7 @@ status: draft
 | 宪法主权面 | 价值独立性公理 | S-14 语境自指禁令不可被任何内部决策覆盖 |
 | 价值独立性公理 | 辞典式排序 | 排序链中"探索>宪法>校准>认知完整性>时间>间接度"为六级链+身份面否决权（详见架构 [architecture-v0.1.0.md](architecture-v0.1.0.md) §3.3 辞典式裁决器），突出见证优先于使用的核心理念 |
 | 价值独立性公理 | P1-P4 | P1 承认使用价值但不允许使用改写见证 |
-| 辞典式排序 | 分域真理观 | 跨域冲突时由辞典式排序在不可支配集上选定默认项（D-01 修订后不再表述为「兜底裁决」——前沿全集随结果保留） |
+| 辞典式排序 | 分域真理观 | 跨域冲突时由辞典式排序在不可支配集上选定默认项（决策 D-01 修订后不再表述为「兜底裁决」——前沿全集随结果保留） |
 | 分域真理观 | 保守倾向 | 跨域回退规则由分域真理观的规范真理定位决定 |
 | 保守倾向 | P5 探索 | 保守倾向与 P5 为正交决策变量（认知基础 E.5）：P5 决定「方向」（探索路径选择），保守倾向决定「上限」（预算风险控制）；两者在平局场景下协作用于控制探索扩张 |
 | 保守倾向 | 上下文腐烂（CRI） | CRI 超阈时保守倾向自动增强（平局→NO-OP 适用于决策，CRI 驱动的检索深度降级适用于执行） |
@@ -129,7 +129,7 @@ status: draft
 | 冲突双方 | 张力性质 | 管理机制 |
 |:---------|:---------|:---------|
 | P1（使用定义价值） vs 价值独立性公理 | 使用价值主导操作 vs 见证价值不可被使用覆盖 | 分域真理观：操作层实用论主导，冲突层符合论兜底 |
-| P5（探索） vs 保守倾向 | 探索扩展边界 vs 保守不引入风险 | 探索安全边界（认知基础 E.5：不挤占核心记忆） + 保守偏向告警 |
+| P5（探索） vs 保守倾向 | 探索扩展边界 vs 保守不引入风险 | 探索安全边界（认知基础 §2.2 硬约束 3：探索投资不进入使用价值排序） + 保守偏向告警 |
 | 他律性约束 vs 突破上限目标 | 外部依赖 vs 自主演化 | 弱有界自省声明 + 三阶段演进（纯他律→受限自主→混合自主） |
 | 构造主体立场 vs 他律性 | 身份持续建构 vs 外部校准锚定 | 已决策（v0.1.0 构造论）：初始赋予依赖外部校准锚定，持续建构受他律性校准供给约束——外部校准是身份初始赋予与校准修正的唯一外部锚点，二者不冲突 |
 
@@ -140,8 +140,8 @@ status: draft
 ```text
 认知基础理念 → 架构约束 → 架构组件 → 验证机制
 
-例 1: 价值独立性公理 → S-14 语境自指禁令 → 见证锚定/使用权重双副本分离 → architecture-v0.1.0.md §5 差异检验
-例 2: 辞典式排序 → 六级链+身份面否决权为宪法级约束 → architecture-v0.1.0.md §3.3 辞典式裁决器 → architecture-v0.1.0.md §3.3 序数压制幅度记录 + 排列漂移审计
+例 1: 价值独立性公理 → S-14 语境自指禁令 → 见证锚定/使用权重双副本分离 → architecture-v0.1.0.md §5.5 差异检验
+例 2: 辞典式排序 → 六级链+身份面否决权为宪法级约束 → architecture-v0.1.0.md §3.3 辞典式裁决器 → architecture-v0.1.0.md §3.3 序数幅度差记录 + 运行期漂移审计
 例 3: 分域真理观 → 三域三真理路由规则 → architecture-v0.1.0.md §3.2.1 真理路由器（分域真理路由）→ 域切换条件判定 + 跨域默认项选择（决策 D-01）
 例 4: P6 → 禁止无声丢失维度信息 → 受控例外标注 + 多维表征保留 → E.7 统一审计框架
 ```
@@ -153,18 +153,18 @@ status: draft
 | 理念 | 认知基础声明 | 附录声明 | 架构承载 |
 |:----|:------------|:--------|:---------|
 | 他律性约束 | §三 他律性约束声明 | E.8 升级路径 | [architecture-v0.1.0.md](architecture-v0.1.0.md) §10.9 降级状态机 |
-| 价值独立性公理 | 附录 C.5 否决权模型（原双轨切换已替代为否决权正交模型） | — | [architecture-v0.1.0.md](architecture-v0.1.0.md) §8（安全红线 S-14）+ §5.5 差异检验 |
-| 辞典式排序 | 附录 E.3 | E.3 排序弹性 | [architecture-v0.1.0.md](architecture-v0.1.0.md) §3.3 裁决器 |
+| 价值独立性公理 | 附录 C.5 否决权正交模型 | — | [architecture-v0.1.0.md](architecture-v0.1.0.md) §8（安全红线 S-14）+ §5.5 差异检验 |
+| 辞典式排序 | §2.1 六级排序链规范性选择声明 | 附录 E.3 排序弹性 | [architecture-v0.1.0.md](architecture-v0.1.0.md) §3.3 裁决器 |
 | P1-P5 | 认知基础 [cognitive-foundation.md](cognitive-foundation.md) §2.2 设计原则 | — | [architecture-v0.1.0.md](architecture-v0.1.0.md) §0.6 映射表 |
 | P6 | 认知基础 [cognitive-foundation.md](cognitive-foundation.md) §2.3 方法论保障 | E.7 | §3.3 受控例外（架构层已登记的 P6 例外） |
 | 分域真理观 | 附录 C.6 | C.6 | [architecture-v0.1.0.md](architecture-v0.1.0.md) §3.2.1 真理路由器 |
 | 保守倾向 | 附录 E.5 | E.5 | [architecture-v0.1.0.md](architecture-v0.1.0.md) §3.3 保守倾向闸门 |
-| 认知关节 | 附录 E.2 | E.2 | [architecture-v0.1.0.md](architecture-v0.1.0.md) §0.5 认知关节索引 |
+| 认知关节 | 附录 E.2 | E.2 | [architecture-v0.1.0.md](architecture-v0.1.0.md) §0.5 认知关节登记表 |
 | 指针原则 | [cognitive-foundation.md](cognitive-foundation.md) §2.1 指针原则 | — | [architecture-v0.1.0.md](architecture-v0.1.0.md) §0.4 指针通信协议 |
 | 上下文腐烂（CRI） | [cognitive-foundation.md](cognitive-foundation.md) §1.9 | — | [architecture-v0.1.0.md](architecture-v0.1.0.md) §2.2 CRI 监测器 + §3.9/§3.10 深度降级/决策切换 |
 | 注册表 | [cognitive-foundation.md](cognitive-foundation.md) §1.7 确定性状态 | — | [architecture-v0.1.0.md](architecture-v0.1.0.md) §0.4 横切组件 |
-| 编译器 | [cognitive-foundation.md](cognitive-foundation.md) §1.8 编译器 | — | §7 接入层子模块 |
-| 三级知识生产管道 | [cognitive-foundation.md](cognitive-foundation.md) §1.10 | — | §5.10 知识加工区 |
+| 编译器 | [cognitive-foundation.md](cognitive-foundation.md) §1.8 编译器 | — | [architecture-v0.1.0.md](architecture-v0.1.0.md) §7 接入层子模块 |
+| 三级知识生产管道 | [cognitive-foundation.md](cognitive-foundation.md) §1.10 | — | [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.10 知识加工区 |
 
 ## 版本记录
 
@@ -177,3 +177,7 @@ status: draft
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：定位行三硬一软承诺兑现、交叉引用列修正、真理模式切换术语清理。 |
 | 0.0.12 | 2026-08-04 | 门禁盲区闭环批次：决策 D-01 引用标注「决策」前缀（2 处）。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：H-01 §3.2→§3.3 六处（辞典式裁决器/序数压制幅度记录/受控例外/保守倾向闸门）；M-04 交叉引用表「认知基础声明」列 3 行文件错列修正（注册表/编译器→cognitive-foundation，指针原则补 §2.1 出处）。 |
+| 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-04 附录 C.5「（原双轨切换已替代为否决权正交模型）」→「否决权正交模型」。 |
+| 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
+| 0.0.74 | 2026-08-09 | round38 门禁建议落实批次（changelog 0.0.74）：例 2 旧机制名修正——「序数压制幅度记录 + 排列漂移审计」→「序数幅度差记录 + 运行期漂移审计」（架构 §3.3 权威命名，0.0.38 批次已更名，本文引用滞后）；「认知关节索引」→「认知关节登记表」（架构 §0.5 权威标题）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |

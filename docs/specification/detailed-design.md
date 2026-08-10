@@ -9,8 +9,8 @@ tags:
   - design
   - implementation
 created: 2026-07-21
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -180,13 +180,13 @@ class StorageBackend(ABC):
     async def update_usage(self, memory_id: UUID, delta: UsageDelta): ...
 ```
 
-### 写入管线设计（外部理念吸收 0.0.41）
+### 写入管线设计（外部理念吸收）
 
 写入路径（本节「数据流：写入路径」）的可靠性设计三项约束——承接「写入失败→积累垃圾」「巩固失败→矛盾规则」两类失败模式（troubleshooting §二a）的正面约束：
 
-**① 稳定 Memory Key 规范化策略**：同一事实的多次观测收敛到稳定写入键——Memory Key 由（用户域 + 规范化实体/主题锚点 + 路径前缀）确定性派生，规范化规则（大小写、别名、时态归一）在摄取门禁内统一执行；同 Key 的新观测按 ADD-only 协议（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3g）追加（relation_type=supplement）而非新建独立记忆，避免同一事实的多副本漂移；内容级去重由 `content_hash` 兜底（同哈希不新建记录，仅更新 usage_weight，见 [data-model.md](data-model.md) §8.3 冲突判定规则）。
+**① 稳定 Memory Key 规范化策略**：同一事实的多次观测收敛到稳定写入键——Memory Key 由（用户域 + 规范化实体/主题锚点 + 路径前缀）确定性派生，规范化规则（大小写、别名、时态归一）在摄取门禁内统一执行；同 Key 的新观测按 ADD-only 协议（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3g）追加（relation_type=supplement）而非新建独立记忆，避免同一事实的多副本漂移；内容级去重由 `content_hash` 兜底（同哈希不新建记录，仅更新 usage_weight，见 [data-model.md](data-model.md) §1 memories `content_hash` 列）。
 
-**② 幂等 + 乐观锁事务提交（事实源/日志/Outbox 三分）**：单次写入在单事务内三分提交——事实源（`memories` 主记录）、日志（`journal_entries` 原始轮次/审计链）、Outbox（事件总线持久化 `usage_events`）要么全部成功要么全部回滚（竖切事务开关 `KAIROS_BATCH_TRANSACTION_ENABLED`）；写入请求携带幂等键（客户端生成 request_id），重复提交按幂等键去重拒绝；并发更新经 `version` 乐观锁裁决（冲突返回 `ERR-DB-005`），冲突走版本链追加而非覆盖（版本链模型见 [data-model.md](data-model.md) §1 memories）。
+**② 幂等 + 乐观锁事务提交（事实源/日志/Outbox 三分）**：单次写入在单事务内三分提交——事实源（`memories` 主记录）、日志（`journal_entries` 原始轮次/审计链）、Outbox（事件总线持久化 `usage_events`）要么全部成功要么全部回滚（竖切事务开关 `KAIROS_BATCH_TRANSACTION_ENABLED`）；写入请求可携带 `Idempotency-Key` 请求头（可选）——提供时服务端以该键去重：同键重复提交不产生新记录（返回首次写入结果），键冲突且载荷不一致返回 409 `ERR-CTR-005`（幂等键冲突），未提供时按常规写入（重复提交可能产生重复记录）；并发更新经 `version` 乐观锁裁决（冲突返回 409 `ERR-DB-005`），冲突走版本链追加而非覆盖（版本链模型见 [data-model.md](data-model.md) §1 memories）。**两错误码分工**：`ERR-CTR-005` 为幂等键冲突（同键重复提交且载荷不一致），`ERR-DB-005` 为版本冲突（`If-Match` 与当前版本不一致，见 [api-spec.md](api-spec.md) §1.3）。
 
 **③ 索引为派生视图可重建**：路径前缀树、FTS5 全文索引、向量索引、kNN 近邻表（`memory_semantic_knn`，见 [data-model.md](data-model.md) §8.16）均声明为事实源（`memories` 主记录）的**派生视图**——可由主记录确定性重建（重建与校验路径见 §11.5 一致性检查 C1~C8）；主记录是唯一事实源，任何索引损坏不损失数据、仅触发重建，禁止索引侧数据反写主记录。
 
@@ -205,17 +205,21 @@ class StorageBackend(ABC):
 
 > **权威口径**：本节以架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 遗忘调度器为权威定义（v0.1.0 单曲线指数衰减）。两处不一致时以架构 §5.2 为准。下文的「v1.1 目标」段为完整愿景，不在 v0.1.0 执行路径内。
 
+> **返回值极性声明（防倒置）**：本函数返回 **freshness（新鲜度）**——**值越高越新鲜、越不该被遗忘**，与 v1.1 二维曲面的「遗忘得分」（值越高越该被遗忘，对应 `KAIROS_FORGETTING_SCORE_THRESHOLD`，见 [configuration.md](../ops/configuration.md) §3）**极性相反**。两者不可互换代入阈值比较。函数命名与返回值统一采用 freshness 语义；豁免记忆返回哨兵值而非数值 `0.0`，避免被误读为「新鲜度最低 = 最该遗忘」。
+
 ```python
-FORGETTING_SCORE(memory):
+EVALUATE_FRESHNESS(memory):
     # v0.1.0 权威算法（架构 §5.2 遗忘调度器·单曲线指数衰减）
+    # 返回 freshness ∈ (0,1]：越高越新鲜（越不该遗忘），或哨兵 EXEMPT（豁免）
     # freshness = 2^(-days_since_last_access / HALF_LIFE)
     # 三阈值判定：freshness ≥ ACTIVE_THRESHOLD → active / [STALE_THRESHOLD, ACTIVE_THRESHOLD) → stale / < STALE_THRESHOLD → archived
-    days_since_last_access = (NOW - memory.last_access_at).days   # last_access_at 来自 memories 表
-    freshness = 2 ** (-days_since_last_access / HALF_LIFE)        # HALF_LIFE 默认 69 天（KAIROS_FORGETTING_HALF_LIFE）
 
-    # 身份与结构豁免（见证豁免 S-10 + 结构性记忆守护）
+    # 身份与结构豁免（见证豁免 S-10 + 结构性记忆守护）——先于计算判定，豁免记忆不产生 freshness 得分
     if memory.is_identity or memory.is_structure:
-        return 0.0   # 不进入遗忘评估
+        return EXEMPT   # 哨兵值：不进入遗忘候选池、不参与状态转换、不参与遗忘排序（≠ 数值 0）
+
+    days_since_last_access = (NOW - memory.last_access_at).days          # 与架构 §5.2 公式口径一致（freshness = 2^(-days_since_last_access / HALF_LIFE)）
+    freshness = 2 ** (-days_since_last_access / HALF_LIFE)               # HALF_LIFE 默认 69 天（KAIROS_FORGETTING_HALF_LIFE）
 
     # 状态转换（与架构 §5.2 记忆状态机一致：Active→Stale→Archived）
     if freshness >= ACTIVE_THRESHOLD:             # 默认 0.3（KAIROS_FRESHNESS_ACTIVE_THRESHOLD）
@@ -227,14 +231,18 @@ FORGETTING_SCORE(memory):
 
     # 复兴通道：Archived→Active 由潜伏势能重估端口（latent_trigger）或外部校准信号触发
     # （架构 §5.2 状态转换表）——显式检索仅更新 last_access_at，不直接触发状态复兴
+    # 衰减口径注记（防「检索即复兴」）：freshness 公式锚定 last_access_at（与架构 §5.2 一致），
+    # 但 archived/stale 记忆经显式检索仅更新 last_access_at（用于使用统计与 5D 排序新鲜度调制），
+    # 不改变状态——状态复兴必须经潜伏势能重估端口或外部校准信号显式触发（架构 §5.2 状态转换表），
+    # 避免「检索即复兴」绕过状态机判定（对齐 §11.5 一致性检查 C4）。
     return freshness
 
 # ── v1.1 目标（二维遗忘曲面 + 使用频率调制；不在 v0.1.0 执行路径内，仅供实现参考）──
 # base_score = decontextualization_level × SIGMOID(age_days / AGE_DECAY_CONSTANT)   # AGE_DECAY_CONSTANT 默认 30 天
 # frequency_mod = 1.0 / (1.0 + LN(1 + recent_use_count_30d))
 # score = base_rate(contract) × base_score × frequency_mod
-# 状态转换（候选两阶段）：得分 > 阈值 → CANDIDATING（标记遗忘候选）→ 候选期结束且无复兴命中 → SUPPRESSED
-# suppressed 为软标记（数据保留、可复兴），物理删除仅由 forgetAfter 对 temporary 契约执行
+# 状态转换（候选两阶段）：得分 > 阈值 → CANDIDATING（标记遗忘候选）→ 候选期结束且无复兴命中 → SUPPRESSED（memories.status 五值平级枚举之一，非 archived 子态；由定向遗忘操作写入，经 restore 撤销）
+# 物理删除仅由 forgetAfter 对 temporary 契约执行；suppressed 仅抑制检索、保留数据，与 archived 平级
 ```
 
 ### 遗忘调度器状态机
@@ -263,7 +271,7 @@ FORGETTING_SCORE(memory):
 （架构 §5.2 forgetAfter，清理前写审计日志 expiry_cascade_delete）。
 ```
 
-> **状态机范围注记**：第四态 Superseded 由知识演化 replaces 触发（架构 §5.2），本图为 ACTIVE/STALE/ARCHIVED 三态 + temporary 契约例外。Superseded 记忆经宪法修订端口恢复。
+> **状态机范围注记**：本遗忘调度器状态机仅覆盖 freshness 驱动的 ACTIVE/STALE/ARCHIVED 三态（与架构 §5.2 记忆状态机五态平级口径一致；SUPPRESSED 由用户主动定向遗忘操作 `POST /v1/memories/{id}/suppress` 写入、SUPERSEDED 由知识演化 replaces 触发，均不经由本调度器）；temporary 契约例外见本图末行。Superseded 记忆经宪法修订端口恢复。
 
 ---
 
@@ -301,7 +309,7 @@ behavior（自动化行为规则，不检索直接输出）
 
 > 设计来源：会话压缩器的 verbatim 检查（摘要与最后一条消息完全相同则拒绝）——同一「模型复制输入冒充产出」失效模式的护栏结构。Kairos 的 Reflect 收敛判据（§4.1）与 verbatim 检查为两个独立维度：前者防「结论不稳定」，后者防「产物无抽象」。
 
-### Compaction 成本-保真三 regime（外部理念吸收 0.0.41）
+### Compaction 成本-保真三 regime（外部理念吸收）
 
 > 权威定义：架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2「双模式 Compaction」（sliding_window / all），存储承载见 [data-model.md](data-model.md) §12 `compaction_snapshots`。双模式回答「何时压缩」，本 regime 框架回答「压缩成什么样、付出什么代价」。
 
@@ -332,7 +340,7 @@ Reflect loop 暴露四类只读工具（仅查询，不修改记忆内容）：
 | **`recall`** | 从存储层检索相关记忆 | `query: string`, `max_results: int`, `domain_filter?: string` | 排序后的记忆列表（含 `path`、`content_summary`、`narrative_coherence_score`、`timestamp`） |
 | **`search_observations`** | 在自观察记忆（meta-LTM）中搜索历史治理动作后效 | `governance_type?: string`, `time_window?: [start, end]`, `outcome_filter?: "success"\|"failure"` | 匹配的治理后效记录（含治理策略 ID、产出影响摘要、后效评估） |
 | **`search_mental_models`** | 在关系索引中检索因果链与认知结构 | `anchor_memory_id?: string`, `relation_type?: "causal"\|"competitive"\|"dependency"`, `max_hops: int` | 多跳关系图（节点=记忆 ID，边=关系类型 + 方向），最大深度 3 |
-| **`done`** | 声明反思收敛，输出最终反思结论 | `conclusion: string`, `confidence: float`, `updated_mental_models?: string[]`, `evidence_ids: string[]` | 终止循环，结论写入升华管道的 item→strategy 阶段 |
+| **`done`** | 提交候选反思结论，交由收敛判据裁决是否终止 | `conclusion: string`, `confidence: float`, `updated_mental_models?: string[]`, `evidence_ids: string[]` | 候选结论入收敛评估缓冲：**首次调用记录基线并继续下一轮**；与上一次 `done` 结论余弦相似度 ≥ 0.90 时判定收敛、终止循环并将结论写入升华管道的 item→strategy 阶段 |
 
 > **只读约束**：四类工具均为只读——Reflect loop 不修改记忆内容。反思结论（`done` 输出）作为升华管道的输入进入 strategy 阶段，由后续的 strategy→behavior 管线决定是否触发记忆权重的调整或 playbook 生成。此约束防止反思循环直接修改见证锚定或使用权重，确保反思是「观察-理解-建议」路径而非「观察-篡改」路径。
 
@@ -340,7 +348,16 @@ Reflect loop 暴露四类只读工具（仅查询，不修改记忆内容）：
 
 Reflect agentic loop 的循环控制遵循 tool-calling 模式——Agent 在每轮自主选择调用 recall/search_observations/search_mental_models/done 工具，最大 10 轮硬上限。收敛判据：连续两次 `done` 调用输出的结论余弦相似度 ≥ 0.90 时判定收敛。具体循环伪代码见 [implementation-map.md](implementation-map.md) 存储层 `src/storage/reflect.py` 实现。
 
-**收敛判据**：Reflect loop 的终止条件不是固定轮数而是收敛度——当 Agent 在连续两次 `done` 调用中输出的结论余弦相似度 ≥ 0.90 时，判定收敛并终止。在未收敛情况下达到 MAX_ROUNDS=10 时强制终止，取所有 `done` 调用中置信度最高的作为最终输出。
+**收敛判据**：Reflect loop 的终止条件不是固定轮数而是收敛度——`done` 是**结论提交动作而非终止动作**，终止权归收敛判据：
+
+| `done` 调用序次 | 处置 |
+|:---------------|:-----|
+| 第 1 次 | 记录为收敛基线，**不终止**，循环继续（Agent 可继续调用只读工具后再次 `done`） |
+| 第 n 次（n ≥ 2） | 与第 n-1 次结论计算余弦相似度：≥ 0.90 判定收敛并终止；< 0.90 更新基线后继续 |
+| 达到 MAX_ROUNDS=10 仍未收敛 | 强制终止，取所有 `done` 调用中置信度最高的作为最终输出 |
+| 全程未调用 `done`（达轮数上限） | 判定 `reflection_unconverged`，结论缺失，仅写入审计日志（见下表末行处置） |
+
+因此**收敛终止的最小 `done` 调用次数为 2**——单次 `done` 不构成收敛，只建立基线。
 
 **收敛度阈值分级**：
 
@@ -377,14 +394,14 @@ Reflect loop 的完整执行轨迹写入使用事件总线，标记 `reflect_age
   "rounds_executed": 5,
   "convergence_score": 0.93,
   "termination": "converged",
-  "tools_called": {"recall": 2, "search_observations": 1, "search_mental_models": 1, "done": 1},
+  "tools_called": {"recall": 2, "search_observations": 1, "search_mental_models": 1, "done": 2},
   "evidence_ids": ["mem_001", "mem_042", "mem_107"],
   "conclusion_summary": "...",
   "confidence": 0.85
 }
 ```
 
-审计庭可查询：(a) 收敛率（`reflection_converged` 占比）——收敛率持续下降时触发「反思漂移告警」；(b) 工具使用分布——`done` 未在循环中被调用的频率（指示 Agent 在循环中「迷失」）；(c) 反思触发频率——频率异常升高时触发「过度反思告警」（可能指示升华管道产出质量下降）。
+审计庭可查询：(a) 收敛率（`reflection_converged` 占比）——收敛率持续下降时触发「反思漂移告警」；(b) 工具使用分布——`done` 调用次数 < 2 的循环占比（`done` 从未调用指示 Agent 在循环中「迷失」；仅调用 1 次指示 Agent 在建立基线后即耗尽轮数）；(c) 反思触发频率——频率异常升高时触发「过度反思告警」（可能指示升华管道产出质量下降）。
 
 > **反思债务（Reflection Debt）风险声明**：Reflect agentic loop 的工具调用消耗 LLM token——每次 tool-choice 决策 + 工具执行（`recall` 触发检索、`search_mental_models` 触发图遍历）—的总 token 成本是线性 Reflect 的 3-10 倍。系统在注意力预算紧张（§9 Token 预算分解中 reserved 配额不足）时自动跳过 Reflect loop，降级为线性 Reflect。此风险已登记于成本护栏（§7）的监控范围内。
 
@@ -450,9 +467,9 @@ CALIBRATION_LOOP:
 
 ### 6.1 认知完整性轴三维检测器
 
-认知完整性轴的三个度量维度（反例覆盖度 / 路径禁区标注密度 / 组合约束网络连通性）的认知定义见认知基础 §1.1。以下为其可操作代理定义（D-15，方案 A）——原始表述含不可知分母（「总推理边界范围」）与无架构承载项（组合约束连通性），v0.1.0 采用**闭集代理**实现：
+认知完整性轴的三个度量维度（反例覆盖度 / 路径禁区标注密度 / 组合约束网络连通性）的认知定义见认知基础 §1.1。以下为其可操作代理定义（决策 D-15，方案 A）——原始表述含不可知分母（「总推理边界范围」）与无架构承载项（组合约束连通性），v0.1.0 采用**闭集代理**实现：
 
-> **可操作代理定义（D-15，方案 A）**：上述三维的原始表述含不可知分母（「总推理边界范围」）与无架构承载项（组合约束连通性），不可直接实现。v0.1.0 采用**闭集代理**——把分母从「客观全集」改为「系统已登记全集」，使三维成为可计算量：
+> **可操作代理定义（决策 D-15，方案 A）**：上述三维的原始表述含不可知分母（「总推理边界范围」）与无架构承载项（组合约束连通性），不可直接实现。v0.1.0 采用**闭集代理**——把分母从「客观全集」改为「系统已登记全集」，使三维成为可计算量：
 >
 > | 维度 | 代理定义（分子 / 分母均取自系统内已登记数据） | 数据源 |
 > |:--|:--|:--|
@@ -466,9 +483,9 @@ CALIBRATION_LOOP:
 
 ### 6.2 可及性轴代理
 
-可及性轴的认知定义（度量「给定检索线索，找到这条信息的预期成本」）见认知基础 §1.1。以下为其可操作代理定义（D-15，方案 A）：
+可及性轴的认知定义（度量「给定检索线索，找到这条信息的预期成本」）见认知基础 §1.1。以下为其可操作代理定义（决策 D-15，方案 A）：
 
-> **可操作代理定义（D-15，方案 A）**：本轴原定义的三项输入中，「前摄/倒摄抑制深度」与「提取诱发遗忘的抑制强度」在 v0.1.0 **无数据源**——D.9 已声明当前认知模型不将干扰预设为独立机制，故不存在对应的追踪字段。若坚持原定义，本轴不可取值。v0.1.0 改以三项**可观测量**合成代理值：
+> **可操作代理定义（决策 D-15，方案 A）**：本轴原定义的三项输入中，「前摄/倒摄抑制深度」与「提取诱发遗忘的抑制强度」在 v0.1.0 **无数据源**——D.9 已声明当前认知模型不将干扰预设为独立机制，故不存在对应的追踪字段。若坚持原定义，本轴不可取值。v0.1.0 改以三项**可观测量**合成代理值：
 >
 > `Accessibility = 1 − clamp₀₁(0.5·R̂ + 0.3·Ĉ + 0.2·D̂)`
 >
@@ -482,9 +499,9 @@ CALIBRATION_LOOP:
 
 ### 6.3 CRI 代理实现
 
-上下文腐烂指数（Context Rot Index, CRI）的认知定义（综合注意力分布熵、有效信息利用率、任务成功率三指标，值域 [0,1]，0=无腐烂、1=完全腐烂）见认知基础 §1.9。以下为其可操作代理定义（D-15，方案 A）：
+上下文腐烂指数（Context Rot Index, CRI）的认知定义（综合注意力分布熵、有效信息利用率、任务成功率三指标，值域 [0,1]，0=无腐烂、1=完全腐烂）见认知基础 §1.9。以下为其可操作代理定义（决策 D-15，方案 A）：
 
-> **可操作代理定义（D-15，方案 A）**：上述三指标的「综合」原表述无权重、无归一化、无采样窗口，不可实现。v0.1.0 给出如下可计算定义：
+> **可操作代理定义（决策 D-15，方案 A）**：上述三指标的「综合」原表述无权重、无归一化、无采样窗口，不可实现。v0.1.0 给出如下可计算定义：
 >
 > `CRI = w₁·(1 − Ĥ) + w₂·(1 − U) + w₃·(1 − Ŝ)`
 >
@@ -498,7 +515,7 @@ CALIBRATION_LOOP:
 >
 > **冷启动与置信度**：窗口内交互轮次 < 5 时，CRI 强制取 `0` 且不触发任何降级——样本不足时的高 CRI 无统计意义，宁可漏报不可误降级。轮次介于 5 与窗口长度之间时正常计算但标记 `cri_confidence=low`，此时 L3（人工确认）不由 CRI 单独触发。
 >
-> **`Ŝ` 失效时的降权保护**：`KAIROS_CRI_TASK_SUCCESS_PROXY=explicit_feedback` 在多数普通对话中恒为 0（D-024 已登记此风险），会使 CRI 虚高 `w₃=0.2`。故规定：窗口内**无任何成功/失败信号**时，`w₃` 置 0 并将 `w₁ w₂` 按比例重规范化为 `0.375 / 0.625`——即缺失项不参与，而非以 0 值污染。此规则使 CRI 在无反馈场景下仍然可用。
+> **`Ŝ` 失效时的降权保护**：`KAIROS_CRI_TASK_SUCCESS_PROXY=explicit_feedback` 在多数普通对话中恒为 0（债务 D-024 已登记此风险），会使 CRI 虚高 `w₃=0.2`。故规定：窗口内**无任何成功/失败信号**时，`w₃` 置 0 并将 `w₁ w₂` 按比例重规范化为 `0.375 / 0.625`——即缺失项不参与，而非以 0 值污染。此规则使 CRI 在无反馈场景下仍然可用。
 
 ### 6.4 自激回路诊断指标
 
@@ -512,7 +529,7 @@ CALIBRATION_LOOP:
 
 ## §7 WM调度预处理器（概要）
 
-架构详见 `architecture-v0.1.0.md §4`（WM调度预处理器）。核心循环：
+架构详见 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4（WM调度预处理器）。核心循环：
 
 ### 层级蒸馏管道
 
@@ -586,15 +603,15 @@ REASONING_LOOP(context):
   "payload": {},
   "timestamp": 1700000000000000000
 }
-// 注：TTL 由 event_type 按架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 事件类型原语表确定，不在事件中携带
+// 注：TTL 由 event_type 按架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 事件类型枚举表确定，不在事件中携带
 ```
 
 ### 事件类型表
 
-> 事件定义以 `architecture-v0.1.0.md §10.10` 为唯一权威来源。本文仅引用，不新增事件类型。
+> 事件定义以 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 为唯一权威来源。本文仅引用，不新增事件类型。
 
 | event_type | 发送者 | 接收者 | 说明 |
-|-----------|:-------|:-------|:-----|
+|:----------|:-------|:-------|:-----|
 | `use_event` | WM | 策略+存储+元认知 | 使用事件提交 |
 | `calibration_signal` | 宪法主权面 | 全层广播 | 外部校准信号注入 |
 | `degradation_switch` | 宪法主权面 | 元认知+策略 | 降级模式切换 |
@@ -629,15 +646,23 @@ REASONING_LOOP(context):
  └─ 解析查询意图（含按会话上下文构造的检索意图，策略层预测器输入）
 ```
 
-### StorageBackend `as_of` 接口（新增）
+### StorageBackend `as_of` 接口
 
 ```python
 def as_of(ts: datetime) -> list[MemoryRecord]:
     """返回事件时间 ts 之前发生（occurred_at ≤ ts）且当时已写入（created_at ≤ ts）的记忆。
     被 superseded 的记忆按事务时间视角仍可查询（版本链保留旧版本）。
-    双时态语义见架构 §5.2 半开区间时间语义。"""
+    双时态语义见架构 §5.2 半开区间时间语义。
+    检索口径与常规查询一致（见 [data-model.md](data-model.md) §1 检索默认过滤）：
+      (a) 软删除过滤——追加 is_deleted = FALSE，与 [data-model.md](data-model.md) 全库检索默认口径一致；
+      (b) 版本选择——按版本链取 ts 时刻的生效版本（created_at ≤ ts 的最新版本），
+          而非默认的 is_latest=TRUE（is_latest 为当前时刻视角，双时态查询须以 ts 为视角）。"""
     return self._query(
-        "WHERE occurred_at IS NOT NULL AND occurred_at <= :ts AND created_at <= :ts",
+        "WHERE occurred_at IS NOT NULL AND occurred_at <= :ts AND created_at <= :ts "
+        "AND is_deleted = FALSE "
+        "AND version = (SELECT MAX(v.version) FROM memories v "
+        "                 WHERE v.root_memory_id = memories.root_memory_id "
+        "                   AND v.created_at <= :ts)",
         {"ts": ts},
     )
 ```
@@ -687,6 +712,8 @@ GSPO 压缩仅在聚类簇内存在足够差异时激活——计算簇内重要
 $$\text{CV}(C) = \frac{\sigma_C}{\mu_C} \quad \text{其中 } \mu_C \text{ 为算术均值，} \sigma_C \text{ 为标准差}$$
 
 当 `CV(C) >` 配置阈值时，GSPO 压缩激活，以 `cluster_importance(C)` 替代簇内所有记忆的独立分数。CV ≤ 阈值时簇内记忆保持独立分数不变（簇内质量均匀，无冗余压缩必要）。
+
+**候选集缩减语义（防「重打分不缩减」误解）**：GSPO 压缩**同时缩减候选集规模**——簇内仅保留重要性最高的成员作为「簇代表」进入下游（Cross-encoder / MMR），其余成员由检索管线剔除（标记 `gspo_collapsed` 写入审计事件，可按 `?clearance=debug` 回溯复核，不代表删除）。因此：(a) 「替代簇内所有记忆的独立分数」指代表成员的排序分以 `cluster_importance` 计，而非对每个成员分别打分；(b) 下游 Cross-encoder 的输入规模 = 簇数 + 未成簇记忆数，小于原始候选数，达成「降低 Cross-encoder 计算开销」的目标。
 
 **域均衡（Domain Diversification）**
 
@@ -850,10 +877,12 @@ LLM 实体提取是 Kairos 实体知识图谱的核心数据源——每次 Deep
 
 > **存储枚举映射**：`type` 为外部提取输出（LLM/spaCy）的 10 类枚举；持久化至 `entities.type` 时映射为存储层四值枚举（[data-model.md](data-model.md) §8.2 entities 表，存储层权威口径）：PERSON/ORG/GPE → `people`；PROJECT/TOOL/TECH_STACK → `project`；CONCEPT/EVENT/PRODUCT → `concept`；DATE → 时间字段（如 `occurred_at` 事件时间，不落 entities.type）。其余类（如 spaCy L1 的 MONEY/PERCENT/LOC/FAC、L2/L3 规则类 VERSION/GIT_SHA 等）归 `concept`——四值闭合。
 
-**写入策略**：
-- LLM 置信度 ≥ 配置阈值（见 [ops/configuration.md](../ops/configuration.md) §6.6）→ 直接写入实体表，source=`llm`
-- LLM 置信度 0.5-0.8 → 写入但标记 `entity_pending_review`，供后续人工或高置信度校准信号确认
-- LLM 置信度 < 0.5 → 丢弃该实体（不写入）
+**写入策略**（阈值均取**开区间**判定，互斥无重叠；配置参数见 [ops/configuration.md](../ops/configuration.md) §6.6）：
+- LLM 置信度 ≥ `KAIROS_ENTITY_LLM_CONFIDENCE_THRESHOLD`（默认 0.8）→ 直接写入实体表，source=`llm`
+- LLM 置信度 ∈ [`KAIROS_ENTITY_LLM_DISCARD_THRESHOLD`, `KAIROS_ENTITY_LLM_CONFIDENCE_THRESHOLD`)（默认 [0.5, 0.8)）→ 写入但标记 `entity_pending_review`，供后续人工或高置信度校准信号确认
+- LLM 置信度 < `KAIROS_ENTITY_LLM_DISCARD_THRESHOLD`（默认 0.5）→ 丢弃该实体（不写入）
+
+> **来源字段口径**：`source` 为实体提取来源标记（`llm` / `keyword_fallback` / 降级标记），持久化于 `entities.metadata` JSON 的 `source` 键——`entities` 表无独立 `source`/`provenance` 列（见 [schema-slice.sql](schema-slice.sql) §12）；与记忆级 `memories.provenance`（S-15 来源标识，记忆写入必填）为两个不同层级字段，勿混用。
 
 **输出校验**：
 - JSON 解析失败 → 重试一次（指数退避 1s），仍失败则降级至策略二
@@ -1073,7 +1102,7 @@ $$\text{task\_score} = 0.40 \cdot \text{temporal\_precision} + 0.30 \cdot \text{
 | 数据损坏（检查点校验失败） | 回退至上一检查点 | 1（回退后续训） | 无退避——直接加载上一有效检查点 |
 | 外部校准中断 | 等待校准恢复后续训 | 无上限（阻塞等待） | 每 30s 轮询校准端口状态 |
 
-**恢复契约六属性（验收标准，外部理念吸收 0.0.41）**：持久化/防抖相关设计（断点续训检查点、防抖任务链 `debounced_tasks`、`journal_buffer` 回放）的恢复行为以六属性（前缀延续 / 效果恰好一次 / 分叉确定性 / 检查点有效性 / 消费一次 / 恢复确定性）为验收标准——任一属性不满足即视为恢复契约违约。验收判据表见 [quality/acceptance-criteria.md](../quality/acceptance-criteria.md) 恢复契约验收（0.0.42 自本文剥离）。配置参数：断点续训与重试参数见 [ops/configuration.md](../ops/configuration.md) §8.7。
+**恢复契约六属性（验收标准）**：持久化/防抖相关设计（断点续训检查点、防抖任务链 `debounced_tasks`、`journal_buffer` 回放）的恢复行为以六属性（前缀延续 / 效果恰好一次 / 分叉确定性 / 检查点有效性 / 消费一次 / 恢复确定性）为验收标准——任一属性不满足即视为恢复契约违约。验收判据表见 [quality/acceptance-criteria.md](../quality/acceptance-criteria.md) 恢复契约验收（自本文剥离）。配置参数：断点续训与重试参数见 [ops/configuration.md](../ops/configuration.md) §8.7。
 
 ### 10.6 用户画像性能基准（P3-06）
 
@@ -1083,7 +1112,7 @@ $$\text{task\_score} = 0.40 \cdot \text{temporal\_precision} + 0.30 \cdot \text{
 
 **实现策略**：
 
-- **应用层 LRU 缓存**：`user_profiles` 读取结果缓存于 PreparedStatementCache（与 SQL 语句缓存共享 LRU 空间但独立计数），TTL 30 秒。缓存键为 `user_profile:{user_id}:{trait_type}`
+- **应用层 LRU 缓存**：`user_profiles` 读取结果缓存于画像专用的应用层 LRU 缓存（容量独立于数据库访问层，不依赖语句缓存组件），TTL 30 秒。缓存键为 `user_profile:{user_id}:{trait_type}`。PreparedStatementCache 为 v1.1 组件（见 [debt-collection.md](../governance/debt-collection.md) 债务 D-418），其落地后两者可共享 LRU 空间但保持独立计数
 - **写入穿透**：画像更新时同步写入数据库 + 主动失效缓存对应条目，确保检索始终拿到最新权重配置
 - **预热策略**：系统启动时预加载高频用户画像至缓存（基于最近 7 天活跃用户 Top-N）
 - **降级路径**：缓存未命中且数据库查询超时时，返回默认画像配置（所有 RL 权重使用默认值），记录降级事件至使用事件总线标记 `profile_read_degraded`
@@ -1472,7 +1501,7 @@ Kairos 的存储层维护两套数据视图——**文件系统视图**（`memor
 | 模式 | 触发方式 | 检查范围 | 延迟预算 |
 |:-----|:--------|:--------|:--------|
 | **Light（轻量）** | 后台维护引擎 Light 模式，每小时 | C1 + C2 + C4 + C7（仅统计计数，不逐条比对） | < 1s |
-| **Deep（深度）** | 后台维护引擎 Deep 模式，每日凌晨 | C1-C8 全量检查（逐条比对 + 哈希校验） | < 60s（100K 记忆规模） |
+| **Deep（深度）** | 后台维护引擎 Deep 模式，每日凌晨 | C1-C8 全量检查——C1~C7 为确定性 SQL 全量查询（无抽样）；C8 内容哈希校验按 `KAIROS_CONSISTENCY_HASH_VERIFY_SAMPLE_RATE`（默认 0.05）抽检（全量哈希比对成本过高，参数见 [configuration.md](../ops/configuration.md) §11.5；抽检发现不一致后对该记忆全链复核） | < 60s（100K 记忆规模，含 5% 哈希抽检） |
 | **On-demand（按需）** | 手动触发一致性检查端点（见 api-spec §16 POST /v1/admin/consistency-check） | 可指定检查项子集和路径范围 | 取决于数据量和检查项 |
 
 **自动修复策略**：
@@ -1588,3 +1617,12 @@ Kairos 的存储层维护两套数据视图——**文件系统视图**（`memor
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：遗忘伪代码删悬空 base_weight；实体提取输出→存储枚举映射注记；§2 写入路径三区流转改写；遗忘状态机补 Superseded 态注记；升华产物质量护栏来源收敛；路径空间统一下划线命名。 |
 | 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：§2 补写入管线设计（稳定 Memory Key 规范化 / 幂等+乐观锁三分提交 / 索引为派生视图可重建）；§4 补 Compaction 成本-保真三 regime（朴素累积二次方 → 粗摘要线性+准确性悬崖 → 验证压缩线性+保真）；§10.5 补恢复契约六属性（前缀延续/效果恰好一次/分叉确定性/检查点有效性/消费一次/恢复确定性）作为验收标准。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§10.5 恢复契约六属性验收判据剥离至 acceptance-criteria §三a；§10.2 基准测试集成流程剥离至 benchmark-plan §3.14；§4.1/§6.x 引用修正与决策/债务前缀补标。 |
+| 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-04 `### StorageBackend \`as_of\` 接口（新增）`→去除版本标记。 |
+| 0.0.61 | 2026-08-08 | round27 深度审计修复批次（changelog 0.0.61）：§3 遗忘调度器状态机范围注记修正——明确本图仅覆盖 freshness 驱动的 ACTIVE/STALE/ARCHIVED 三态，SUPPRESSED（定向遗忘操作写入）/SUPERSEDED（知识演化 replaces 触发）均不经由本调度器，与架构 §5.2 五态平级口径一致。 |
+| 0.0.63 | 2026-08-08 | round29 全面深度审计修复批次（changelog 0.0.63）：§10.6 用户画像缓存解除对 v1.1 组件的依赖——画像读取结果改缓存于画像专用应用层 LRU 缓存（容量独立于数据库访问层），PreparedStatementCache 作为 v1.1 组件（债务 D-418）落地后可共享 LRU 空间但保持独立计数。 |
+| 0.0.74 | 2026-08-09 | round38 门禁建议落实批次（changelog 0.0.74）：§事件总线 TTL 注记引用「架构 §10.10 事件类型原语表」→「事件类型枚举表」（架构实际标题为「事件类型枚举」，round37 门禁补盲区 6.26 档 4 捕获的三处同源悬空引用之一）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.75 | 2026-08-09 | round39 全面深度审计修复批次（changelog 0.0.75）：写入管线① 内容级去重引用「data-model §8.3 冲突判定规则」→「data-model §1 memories `content_hash` 列」（data-model §8.3 为 memory_entities 表，全文无「冲突判定规则」章节，悬空引用；content_hash 去重语义承载于 §1 memories 表）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.79 | 2026-08-09 | round41 全面深度审计修复批次（changelog 0.0.79）：恢复契约六属性去除单轨批次号注记「（外部理念吸收 0.0.41）」（豁免 2 条款：仅批次号无外部实证代号不豁免）；事件表分隔行首格补冒号。 |
+| 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
+| 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：状态机死角收口——Reflect done 收敛语义（首次调用建基线、≥2 次比对收敛）、遗忘函数更名 EVALUATE_FRESHNESS + 极性声明 + EXEMPT 哨兵、宪法修订端口补单条记忆出口（contract_downgrade / state_restore，is_identity 须附判例）；幂等键统一（Idempotency-Key + ERR-CTR-005）、乐观锁强制 If-Match；as_of 补软删过滤 + ts 时刻版本选择；Deep C1-C8 全量/哈希 5% 抽检口径澄清；GSPO 补候选集缩减语义；实体置信度阈值改互斥开区间（KAIROS_ENTITY_LLM_DISCARD_THRESHOLD）；陈旧检索不触发复兴口径注记。详见 changelog 0.0.85 叙述节。 |
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：写入管线设计② 幂等模型改写（Idempotency-Key 可选头 + 同键返回首次结果 + ERR-CTR-005/ERR-DB-005 两码分工）+ 正文裸引用链接化 4 处。 |

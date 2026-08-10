@@ -8,8 +8,8 @@ tags:
   - governance
   - planning
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -74,7 +74,7 @@ status: draft
 
 | Phase | 交付物 | 验收标准（acceptance-criteria） | 门禁/E2E 覆盖 |
 |:-----|:------|:-------------------------------|:-------------|
-| **Phase 0 基建** | 项目骨架、DB 迁移、CI | §〇 竖切验收（schema 迁移可回滚项） | `scripts/doc-audit.py` 全绿（18+14a）；迁移用例 TC-A07-001~003（test-plan §3.9） |
+| **Phase 0 基建** | 项目骨架、DB 迁移、CI | §〇 竖切验收（schema 迁移可回滚项） | `scripts/doc-audit.py` 全绿（18 类 + 14a + 6.8a + 6.12a + 6.13~6.38，清单以 [engineering-workflow.md](../development/engineering-workflow.md) §四 为准）；迁移用例 TC-A07-001~003（test-plan §3.9） |
 | **Phase 1 核心存储与检索** | CRUD+双副本、路径空间+事件总线、三信号检索、遗忘+潜伏势能 | §〇 竖切验收（检索/写入/遗忘判据）+ §二 非功能检查 | E2E-01/02/06/07；TC-W01~04/R01~03/F01~03（test-plan §3） |
 | **Phase 2 身份与治理闭环** | 身份注册表、校准+降级+审计 | §〇 竖切验收（校准/降级/审计判据）+ G-03 v0.1.0 判据 | E2E-04/05/06/08；TC-CAL01~04；S-10/S-11/S-14 红线单测 |
 | **Phase 3 集成验证与验收** | 基准、文档对齐、竖切验收 | §〇 竖切验收全项 + §二 发布检查项 | E2E 全 9 条（竖切 7/9 口径见 test-plan §2 注记）；19 红线；`deep-audit.py` 全绿 |
@@ -104,3 +104,12 @@ status: draft
 | 0.0.11 | 2026-08-04 | 开发就绪度修复批次：W5 里程碑周次消歧注记（与功能编号/组件序号区分）。 |
 | 0.0.17 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.17，外部建议 R-10 落地）：§二 里程碑补「Phase ↔ 验收 ↔ 门禁」对照表——Phase 0-3 交付物 → acceptance-criteria 对应节 → 门禁/E2E 覆盖，每 Phase 明确完成判定与判定顺序。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：W5 里程碑补检索权重口径注记（三信号候选域内融合 vs 四链路检索扩展，两套权重不叠加）；竖切端点计数 REST 20→21 联动（slice-implementation-guide 补 restore 端点）。 |
+| 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-05 门禁口径修正「18+14a」→「18 类 + 14a + 6.8a + 6.12a + 6.13~6.22」。 |
+| 0.0.54 | 2026-08-08 | round23 结构性建议落地批次（changelog 0.0.54）：S23-1 门禁 6.23 单一事实源反查（端点登记一致性）落地，首跑捕获架构 L2165 GET /health/memory-pressure 漏 /v1 前缀并修复；S23-2 新增 scripts/version-record-update.py 版本记录回填脚本；工程工作流/项目计划门禁口径补 6.23。 |
+| 0.0.56 | 2026-08-08 | round24 结构性建议落地批次（changelog 0.0.56）：S24-1 门禁 6.24 端点→章节锚点一致性（首跑捕获架构 L771 calibration 端点引用 §1.7→§6.5）；S24-2 门禁 6.25 认知基础去版本化（首跑捕获 4 处版本字样残留并修复）；门禁清单口径 6.13~6.25。 |
+| 0.0.58 | 2026-08-08 | round25 结构性建议落地批次（changelog 0.0.58）：S25-1 门禁 6.26 通用章节引用存在性与标题语义入检；S25-2 门禁 6.27 api-spec 章节版本标注完备性入检；门禁口径 6.13~6.25→6.13~6.27。 |
+| 0.0.64 | 2026-08-08 | round30 全面深度审计修复批次（changelog 0.0.64，补登）：Phase 0 门禁口径同步 6.13~6.31（含本轮新增 6.31，清单以 engineering-workflow §四 为准）。 |
+| 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.64 行（门禁清单 6.13~6.31）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.72 | 2026-08-09 | round36 全面深度审计修复批次（changelog 0.0.72）：Phase 0 门禁口径同步 6.13~6.32（0.0.71 批次工程流程门禁清单补 6.32 后，本文 Phase ↔ 验收 ↔ 门禁对照表镜像滞后一轮——round35 教训同源）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.74 | 2026-08-09 | round38 门禁建议落实批次（changelog 0.0.74）：Phase 0 门禁口径同步 6.13~6.33（round38 门禁扩展批次——6.33 feature-list 引用列全量校验入检 + 6.26 档 4 机制名存在性扩展，清单以 engineering-workflow §四 为准）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.84 | 2026-08-10 | round46 门禁建议落实批次（changelog 0.0.84）：Phase 0 门禁口径同步 6.13~6.38（门禁清单镜像补齐 round44 漏登的 6.34/6.35 + 本轮 6.36/6.37/6.38，清单以 engineering-workflow §四 为准）；frontmatter updated/last_reviewed 同步 2026-08-10。 |

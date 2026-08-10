@@ -8,8 +8,8 @@ tags:
   - development
   - engineering
 created: 2026-08-06
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -60,9 +60,9 @@ status: draft
 
 进入开发阶段后，CI 流水线必过步骤（按序执行，任一失败即阻断合并）：
 
-1. `python scripts/doc-audit.py` —— 18 类 + 14a + 6.8a + 6.12a + 6.13 + 6.14 + 6.15 + 6.16 + 6.17 + 6.18 + 6.19 门禁全绿（exit 0）；
+1. `python scripts/doc-audit.py` —— 18 类 + 14a + 6.8a + 6.12a + 6.13 + 6.14 + 6.15 + 6.16 + 6.17 + 6.18 + 6.19 + 6.20 + 6.21 + 6.22 + 6.23 + 6.24 + 6.25 + 6.26 + 6.27 + 6.28 + 6.29 + 6.30 + 6.31 + 6.32 + 6.33 + 6.34 + 6.35 + 6.36 + 6.37 + 6.38 门禁全绿（exit 0）；**级别注记**：6.36 版本归属互斥 / 6.37 表格范围词一致性 / 6.38 阈值监控自洽性 为 **FAIL 级硬门禁**（round46 以 WARN 软门禁首轮、round47 全库 0 违例观察、round48 晋升 FAIL，见 changelog 0.0.86）；6.26 档 4 为 WARN 级软提示（供人工审计）。
 2. `python scripts/deep-audit.py` —— 链接/出入度/数字声明/占位盘点无阻断项（exit 0）；
-3. 代码检查（代码就绪后）：lint + 类型检查 + 单元测试 + 集成测试（测试矩阵见 [test-plan.md](../quality/test-plan.md) 与 [slice-implementation-guide.md](slice-implementation-guide.md) 竖切验收标准）；
+3. 代码检查（代码就绪后）：lint + 类型检查 + 单元测试 + 集成测试 + **证伪测试**（`[FALSIFICATION]` 套件——架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 编码纪律：没有证伪测试的特征标志不应合入主分支）；测试矩阵按三种命名配置集执行（CI 默认 `kairos-slice`，发布前全量三集，见 [test-strategy.md](../quality/test-strategy.md) §六、[test-plan.md](../quality/test-plan.md) §1 配置集矩阵与 [slice-implementation-guide.md](slice-implementation-guide.md) 竖切验收标准）；
 4. 安全扫描：依赖漏洞扫描 + 密钥扫描（防密钥入库）。
 
 门禁失败处理：失败项须在本 PR/批次内闭环——禁止以「跳过门禁」方式合并（0.0.22 批次「门禁虚假绿灯」教训，处置记录见 changelog 0.0.22）。
@@ -89,3 +89,13 @@ status: draft
 | 0.0.2 | 2026-08-06 | round12/round13 深度审计修复批次（changelog 0.0.33）：§四 CI 门禁清单补 6.8a + 6.16；§三 提交规范新增「批次收尾检查清单」。 |
 | 0.0.3 | 2026-08-06 | round14 深度审计修复批次（changelog 0.0.34）：§四 CI 门禁清单补 6.17 + 6.18 + 6.19（治理面计数一致性 / 检索权重公式唯一性 / §10.24 关联债索引完整性）。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：门禁序号重排（6.8a/6.12a 归位）；分支示例债务编号更正。 |
+| 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-05 CI 门禁列表补 `+ 6.22`。 |
+| 0.0.54 | 2026-08-08 | round23 结构性建议落地批次（changelog 0.0.54）：S23-1 门禁 6.23 单一事实源反查（端点登记一致性）落地，首跑捕获架构 L2165 GET /health/memory-pressure 漏 /v1 前缀并修复；S23-2 新增 scripts/version-record-update.py 版本记录回填脚本；工程工作流/项目计划门禁口径补 6.23。 |
+| 0.0.56 | 2026-08-08 | round24 结构性建议落地批次（changelog 0.0.56）：S24-1 门禁 6.24 端点→章节锚点一致性（首跑捕获架构 L771 calibration 端点引用 §1.7→§6.5）；S24-2 门禁 6.25 认知基础去版本化（首跑捕获 4 处版本字样残留并修复）；门禁清单口径 6.13~6.25。 |
+| 0.0.58 | 2026-08-08 | round25 结构性建议落地批次（changelog 0.0.58）：S25-1 门禁 6.26 通用章节引用存在性与标题语义入检；S25-2 门禁 6.27 api-spec 章节版本标注完备性入检；门禁口径 6.13~6.25→6.13~6.27。 |
+| 0.0.64 | 2026-08-08 | round30 全面深度审计修复批次（changelog 0.0.64，补登）：§四 CI 门禁清单口径同步 6.13~6.31（含本轮新增 6.31 中文正文半角标点纪律，展开式列示）。 |
+| 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.64 行（门禁清单 6.13~6.31）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.71 | 2026-08-09 | round35 门禁建议落实批次（changelog 0.0.71）：§四 CI 门禁清单补 6.32（治理执行记录覆盖性——自引用快照须含最新 changelog 批次，R35-01 防复发）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.74 | 2026-08-09 | round38 门禁建议落实批次（changelog 0.0.74）：§四 CI 门禁清单补 6.33（feature-list「对应架构组件」列引用落点全量校验——round37 建议落地，首跑验证 0 漂移）+ 6.26 扩展「引用文本所指机制名存在性」档 4（WARN 级软提示，防 R37-04~09 类悬空引用复发）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.84 | 2026-08-10 | round46 门禁建议落实批次（changelog 0.0.84）：§四 CI 门禁清单补 6.34/6.35/6.36/6.37/6.38（门禁口径同步 6.13~6.38，补齐 round44 漏登的 6.34/6.35）；frontmatter updated/last_reviewed 同步 2026-08-10。 |
+| 0.0.86 | 2026-08-10 | round48 遗留问题处理批次（changelog 0.0.86）：§四 CI 门禁清单补级别注记——6.36/6.37/6.38 为 FAIL 级硬门禁（round46 WARN 首轮 → round47 全库 0 违例观察 → round48 晋升），6.26 档 4 为 WARN 级软提示；frontmatter updated/last_reviewed 同步 2026-08-10。 |

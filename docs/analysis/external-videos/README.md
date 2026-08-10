@@ -7,8 +7,8 @@ tags:
   - analysis
   - external-videos
 created: 2026-08-07
-updated: 2026-08-08
-last_reviewed: 2026-08-08
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -36,108 +36,108 @@ status: draft
 
 | VID | BVID | 标题 | UP主 | 时长 | 素材级别 |
 |:--|:--|:--|:--|:--|:--|
-| VID-01 | BV1zUTn61EY8 | 7个AI记忆系统从夯到拉 | 小行星AI观测站 | 8min | B|
-| VID-02 | BV1nJ396JEmC | Claude Code 上下文压缩与会话恢复 | 唐国梁Tommy | 14min | A |
-| VID-03 | BV17KoFBBEqM | Hermes 四层记忆系统持久化 | 唐国梁Tommy | 22min | B |
-| VID-04 | BV1p2DyB4Ee3 | 5大Agent Memory工程级对比 | 唐国梁Tommy | 15min | B |
-| VID-05 | BV1orQJB2Edt | MemOS/OpenViking 深度拆解 | 唐国梁Tommy | 24min | B |
-| VID-06 | BV1z6SXBzEYh | Claude Code 六维记忆体系 | 唐国梁Tommy | 24min | B |
-| VID-07 | BV1y5Kp6XEd3 | 生产级Agent记忆系统架构与工程治理 | AI大模型学习study | 12min | B |
-| VID-08 | BV1erEA62EU9 | 热门的 AI Agent 记忆框架全拆 | 廖定强AI笔记 | 8min | A |
-| VID-09 | BV1BM3169EUS | MRAgent 记忆是重建而非检索 | 白拾的物理AI组会 | 32min | B |
-| VID-10 | BV1uiEM6xE9s | 7步设计Agent记忆系统 | 费曼学AI | 17min | B |
-| VID-11 | BV1kSMM6nEhV | 5个信号诊断记忆系统 | 费曼学AI | 7min | B |
-| VID-12 | BV1Z1jJ6cEVE | MemoryOS 三层存储架构 | 加菲大杂烩 | 44min | A |
-| VID-13 | BV1tiuA6mENb | TencentDB Agent Memory v2.0 | 智能体老王 | 4min | B|
-| VID-14 | BV1j3gz6vEQQ | Anthropic 官方 Agent Memory | AI变局 | 28min | A |
-| VID-15 | BV1TUM26vEAC | pi-hermes-memory 实战 | 程序员暮闲 | 9min | B|
-| VID-16 | BV1YXVg69EmC | OpenClaw 三大搜索+七家嵌入 | big叔大 | 4min | A |
-| VID-17 | BV136oYBWEU2 | 个人 Agent 记忆系统实现 | 小单说AI | 13min | B|
-| VID-18 | BV1XCKL6SEg5 | Agent记忆系统设计 | 赫尔辛根默斯肯人 | 6min | B|
-| VID-19 | BV11RGX6bEdc | OpenClaw 三层架构+Dreaming | big叔大 | 6min | A |
-| VID-20 | BV1C8LF62EWa | 9K 星：给 AI Agent 加上长期记忆 | AIlazy俊 | 3min | A |
-| VID-21 | BV1V9Lp68Ey1 | TencentDB-Agent-Memory 解析 | 鲲鹏Talk | 5min | B|
-| VID-22 | BV1vFME6eEHP | Memorix 共享记忆 | 老汤的碳基突围 | 7min | B|
-| VID-23 | BV18kDjBxEYR | 某讯 Agent Memory 分层索引 | AGI_Ananas | 5min | B|
-| VID-24 | BV1LVMV6nEMt | 构建Agent长期记忆系统（10P） | 小寒说IT | 127min | A（6P 匹配，3P 串台） |
-| VID-25 | BV1xoLD6cEEL | 人脑仿生遗忘系统 | 老纪的技术唠嗑局 | 13min | B |
-| VID-26 | BV1F7P9zLErb | mem0 开源框架解析 | 加菲大杂烩 | 40min | B|
-| VID-27 | BV1H8VQ6DEBB | Mem0 极简路线 | 为什么叫QQ | 12min | A |
-| VID-28 | BV1oxNZ6uE6G | Memorix 记忆跟着项目走 | AI技术投降派 | 11min | A |
-| VID-29 | BV1NyMk6QEKB | AI面试：如何实现长期记忆 | DeepTalk-Pro | 2min | B|
-| VID-30 | BV1FpRaBFENL | 4款记忆方案分清 | Ali厂长 | 5min | A |
-| VID-31 | BV1rnM269ErH | OpenClaw 讲透 Agent 记忆 | 小马Bosn | 18min | A |
-| VID-32 | BV1tk376oEHn | AutoMem 记忆演化技能 | breezedeus | 29min | B|
-| VID-33 | BV1QwGT6MEKQ | OptMem 一行一段永久记忆 | jeffzhengye | 7min | B|
-| VID-34 | BV1PU3b6pEVP | 记忆写入全链路 | AI架构师Leo | 14min | B |
-| VID-35 | BV1HhGV6kEmt | Metis 原生记忆基础模型 | 熊二等兵 | 18min | B |
-| VID-36 | BV1P4Mr6LEem | AutoGenetic Memory | openJiuwen | 1min | B|
-| VID-37 | BV1L2gY6jErn | Claude 2026 记忆系统新功能 | AI酷生活 | 3min | A |
-| VID-38 | BV1v8PYz1EUt | mem0 代码精读 | 日新月异max | 101min | B|
-| VID-39 | BV1k65X6dExY | Letta/MemGPT 持久记忆 | AI技术投降派 | 5min | A |
-| VID-40 | BV18yX6BFEHS | Zep 长期记忆系统 | 郭宏志-老郭 | 14min | B|
-| VID-41 | BV1nS7X6hECB | supermemory 长期记忆 | 码上成功的小猴 | 1min | B|
-| VID-42 | BV1JggX6kEbs | 让AI自动进化的记忆系统 | 新书提拉 | 4min | A |
-| VID-43 | BV1vkEj6WE3F | 基于Mem0的上下文和记忆管理 | 人月聊IT | 6min | B|
-| VID-44 | BV1NS3h68EVL | 百万上下文只是超大垃圾桶 | 元共格 | 15min | B |
-| VID-45 | BV14dTY6bEYF | Hermes 记忆与上下文完全指南 | Andy要上岸机器学习 | 14min | B（whisper） |
-| VID-46 | BV1erKP6pEjx | 分层记忆系统设计 | 喵叔的捣奈特 | 20min | B |
-| VID-47 | BV1CpgQ61EGn | 从零构建生产级 Agent Memory（一） | 老纪的技术唠嗑局 | 5min | A |
-| VID-48 | BV11wga6tEGH | 从零构建生产级 Agent Memory（二） | 老纪的技术唠嗑局 | 5min | B|
-| VID-49 | BV15L3F6pEFN | 从零构建生产级 Agent Memory（三） | 老纪的技术唠嗑局 | 4min | B|
-| VID-50 | BV1AA3i6TEAU | 从零构建生产级 Agent Memory（四） | 老纪的技术唠嗑局 | 4min | B|
-| VID-51 | BV1fp3k6mEJU | 从零构建生产级 Agent Memory（五） | 老纪的技术唠嗑局 | 4min | B|
-| VID-52 | BV145326zEAM | 从零构建生产级 Agent Memory（六） | 老纪的技术唠嗑局 | 4min | A |
-| VID-53 | BV1wkMB6qEyN | Google Memory Bank 长期记忆 | AI变局 | 21min | B|
-| VID-54 | BV18G3z6oE4p | Anthropic Memory+Dreaming | AI变局 | 27min | B（部分降级）|
-| VID-55 | BV1LG3F6sEn9 | 短时/长期记忆分层精讲 | AI大模型原理 | 3min | A |
-| VID-56 | BV14B3S6SEaw | LLM 记忆做成文件系统（论文） | 熊二等兵 | 13min | A |
-| VID-57 | BV1hn5E6kEdW | AgentSwing 动态上下文管理 | Agent智能体深度研究院 | 8min | B |
-| VID-58 | BV1WuLH66EHg | RF-Mem 快慢双路径检索 | Agent智能体深度研究院 | 9min | A |
-| VID-59 | BV1EnLH6AEz5 | MemCoE 先学怎么记 | Agent智能体深度研究院 | 12min | A |
-| VID-60 | BV1VhLH6xEjy | GAM 即时编译式记忆 | Agent智能体深度研究院 | 9min | B |
-| VID-61 | BV1dfGh6jE2j | LightMem 三段式处理 | Agent智能体深度研究院 | 8min | B |
-| VID-62 | BV1QBgi6EEeV | RE-TRAC 轨迹压缩 | Agent智能体深度研究院 | 11min | A |
-| VID-63 | BV1Ty3764E59 | PlugMem 交互历史重构 | Agent智能体深度研究院 | 12min | B|
-| VID-64 | BV1rQEB6oEpe | OpenAI Dreaming 记忆 | Agent智能体深度研究院 | 13min | B |
-| VID-65 | BV1QEgx6HEyF | MedRGAG 该信查到的还是记得的 | Agent智能体深度研究院 | 10min | B |
-| VID-66 | BV1QJ7z6CES8 | SuperMemory 技术架构解析 | AI大白话007 | 4min | B|
-| VID-67 | BV1Eg5C6xERt | 四层记忆架构详解（用户补充） | Agent开发实战 | 16min | B |
-| VID-68 | BV1eTPEzNEqf | 解决OpenClaw长期记忆4种方法 | 一蛙AI | 11min | B |
-| VID-69 | BV1nU96BnE6P | 浅入深出 Agent 系列之八：Agent Memory 管理 | 奇创喵 | 27min | B |
-| VID-70 | BV1uvT16aEBx | 01 RAG Agent 短期记忆 | AI_Julie | 15min | B |
-| VID-71 | BV1TXTQ65E45 | 04 memory 打分三要素 | AI_Julie | 8min | B |
-| VID-72 | BV1gqNc6vEes | 05 Agent memory 的设计 | AI_Julie | 12min | B |
-| VID-73 | BV1gRNF6PE48 | 07 吐血整理的Agent memory 设计 | AI_Julie | 18min | B |
-| VID-74 | BV1CZNN6iEWq | 08 吐血整理的Agent memory 设计 | AI_Julie | 19min | B |
-| VID-75 | BV1cezTBDEgQ | Agent Memory 是什么？【论文精读】 | 日新月异max | 33min | B |
-| VID-76 | BV1qnzQBMEnq | 入门Agent Memory【代码精读】 | 日新月异max | 44min | B |
-| VID-77 | BV1oa6uBXE8J | MemoryOS 操作系统实现【论文精读】 | 日新月异max | 43min | B |
-| VID-78 | BV1hr6EBBEhM | 看Github项目，以MemoryOS为例【代码精读】 | 日新月异max | 70min | B |
-| VID-79 | BV1igFTzfE7a | 纯文本agent memory论文串讲【论文精读】 | 日新月异max | 114min | B |
-| VID-80 | BV1nWABzwEuG | MemVerse 多模态记忆【论文精读】 | 日新月异max | 63min | B |
-| VID-81 | BV1dRNMzLEof | Mindverse 模型即记忆【深度解析】 | 日新月异max | 35min | B |
-| VID-82 | BV1XZw9zFEXy | 端到端上下文工程：Zep【代码解读】 | 日新月异max | 31min | B |
-| VID-83 | BV1zxL561EcM | 文件存储记忆 memU【代码解读】 | 日新月异max | 33min | B |
-| VID-84 | BV1wmGg6NEaz | Metis 原生记忆大模型（用户补充） | 每日Arxiv | 13min | B |
-| VID-85 | BV1Z2GP66EWp | 构建生产级Agent Memory系统架构（用户补充） | Ai大模型实战教学 | 12min | B |
-| VID-86 | BV1HUjU6QEds | Hermes Agent架构：Memory、上下文与网关（用户补充） | 狡猾的哈基 | 40min | B |
-| VID-87 | BV1Bm6bB5EJ3 | OpenClaw是什么（搜索精选） | 小白debug | 6min | B |
-| VID-88 | BV1RCGR6yEEw | RAG/Memory 语义检索原理（搜索精选） | 小白debug | 9min | B |
-| VID-89 | BV1WV2vBWEkL | Episodic Memory（搜索精选） | 亚马逊云科技 | 3min | B |
-| VID-90 | BV1ZA93BtEKW | Claude Code 记忆系统设计（搜索精选） | 五道口纳什 | 21min | B |
-| VID-91 | BV1hDEN6EESL | Agent 自主经营环世界（搜索精选） | 徇Official | 60min | C（无有效语音） |
-| VID-92 | BV1KwwzzGEvD | OpenClaw graph-memory 插件（搜索精选） | AGI_Ananas | 12min | B |
-| VID-93 | BV1xUcZzfEaB | openclaw 图谱记忆（搜索精选） | AGI_Ananas | 9min | B |
-| VID-94 | BV19XvDBQE6y | 重新定义 agent Memory（搜索精选） | 慢学AI | 7min | B |
-| VID-95 | BV1s81xBZEPn | NeurIPS Plan Caching（搜索精选） | iHang的科研笔记 | 20min | B |
-| VID-96 | BV1RczjBPE8K | Agent Skills 对比（搜索精选） | 御风大世界 | 6min | B |
-| VID-97 | BV1dE97BrEYX | 20小时 Agent Memory 教程合集（搜索精选） | 大模型小爱 | 1216min | C（串台合集） |
-| VID-98 | BV1SSfBBzEWL | Memorix：跨 Agent 记忆桥 | Le_Ho | 1min | A |
-| VID-99 | BV11kT16dErg | 02 RAG Agent 长期记忆 | AI_Julie | 12min | A |
-| VID-100 | BV12rT164EP9 | 03 RAG Agent 摘要记忆 | AI_Julie | 12min | A |
-| VID-101 | BV1XYNc6TEpt | 06 Agent Harness hermes 设计 | AI_Julie | 6min | A |
-| VID-102 | BV1H2NM6rExh | 09 Agent memory 设计 面试宝典 | AI_Julie | 19min | A |
+| [VID-01](notes/VID-01-BV1zUTn61EY8.md) | BV1zUTn61EY8 | 7个AI记忆系统从夯到拉 | 小行星AI观测站 | 8min | B |
+| [VID-02](notes/VID-02-BV1nJ396JEmC.md) | BV1nJ396JEmC | Claude Code 上下文压缩与会话恢复 | 唐国梁Tommy | 14min | A |
+| [VID-03](notes/VID-03-BV17KoFBBEqM.md) | BV17KoFBBEqM | Hermes 四层记忆系统持久化 | 唐国梁Tommy | 22min | B |
+| [VID-04](notes/VID-04-BV1p2DyB4Ee3.md) | BV1p2DyB4Ee3 | 5大Agent Memory工程级对比 | 唐国梁Tommy | 15min | B |
+| [VID-05](notes/VID-05-BV1orQJB2Edt.md) | BV1orQJB2Edt | MemOS/OpenViking 深度拆解 | 唐国梁Tommy | 24min | B |
+| [VID-06](notes/VID-06-BV1z6SXBzEYh.md) | BV1z6SXBzEYh | Claude Code 六维记忆体系 | 唐国梁Tommy | 24min | B |
+| [VID-07](notes/VID-07-BV1y5Kp6XEd3.md) | BV1y5Kp6XEd3 | 生产级Agent记忆系统架构与工程治理 | AI大模型学习study | 12min | B |
+| [VID-08](notes/VID-08-BV1erEA62EU9.md) | BV1erEA62EU9 | 热门的 AI Agent 记忆框架全拆 | 廖定强AI笔记 | 8min | A |
+| [VID-09](notes/VID-09-BV1BM3169EUS.md) | BV1BM3169EUS | MRAgent 记忆是重建而非检索 | 白拾的物理AI组会 | 32min | B |
+| [VID-10](notes/VID-10-BV1uiEM6xE9s.md) | BV1uiEM6xE9s | 7步设计Agent记忆系统 | 费曼学AI | 17min | B |
+| [VID-11](notes/VID-11-BV1kSMM6nEhV.md) | BV1kSMM6nEhV | 5个信号诊断记忆系统 | 费曼学AI | 7min | B |
+| [VID-12](notes/VID-12-BV1Z1jJ6cEVE.md) | BV1Z1jJ6cEVE | MemoryOS 三层存储架构 | 加菲大杂烩 | 44min | A |
+| [VID-13](notes/VID-13-BV1tiuA6mENb.md) | BV1tiuA6mENb | TencentDB Agent Memory v2.0 | 智能体老王 | 4min | B |
+| [VID-14](notes/VID-14-BV1j3gz6vEQQ.md) | BV1j3gz6vEQQ | Anthropic 官方 Agent Memory | AI变局 | 28min | A |
+| [VID-15](notes/VID-15-BV1TUM26vEAC.md) | BV1TUM26vEAC | pi-hermes-memory 实战 | 程序员暮闲 | 9min | B |
+| [VID-16](notes/VID-16-BV1YXVg69EmC.md) | BV1YXVg69EmC | OpenClaw 三大搜索+七家嵌入 | big叔大 | 4min | A |
+| [VID-17](notes/VID-17-BV136oYBWEU2.md) | BV136oYBWEU2 | 个人 Agent 记忆系统实现 | 小单说AI | 13min | B |
+| [VID-18](notes/VID-18-BV1XCKL6SEg5.md) | BV1XCKL6SEg5 | Agent记忆系统设计 | 赫尔辛根默斯肯人 | 6min | B |
+| [VID-19](notes/VID-19-BV11RGX6bEdc.md) | BV11RGX6bEdc | OpenClaw 三层架构+Dreaming | big叔大 | 6min | A |
+| [VID-20](notes/VID-20-BV1C8LF62EWa.md) | BV1C8LF62EWa | 9K 星：给 AI Agent 加上长期记忆 | AIlazy俊 | 3min | A |
+| [VID-21](notes/VID-21-BV1V9Lp68Ey1.md) | BV1V9Lp68Ey1 | TencentDB-Agent-Memory 解析 | 鲲鹏Talk | 5min | B |
+| [VID-22](notes/VID-22-BV1vFME6eEHP.md) | BV1vFME6eEHP | Memorix 共享记忆 | 老汤的碳基突围 | 7min | B |
+| [VID-23](notes/VID-23-BV18kDjBxEYR.md) | BV18kDjBxEYR | 某讯 Agent Memory 分层索引 | AGI_Ananas | 5min | B |
+| [VID-24](notes/VID-24-BV1LVMV6nEMt.md) | BV1LVMV6nEMt | 构建Agent长期记忆系统（10P） | 小寒说IT | 127min | A（6P 匹配，3P 串台） |
+| [VID-25](notes/VID-25-BV1xoLD6cEEL.md) | BV1xoLD6cEEL | 人脑仿生遗忘系统 | 老纪的技术唠嗑局 | 13min | B |
+| [VID-26](notes/VID-26-BV1F7P9zLErb.md) | BV1F7P9zLErb | mem0 开源框架解析 | 加菲大杂烩 | 40min | B |
+| [VID-27](notes/VID-27-BV1H8VQ6DEBB.md) | BV1H8VQ6DEBB | Mem0 极简路线 | 为什么叫QQ | 12min | A |
+| [VID-28](notes/VID-28-BV1oxNZ6uE6G.md) | BV1oxNZ6uE6G | Memorix 记忆跟着项目走 | AI技术投降派 | 11min | A |
+| [VID-29](notes/VID-29-BV1NyMk6QEKB.md) | BV1NyMk6QEKB | AI面试：如何实现长期记忆 | DeepTalk-Pro | 2min | B |
+| [VID-30](notes/VID-30-BV1FpRaBFENL.md) | BV1FpRaBFENL | 4款记忆方案分清 | Ali厂长 | 5min | A |
+| [VID-31](notes/VID-31-BV1rnM269ErH.md) | BV1rnM269ErH | OpenClaw 讲透 Agent 记忆 | 小马Bosn | 18min | A |
+| [VID-32](notes/VID-32-BV1tk376oEHn.md) | BV1tk376oEHn | AutoMem 记忆演化技能 | breezedeus | 29min | B |
+| [VID-33](notes/VID-33-BV1QwGT6MEKQ.md) | BV1QwGT6MEKQ | OptMem 一行一段永久记忆 | jeffzhengye | 7min | B |
+| [VID-34](notes/VID-34-BV1PU3b6pEVP.md) | BV1PU3b6pEVP | 记忆写入全链路 | AI架构师Leo | 14min | B |
+| [VID-35](notes/VID-35-BV1HhGV6kEmt.md) | BV1HhGV6kEmt | Metis 原生记忆基础模型 | 熊二等兵 | 18min | B |
+| [VID-36](notes/VID-36-BV1P4Mr6LEem.md) | BV1P4Mr6LEem | AutoGenetic Memory | openJiuwen | 1min | B |
+| [VID-37](notes/VID-37-BV1L2gY6jErn.md) | BV1L2gY6jErn | Claude 2026 记忆系统新功能 | AI酷生活 | 3min | A |
+| [VID-38](notes/VID-38-BV1v8PYz1EUt.md) | BV1v8PYz1EUt | mem0 代码精读 | 日新月异max | 101min | B |
+| [VID-39](notes/VID-39-BV1k65X6dExY.md) | BV1k65X6dExY | Letta/MemGPT 持久记忆 | AI技术投降派 | 5min | A |
+| [VID-40](notes/VID-40-BV18yX6BFEHS.md) | BV18yX6BFEHS | Zep 长期记忆系统 | 郭宏志-老郭 | 14min | B |
+| [VID-41](notes/VID-41-BV1nS7X6hECB.md) | BV1nS7X6hECB | supermemory 长期记忆 | 码上成功的小猴 | 1min | B |
+| [VID-42](notes/VID-42-BV1JggX6kEbs.md) | BV1JggX6kEbs | 让AI自动进化的记忆系统 | 新书提拉 | 4min | A |
+| [VID-43](notes/VID-43-BV1vkEj6WE3F.md) | BV1vkEj6WE3F | 基于Mem0的上下文和记忆管理 | 人月聊IT | 6min | B |
+| [VID-44](notes/VID-44-BV1NS3h68EVL.md) | BV1NS3h68EVL | 百万上下文只是超大垃圾桶 | 元共格 | 15min | B |
+| [VID-45](notes/VID-45-BV14dTY6bEYF.md) | BV14dTY6bEYF | Hermes 记忆与上下文完全指南 | Andy要上岸机器学习 | 14min | B（whisper） |
+| [VID-46](notes/VID-46-BV1erKP6pEjx.md) | BV1erKP6pEjx | 分层记忆系统设计 | 喵叔的捣奈特 | 20min | B |
+| [VID-47](notes/VID-47-BV1CpgQ61EGn.md) | BV1CpgQ61EGn | 从零构建生产级 Agent Memory（一） | 老纪的技术唠嗑局 | 5min | A |
+| [VID-48](notes/VID-48-BV11wga6tEGH.md) | BV11wga6tEGH | 从零构建生产级 Agent Memory（二） | 老纪的技术唠嗑局 | 5min | B |
+| [VID-49](notes/VID-49-BV15L3F6pEFN.md) | BV15L3F6pEFN | 从零构建生产级 Agent Memory（三） | 老纪的技术唠嗑局 | 4min | B |
+| [VID-50](notes/VID-50-BV1AA3i6TEAU.md) | BV1AA3i6TEAU | 从零构建生产级 Agent Memory（四） | 老纪的技术唠嗑局 | 4min | B |
+| [VID-51](notes/VID-51-BV1fp3k6mEJU.md) | BV1fp3k6mEJU | 从零构建生产级 Agent Memory（五） | 老纪的技术唠嗑局 | 4min | B |
+| [VID-52](notes/VID-52-BV145326zEAM.md) | BV145326zEAM | 从零构建生产级 Agent Memory（六） | 老纪的技术唠嗑局 | 4min | A |
+| [VID-53](notes/VID-53-BV1wkMB6qEyN.md) | BV1wkMB6qEyN | Google Memory Bank 长期记忆 | AI变局 | 21min | B |
+| [VID-54](notes/VID-54-BV18G3z6oE4p.md) | BV18G3z6oE4p | Anthropic Memory+Dreaming | AI变局 | 27min | B（部分降级）|
+| [VID-55](notes/VID-55-BV1LG3F6sEn9.md) | BV1LG3F6sEn9 | 短时/长期记忆分层精讲 | AI大模型原理 | 3min | A |
+| [VID-56](notes/VID-56-BV14B3S6SEaw.md) | BV14B3S6SEaw | LLM 记忆做成文件系统（论文） | 熊二等兵 | 13min | A |
+| [VID-57](notes/VID-57-BV1hn5E6kEdW.md) | BV1hn5E6kEdW | AgentSwing 动态上下文管理 | Agent智能体深度研究院 | 8min | B |
+| [VID-58](notes/VID-58-BV1WuLH66EHg.md) | BV1WuLH66EHg | RF-Mem 快慢双路径检索 | Agent智能体深度研究院 | 9min | A |
+| [VID-59](notes/VID-59-BV1EnLH6AEz5.md) | BV1EnLH6AEz5 | MemCoE 先学怎么记 | Agent智能体深度研究院 | 12min | A |
+| [VID-60](notes/VID-60-BV1VhLH6xEjy.md) | BV1VhLH6xEjy | GAM 即时编译式记忆 | Agent智能体深度研究院 | 9min | B |
+| [VID-61](notes/VID-61-BV1dfGh6jE2j.md) | BV1dfGh6jE2j | LightMem 三段式处理 | Agent智能体深度研究院 | 8min | B |
+| [VID-62](notes/VID-62-BV1QBgi6EEeV.md) | BV1QBgi6EEeV | RE-TRAC 轨迹压缩 | Agent智能体深度研究院 | 11min | A |
+| [VID-63](notes/VID-63-BV1Ty3764E59.md) | BV1Ty3764E59 | PlugMem 交互历史重构 | Agent智能体深度研究院 | 12min | B |
+| [VID-64](notes/VID-64-BV1rQEB6oEpe.md) | BV1rQEB6oEpe | OpenAI Dreaming 记忆 | Agent智能体深度研究院 | 13min | B |
+| [VID-65](notes/VID-65-BV1QEgx6HEyF.md) | BV1QEgx6HEyF | MedRGAG 该信查到的还是记得的 | Agent智能体深度研究院 | 10min | B |
+| [VID-66](notes/VID-66-BV1QJ7z6CES8.md) | BV1QJ7z6CES8 | SuperMemory 技术架构解析 | AI大白话007 | 4min | B |
+| [VID-67](notes/VID-67-BV1Eg5C6xERt.md) | BV1Eg5C6xERt | 四层记忆架构详解（用户补充） | Agent开发实战 | 16min | B |
+| [VID-68](notes/VID-68-BV1eTPEzNEqf.md) | BV1eTPEzNEqf | 解决OpenClaw长期记忆4种方法 | 一蛙AI | 11min | B |
+| [VID-69](notes/VID-69-BV1nU96BnE6P.md) | BV1nU96BnE6P | 浅入深出 Agent 系列之八：Agent Memory 管理 | 奇创喵 | 27min | B |
+| [VID-70](notes/VID-70-BV1uvT16aEBx.md) | BV1uvT16aEBx | 01 RAG Agent 短期记忆 | AI_Julie | 15min | B |
+| [VID-71](notes/VID-71-BV1TXTQ65E45.md) | BV1TXTQ65E45 | 04 memory 打分三要素 | AI_Julie | 8min | B |
+| [VID-72](notes/VID-72-BV1gqNc6vEes.md) | BV1gqNc6vEes | 05 Agent memory 的设计 | AI_Julie | 12min | B |
+| [VID-73](notes/VID-73-BV1gRNF6PE48.md) | BV1gRNF6PE48 | 07 吐血整理的Agent memory 设计 | AI_Julie | 18min | B |
+| [VID-74](notes/VID-74-BV1CZNN6iEWq.md) | BV1CZNN6iEWq | 08 吐血整理的Agent memory 设计 | AI_Julie | 19min | B |
+| [VID-75](notes/VID-75-BV1cezTBDEgQ.md) | BV1cezTBDEgQ | Agent Memory 是什么？【论文精读】 | 日新月异max | 33min | B |
+| [VID-76](notes/VID-76-BV1qnzQBMEnq.md) | BV1qnzQBMEnq | 入门Agent Memory【代码精读】 | 日新月异max | 44min | B |
+| [VID-77](notes/VID-77-BV1oa6uBXE8J.md) | BV1oa6uBXE8J | MemoryOS 操作系统实现【论文精读】 | 日新月异max | 43min | B |
+| [VID-78](notes/VID-78-BV1hr6EBBEhM.md) | BV1hr6EBBEhM | 看Github项目，以MemoryOS为例【代码精读】 | 日新月异max | 70min | B |
+| [VID-79](notes/VID-79-BV1igFTzfE7a.md) | BV1igFTzfE7a | 纯文本agent memory论文串讲【论文精读】 | 日新月异max | 114min | B |
+| [VID-80](notes/VID-80-BV1nWABzwEuG.md) | BV1nWABzwEuG | MemVerse 多模态记忆【论文精读】 | 日新月异max | 63min | B |
+| [VID-81](notes/VID-81-BV1dRNMzLEof.md) | BV1dRNMzLEof | Mindverse 模型即记忆【深度解析】 | 日新月异max | 35min | B |
+| [VID-82](notes/VID-82-BV1XZw9zFEXy.md) | BV1XZw9zFEXy | 端到端上下文工程：Zep【代码解读】 | 日新月异max | 31min | B |
+| [VID-83](notes/VID-83-BV1zxL561EcM.md) | BV1zxL561EcM | 文件存储记忆 memU【代码解读】 | 日新月异max | 33min | B |
+| [VID-84](notes/VID-84-BV1wmGg6NEaz.md) | BV1wmGg6NEaz | Metis 原生记忆大模型（用户补充） | 每日Arxiv | 13min | B |
+| [VID-85](notes/VID-85-BV1Z2GP66EWp.md) | BV1Z2GP66EWp | 构建生产级Agent Memory系统架构（用户补充） | Ai大模型实战教学 | 12min | B |
+| [VID-86](notes/VID-86-BV1HUjU6QEds.md) | BV1HUjU6QEds | Hermes Agent架构：Memory、上下文与网关（用户补充） | 狡猾的哈基 | 40min | B |
+| [VID-87](notes/VID-87-BV1Bm6bB5EJ3.md) | BV1Bm6bB5EJ3 | OpenClaw是什么（搜索精选） | 小白debug | 6min | B |
+| [VID-88](notes/VID-88-BV1RCGR6yEEw.md) | BV1RCGR6yEEw | RAG/Memory 语义检索原理（搜索精选） | 小白debug | 9min | B |
+| [VID-89](notes/VID-89-BV1WV2vBWEkL.md) | BV1WV2vBWEkL | Episodic Memory（搜索精选） | 亚马逊云科技 | 3min | B |
+| [VID-90](notes/VID-90-BV1ZA93BtEKW.md) | BV1ZA93BtEKW | Claude Code 记忆系统设计（搜索精选） | 五道口纳什 | 21min | B |
+| [VID-91](notes/VID-91-BV1hDEN6EESL.md) | BV1hDEN6EESL | Agent 自主经营环世界（搜索精选） | 徇Official | 60min | C（无有效语音） |
+| [VID-92](notes/VID-92-BV1KwwzzGEvD.md) | BV1KwwzzGEvD | OpenClaw graph-memory 插件（搜索精选） | AGI_Ananas | 12min | B |
+| [VID-93](notes/VID-93-BV1xUcZzfEaB.md) | BV1xUcZzfEaB | openclaw 图谱记忆（搜索精选） | AGI_Ananas | 9min | B |
+| [VID-94](notes/VID-94-BV19XvDBQE6y.md) | BV19XvDBQE6y | 重新定义 agent Memory（搜索精选） | 慢学AI | 7min | B |
+| [VID-95](notes/VID-95-BV1s81xBZEPn.md) | BV1s81xBZEPn | NeurIPS Plan Caching（搜索精选） | iHang的科研笔记 | 20min | B |
+| [VID-96](notes/VID-96-BV1RczjBPE8K.md) | BV1RczjBPE8K | Agent Skills 对比（搜索精选） | 御风大世界 | 6min | B |
+| [VID-97](notes/VID-97-BV1dE97BrEYX.md) | BV1dE97BrEYX | 20小时 Agent Memory 教程合集（搜索精选） | 大模型小爱 | 1216min | C（串台合集） |
+| [VID-98](notes/VID-98-BV1SSfBBzEWL.md) | BV1SSfBBzEWL | Memorix：跨 Agent 记忆桥 | Le_Ho | 1min | A |
+| [VID-99](notes/VID-99-BV11kT16dErg.md) | BV11kT16dErg | 02 RAG Agent 长期记忆 | AI_Julie | 12min | A |
+| [VID-100](notes/VID-100-BV12rT164EP9.md) | BV12rT164EP9 | 03 RAG Agent 摘要记忆 | AI_Julie | 12min | A |
+| [VID-101](notes/VID-101-BV1XYNc6TEpt.md) | BV1XYNc6TEpt | 06 Agent Harness hermes 设计 | AI_Julie | 6min | A |
+| [VID-102](notes/VID-102-BV1H2NM6rExh.md) | BV1H2NM6rExh | 09 Agent memory 设计 面试宝典 | AI_Julie | 19min | A |
 
 ## 目录导航
 
@@ -170,3 +170,4 @@ status: draft
 | 0.0.42 | 2026-08-07 | 0.0.2（0.0.42 批次）审计修复：素材统计对齐实际口径（102 视频：27 字幕 + 75 whisper，C 级仅 VID-91/97 全降级 + VID-54 部分降级）；25 份重转写成功笔记升 B 级；清单级别列同步。 |
 | 0.0.44 | 2026-08-08 | 0.0.44 批次：PAPER-10（G-Memory）增量（论文批次扩至 10 篇，用户直发链接 + 原文 PDF 核验，papers/ 导航说明同步）；吸收建议 AP-29~37 + PAPER-01~09 增量未覆盖项全量落地至核心设计文档（吸收管线闭环——本批次全部「可吸收」条目已落库）。 |
 | 0.0.47 | 2026-08-08 | 0.0.47 批次：13 链接批次（2 篇已分析交叉引用 + 11 篇新论文 PAPER-11~21，第 3 链接 2509.2470 缺位解析为 MemGen 2509.24704）；分诊 I 节 EV-60~74 + 吸收建议四d 节 AP-38~52（建议态未落库）+ 张力 AT-08~09；本批次零改动核心设计文档。 |
+| 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：视频清单 102 行 VID 单元格补笔记链接（导航可直达）；24 行素材级别单元格 `B|` 缺空格归一为 `B |`（格式统一）。 |

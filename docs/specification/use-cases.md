@@ -8,8 +8,8 @@ tags:
   - design
   - requirements
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -17,7 +17,7 @@ status: draft
 
 > **定位**：描述 Agent 与 Kairos 交互的典型场景。功能清单说「能做什么」，用例说「在什么情境下按什么顺序做」。
 >
-> **竖切边界注记**：本文 8 个场景覆盖完整 v0.1.0 能力，部分场景依赖的功能不在竖切首迭代（如场景 5 依赖的 suppressed 定向遗忘——承载功能 M-10 属扩展功能，竖切记忆管理仅 M-01/M-03/M-05；场景 2 的异步巩固管道对应 SYS-01 journal 双重隔离写入，竖切已含）。场景与竖切范围的对应以 [feature-list.md](feature-list.md) 竖切标注为准——场景可先于竖切验证（人工/沙箱），竖切验收以 acceptance-criteria 竖切验收标准为准。
+> **竖切边界注记**：本文 8 个场景覆盖完整 v0.1.0 能力，部分场景依赖的功能不在竖切首迭代（如场景 5 依赖的 suppressed 定向遗忘——承载功能 M-04 定向遗忘属扩展功能，竖切记忆管理仅 M-01/M-03/M-05；场景 2 的异步巩固管道对应 SYS-01 journal 双重隔离写入，竖切已含）。场景与竖切范围的对应以 [feature-list.md](feature-list.md) 竖切标注为准——场景可先于竖切验证（人工/沙箱），竖切验收以 acceptance-criteria 竖切验收标准为准。
 
 ---
 
@@ -72,7 +72,7 @@ status: draft
 **流程**：
 1. 用户通过 REST API `POST /v1/calibrate` 发送校准信号（memory_id + score + source）
 2. 宪法主权面外部校准端口接收并鉴权
-3. 校准信号写入见证锚定主副本（`narrative_coherence_score` 更新）
+3. 校准信号写入见证锚定主副本（触发差异检验，校准置信度与见证值更新；`narrative_coherence_score` 由叙事自洽度评估器生成，非校准信号直接写入，见架构 §5.2）
 4. 差异检验：使用权重影子副本与更新后的见证锚定比对
 5. 若无冲突：校准信号注入完成
 6. 若有冲突：使用权重标记 `suspect_flag=true`，转入沙箱验证环
@@ -90,7 +90,7 @@ status: draft
 5. 命中 → 触发复兴加速通道（盲区匹配的记忆影子副本置信度非零初始）
 6. 记忆恢复为 `status=active`，激活权重设为初始值
 
-> **复兴触发口径（勘误）**：Archived→Active 的复兴仅由**潜伏势能重估端口（盲区驱动/前向关联扫描）或外部校准信号**触发（架构 §5.2 状态转换表）——显式检索仅更新 `last_access_at`，不直接触发状态复兴（与 feature-list F-03、test-plan TC-F03-001 同步修正）。
+> **复兴触发口径**：Archived→Active 的复兴仅由**潜伏势能重估端口（盲区驱动/前向关联扫描）或外部校准信号**触发（架构 §5.2 状态转换表）——显式检索仅更新 `last_access_at`，不直接触发状态复兴（与 feature-list F-03、test-plan TC-F03-001 同步修正）。
 
 ## 场景 6：外部校准中断与降级
 
@@ -101,7 +101,7 @@ status: draft
 2. 中断持续 < N 周期：**保守静默**——使用权重停止积累，仅处理显式检索
 3. 中断持续 N-M 周期：**受限交叉验证**——允许高置信度记忆间关联验证
 4. 中断持续 > M 周期：**安全休眠**——暂停主动推理，仅维持数据完整性
-5. 外部校准信号恢复 → 所有降级期间产生的待审查产物进入差异检验（N、M 为配置参数，详见 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.9 降级状态机与 [ops/configuration.md](../ops/configuration.md) 中 `DEGRADATION_PERIOD_N`/`DEGRADATION_PERIOD_M`）
+5. 外部校准信号恢复 → 所有降级期间产生的待审查产物进入差异检验（N、M 为配置参数，详见 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.9 降级状态机与 [ops/configuration.md](../ops/configuration.md) 中 `KAIROS_DEGRADATION_PERIOD_N`/`KAIROS_DEGRADATION_PERIOD_M`）
 6. 未通过者回滚 → 通过者正常合并 → 系统退出降级模式
 
 ## 场景 7：安全红线触发
@@ -147,3 +147,7 @@ status: draft
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：场景 5 遗忘流程改写为 freshness 口径+复兴触发勘误；场景 6 步骤编号修复（括注移入步骤 5）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：版本注记纪律收敛（竖切边界注记/复兴触发口径去版本号前缀，保留信息内容）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：路径空间统一下划线命名。 |
+| 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
+| 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
+| 0.0.67 | 2026-08-09 | round33 全面深度审计修复批次（changelog 0.0.67）：场景 5「复兴触发口径（勘误）」去除过程标记后缀（零版本标记纪律收敛，正文仅描述当前状态）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：场景 4 步骤 3 表述精确化——外部校准写入见证锚定主副本触发差异检验并更新校准置信度/见证值，`narrative_coherence_score` 由叙事自洽度评估器生成、非校准信号直接写入（架构 §5.2）。 |

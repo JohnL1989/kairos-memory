@@ -8,8 +8,8 @@ tags:
   - deployment
   - ops
 created: 2026-07-18
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-08
+last_reviewed: 2026-08-08
 status: draft
 ---
 
@@ -42,7 +42,7 @@ status: draft
 
 三种模式下 API 兼容，核心记忆操作（写入/检索）均可用。**遗忘能力注记**：遗忘调度器在竖切（v0.1.0-slice）内显式启用；完整系统形态下 `KAIROS_FEATURE_FORGETTING_ENGINE` 默认 OFF（仅基础 TTL 清理），需在配置中显式开启（见 [configuration.md](configuration.md) §11 特征标志与架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8）。差异在于元认知层监测深度（全量模式有完整监测器族）和跨层协调能力——轻量模式为独立进程，标准/全量模式支持 Docker 编排。切换只需要更改配置文件中的数据源指向和部署方式。
 
-> **认知组件声明**：上表描述的是**基础设施与部署维度**的差异（数据库/容量/编排方式）。各模式的认知组件实际启用范围由 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 定义的特征标志独立控制——默认仅启用核心 LTM、路径空间、三信号混合检索和基础审计日志；功能标志（帕累托排序、元认知监测器、宪法治理、升华管道等）默认 OFF，须在配置中显式启用。详见配置文档中对应 `KAIROS_FEATURE_*` 参数及架构文档 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 特征标志编码纪律。
+> **认知组件声明（部分正交）**：上表描述的是**基础设施与部署维度**的差异（数据库/容量/编排方式），与认知组件启用范围**部分正交**——认知组件由 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 的**命名配置集**（`kairos-minimal` / `kairos-slice` / `kairos-full`）决定，而非由部署模式独立控制。默认仅启用核心 LTM、路径空间、三信号混合检索和基础审计日志；功能标志（帕累托排序、元认知监测器、宪法治理、升华管道等）默认 OFF，须在配置中显式启用。命名配置集与部署模式的关系：轻量/标准模式可搭配 `kairos-minimal` 或 `kairos-slice`；**全量模式绑定 `kairos-full`**（其定义即「全部特征标志 ON」）为唯一例外——其余「部署模式 × 命名配置集」组合不在受支持范围。详见配置文档中对应 `KAIROS_FEATURE_*` 参数及架构文档 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 特征标志编码纪律与配置集降级阶梯。
 
 ---
 
@@ -101,7 +101,7 @@ status: draft
 轻量模式：
 ```bash
 kairos serve              # 默认 SQLite 模式轻量
-# PostgreSQL 模式：kairos serve --pg（等价于设置 KAIROS_LITE_MODE=false，--pg 覆盖环境变量中的 LITE_MODE 值；规划扩展命令，CLI 表见 api-spec §3）
+# PostgreSQL 模式：kairos serve --pg（等价于设置 KAIROS_LITE_MODE=false，--pg 覆盖环境变量中的 LITE_MODE 值；规划扩展命令，api-spec §3 未登记，须纳入债务 D-430 追缴清单）
 kairos health             # 健康检查
 ```
 
@@ -252,3 +252,5 @@ Kairos 输出结构化 JSON 日志到 stdout（容器部署模式）；本地运
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：全量模式启动时间 ~15 秒补「扩展设计值」注记（NFR 仅定义标准模式启动 ≤10s，§一 部署模式表与 §五 compose 说明两处）；`KAIROS_LLM_ENDPOINT` 必填口径与 `KAIROS_LLM_API_KEY` 对齐（标准/全量 ✅，轻量 ❌）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：全量模式与架构 kairos-full 配置集对齐（补宪法主权面/推理皮层维度）；日志字段统一 logger；轻量模式启动时间补扩展设计值注记。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§八 版本升级压缩为指针（runbook §3 权威）；--pg 规划扩展注记；「试用」笔误。 |
+| 0.0.51 | 2026-08-08 | round22 审计修复批次（changelog 0.0.51）：§一 认知组件声明改写为部分正交语义（部署模式决定基础设施维度、命名配置集决定认知组件；全量模式绑定 kairos-full 为唯一例外）。 |
+| 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |

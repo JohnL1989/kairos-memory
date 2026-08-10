@@ -8,8 +8,8 @@ tags:
   - design
   - requirements
 created: 2026-07-20
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -37,6 +37,8 @@ status: draft
 
 ---
 
+> **章节导航**：一 记忆写入 · 二 记忆检索 · 三 记忆管理 · 四 升华管道 · 五 遗忘与衰减 · 六 前瞻记忆 · 七 校准与治理 · 八 系统管理 · 九 扩展功能
+
 ## 一、记忆写入
 
 | 编号 | 功能 | 说明 | 对应架构组件 |
@@ -57,8 +59,8 @@ status: draft
 | R-02 | 语义检索 | 按内容语义相似度检索（向量搜索） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 向量空间 |
 | R-03 | 多路径融合 | 同时走多条检索路径后汇聚结果 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4.2 汇聚式多路径融合 |
 | R-04 | 按契约过滤 | 仅检索指定契约类型的记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.1 契约过滤 |
-| R-05 | 按时间范围过滤 | 检索指定时间窗口内的记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 时间索引 |
-| R-06 | 按情感维度检索 | 按 VAD 相似度检索记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 情感提升通道 |
+| R-05 | 按时间范围过滤 | 检索指定时间窗口内的记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3a 时间过滤约束 |
+| R-06 | 情感维度（VAD）加权检索 | VAD 条件激活的排序权重提升通道（非独立检索轴，cos≥0.5 时注入，默认忽略情感维度） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 预测器（情感基线提升通道） |
 | R-07 | 按关系检索 | 检索与某记忆存在指定关系的记忆集合 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 关系索引 |
 | R-08 | 路径空间浏览 | 树状浏览路径空间（ls/cd/tree） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1 CLI 接口 |
 
@@ -94,8 +96,8 @@ status: draft
 
 | 编号 | 功能 | 说明 | 对应架构组件 |
 |:----|:-----|:-----|:------------|
-| PM-01 | 前瞻意图创建 ⏳ v1.1+ | 写入未来意图记忆至 `kairos://_system/intentions/`，使用**意图契约**（intention——独立契约类型，激活优先级低于常驻但高于按需，不受遗忘调度器评估；完成/取消后降级为按需，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆段与 [data-model.md](data-model.md) `memories.contract`）。v0.1.0 架构就绪（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻保持协议），数据模型和 API 未落地 | §4 WM调度预处理器 + [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻保持跨层协调协议 |
-| PM-02 | 前瞻意图完成/取消 ⏳ v1.1+ | 意图完成或取消时标记为 `resolved`，降级为普通按需记忆。v0.1.0 首迭代（竖切）仅实现 4 类事件（use_event/calibration_signal/degradation_switch/latent_trigger）；intention_activate/intention_resolve 待对应组件启用时按架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.6 事件类型注册门禁实现；完整生命周期管理延至 v1.1 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4 WM调度预处理器生命周期管理 |
+| PM-01 | 前瞻意图创建 ⏳ v1.1+ | 写入未来意图记忆至 `kairos://_system/intentions/`，使用**意图契约**（intention——独立契约类型，激活优先级低于常驻但高于按需，不受遗忘调度器评估；完成/取消后降级为按需，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆段与 [data-model.md](data-model.md) `memories.contract`）。**版本归属按能力粒度切分**：v0.1.0 落地契约层承载——`contract` 枚举值 `intention` 及其保护语义（不受遗忘调度器评估）见 [data-model.md](data-model.md) `memories.contract`，删除守卫（409 `ERR-CTR-004` 意图契约未关闭）见 [api-spec.md](api-spec.md) §1.5；v1.1+ 承载意图创建专用端点与 WM 触发条件匹配（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻保持协议当前为架构就绪状态） | §4 WM调度预处理器 + [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻保持跨层协调协议 |
+| PM-02 | 前瞻意图完成/取消 ⏳ v1.1+ | 意图完成或取消时标记为 `resolved`，降级为普通按需记忆。v0.1.0 首迭代（竖切）实现 4 类事件（use_event/calibration_signal/degradation_switch/latent_trigger），并已落地删除守卫（未关闭意图直接删除返回 409 `ERR-CTR-004`，见 [api-spec.md](api-spec.md) §1.5）；intention_activate/intention_resolve 事件待对应组件启用时按架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.6 事件类型注册门禁实现，完整生命周期管理归 v1.1 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4 WM调度预处理器生命周期管理 |
 
 ## 七、校准与治理
 
@@ -154,6 +156,14 @@ status: draft
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：H-01 MCP 工具计数 12→15（基础工具集 12 + 关系管理 3，对齐 api-spec §6.8）；PM-02 事件总线口径与架构 §10.10 竖切统一（4 类事件，intention 事件按 §10.6 注册门禁）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：P3-04/W-13 多模态版本档位注记（v0.1.0 子集交付）；R-21 更名四链路图谱扩展；W-04 更名 VAD 情感元数据写入；W-07 补 S-07 链接；零版本标记收敛。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：R-03 多路径结果集引用改指 §4.2；M-15/M-17/PL-04~06 技能类引用改指 blueprint §一；R-17 实体加成引用改指 §7.3a；债务编号前缀补标。 |
+| 0.0.61 | 2026-08-08 | 版本记录补登（changelog 0.0.61）：M-10 记忆状态机口径由「含子态 Suppressed」修正为五态平级全生命周期（active/stale/archived/suppressed/superseded，无子态），与架构 §5.2 一致（前序批次实施、漏登记于本文档版本记录，本批补登）。 |
+| 0.0.72 | 2026-08-09 | round36 全面深度审计修复批次（changelog 0.0.72）：H-02/H-03 引用落点 §7.3→§7.1a（Hermes Memory Provider 权威定义在 §7.1a，0.0.26 批次仅修 H-01 同源遗漏 H-02/H-03）；P3-21 FTS5 口径补注（基础 unicode61 为 v0.1.0 轻量模式承载，jieba 为可选扩展，对齐 0.0.62 批次）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.73 | 2026-08-09 | round37 全面深度审计修复批次（changelog 0.0.73）：引用落点批量修正 9 行——R-05 时间索引→§7.3a 时间过滤约束（架构无「时间索引」节点）、R-10 时间序检索→api-spec §1.2（架构无「向量空间·时间序」，接口承载补全）、W-09 冲突检测→blueprint §5.6（§5.5 差异检验语义错配）、M-12 社区检测→blueprint §一（架构 §5.2 无此节点）、M-13/A-16 事实新鲜度→blueprint §一（架构 §5.2 无此节点）、A-15 Recall Funnel→架构 §7.3（架构 §5.2 无此节点）、M-16 MemCube→blueprint §一（架构无 MemCube）、M-22 Mental Model→blueprint §一（架构无 mental_model 承载）、A-24 MCP Bridge→§7.1a（权威定义处）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.79 | 2026-08-09 | round41 全面深度审计修复批次（changelog 0.0.79）：新增分节导航（一~九）。 |
+| 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
+| 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
+| 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：PM-01/PM-02 意图契约版本归属改能力粒度切分——v0.1.0 落地契约枚举值 + 保护语义 + DELETE 守卫（409 ERR-CTR-004），意图生命周期端点与 intention_activate/resolve 事件归 v1.1+；与 requirements-baseline §1.8 / data-model / api-spec 契约层已落地事实对齐；详见 changelog 0.0.83 叙述节。 |
+| 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：Phase 2 引用落点修正 4 处——R-23 QueryAnalyzer §2.1→§2.6.1、R-24 时间覆盖采样 §2.1→§2.6.2、R-27 时间覆盖检索 §2.1→§2.6.2、SF-18 防抖反射执行器 §2.1→§2.6.3（架构关联组件实际章节；§2.1 为元认知层定位）。 |
 
 ---
 
@@ -166,11 +176,11 @@ status: draft
 | M-07 | 冗余合并 | 余弦相似度 > 0.92 的记忆自动合并，保留高热，软删低热 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 后台维护引擎·Light |
 | M-08 | 热度衰减 | 记忆 heat_score 按日衰减 α=0.95，访问增量 Δ=0.05 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 后台维护引擎·Light |
 | M-09 | 噪声清理 | 临时契约中超 TTL 且未被查询的记忆自动清除 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 后台维护引擎·Light |
-| R-10 | 时间序检索 | 纯时间轴排序，与热度解耦（sort=created_at） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 向量空间·时间序 |
+| R-10 | 时间序检索 | 纯时间轴排序，与热度解耦（sort=created_at） | [api-spec.md](api-spec.md) §1.2 记忆检索（sort 参数） |
 | R-11 | 实体图谱检索 | 按实体查询关联记忆，支持多跳图遍历 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 实体知识图谱 |
 | R-12 | 分块检索 | 长文本分块后逐块检索，结果去重 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 长文本分块引擎 |
 | W-08 | 实体自动提取 | 写入时 LLM 自动提取实体并写入知识图谱 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 实体知识图谱 |
-| W-09 | 冲突检测写入 | 写入时检测语义冲突/重复，返回合并/覆盖/新建建议 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.5 差异检验 |
+| W-09 | 冲突检测写入 | 写入时检测语义冲突/重复，返回合并/覆盖/新建建议 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §5.6 新信息冲突解决 |
 | W-10 | 三区写入 | 记忆按 hall 字段写入加工区，自动触发蒸馏→验证→归档 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.10 知识加工区 |
 | W-11 | 纠正自动检测 | 检测用户否定/改写/隐式纠正，自动触发差异检验 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.4 用户纠正自动检测 |
 | SF-05 | 会话历史保留 | 完整对话消息持久化，跨会话可查询 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 对话历史持久化 |
@@ -178,8 +188,8 @@ status: draft
 | SF-07 | 验证区退回加工区 | 差异检验不通过时退回加工区重新蒸馏 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.10 退回回流 |
 | SF-08 | 自适应蒸馏调度 | 基于周活跃度动态调整蒸馏批次和触发阈值 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 升华管道·自适应调度 |
 | H-01 | MCP Bridge 接入 | 15 个 MCP 工具供 Hermes Agent 直接调用（基础工具集 12 + 关系管理 3，见 [api-spec.md](api-spec.md) §6.8） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1a MCP Bridge |
-| H-02 | Memory Provider | 6 个生命周期钩子自动监听代理事件 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 Hermes Memory Provider |
-| H-03 | 热度预取 | on_turn_start 预取高热度记忆注入 WM | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 Memory Provider hook |
+| H-02 | Memory Provider | 6 个生命周期钩子自动监听代理事件 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1a Hermes Memory Provider |
+| H-03 | 热度预取 | on_turn_start 预取高热度记忆注入 WM | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1a Memory Provider hook |
 | A-08 | 后台维护触发 | 手动触发 Light/Deep 维护模式 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 后台维护引擎 |
 | A-09 | 维护状态查看 | 查询维护引擎运行历史和指标 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 后台维护引擎 |
 | A-10 | 端云同步推送 | 本地增量修改推送到服务端 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.11 端云同步协议 |
@@ -192,10 +202,10 @@ status: draft
 | T-04 | RCW 多源加权 | 按来源类型分配奖励贡献权重 | [rl-weight-spec.md](rl-weight-spec.md) §权重优化器实现 |
 | T-05 | KPop 稳定性监测 | KL 散度超阈值触发额外衰减 | [rl-weight-spec.md](rl-weight-spec.md) §权重优化器实现 |
 | T-06 | Cosine LR 调度 | 余弦退火学习率，后期防震荡 | [rl-weight-spec.md](rl-weight-spec.md) §权重优化器实现 |
-| M-10 | 状态机五态 | Active→Stale→Archived（含子态 Suppressed）→Superseded 全生命周期 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 记忆状态机 |
+| M-10 | 状态机五态 | Active→Stale→Archived→Suppressed→Superseded 五态平级全生命周期（无子态） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 记忆状态机 |
 | M-11 | 状态变更跟踪 | 每次状态转换写入 memory_states 表 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 记忆状态机 |
-| M-12 | 社区检测 | 对实体关系图自动聚类为社区，支持社区级检索和摘要 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 社区检测 |
-| M-13 | 临时事实智能过期 | 自动检测记忆中的时间指示，到期自动清理 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 事实新鲜度·临时过期 |
+| M-12 | 社区检测 | 对实体关系图自动聚类为社区，支持社区级检索和摘要 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（社区检测） |
+| M-13 | 临时事实智能过期 | 自动检测记忆中的时间指示，到期自动清理 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（事实新鲜度元数据） |
 | M-14 | 记忆版本管理 | Update 自动保留内容快照，支持版本历史查询和回滚 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 记忆版本管理 |
 | R-13 | 知识演化链查询 | 按记忆 ID 查询 replaces/enriches/confirms/challenges | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 知识演化追踪 |
 | R-14 | 分块差分索引 | Update 操作只 embedding 新行，不变行保留向量 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 长文本分块引擎·差分同步 |
@@ -209,8 +219,8 @@ status: draft
 | PL-05 | 三级技能进化 | L1 Traces→L2 Policies→L3 World Model→Skills | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（三级技能进化） |
 | PL-06 | World Model 规则 | 跨 task_class 稳定模式自动沉淀为 world_model_rules | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（三级技能进化） |
 | W-12 | 捕获门控增强 | 12 种 skip pattern + secret regex + trivial + hard_max | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 摄取验证门禁·捕获门控 |
-| A-15 | Recall Funnel | 检索 trace 结构化（stage counts + timings + scoring） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 / [api-spec.md](api-spec.md) §6.7 |
-| A-16 | Freshness 报告 | fact_freshness 覆盖度/过期/需验证统计 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 事实新鲜度元数据 |
+| A-15 | Recall Funnel | 检索 trace 结构化（stage counts + timings + scoring） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 检索轨迹可视化 / [api-spec.md](api-spec.md) §6.7 |
+| A-16 | Freshness 报告 | fact_freshness 覆盖度/过期/需验证统计 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（事实新鲜度元数据）/ [data-model.md](data-model.md) §8.6 |
 | A-17 | 主动话题 | Deep 模式生成四种 proactive topics，on_turn_start 注入 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 主动话题生成器 |
 | A-18 | 检索轨迹可视化 | 意图分析→定位→钻取→聚合全程记录，事件总线标记 retrieval_trajectory | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 检索轨迹可视化 |
 | A-19 | Cross-encoder 重排序 | 5D 排序后 cross-encoder 逐对精确重排 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3 Cross-encoder 重排序 |
@@ -235,7 +245,7 @@ status: draft
 | R-21 | 四链路图谱扩展 | 语义 + Entity 共现 + Semantic kNN + Causal 四链并行扩展，融合权重 0.50/0.20/0.10/0.20（语义/共现/kNN/因果，架构 §5.2 检索扩展链路） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | R-22 | 编译管线敏捷检索 | 编译时注入双模检索（Fast <10ms + Deep 按需） | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3d |
 | M-15 | 技能管理系统 | skills 表 + find_skills 语义搜索 + 六态生命周期 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（技能管理系统） |
-| M-16 | MemCube 四层分化 | textual/activation/parametric/preference 四层记忆 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
+| M-16 | MemCube 四层分化 | textual/activation/parametric/preference 四层记忆 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（MemCube 四层记忆分化） |
 | M-17 | 四层记忆质量层次 | mental_models>observation>experience>world 检索优先级 1.00/0.75/0.50/0.25 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（四层记忆质量层次） |
 | M-18 | 组件注册表 | 运行时类型化组件注册 + 优先级回退 + 五态生命周期 | 横切组件 |
 | SF-14 | 编译管线上下文组装 | 四阶段（采集→分类渲染→注入元数据→哈希缓存）多源上下文组装 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4.3 |
@@ -253,22 +263,22 @@ status: draft
 | M-19 | Flag 系统 | needs_verify（30天无演化链）+ contradiction（Jaccard>0.7+极性相反）主动告警 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | M-20 | 版本链模型 | parentMemoryId/rootMemoryId/nextVersionId/isLatest 四字段 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | M-21 | Saga 叙事线 | narrative_threads 表。**v0.1.0 子集：创建/添加记忆/按叙事线检索/手动完结四操作（纯 DB 无 LLM），端点见 [api-spec.md](api-spec.md) §8；summarize_thread() 与自动聚合/自动完结为 v1.1 目标** | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
-| M-22 | Mental Model 可刷新 | DERIVED_FROM 关系追踪 + 源变化触发 re-generation | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
+| M-22 | Mental Model 可刷新 | DERIVED_FROM 关系追踪 + 源变化触发 re-generation | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一（四层记忆质量层次） |
 | M-23 | 可配置 Profile Schema | 声明式 Schema + 5 预设模板 + L4 蒸馏刷新 | [detailed-design.md](detailed-design.md) §11.3 |
-| R-23 | QueryAnalyzer | 三阶段（意图5类→实体5类型→时间6种）理解层 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.1 |
-| R-24 | 时间覆盖采样 | 8 对数桶→10 入口点均匀覆盖算法 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.1 |
+| R-23 | QueryAnalyzer | 三阶段（意图5类→实体5类型→时间6种）理解层 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.6.1 |
+| R-24 | 时间覆盖采样 | 8 对数桶→10 入口点均匀覆盖算法 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.6.2 |
 | R-25 | 时间戳后处理 | 小模型独立后处理（<100M），主流程解耦 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 |
 | R-26 | Episode 归因索引 | 批量摄取 episode_indices → node_episode_index_map | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5 |
-| R-27 | 时间覆盖检索 | 8桶→10入口点，QueryAnalyzer 联动 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.1 |
+| R-27 | 时间覆盖检索 | 8桶→10入口点，QueryAnalyzer 联动 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.6.2 |
 | R-28 | ADD-only 提取 | linked_memory_ids + Observation Date 锚定，叠加非替代 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3g |
-| SF-18 | 防抖反射执行器 | 同 thread_id 新提交自动取消旧任务 + after_seconds 延迟 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.1 |
+| SF-18 | 防抖反射执行器 | 同 thread_id 新提交自动取消旧任务 + after_seconds 延迟 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.6.3 |
 | SF-19 | 双模式 Compaction | sliding_window 增量 + all 全量 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | SF-20 | 变量愈合 | 变量注册表 + 三策略回填 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §4.4 |
 | W-13 | 资源摄取 | add_resource file/URL/sitemap/RSS + watch_interval（**v0.1.0 交付**，与 api-spec §18.2 多模态 Part 的 v0.1.0 档位一致，见 §18.1） | [api-spec.md](api-spec.md) §18.1 |
 | W-14 | spaCy 实体提取 | 非 LLM NER 4 规则 + 150+ 过滤词 | [detailed-design.md](detailed-design.md) §9.3 |
 | W-15 | ADD-only 提取协议 | 叠加非替代，linked_memory_ids 溯源 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3g |
 | A-23 | Connectors 同步 | Gmail/Drive/Notion/GitHub webhook + 轮询兜底 | [detailed-design.md](detailed-design.md) §11.2 |
-| A-24 | 关系管理 API | link/unlink/relations 三工具 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 MCP Bridge |
+| A-24 | 关系管理 API | link/unlink/relations 三工具 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1a MCP Bridge |
 | A-25 | forgetAfter 过期 | temporary 契约到期硬删除，级联清理 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
 | A-26 | 12 规范操作集 | CRUD + merge/fork/archive/restore/purge/link/unlink | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7 |
 | A-27 | 半开区间时间 | [valid_from, valid_to) 严格上界 + supersede() | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 |
@@ -298,6 +308,8 @@ status: draft
 > **计数口径**：上表为**小计**，仅统计 Phase 0~2 的 144 项；叠加下方 Phase 3 长期储备 24 项后，全量为 **168 项**（见 §最终计数）。引用本文件功能总数时请以 168 为准，勿取本表的 144。
 >
 > **未使用编号**（已登记，不得回收复用）：`A-14`、`R-09`、`P3-18`。
+>
+> **分类口径注记**：功能分类共 **14 类** = 核心 8 类（上表）+ 扩展 6 类（Hermes 集成 / 模型能力 / RL 优化 / Playbook / 技能进化 / 系统基建）——README 与版本记录「14 类 168 项」即此口径。
 
 ### Phase 3 新增（长期技术储备）
 
@@ -322,7 +334,7 @@ status: draft
 | P3-17 | TeamScope 多租户 | team_id + user_id 双层跨 host | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-17 |
 | P3-19 | File Graph 深层能力 | 反向链接/多跳/孤立检测/中心性 | [technology-stack.md](../development/technology-stack.md) §七 |
 | P3-20 | SQLCipher 加密 | AES-256-CBC page 全库加密 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-20 |
-| P3-21 | FTS5 全文搜索 | contentless-external + jieba 分词 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-21 |
+| P3-21 | FTS5 全文搜索 | contentless-external 模式（基础 FTS5 + unicode61 为 v0.1.0 轻量模式 BM25 承载，见架构 §5.20.2；jieba 为需编译扩展的可选精细中文分词，由 `KAIROS_FTS5_CHINESE_SEGMENTATION` 控制） | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-21 |
 | P3-22 | PreparedCache 96 条 | LRU 逐出 + SHA256 键 + 读写锁 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-22 |
 | P3-23 | Schema 版本保护 | 硬拒绝高版本 DB（exit 75） | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-23 |
 | P3-24 | Symbolic Memory | Mermaid Canvas 节点图，200 节点上限，交互展开/过滤/样式映射 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-24 |

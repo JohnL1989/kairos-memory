@@ -18,6 +18,8 @@
 -- 0.0.26 复核 : 15 张表与 data-model v0.0.25 逐列比对（0.0.16 批次新增 memories.structural_value/
 --            structural_value_reasons/structural_value_updated_at/compression_trail 4 字段已回填；
 --            is_structure ↔ structural_value 双向同步 CHECK 已补；其余 14 张表无残余差异）
+-- 0.0.55 复核 : 字段注释「（新增）」编辑痕迹清除（round24 审计 R24-06）；14 物理 + 1 FTS5 虚拟表
+--            口径与 data-model/README 对齐（round24 审计 R24-04）
 -- =============================================================================
 
 PRAGMA foreign_keys = ON;      -- 必须：SQLite 默认不强制外键，未开启则所有 FK 静默失效
@@ -74,9 +76,9 @@ CREATE TABLE memories (
   identity_reviewed_at      TEXT,
   identity_review_count     INTEGER NOT NULL DEFAULT 0,
   is_structure              INTEGER NOT NULL DEFAULT 0 CHECK (is_structure IN (0,1)),
-  structural_value          INTEGER NOT NULL DEFAULT 0   CHECK (structural_value IN (0,1,2)),  -- 半定量结构标记：0 非结构 / 1 疑似 / 2 确认（新增）
-  structural_value_reasons  TEXT    NOT NULL DEFAULT '[]',   -- JSON 数组：升档原因列表（新增）
-  structural_value_updated_at TEXT,                           -- 最近一次升/降档时间 ISO-8601（新增）
+  structural_value          INTEGER NOT NULL DEFAULT 0   CHECK (structural_value IN (0,1,2)),  -- 半定量结构标记：0 非结构 / 1 疑似 / 2 确认
+  structural_value_reasons  TEXT    NOT NULL DEFAULT '[]',   -- JSON 数组：升档原因列表
+  structural_value_updated_at TEXT,                           -- 最近一次升/降档时间 ISO-8601
   is_deleted                INTEGER NOT NULL DEFAULT 0 CHECK (is_deleted IN (0,1)),
   calibration_confidence    REAL    NOT NULL DEFAULT 0.5 CHECK (calibration_confidence BETWEEN 0 AND 1),
   vad_v                     REAL    NOT NULL DEFAULT 0   CHECK (vad_v BETWEEN -1 AND 1),
@@ -85,8 +87,8 @@ CREATE TABLE memories (
   decontextualization_level REAL    NOT NULL DEFAULT 0   CHECK (decontextualization_level BETWEEN 0 AND 1),
   heat_score                REAL    NOT NULL DEFAULT 1.0 CHECK (heat_score BETWEEN 0 AND 1),
   expires_at                TEXT,                                        -- 仅 temporary 契约；到期硬删除
-  valid_until               TEXT,                                        -- 显式时效字段（外部理念吸收 0.0.41：时间轴结构互补）——知识有效期截止，可空；到期不硬删除
-  expiration_date           TEXT,                                        -- 显式时效字段（外部理念吸收 0.0.41：时间轴结构互补）——数据保留期限，可空
+  valid_until               TEXT,                                        -- 显式时效字段（外部理念吸收：时间轴结构互补）——知识有效期截止，可空；到期不硬删除
+  expiration_date           TEXT,                                        -- 显式时效字段（外部理念吸收：时间轴结构互补）——数据保留期限，可空
   locked_until              TEXT,
   encoding_context          TEXT,                                        -- JSONB
   occurred_at               TEXT,                                        -- 事件时间（双时态，可空——无法判定时不填；轻量级时间戳后处理回填）
@@ -103,7 +105,7 @@ CREATE TABLE memories (
                                     CHECK (quality_tier IN ('mental_models','observation','experience','world')),
   compacted                INTEGER NOT NULL DEFAULT 0 CHECK (compacted IN (0,1)),   -- 压缩标记（RC-07）
   compacted_at             TEXT,                                                     -- 压缩时间 ISO8601；30 天回滚窗口判定
-  compression_trail        TEXT    NOT NULL DEFAULT '{}',   -- JSON 对象：逐记忆压缩审计日志（新增，P6 逐记忆粒度）
+  compression_trail        TEXT    NOT NULL DEFAULT '{}',   -- JSON 对象：逐记忆压缩审计日志（P6 逐记忆粒度）
   -- is_structure ↔ structural_value 双向同步（data-model 0.0.16）：is_structure=1 ↔ structural_value=2
   CHECK ((is_structure = 0 AND structural_value != 2) OR (is_structure = 1 AND structural_value = 2)),
   UNIQUE (path, version)

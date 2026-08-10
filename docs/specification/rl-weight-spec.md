@@ -8,8 +8,8 @@ tags:
   - rl
   - specification
 created: 2026-07-22
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -106,13 +106,19 @@ status: draft
   │
   └─ 权重更新
       delta = learning_rate × advantage × rcw_multiplier
-      # Bounded Simplex Projection：先 softmax 归一化，再投影到各维度的独立范围约束
-      raw = softmax(weight + delta)
-      # 迭代投影：clamp 到 [min, max] → 重归一化 → 重复直至收敛（通常 2-3 次）
-      for _ in range(5):
-          projected = clamp(raw, weight_bounds[:,0], weight_bounds[:,1])
-          raw = projected / sum(projected)
-      weight = raw
+      # Bounded Simplex Projection：在保持 Σ=1（P6 禁止单标量聚合）与各维度
+      # [min, max] 独立范围约束的双重约束下求欧氏投影（capped simplex projection）。
+      # 注：softmax 已保证非负且 Σ=1，其后再做 clamp+重归一化会破坏 softmax 的
+      # 归一化性质（clamp 后重归一化相当于换用另一种测度），此处不使用 softmax。
+      def project_to_capped_simplex(v, bounds):
+          # v 为投影前的权重向量；bounds 为各维 [min, max]
+          u = v.copy()
+          for _ in range(50):                      # 二分法求阈值 λ（数值收敛）
+              λ = 二分中点(bounds, 剩余空间判定)
+              u = clip(v - λ, bounds[:,0], bounds[:,1])
+              if abs(Σu - 1) < 1e-6: break
+          return u
+      weight = project_to_capped_simplex(weight + delta, weight_bounds)
       EMA: ema = decay_factor × ema + (1 - decay_factor) × weight
 ```
 
@@ -131,3 +137,4 @@ status: draft
 | 0.0.32 | 2026-08-06 | 第三方分析分诊批次（changelog 0.0.32）：KL 散度段补衰减实现防坑注记（softmax 对正缩放不变——同因子衰减再归一化为数学恒等式，外部实现实测踩中后修正；Kairos 投影管线不受影响）；检索反馈权重快照机制随 D-414 登记（规格级，实现随 RL 权重优化器 v1.1+）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：版本注记纪律收敛（正文删除 0.0.14/0.0.32 前缀与产品名，保留技术信息）；RCW 映射规则补口径注记（维度表来源为输入集，RCW 为奖励信号子集——knowledge/research 经 relevance、task_history 经 recency 加权）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：初始化段补「首次更新后 Σ 恒为 1」注记。 |
+| 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：Bounded Simplex Projection 改用 capped simplex 欧氏投影（二分求 λ，双重约束 Σ=1 与各维 [min,max] 一次满足），删除 softmax+clamp+重归一化描述（softmax 已保证 Σ=1，其后重归一化破坏归一化性质）。详见 changelog 0.0.85 叙述节。 |

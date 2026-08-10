@@ -8,8 +8,8 @@ tags:
   - ops
   - reliability
 created: 2026-07-18
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -98,15 +98,15 @@ pg_dump -d kairos -f ~/.kairos/backups/kairos-$(date +%Y%m%d-%H%M%S).sql
 
 > **容量预算**：单次全量备份体积 ≈ 数据库文件体积（10 万条 ≈ 2GB 级，标准模式 NFR 口径；轻量模式 ≤500MB，见 [nfr-specification.md](../specification/nfr-specification.md) §四）；30 天保留总量预算 ≤ 单次体积 × 30 + WAL 7 天 × 日增量 + 升华快照 30 天 × 单次体积。备份目录占用 ≥ 磁盘 75% 时触发清理最旧备份（保留期最短的 WAL 先行），≥ 92% 时停止升华快照并告警（与 §1.4 磁盘告警联动）。
 >
-> **核算注记**：以 NFR 口径换算（10 万条 ≈ 2GB 级标准模式，[nfr-specification.md](../specification/nfr-specification.md) §四），数据库全量 30 天保留 ≈ 60GB，超出 NFR 标准模式 50GB 磁盘预算（§二）——备份目录须独立磁盘或远程存储承载，或按实际数据量下调保留天数（`KAIROS_BACKUP_RETENTION_DAYS` 已参数化）；WAL 7 天与升华快照保留另计。原「100 万条 ≈ 2GB 级」表述与 NFR 冲突，已按 NFR 口径修正。
+> **核算注记**：备份容量按**实际数据量**规划，不取固定值。以 NFR 资源口径换算（标准模式 10 万条 ≈ 2GB 级，[nfr-specification.md](../specification/nfr-specification.md) §四），数据库全量 30 天保留 ≈ 60GB；若数据量达标准模式容量上限（≥100 万条，[nfr-specification.md](../specification/nfr-specification.md) §二），单次全量 ≈ 20GB、30 天保留 ≈ 600GB——与 10 万条基准相差一个数量级，运维规划须按当前实际条数换算而非套用 60GB。两种口径均超出 NFR 标准模式 50GB 磁盘预算（该预算仅覆盖主库、索引与日志，不含备份存储）——备份目录须由独立磁盘或远程存储承载，并按实际数据量下调保留天数（`KAIROS_BACKUP_RETENTION_DAYS` 已参数化）；WAL 7 天与升华快照保留另计。
 >
-> **参数化注记**：常驻契约快照与升华快照的「30 天」保留期为基线硬编码值（数据库全量 30 天与 WAL 7 天已由 `KAIROS_BACKUP_RETENTION_DAYS`/`KAIROS_WAL_ARCHIVE_RETENTION_DAYS` 参数化）；快照保留期的参数化列入后续运维批次（届时在 configuration 附录 A 登记），当前按基线值执行。
+> **参数化注记**：常驻契约快照与升华快照的「30 天」保留期为基线硬编码值（数据库全量 30 天与 WAL 7 天已由 `KAIROS_BACKUP_RETENTION_DAYS`/`KAIROS_WAL_ARCHIVE_RETENTION_DAYS` 参数化）；快照保留期的参数化列入后续运维批次（追缴见 [debt-collection.md](../governance/debt-collection.md) 债务 D-442；届时在 configuration 附录 A 登记），当前按基线值执行。
 
 ---
 
 ## 四、恢复演练
 
-每月自动运行一次干恢复演练，由健康检查触发。演练内容包括：
+每月自动运行一次干恢复演练，由系统调度器按月度周期触发（与日频健康检查解耦；月度维护清单见 [runbook.md](runbook.md) §6.1）。演练内容包括：
 1. 从最近一次全量备份恢复至测试数据库
 2. 验证数据完整性（行数 + content_hash 校验）
 3. 报告恢复时间和通过/失败状态
@@ -126,3 +126,6 @@ pg_dump -d kairos -f ~/.kairos/backups/kairos-$(date +%Y%m%d-%H%M%S).sql
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：`error_log`/`events` 表改指真实承载（写入审计日志（使用事件总线）；升华恢复改 sublimation_queue 表 status=pending/processing，见 data-model）；备份容量换算口径修正（100 万条≈2GB 级 → 10 万条≈2GB 级 NFR 口径，原表述与 NFR 冲突）；30 天保留 vs NFR 50GB 磁盘预算核算注记。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：轻量档 LLM 超时取值适用前提注记；版本标记收敛。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：写入路径引用改指 detailed-design §2（原误指架构 §4）。 |
+| 0.0.65 | 2026-08-08 | round31 深度审计修复批次（changelog 0.0.65）：§四 恢复演练触发方式修正（健康检查触发 → 系统调度器月度周期触发，与日频健康检查解耦）。 |
+| 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：§三 备份容量核算口径修正——按实际数据量规划，补满载口径（100 万条≈20GB 单次 / ≈600GB 30 天保留），声明 NFR 50GB 预算仅覆盖主库/索引/日志、备份须独立存储；与 nfr-specification §二 对齐；详见 changelog 0.0.83 叙述节。 |
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：快照保留期参数化软承诺补债务 D-442 指针。 |

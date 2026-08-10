@@ -8,8 +8,8 @@ tags:
   - design
   - requirements
 created: 2026-07-20
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -40,7 +40,7 @@ status: draft
 | --- | --- | --- | --- | --- |
 | CPU | 4 核（x86_64） | 2 核 | 容量规划清点（部署规格 + 存储计数） | — |
 | 内存 | 8 GB | 2 GB | 容量规划清点（部署规格 + 存储计数） | — 机器分配规格，进程常驻上限见 §四 资源 |
-| 磁盘 | SSD, 50 GB 可用 | SSD, 10 GB 可用 | 容量规划清点（部署规格 + 存储计数） | — |
+| 磁盘 | SSD, 50 GB 可用 | SSD, 10 GB 可用 | 容量规划清点（部署规格 + 存储计数） | 预算仅覆盖主库、索引与日志；备份、WAL 归档与升华快照须独立存储承载，容量按实际条数换算（见 [reliability.md](../ops/reliability.md) §三 备份策略） |
 | 数据库 | PostgreSQL 15+ | SQLite 3.40 | 容量规划清点（部署规格 + 存储计数） | — |
 | 最大记忆数 | ≥ 100 万条 | ≥ 10 万条 | 容量规划清点（部署规格 + 存储计数） | 含已归档 |
 | 单条内容上限 | 64 KB | 64 KB | 容量规划清点（部署规格 + 存储计数） | — |
@@ -53,11 +53,11 @@ status: draft
 
 | 指标 | 目标 | 测量方法 | 说明 |
 | --- | --- | --- | --- |
-| 系统可用性 | ≥ 99.9%（v0.1.0 设计目标，适用于有进程级恢复的部署。单进程无守护模式不承诺此指标——见 [deployment.md](../ops/deployment.md) 三级部署梯度） | 运行期可用性监控（滚动窗口 SLO 统计） | 计划内维护除外。已由 [requirements-baseline.md](../specification/requirements-baseline.md) N-11 承接（勘误：原「未在 requirements-baseline 中定义」注记在 N-11 补登后已过时） |
-| 启动时间 | ≤ 10s | 运行期可用性监控（滚动窗口 SLO 统计） | 标准模式 |
-| 故障恢复 | ≤ 30s | 运行期可用性监控（滚动窗口 SLO 统计） | 自动恢复，不丢已持久化数据 |
-| RPO（数据丢失窗口） | ≤5 分钟 | 写入→崩溃→恢复→验证（requirements-baseline N-10 引用） | 与 RTO 互补——RTO 管恢复时长，RPO 管可容忍的数据丢失窗口 |
-| 降级可用性 | ≥ 99% | 运行期可用性监控（滚动窗口 SLO 统计） | 外部校准中断期间 |
+| 系统可用性 | ≥ 99.9%（v0.1.0 设计目标，适用于有进程级恢复的部署。单进程无守护模式不承诺此指标——见 [deployment.md](../ops/deployment.md) 三级部署梯度） | 运行期可用性监控（滚动窗口 SLO 统计，输入指标 `kairos_availability_ratio`，见 [observability.md](../ops/observability.md) §1.1；基准测试不统计可用性，以生产运行数据为准，见 [benchmark-plan.md](../quality/benchmark-plan.md) §3.6） | 计划内维护除外。已由 [requirements-baseline.md](../specification/requirements-baseline.md) N-11 承接（勘误：原「未在 requirements-baseline 中定义」注记在 N-11 补登后已过时） |
+| 启动时间 | ≤ 10s | 启动计时基准测试（[benchmark-plan.md](../quality/benchmark-plan.md) §3.10） | 标准模式 |
+| 故障恢复 | ≤ 30s | 故障注入 + 恢复计时（[benchmark-plan.md](../quality/benchmark-plan.md) §3.6：kill -9 崩溃注入 → /health 恢复计时） | 自动恢复，不丢已持久化数据 |
+| RPO（数据丢失窗口） | ≤5 分钟 | 写入→崩溃→恢复→验证（requirements-baseline N-10 引用；基准测试方法见 [benchmark-plan.md](../quality/benchmark-plan.md) §3.6 RPO 验证步骤） | 与 RTO 互补——RTO 管恢复时长，RPO 管可容忍的数据丢失窗口。**适用范围**：数据库组件（记忆主数据，恢复路径 = 全量 + WAL 回放，见 [reliability.md](../ops/reliability.md) §二）；升华层等可重建产物接受更宽 RPO（≤1 天，自 sublimation_queue 恢复），组件粒度口径以 reliability §二 为准 |
+| 降级可用性 | ≥ 99% | 运行期可用性监控（滚动窗口 SLO 统计，输入指标 `kairos_availability_ratio`，见 [observability.md](../ops/observability.md) §1.1） | 外部校准中断期间 |
 
 ## 四、资源
 
@@ -90,3 +90,6 @@ status: draft
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：可用性表补 RPO 指标条目（与 RTO 相邻，对齐 requirements-baseline N-10）。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：敏感信息脱敏「可逆」改「不可逆（掩码/替换）」；系统可用性注记勘误（已由 requirements-baseline N-11 承接）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：系统可用性行版本注记清理（「0.0.14 勘误」→「勘误」，N-11 承接注记去版本号）。 |
+| 0.0.65 | 2026-08-08 | round31 深度审计修复批次（changelog 0.0.65）：§三 测量方法列修正——启动时间改指 benchmark-plan §3.10、故障恢复改指 benchmark-plan §3.6、系统可用性/降级可用性补 `kairos_availability_ratio` 观测指针；RPO 行补适用范围注记（数据库组件，升华层等可重建产物 ≤1 天，以 reliability §二 组件粒度为准）。 |
+| 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
+| 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：§二 磁盘行备注列补「预算仅覆盖主库/索引/日志；备份/WAL 归档/升华快照须独立存储」；与 reliability §三 满载口径对齐；详见 changelog 0.0.83 叙述节。 |

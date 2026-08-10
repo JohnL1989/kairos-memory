@@ -8,8 +8,8 @@ tags:
   - design
   - api
 created: 2026-07-20
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -22,11 +22,37 @@ status: draft
 
 ---
 
+> **章节导航**——本文篇幅较长，按下表定位所需章节：
+>
+> | 章节 | 主题 |
+> |:----|:----|
+> | §1 REST API | 88 端点总览（记忆/检索/校准/管理/审计） |
+> | §2 Agent Tool | 智能体工具接口 |
+> | §3 CLI 命令 | 命令行接口 |
+> | §4 事件总线消息格式 | 事件类型与载荷 |
+> | §5 记忆读取与升华 | 记忆查询与升华产物读取 |
+> | §6 扩展端点 | 校准/压缩/图谱/检索/评估/监控等扩展端点 |
+> | §7 错误码体系 | HTTP 级常用错误码子集 |
+> | §8 叙事线 API | 叙事线管理端点 |
+> | §9 压缩管理 API | 压缩审计端点 |
+> | §10 因果链路 API | 因果链查询端点 |
+> | §11 事实三元组直接注入 API（P3，v1.1+） | 事实注入端点 |
+> | §12 边类型管理 API（P3，v1.1+） | 边类型管理端点 |
+> | §13 技能管理 API | 技能管理端点 |
+> | §14 Connector 管理 API | 外部连接器端点 |
+> | §15 Profile Schema 管理 API | 用户画像 Schema 端点 |
+> | §16 管理导入导出 API | 导入导出端点 |
+> | §17 图谱可视化 API | 图谱可视化端点 |
+> | §18 资源摄取与多模态 | 摄取协议与多模态 Part schema
+
 ## §1 REST API
 
 ### 1.1 记忆写入
 
 **POST /v1/memories**
+
+> **幂等键（对齐 detailed-design §2 写入管线设计②（幂等 + 乐观锁事务提交））**：本端点接受请求头 `Idempotency-Key: <uuid>`（可选）。提供时，服务端以该键做去重——同一键的重复提交不产生新记录（返回首次写入结果；键冲突且载荷不一致返回 409 `ERR-CTR-005`）；未提供时按常规写入。幂等键记录保留期与去重细节见 [detailed-design.md](detailed-design.md) §2 写入管线「幂等 + 乐观锁事务提交」。
+> **并发控制（对齐 detailed-design §2 乐观锁）**：本端点返回体含 `version` 字段；后续 `PATCH /v1/memories/{id}` **必须携带** `If-Match`（乐观锁强制，无「最后写入胜出」路径，见 §1.3）。
 
 ```json
 {
@@ -52,7 +78,7 @@ status: draft
 
 **POST /v1/memories/batch** — 批量导入（W-03）
 
-**约束**：最大批量 100 条。非幂等——重复提交可能产生重复记录。部分失败返回 207 Multi-Status（成功条数 + 失败详情）。`on_conflict`（skip|overwrite）与 §16 导入 `conflict_resolution`（fail/overwrite/skip）语义不同：批量导入对冲突条目逐条跳过/覆盖，冲突经 207 逐条返回而非整体失败，无 fail 档（见 §16 导入）。
+**约束**：最大批量 100 条。幂等键语义与单条写入一致——请求体可携带 `idempotency_key`，同键重复提交整体去重（不产生重复记录，返回首次提交结果）；未携带时按「非幂等」处理（重复提交可能产生重复记录，与 detailed-design §2 写入管线设计②（幂等 + 乐观锁事务提交）不冲突：该约束针对单条写入与批量整体，均以幂等键为去重依据）。部分失败返回 207 Multi-Status（成功条数 + 失败详情）。`on_conflict`（skip|overwrite）与 §16 导入 `conflict_resolution`（fail/overwrite/skip）语义不同：批量导入对冲突条目逐条跳过/覆盖，冲突经 207 逐条返回而非整体失败，无 fail 档（见 §16 导入）。
 
 ```json
 {
@@ -80,7 +106,7 @@ status: draft
 
 **GET /v1/memories?path=kairos://_user/{id}/memories/&limit=10&offset=0**
 
-**GET /v1/memories?q=search+query&limit=5**
+**GET /v1/memories?q=search+query&limit=5&sort=created_at** — `sort` 可选：`created_at`（时间序，与热度解耦——feature-list R-10）/ `heat_score`（热度序，需维护引擎 Light 模式启用）。默认按相关性排序。**未启用时的行为**：维护引擎 Light 模式未启用时 `heat_score` 不被更新（全表恒为 DDL 初始值 1.0），`sort=heat_score` 退化为按主键写入序返回，**不返回错误**（该值为合法枚举，非参数校验失败，故不触发 `ERR-INPUT-*`）
 
 **GET /v1/memories/{id}**
 
@@ -127,7 +153,7 @@ status: draft
       "last_external_calibration": "2026-07-28T14:30:00Z",
       "days_since_last_calibration": 8,
       "active_mode": "virtual",
-      "virtual_calibration_confidence_ceiling": 0.227
+      "virtual_calibration_confidence_ceiling": 0.256
     }
   },
   "nudge": {
@@ -145,7 +171,7 @@ status: draft
 
 **PATCH /v1/memories/{id}**（内部实现为版本插入，修改历史可审计，详见 [data-model.md](data-model.md) `superseded_by` 链）
 
-**并发冲突**：请求头 `If-Match: {current_version}` 可选。提供时，服务端校验当前版本与请求一致后才执行更新；不一致返回 409 Conflict。不提供时直接更新（最后写入胜出）。
+**并发冲突**：请求头 `If-Match: {current_version}` **必需**（对齐 [detailed-design.md](detailed-design.md) §2 写入管线设计②（幂等 + 乐观锁事务提交）乐观锁口径——v0.1.0 一律经 `version` 乐观锁裁决，无「最后写入胜出」路径）。服务端校验当前版本与请求一致后才执行更新；不一致返回 409 Conflict（`ERR-DB-005`），冲突走版本链追加而非覆盖（见 [data-model.md](data-model.md) §1 `superseded_by` 链）。
 
 ```json
 {
@@ -170,12 +196,21 @@ status: draft
 ```
 **响应** `200`
 
+- 落地为 `memories.locked_until = now() + duration_seconds`（见 [data-model.md](data-model.md) §1 `locked_until`）
+- **锁定态拒绝语义**：`locked_until` 未到期期间，`PATCH /v1/memories/{id}`、`DELETE /v1/memories/{id}`、`POST /v1/memories/{id}/archive`、`POST /v1/memories/{id}/suppress` 与 `POST /v1/memories/merge`（源记忆命中锁定）一律拒绝，返回 `403`（`ERR-CTR-003`）；只读操作（检索/导出/版本查询）不受锁定影响
+- **解除**：到期自动解除；提前解除须 admin 权限（`PATCH /v1/memories/{id}` 携带 `locked_until: null`，写入审计日志）——**admin 解锁路径不受锁定态拒绝语义约束**：解锁 PATCH 的载荷仅允许 `locked_until: null` 一项（其余字段如 content/vad 在锁定期内一律按 `ERR-CTR-003` 拒绝），实现上校验「载荷仅含解锁字段则放行、否则拒绝」，避免「锁定态拒绝一切 PATCH 导致无法提前解锁」的死锁
+- **优先级**：宪法强制冻结（`POST /v1/freeze`）优先级高于记忆级锁定——冻结期间所有写操作一律拒绝，锁定状态不额外放行
+- **错误**：`403`（`ERR-CTR-003` 记忆已锁定，用于被锁定记忆的写操作；`ERR-AUTH-004` 提前解除需 admin Key）、`404`（`ERR-DB-004` 记忆不存在）
+
 **POST /v1/memories/{id}/expire** — 标记过期（设 TTL，到期自动归档）
 
 ```json
 {"ttl_seconds": 86400}
 ```
 **响应** `200`
+
+- **到期处置按契约分支**（与 DELETE 契约语义一致）：permanent 契约拒绝设置过期（返回 `403`）；ondemand / environmental 契约到期转归档（`status=archived`）；temporary 契约到期**硬删除**（直接清除，清理前写入审计日志标记 `expiry_cascade_delete`，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 forgetAfter）；intention 契约到期先经意图关闭裁定（`intention_resolve`）降级为 ondemand 后转归档
+- **错误**：`403`（permanent 契约拒绝设置过期；`ERR-CTR-003` 记忆已锁定）、`404`（`ERR-DB-004` 记忆不存在）
 
 **POST /v1/memories/merge** — 语义合并（保留见证锚定，受 S-14 约束）
 
@@ -229,6 +264,9 @@ status: draft
 - permanent（常驻）契约：拒绝删除（返回 403）——常驻记忆不可经常规删除路径移除，仅可经宪法修订端口降级
 - ondemand（按需）/environmental（环境）契约：软删除（标记 `is_deleted=true`，保留审计痕迹）
 - temporary（临时）契约：硬删除（直接清除，清理前写入审计日志标记 `expiry_cascade_delete`——与架构 §8 临时契约留痕口径一致，见 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §8 外部来源铁律）
+- intention（意图）契约：拒绝直接删除（返回 409，`ERR-CTR-004`）——前瞻记忆须先经意图关闭裁定（`intention_resolve` 事件，见 §5 事件总线）降级为 ondemand，再按软删除路径处理（依据 [data-model.md](data-model.md) §1 `contract` 列「意图完成/取消后降级为 ondemand」）
+- **锁定态**：`locked_until` 未到期的记忆一律拒绝删除（返回 403，`ERR-CTR-003`），优先于上述契约分支判定
+- **错误**：`403`（permanent 契约拒删 / `ERR-CTR-003` 记忆已锁定）、`404`（`ERR-DB-004` 记忆不存在）、`409`（`ERR-CTR-004` 意图契约未关闭）
 
 **POST /v1/memories/{id}/suppress** — 定向遗忘（抑制检索，保留数据）
 ```json
@@ -239,15 +277,18 @@ status: draft
 - 将记忆从活跃存储移至冷存储（`status=archived`），常规检索不再返回，数据保留可恢复
 - 语义对齐：对应架构 12 规范操作集 `archive`（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3.1），幂等——已归档记忆重复归档返回成功（200）但不重复操作（见架构 §7.3.1 幂等性清单）
 - 契约约束：permanent 契约归档前须经宪法修订端口降级（直接返回 403）；temporary 契约不进入归档（到期由 forgetAfter 硬删除，见架构 §5.2）；其余契约正常归档
-- 错误：`404`（记忆不存在）、`403`（permanent 契约拒绝归档）
+- **身份守卫**：`is_identity=true` 记忆不可归档（见证豁免 S-10——身份记忆不受遗忘/归档调度评估，见 [operation-catalog.md](operation-catalog.md) OP-054），返回 `403`（`ERR-SEC-001`）
+- 错误：`404`（记忆不存在）、`403`（permanent 契约拒绝归档 / `ERR-SEC-001` 身份记忆拒绝归档）
 ```json
 {"reason": "low_usage"}   // 归档原因（可选，写入审计日志）
 ```
 
-**POST /v1/memories/{id}/restore** — 归档恢复（竖切功能 M-05 配套）
-- 将记忆从冷存储恢复至活跃检索池（`status=active`），重新参与权重计算和语义检索
+**POST /v1/memories/{id}/restore** — 归档恢复 / 抑制解除（竖切功能 M-05 配套）
+- 将记忆从冷存储或抑制态恢复至活跃检索池（`status=active`），重新参与权重计算和语义检索
+- **受理状态**：`archived`（归档恢复）与 `suppressed`（抑制解除）——二者在 `memories.status` 中为**平级状态**（五值枚举 active/stale/archived/suppressed/superseded，见 [data-model.md](data-model.md) §1 与 [schema-slice.sql](schema-slice.sql) `status` CHECK 约束），本端点是两者共同的唯一出口，避免 `suppressed` 成为无出口终态
+- **抑制解除的附加约束**：(a) 解除操作按 S-16 写入审计日志（与定向遗忘留痕对称，无日志视为未执行）；(b) 已执行 S-19 哈希净化的记忆**内容不可恢复**，解除请求返回 `403`（`ERR-SEC-001`）——化石节点仅保留拓扑关系，不回到活跃检索池
 - 语义对齐：对应架构 12 规范操作集 `restore`（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3），须经潜伏势能重估端口（架构 §5.2）的匹配验证——记忆的语义向量须与当前活跃上下文的盲区方向存在 ≥ 阈值（默认 0.6）的余弦相似度
-- 错误：`404`（记忆不存在或非 archived 状态）、`422`（语义匹配验证未通过）
+- 错误：`403`（`ERR-SEC-001` 已哈希净化不可恢复）、`404`（`ERR-DB-004` 记忆不存在或状态不在 archived/suppressed 之列）、`422`（语义匹配验证未通过）
 ```json
 {"reason": "context_reemerged"}   // 恢复原因（可选，写入审计日志）
 ```
@@ -284,6 +325,18 @@ status: draft
   "new_value": "..."
 }
 ```
+
+**单条记忆契约操作（状态机出口，对齐 detailed-design §4 状态机死角修复）**：本端点同时是 permanent 契约降级与 superseded 记忆恢复的**唯一合法出口**——`action` 扩展两项，配合 `memory_id` 使用：
+
+| action | 前提 | 效果 | 审计留痕 |
+|:-------|:-----|:-----|:---------|
+| `contract_downgrade` | 目标记忆为 permanent 契约 | 降级为 ondemand（permanent 契约唯一合法降级路径，见 §1.5 DELETE permanent 分支；降级后可按常规路径删除/归档） | `constitution_contract_downgrade` |
+| `state_restore` | 目标记忆状态为 `superseded`（版本链被替换的旧版本） | 恢复为 active 并升级为最新版本（版本链追加，`superseded_by` 解除；superseded 状态的唯一合法恢复出口） | `constitution_state_restore` |
+
+- `memory_id` 为 UUID；未提供时按偏好键值操作（上述两 action 必须携带 `memory_id`，否则返回 `422`）
+- **is_identity 降级特别路径**：`is_identity=true` 记忆执行 `contract_downgrade` 前须先经「元认知层提案 → 宪法解释层判例 → 本端点执行」完整路径（架构 §8 is_identity 降级门槛——本端点仅为执行端口，不替代提案与裁定）；未附判例编号（请求体可选字段 `case_id`）的降级请求返回 `403`（`ERR-SEC-001`）
+- 两项操作均写入审计日志并附带 HMAC 链 + 强制冷却期（≥1 调度周期，默认 300s，附加控制项口径见 [security-specification.md](../security/security-specification.md) §1 S-19 范围勘误）
+- 错误：`422`（缺 `memory_id` / 目标状态不满足前提）、`403`（非 admin / `ERR-SEC-001` 身份记忆缺判例拒绝降级）、`404`（`ERR-DB-004` 记忆不存在）
 
 **POST /v1/degradation/switch** — 降级模式切换（CAL-04，需 admin Key）
 ```json
@@ -494,33 +547,36 @@ status: draft
 
 ## §3 CLI 命令
 
-| 命令 | 说明 | 示例 |
-|:----|:-----|:-----|
-| `kairos init` | 初始化系统（创建配置、目录和数据库） | `kairos init --db sqlite:///$HOME/.kairos/kairos.db` |
-| `kairos serve` | 启动服务 | `kairos serve --port 8010` |
-| `kairos write <path>` | 写入记忆 | `kairos write kairos://_user/default/memories/ --content "..."` |
-| `kairos read <path>` | 读取记忆 | `kairos read kairos://_user/default/memories/abc` |
-| `kairos search <query>` | 搜索 | `kairos search "关键词" --limit 10` |
-| `kairos ls <path>` | 列出路径 | `kairos ls kairos://_user/default/` |
-| `kairos tree <path>` | 树状浏览 | `kairos tree kairos://_project/ --depth 3` |
-| `kairos forget <id>` | 显式遗忘 | `kairos forget uuid` |
-| `kairos suppress <id>` | 定向遗忘 | `kairos suppress uuid --reason compliance` |
-| `kairos health` | 健康检查 | `kairos health` |
-| `kairos config` | 配置管理 | `kairos config set KAIROS_DAILY_BUDGET_FEN 20000` |
-| `kairos db` | 数据库管理 | `kairos db init` / `kairos db migrate` / `kairos db verify` / `kairos db backup` / `kairos db vacuum` / `kairos db reindex` |
-| `kairos stop` | 停止服务 | `kairos stop` |
-| `kairos logs` | 查看日志 | `kairos logs --tail 100` |
-| `kairos audit verify-chain` | 审计链完整性验证（HMAC 审计链算法见 [threat-model.md](../security/threat-model.md) HMAC 审计链——`hmac = HMAC-SHA256(hmac_key, timestamp + operator + action + content_hash + prev_hmac)`，5 项输入；details 等可变信息以 SHA256 摘要并入 content_hash 参与链计算；支持精确定位篡改记录与整体完整性校验） | `kairos audit verify-chain` |
-| `kairos sublimation trigger` | 手动触发升华 | `kairos sublimation trigger --path kairos://_project/x/` |
-| `kairos sublimation progress` | 查询升华进度 | `kairos sublimation progress` |
-| `kairos calibrate` | 外部校准 | `kairos calibrate --memory-id uuid --score 0.85` |
-| `kairos degradation switch` | 降级模式切换（CAL-04） | `kairos degradation switch --mode safe_hibernation` |
-| `kairos freeze` | 强制冻结 | `kairos freeze --duration 300` |
-| `kairos status` | 系统状态 | `kairos status` 显示各层运行状态 |
-| `kairos update <id>` | 更新记忆 | `kairos update uuid --content "new content"` |
-| `kairos approve <id>` | 审批升华候选 | `kairos approve uuid --accept` |
-| `kairos init --init-key` | 生成 API Key（同时生成 SALT/SECRET_KEY/AUDIT_HMAC_KEY） | `kairos init --init-key` |
-| `kairos admin key rotate` | 轮换 API Key | `kairos admin key rotate <key_id>` |
+> **CLI ↔ API 映射**：下表「对应端点」列为 CLI 命令与 §1~§2 REST 端点的一一映射，是全库唯一的映射权威源（[quick-start.md](../user/quick-start.md) 与 [user-guide.md](../user/user-guide.md) 引用此表）。标注「本地执行」的命令不经 HTTP 层，直接操作本地配置/数据库/进程，无对应端点。
+
+| 命令 | 说明 | 对应端点 | 示例 |
+|:----|:-----|:-----|:-----|
+| `kairos init` | 初始化系统（创建配置、目录和数据库） | 本地执行 | `kairos init --db sqlite:///$HOME/.kairos/kairos.db` |
+| `kairos serve` | 启动服务 | 本地执行 | `kairos serve --port 8010` |
+| `kairos write <path>` | 写入记忆（`--source` 必填，缺失触发 S-15 → 422；`--contract` 可选，默认 ondemand，取值 permanent/ondemand/environmental/temporary/intention） | `POST /v1/memories` | `kairos write kairos://_user/default/memories/ --content "..." --source user_input --contract ondemand` |
+| `kairos read <path>` | 读取记忆 | `GET /v1/memories/{id}` | `kairos read kairos://_user/default/memories/abc` |
+| `kairos search <query>` | 搜索 | `POST /v1/memories/search` | `kairos search "关键词" --limit 10` |
+| `kairos ls <path>` | 列出路径 | `GET /v1/path` | `kairos ls kairos://_user/default/` |
+| `kairos tree <path>` | 树状浏览 | `GET /v1/path/tree` | `kairos tree kairos://_project/ --depth 3` |
+| `kairos forget <id>` | 显式遗忘 | `DELETE /v1/memories/{id}` | `kairos forget uuid` |
+| `kairos suppress <id>` | 定向遗忘 | `POST /v1/memories/{id}/suppress` | `kairos suppress uuid --reason compliance` |
+| `kairos restore <id>` | 归档恢复 / 抑制解除 | `POST /v1/memories/{id}/restore` | `kairos restore uuid --reason context_reemerged` |
+| `kairos health` | 健康检查 | `GET /health` | `kairos health` |
+| `kairos config` | 配置管理 | `GET /v1/config`（查看）/ `PATCH /v1/config`（修改） | `kairos config set KAIROS_DAILY_BUDGET_FEN 20000` |
+| `kairos db` | 数据库管理 | 本地执行 | `kairos db init` / `kairos db migrate` / `kairos db verify` / `kairos db backup` / `kairos db vacuum` / `kairos db reindex` |
+| `kairos stop` | 停止服务 | 本地执行 | `kairos stop` |
+| `kairos logs` | 查看日志 | 本地执行 | `kairos logs --tail 100` |
+| `kairos audit verify-chain` | 审计链完整性验证（HMAC 审计链算法见 [threat-model.md](../security/threat-model.md) HMAC 审计链——`hmac = HMAC-SHA256(hmac_key, timestamp + operator + action + content_hash + prev_hmac)`，5 项输入；details 等可变信息以 SHA256 摘要并入 content_hash 参与链计算；支持精确定位篡改记录与整体完整性校验） | `GET /v1/audit-log`（取链）+ 本地校验 | `kairos audit verify-chain` |
+| `kairos sublimation trigger` | 手动触发升华 | `POST /v1/sublimation/trigger` | `kairos sublimation trigger --path kairos://_project/x/` |
+| `kairos sublimation progress` | 查询升华进度 | `GET /v1/sublimation/status` | `kairos sublimation progress` |
+| `kairos calibrate` | 外部校准 | `POST /v1/calibrate` | `kairos calibrate --memory-id uuid --score 0.85` |
+| `kairos degradation switch` | 降级模式切换（CAL-04） | `POST /v1/degradation/switch` | `kairos degradation switch --mode safe_hibernation` |
+| `kairos freeze` | 强制冻结 | `POST /v1/freeze`（解冻 `POST /v1/unfreeze`） | `kairos freeze --duration 300` |
+| `kairos status` | 系统状态 | `GET /v1/health/detail` | `kairos status` 显示各层运行状态 |
+| `kairos update <id>` | 更新记忆 | `PATCH /v1/memories/{id}` | `kairos update uuid --content "new content"` |
+| `kairos approve <id>` | 审批升华候选 | `POST /v1/sublimation/process` | `kairos approve uuid --accept` |
+| `kairos init --init-key` | 生成 API Key（同时生成 SALT/SECRET_KEY/AUDIT_HMAC_KEY） | 本地执行 | `kairos init --init-key` |
+| `kairos admin key rotate` | 轮换 API Key | 本地执行（写 `api_keys` 表） | `kairos admin key rotate <key_id>` |
 
 ---
 
@@ -541,28 +597,30 @@ status: draft
 }
 ```
 
-> **v0.1.0 简化**：`target` 默认为 `broadcast` 时表示全层广播（事件类型隐式决定接收层），`trace_id` 在同步事件中为空。`priority` 范围为 0–9（**0=最高**，校准信号使用 0；当前已使用优先级：0（校准/降级）、3（use_event）、6（latent_trigger）），事件时效由接收方按 event_type 的预设 TTL 处理（参见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 事件类型原语表）。优先级 0-2 不被背压阻塞（架构 §10.10 流控与背压）。`timestamp` 为 int64 纳秒（从架构规范，非 ISO8601 字符串）。
+> **v0.1.0 简化**：`target` 默认为 `broadcast` 时表示全层广播（事件类型隐式决定接收层），`trace_id` 在同步事件中为空。`priority` 范围为 0–9（**0=最高**，校准信号使用 0；当前已使用优先级：0（校准/降级）、3（use_event）、6（latent_trigger）），事件时效由接收方按 event_type 的预设 TTL 处理（参见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 事件类型枚举表）。优先级 0-2 不被背压阻塞（架构 §10.10 流控与背压）。`timestamp` 为 int64 纳秒（从架构规范，非 ISO8601 字符串）。
 
 > **临时契约声明**：临时契约记忆过期清除时写入审计日志（标记 `expiry_cascade_delete`，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 forgetAfter）——**不留审计痕迹的场景仅限捕获阶段**：入区闸机/摄取门禁拒绝的输入未入库，不产生审计事件。已入库临时记忆的清除必留痕（与架构 §8 外部来源铁律一致）。此行为与 S-15（来源可鉴别）不冲突：临时契约在写入时仍记录 provenance。
 
-**事件类型枚举**（完整定义以 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 为准，此处仅列 v0.1.0 核心类型）：
+**事件类型枚举**：下表列**全部 10 类**，逐条对应权威定义 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10。**交付范围**：v0.1.0 首迭代（竖切）实现「首迭代」列标 ✅ 的 4 类（`use_event` / `calibration_signal` / `degradation_switch` / `latent_trigger`）；标 ⏳ 的 6 类待其依赖组件（WM 调度预处理器、注意力调度器、升华管道等，特征标志默认 OFF）启用时按架构 §10.6 事件类型注册门禁分批实现，与 [implementation-map.md](implementation-map.md) §八 事件类型定义、[feature-list.md](feature-list.md) PM-02 口径一致：
 
-| event_type | 说明 | 发送者 | 接收者 |
-|-----------|:-----|:-------|:-------|
-| `calibration_signal` | 外部校准信号注入 | 宪法主权面 | 全层广播 |
-| `degradation_switch` | 降级模式切换 | 宪法主权面 | 元认知+策略（架构 §10.10 口径：宪法主权面发布，元认知层+策略层接收） |
-| `use_event` | 使用事件提交（影子副本、权重、审计） | WM | 策略+存储+元认知 |
-| `intention_activate` | 前瞻保持触发条件匹配 | 策略 | WM |
-| `intention_resolve` | 前瞻执行关闭裁定 | WM | 策略→存储 |
-| `affective_boost` | 情感基线提升注入 | 策略 | WM |
-| `exploration_budget` | 探索预算分配 | 元认知 | 策略 |
-| `latent_trigger` | 潜伏势能重估触发 | 元认知 | 存储 |
-| `attention_allocation` | 注意力分配日志 | 注意力调度器 | 元认知 |
-| `sublimation_tick` | 升华管道轮次推进 | 存储 | 自身 |
+| event_type | 说明 | 发送者 | 接收者 | 首迭代 |
+|:----------|:-------|:-------|:-----|:----:|
+| `calibration_signal` | 外部校准信号注入 | 宪法主权面 | 全层广播 | ✅ |
+| `degradation_switch` | 降级模式切换 | 宪法主权面 | 元认知+策略（架构 §10.10 口径：宪法主权面发布，元认知层+策略层接收） | ✅ |
+| `use_event` | 使用事件提交（影子副本、权重、审计） | WM | 策略+存储+元认知 | ✅ |
+| `intention_activate` | 前瞻保持触发条件匹配 | 策略 | WM | ⏳ |
+| `intention_resolve` | 前瞻执行关闭裁定 | WM | 策略→存储 | ⏳ |
+| `affective_boost` | 情感基线提升注入 | 策略 | WM | ⏳ |
+| `exploration_budget` | 探索预算分配 | 元认知 | 策略 | ⏳ |
+| `latent_trigger` | 潜伏势能重估触发 | 元认知 | 存储 | ✅ |
+| `attention_allocation` | 注意力分配日志 | 注意力调度器 | 元认知 | ⏳ |
+| `sublimation_tick` | 升华管道轮次推进 | 存储 | 自身 | ⏳ |
 
 ---
 
-## §5 记忆读取
+## §5 记忆读取与升华
+
+> **定位**：记忆读取（多级读取）与升华蒸馏的两阶段 API（prompt 构建 / 结果处理）。升华触发与状态查询见 §6（`POST /v1/sublimation/trigger`、`GET /v1/sublimation/status`），此处为两阶段 API 的请求/响应契约。
 
 ### GET /v1/memories/{id}?level=summary|overview|full — 多级读取
 
@@ -779,7 +837,7 @@ status: draft
   "last_external_calibration": "2026-07-28T14:30:00Z",
   "days_since_last_calibration": 8,
   "active_mode": "virtual",
-  "virtual_calibration_confidence_ceiling": 0.227,
+  "virtual_calibration_confidence_ceiling": 0.256,
   "recommended_action": "user_calibration_recommended"
 }
 ```
@@ -925,7 +983,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 | `kairos_get_hot_memories` | 热度最高记忆 | GET /v1/memories/heat-top （定义见 §1） |
 | `kairos_search_graph` | 图谱检索 | POST /v1/graph/search |
 | `kairos_extract_entities` | 实体提取 | POST /v1/entities/extract |
-| `kairos_get_memory_traces` | 记忆生命周期历史 | 操作目录 §3（memory_states 生命周期历史仅经 MCP `kairos_get_memory_traces` 访问，REST 不单独开放） |
+| `kairos_get_memory_traces` | 记忆生命周期历史 | 记忆状态机五态历史（[data-model.md](data-model.md) §1 memories 状态机；操作目录 §三 OP-054~066 记忆管理操作覆盖归档/恢复/版本回滚等生命周期操作）——生命周期历史仅经 MCP `kairos_get_memory_traces` 访问，REST 不单独开放 |
 | `kairos_feedback_memory` | 可信度反馈 | POST /v1/memories/{id}/feedback （定义见 §1） |
 | `kairos_calibrate` | 校准信号 | POST /v1/calibrate |
 | `kairos_get_stats` | 记忆库报告 | GET /v1/memories/stats （定义见 §1） |
@@ -1006,7 +1064,11 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 **POST /v1/sync/export** — 导出完整数据快照（.kairos 格式）
 
-**权限**：read
+**权限**：admin
+
+> **权限依据**：全库快照导出等价于全量数据外带，超出 read 角色「仅检索/浏览/查询」的边界（见 [security-specification.md](../security/security-specification.md) §2.2 权限分级），故与 `POST /v1/sync/import` 同级要求 admin Key。
+>
+> **与 §16 `/v1/admin/export` 的边界**：本端点为**端云同步链路**的快照导出（与 `sync/push`/`sync/pull` 同一增量同步语义域，负载仅 `user_id` + `include_vectors`，输出用于设备间迁移）；§16 `/v1/admin/export` 为**运维备份链路**的备份包导出（支持压缩算法与加密选项，输出用于灾备归档）。两者格式同为 `.kairos`，语义域与调用方不同，不合并。
 
 ```json
 {"user_id": "default", "include_vectors": true}
@@ -1026,7 +1088,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ## §7 错误码体系
 
-> **声明**：本表为 HTTP 级错误码常用子集；全量 38 个错误码及其分类（API 返回/内部日志）以 [error-reference.md](../references/error-reference.md) 为权威来源。
+> **声明**：本表为 HTTP 级错误码常用子集；全量 43 个错误码及其分类（API 返回/内部日志）以 [error-reference.md](../references/error-reference.md) 为权威来源。
 
 > **说明**：以下为 HTTP 级错误码子集。完整内部错误码集（含 DB/LLM/SYS 类）见 [references/error-reference.md](../references/error-reference.md)。调用方应仅按此表处理 API 响应中的错误码。
 
@@ -1042,8 +1104,14 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 | `ERR-INPUT-003` | 422 | 路径深度超限（超过 10 层） | 减少路径层级 |
 | `ERR-INPUT-004` | 422 | 语义校验失败（缺少必填字段，如 content / path） | 检查请求体必填字段 |
 | `ERR-SEC-001` | 403 | 安全红线违反 | 检查操作是否符合红线约束 |
+| `ERR-DB-004` | 404 | 资源不存在（记忆 / 版本 / 叙事线 / 边类型等按 ID 或路径定位失败） | 确认 ID 或路径正确 |
+| `ERR-DB-005` | 409 | 版本冲突（`If-Match` 与当前版本不一致，见 §1.3 并发冲突） | 读取最新版本后重试 |
+| `ERR-CNF-001` | 409 | 记忆合并冲突（见 §1.3 `POST /v1/memories/merge`） | 手动裁决或等待外部校准信号 |
+| `ERR-CTR-003` | 403 | 记忆已锁定（`locked_until` 未到期），禁止修改/删除/归档/合并 | 等待锁定到期或经 admin 解除锁定 |
+| `ERR-CTR-004` | 409 | 意图契约未关闭，禁止直接删除（见 §1.5 DELETE 契约分支） | 先经 `intention_resolve` 关闭意图，降级为 ondemand 后重试 |
+| `ERR-CTR-005` | 409 | 幂等键冲突（`Idempotency-Key` 已存在且载荷不一致，见 §1.1 幂等键） | 更换幂等键重试，或查询首次提交结果 |
 
-> **说明**：`ERR-DB-*`、`ERR-LLM-*`、`ERR-SYS-*` 为内部运维与日志使用码，API 不直接返回。上表仅列出 HTTP 级错误码。完整错误码集见 [references/error-reference.md](../references/error-reference.md)。
+> **说明**：`ERR-LLM-*`、`ERR-SYS-*` 与 `ERR-DB-001~003` 为内部运维与日志使用码，API 不直接返回。**例外**：`ERR-DB-004`（404）与 `ERR-DB-005`（409）表达的是调用方可处理的资源状态（不存在 / 版本冲突）而非存储层内部故障，二者随 HTTP 响应返回给调用方，已列入上表。完整错误码集（11 类 43 个）见 [references/error-reference.md](../references/error-reference.md)。
 
 ---
 
@@ -1052,7 +1120,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 > **定位**：架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2「Saga 命名叙事线」的外部接口。
 > **被架构引用**：[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2（叙事线端点）——本章节号变更须同步回改。
 >
-> **v0.1.0 子集声明（决策）**：本批次落地最小子集——创建/添加记忆/按叙事线检索/手动完结四操作（纯数据库实现,无 LLM 依赖）。`summarize` 端点需 LLM 调用,标注为 v1.1 启用;自动聚合（知识演化自动加入、Deep 聚类创建）与自动完结（90 天空闲）为 v1.1 目标。成员有序列表由 `narrative_threads.memory_ids` 数组承载（不新增 position 列）。
+> **v0.1.0 子集声明（决策）**：本批次落地最小子集——创建/添加记忆/按叙事线检索/手动完结四操作（纯数据库实现，无 LLM 依赖）。`summarize` 端点需 LLM 调用，标注为 v1.1 启用；自动聚合（知识演化自动加入、Deep 聚类创建）与自动完结（90 天空闲）为 v1.1 目标。成员有序列表由 `narrative_threads.memory_ids` 数组承载（不新增 position 列）。
 
 ### POST /v1/narrative/threads — 创建叙事线（v0.1.0 子集）
 
@@ -1095,7 +1163,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 }
 ```
 
-### POST /v1/narrative/threads/{thread_id}/summarize — 生成叙事线摘要
+### POST /v1/narrative/threads/{id}/summarize — 生成叙事线摘要
 
 **权限**：write
 
@@ -1243,7 +1311,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ## §13 技能管理 API
 
-> **定位**：架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2「技能管理系统」的外部接口。
+> **定位**：技能管理系统的外部接口——技能管理系统为 v1.1 蓝图机制（feature-list M-15「技能管理系统」归 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一；skills 表数据承载见 [data-model.md](data-model.md) §8.13），**v0.1.0 不交付，端点预留**（与 §11/§12 P3 预留端点同例）。
 
 ### GET /v1/skills — 搜索/列出技能
 
@@ -1281,7 +1349,7 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ## §14 Connector 管理 API
 
-> **定位**：架构 [detailed-design.md](detailed-design.md) §11.2「Connectors 同步模式」的外部接口。
+> **定位**：详细设计 [detailed-design.md](detailed-design.md) §11.2「Connectors 同步模式」的外部接口（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.13 Connectors 同步模式；feature-list A-23）。**v0.1.0 交付，端点非预留**——Connectors 同步为 v0.1.0 扩展功能（A-23）。
 
 ### POST /v1/connectors/register — 注册外部平台 Connector
 
@@ -1310,6 +1378,8 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 
 ## §15 Profile Schema 管理 API
 
+> **定位**：详细设计 [detailed-design.md](detailed-design.md) §11.3「可配置 Profile Schema」的外部接口（架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.14；feature-list M-23）。**v0.1.0 交付，端点非预留**。
+
 ### PUT /v1/profile/schema — 注册/更新自定义 Profile Schema
 
 **权限**：admin
@@ -1323,6 +1393,8 @@ Schema 版本化——修改后自动递增 `schema_id` 后缀，旧 Schema 保�
 ---
 
 ## §16 管理导入导出 API
+
+> **定位**：`.kairos` 备份协议（[detailed-design.md](detailed-design.md) §11.4；架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.15）与文件系统-向量索引一致性检查（[detailed-design.md](detailed-design.md) §11.5；架构 §5.16）的外部接口；快照导出/导入对应 feature-list A-12/A-13（架构 §5.11 快照导入导出）。**v0.1.0 交付，端点非预留**。
 
 ### POST /v1/admin/export — 导出 .kairos 备份包
 
@@ -1364,6 +1436,8 @@ Content-Type: multipart/form-data。`conflict_resolution`：fail / overwrite / s
 ---
 
 ## §17 图谱可视化 API
+
+> **定位**：知识图谱可视化的导出接口。**v1.1 预留端点**——图谱可视化能力对应架构 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-24 Symbolic Memory（Mermaid Canvas 节点图，200 节点上限），v0.1.0 不交付，端点预留（与 §11/§12 P3 预留端点同例）。
 
 ### GET /v1/graph/render — 导出知识图谱可视化
 
@@ -1627,5 +1701,15 @@ v1.1 规划：
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：§4 事件优先级口径改写（当前已使用 0（校准/降级）/3（use_event）/6（latent_trigger），0-2 不被背压阻塞）；§3 CLI 表补注册 `kairos degradation switch`（CLI 24→25，对齐竖切实现指南与 test-plan 使用）；§8 叙事线已完结拒新成员错误 400→409（状态冲突，无新错误码）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：端点计数口径去版本化；batch/import 冲突策略枚举互引注记；图片语义向量版本边界（v0.1.0 仅存储）；degradation_switch 接收者按架构 §10.10 收敛；竖切 M-05 注册注记去版本号；路径空间统一下划线命名；RL 初始化注记。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：叙事线响应 status "open"→"active"（对齐 data-model 枚举）；§1.2 检索响应示例修正（虚拟校准 ceiling/active_mode）；§6.8 MCP 引用格式；任务感知评分流程指 benchmark-plan §3.14。 |
+| 0.0.51 | 2026-08-08 | round22 审计修复批次（changelog 0.0.51）：§7 错误码口径 38→40（新增 ERR-SYS-006/007，对应启动校验审计事件，内部日志码不计入 API 返回子集）。 |
+| 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
+| 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
+| 0.0.73 | 2026-08-09 | round37 全面深度审计修复批次（changelog 0.0.73）：§1.2 记忆检索 GET /v1/memories 补 `sort` 参数承载（`created_at` 时间序/`heat_score` 热度序/默认相关性）——feature-list R-10「时间序检索 sort=created_at」接口落点补全（此前功能声明无接口承载）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.74 | 2026-08-09 | round38 门禁建议落实批次（changelog 0.0.74）：事件时效注记引用「架构 §10.10 事件类型原语表」→「事件类型枚举表」（架构实际标题为「事件类型枚举」，round37 门禁补盲区 6.26 档 4 捕获的三处同源悬空引用之一）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.79 | 2026-08-09 | round41 全面深度审计修复批次（changelog 0.0.79）：新增章节导航表（§1~§18）；事件消息表分隔行首格补冒号。 |
+| 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：§4 事件枚举范围标签对齐表体（列全部 10 类 + 补「首迭代」列 ✅4/⏳6）、§1.2 sort=heat_score 未启用回落语义（维护引擎 Light 未启用时退化为写入序，不返回错误）；详见 changelog 0.0.83 叙述节。 |
+| 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：幂等键统一——POST /v1/memories 新增 Idempotency-Key 头（同键重复提交返回首次结果）、批量导入支持 idempotency_key、新增错误码 ERR-CTR-005；PATCH If-Match 改必需（乐观锁强制，无最后写入胜出）；POST /v1/constitution 扩展 memory_id + contract_downgrade/state_restore（is_identity 须附判例 case_id）；锁定解锁路径澄清（admin 解锁 PATCH 不受锁定态拒绝约束）；archive 补 is_identity 守卫；CLI write 补 --contract 登记；叙事线 summarize 路径参数 {thread_id}→{id}。详见 changelog 0.0.85 叙述节。 |
+| 0.0.86 | 2026-08-10 | round48 遗留问题处理批次（changelog 0.0.86）：§1.3 并发冲突引用措辞对齐——「§2 写入管线约束②」改「§2 写入管线设计②（幂等 + 乐观锁事务提交）」（候选机制名与 detailed-design 目标节标题一致，消除 6.26 误报）；语义不变。详见 changelog 0.0.86 叙述节。 |
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：§1.1/§1.2「写入管线约束②」→「写入管线设计②」两处补改（round48 遗留，R49-02）+ L55 If-Match「建议携带」→「必须携带」口径统一（round47 H-05 同步，R49-04）。 |
 
-> **端点计数口径（决策 D-13 核定）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（注册 `archive`/`restore` 两个竖切端点后 78→80；补 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §健康检查）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §9），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。
+> **端点计数口径（决策 D-13 核定）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（注册 `archive`/`restore` 两个竖切端点后 78→80；补 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §1.8）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §6.5），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。

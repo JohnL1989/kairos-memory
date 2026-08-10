@@ -8,14 +8,14 @@ tags:
   - design
   - implementation
 created: 2026-07-20
-updated: 2026-08-07
-last_reviewed: 2026-08-07
+updated: 2026-08-09
+last_reviewed: 2026-08-09
 status: draft
 ---
 
 # Kairos 架构实现映射
 
-> **已对齐**（2026-08-03 核定，2026-08-04 复核）：表数 **57** 与 [data-model.md](data-model.md) 一致（该文档现有 65 个 `###` 条目——57 物理表 = 65 减 `retrieval_enhancement_config`（配置参数清单）减 8.12/8.17 两节标题减 13.1~13.5 五节；原「58 个 ### 条目」口径经勘误）；端点数 **85** 与 [api-spec.md](api-spec.md) 一致——口径为 `/v1` 业务端点（注册 `archive`/`restore` 后 78→80，0.0.16 新增 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85），另有 3 个无 `/v1` 前缀端点（`GET /health` 探针、`GET /audit/compression`、`GET /audit/compression/summary`）不计入（物理总数 88，见 [api-spec.md](api-spec.md) §版本记录）；本文档登记 **70** 个组件代码路径（按下方各表第二列 `src/` 路径行统计）；参数总数 **370**（configuration 正文 224 + 附录 A 146，见 [configuration.md](../ops/configuration.md)；0.0.38 批次口径同步）。
+> **已对齐**（2026-08-03 核定，2026-08-04 复核）：表数 **57** 与 [data-model.md](data-model.md) 一致（该文档现有 65 个 `###` 条目——57 物理表 = 65 减 `retrieval_enhancement_config`（配置参数清单）减 8.12/8.17 两节标题减 13.1~13.5 五节；原「58 个 ### 条目」口径经勘误）；端点数 **85** 与 [api-spec.md](api-spec.md) 一致——口径为 `/v1` 业务端点（注册 `archive`/`restore` 后 78→80，新增 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85），另有 3 个无 `/v1` 前缀端点（`GET /health` 探针、`GET /audit/compression`、`GET /audit/compression/summary`）不计入（物理总数 88，见 [api-spec.md](api-spec.md) §版本记录）；本文档登记 **70** 个组件代码路径（按下方各表第二列 `src/` 路径行统计）；参数总数 **374**（configuration 正文 227 + 附录 A 147，见 [configuration.md](../ops/configuration.md)；批次口径同步）。
 
 **引用约定：** `架构 §X.Y` 指 [foundation/architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) 第 X 节第 Y 小节。架构文档含 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0–[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §12（含 §10 质量属性与不变量等）。代码路径以 `src/` 为根。
 
@@ -82,7 +82,7 @@ status: draft
 | 模型路由 | `src/storage/model_routing.py` | 4 级梯队 + 自动升降级 + 双层语义缓存 |
 | 知识加工区门闸 | `src/storage/hall_gate.py` | 三区域写入 / 推进 / 退回状态机 + 闸机校验 |
 | 端云同步 | `src/storage/sync.py` | SQLite ↔ PostgreSQL 增量双向同步 + 快照导入导出 |
-| 记忆状态机 | `src/storage/memory_state_machine.py` | Active→Stale→Archived→Superseded 四态 + Suppressed 软标记（子态，架构 §5.2 四态口径；v1.1 目标含 CANDIDATING/SUPPRESSED 两阶段软标记）+ 状态变更跟踪 |
+| 记忆状态机 | `src/storage/memory_state_machine.py` | Active→Stale→Archived→Suppressed→Superseded 五态平级（active/stale/archived/suppressed/superseded，无子态；架构 §5.2 五态口径；v1.1 目标含 CANDIDATING 候选阶段）+ 状态变更跟踪 |
 | 知识演化追踪 | `src/storage/knowledge_evolution.py` | Jaccard+语义 4 类演化关系检测 + 演化链查询 |
 | RL 权重优化器 | `src/storage/rl_optimizer.py` | Cosine LR + ε-greedy + RCW + KPop + EMA 权重优化 |
 | 过程知识 Playbook | `src/storage/playbook.py` | 结构化 playbook 生命周期 + FTS 检索 + 反馈循环 |
@@ -112,7 +112,7 @@ status: draft
 | 架构组件 | 代码路径 | 说明 |
 |:--------|:---------|:-----|
 | REST API 路由 | `src/access/api/` | Litestar handler（设计目标 85 个 `/v1` 业务端点 + 3 个无 `/v1` 前缀端点：`GET /health` 探针、`GET /audit/compression`、`GET /audit/compression/summary`，详见 [api-spec.md](api-spec.md) §版本记录） |
-| CLI 命令 | `src/access/cli.py` | 27 条 CLI 命令（27 = 全量 25 条（api-spec §3）＋规划扩展 2 条待定（如 `kairos status --sublimation` 类子命令）；竖切子集 15 条——三档口径见 [slice-implementation-guide.md](../development/slice-implementation-guide.md)） |
+| CLI 命令 | `src/access/cli.py` | 27 条 CLI 命令（27 = api-spec §3 全量 25 条 ＋ §5 已注册新增 2 条 `kairos layers ls`/`kairos layers distill`；竖切子集 15 条——三档口径见 [slice-implementation-guide.md](../development/slice-implementation-guide.md)） |
 | MCP Bridge | `src/access/mcp/bridge.py` | MCP 服务器进程，15 个工具（见 [api-spec.md](api-spec.md) §6.8） |
 | Memory Provider | `src/access/provider/kairos_provider.py` | Hermes 原生记忆 Provider，6 lifecycle hooks |
 | Agent Tool 定义 | `src/access/tools.py` | 5 个 Agent Tool（memories_write/memories_search/path_browse/memories_list_recent/memories_merge） |
@@ -137,7 +137,7 @@ status: draft
 |:--------|:---------|:-----|
 | 事件总线 | `src/events/bus.py` | 事件发布/订阅/背压，基于 usage_events 表 |
 | 事件类型定义 | `src/events/types.py` | 10 类事件枚举 + 消息结构（权威源：架构 §10.10；首迭代实现 4 类：use_event/calibration_signal/degradation_switch/latent_trigger） |
-| 配置加载 | `src/config.py` | 环境变量/配置文件加载，370 项参数（configuration 正文 224 + 附录 A 146，与 configuration 一致） |
+| 配置加载 | `src/config.py` | 环境变量/配置文件加载，374 项参数（configuration 正文 227 + 附录 A 147，与 configuration 一致） |
 | CLI 入口 | `src/main.py` | 应用入口点（Click/Typer CLI 框架） |
 | 调度器 | `src/scheduler.py` | 升华/遗忘/重估等周期性任务调度（APScheduler） |
 | 工具函数 | `src/utils/` | 通用工具（嵌入/Hash/脱敏/日志等） |
@@ -171,3 +171,7 @@ status: draft
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：MCP Bridge 工具计数 12→15（对齐 api-spec §6.8）；CLI 全量口径 24→25 联动（api-spec §3 补注册 kairos degradation switch）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：参数计数口径同步（正文 224 + 附录 A 146 = 370）；版本标记清理。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：参数总数 371→370 口径同步（0.0.22 旧口径残留）；identity_mapper 归位接入层；记忆状态机四态+Suppressed 软标记口径；CLI 27 条补规划扩展注记。 |
+| 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
+| 0.0.61 | 2026-08-08 | 版本记录补登（changelog 0.0.61）：记忆状态机行口径由「四态+Suppressed 软标记（子态）」修正为五态平级（active/stale/archived/suppressed/superseded，无子态），与架构 §5.2 一致（前序批次实施、漏登记于本文档版本记录，本批补登）。 |
+| 0.0.64 | 2026-08-08 | round30 全面深度审计修复批次（changelog 0.0.64，补登）：配置参数计数同步 370→373（正文 226 + 附录 A 147）。 |
+| 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.64 行（参数计数 373 同步）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |

@@ -8,8 +8,8 @@ tags:
   - references
   - error
 created: 2026-07-20
-updated: 2026-08-05
-last_reviewed: 2026-08-05
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -17,9 +17,9 @@ status: draft
 
 > **定位**：面向调用者的错误码完整参考。[api-spec.md](../specification/api-spec.md) 定义了接口层错误映射，本文展开全部错误码的语义和恢复建议。
 >
-> **说明**：本文为全量内部错误码参考，包含 API 不直接返回的 DB/LLM/SYS 内部日志码与预留码。API 仅返回 HTTP 级子集（见 [api-spec.md](../specification/api-spec.md) §7），调用方以 api-spec 为准处理响应。ERR-DB-*/ERR-LLM-*/ERR-SYS-* 为内部运维与日志使用。
+> **说明**：本文为全量内部错误码参考，包含 API 不直接返回的 DB/LLM/SYS 内部日志码与预留码。API 仅返回 HTTP 级子集（见 [api-spec.md](../specification/api-spec.md) §7），调用方以 api-spec 为准处理响应。`ERR-LLM-*`、`ERR-SYS-*` 与 `ERR-DB-001~003` 为内部运维与日志使用；**例外**：`ERR-DB-004`（404）与 `ERR-DB-005`（409）表达调用方可处理的资源状态（不存在 / 版本冲突）而非存储层内部故障，随 HTTP 响应返回给调用方。
 >
-> **分类**：本表 38 个错误码按使用场景分两类——**API 返回码**（HTTP 状态 + 错误体返回给调用方）与**内部日志码**（仅出现在服务端日志）。API 返回码子集以本表标注为准；api-spec §7 与 runbook §5.3 列出的为其常用子集。
+> **分类**：本表 43 个错误码按使用场景分两类——**API 返回码**（HTTP 状态 + 错误体返回给调用方）与**内部日志码**（仅出现在服务端日志）。API 返回码子集以本表标注为准；api-spec §7 与 runbook §5.3 列出的为其常用子集。
 
 ---
 
@@ -62,8 +62,8 @@ status: draft
 | `ERR-DB-001` | 503 | 数据库连接失败 | 检查数据库是否运行、连接 URL 是否正确 |
 | `ERR-DB-002` | 500 | 数据库迁移失败 | 检查迁移文件，手动修复后重试 `kairos db migrate` |
 | `ERR-DB-003` | 500 | 记忆写入失败（存储层异常） | 检查数据库状态，重试 |
-| `ERR-DB-004` | 404 | 记忆未找到 | 确认 memory_id 或路径正确 |
-| `ERR-DB-005` | 409 | 版本冲突（并发更新） | 读取最新版本后重试 |
+| `ERR-DB-004` | 404 | 资源不存在（记忆 / 版本 / 叙事线 / 边类型等按 ID 或路径定位失败）——**API 返回码**（内部码例外） | 确认 memory_id 或路径正确 |
+| `ERR-DB-005` | 409 | 版本冲突（并发更新，`If-Match` 与当前版本不一致）——**API 返回码**（内部码例外） | 读取最新版本后重试 |
 
 ### 1.5 LLM 与服务（ERR-LLM-*）
 
@@ -89,6 +89,8 @@ status: draft
 | `ERR-SYS-003` | 500 | 内部组件异常 | 检查健康检查端点和日志 |
 | `ERR-SYS-004` | 503 | 调度器不可用 | 重启调度器 |
 | `ERR-SYS-005` | 500 | 未预期的内部错误 | 查看日志并报告 |
+| `ERR-SYS-006` | — | 启动校验：特征标志组合不匹配任一命名配置集（`invalid_flag_composition` 审计事件），拒绝启动 | 检查 `KAIROS_FEATURE_*` 配置，使组合落入 `kairos-minimal`/`kairos-slice`/`kairos-full` 之一（见 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 命名配置集与组合约束） |
+| `ERR-SYS-007` | — | 启动校验：宪法核组件装配后不可用（`constitutional_core_unavailable` 审计事件），拒绝启动（门控优先级规则 (c)） | 检查宪法核组件装配与依赖，必要时降级或重建装配（见 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 组件归属与门控优先级） |
 
 ### 1.8 校准与升华（ERR-CAL-*, ERR-SUB-*）
 
@@ -105,6 +107,9 @@ status: draft
 |:-------|:----:|:-----|:---------|
 | `ERR-CTR-001` | 400 | 无效的契约类型 | 检查 contract 参数值 |
 | `ERR-CTR-002` | 403 | 临时契约不可写入审计历史（临时契约过期清除的审计痕迹受 `expiry_cascade_delete` 标记约束——已入库临时记忆清除必留痕，仅捕获阶段被拒绝的输入不产生审计事件，见 api-spec §4） | 检查审计写操作的目标记忆契约类型 |
+| `ERR-CTR-003` | 403 | 记忆已锁定（`locked_until` 未到期），禁止修改 / 删除 / 归档 / 抑制 / 合并；只读操作不受影响（见 [api-spec.md](../specification/api-spec.md) §1.3 lock 端点） | 等待锁定到期，或由 admin Key 将 `locked_until` 置空提前解除 |
+| `ERR-CTR-004` | 409 | 意图（intention）契约未关闭，禁止直接删除（见 [api-spec.md](../specification/api-spec.md) §1.5 DELETE 契约分支） | 先经 `intention_resolve` 事件关闭意图、降级为 ondemand 后重试 |
+| `ERR-CTR-005` | 409 | 幂等键冲突（`Idempotency-Key` 已存在且载荷与本次请求不一致，见 [api-spec.md](../specification/api-spec.md) §1.1 幂等键） | 更换幂等键重试，或查询首次提交结果 |
 | `ERR-CNF-001` | 409 | 记忆合并冲突 | 手动裁决或等待外部校准信号 |
 | `ERR-CNF-002` | 409 | 差异检验阻断合并 | 检查使用权重与见证锚定的一致性 |
 
@@ -134,7 +139,11 @@ status: draft
 
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
-| 0.0.1 | 2026-07-31 | 错误参考：11 类 38 个错误码的语义与恢复建议。 |
+| 0.0.1 | 2026-07-31 | 错误参考：11 类 40 个错误码的语义与恢复建议。 |
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：api-spec 章节引用修正、API 返回/内部日志分类声明、ERR-CAL-001/002 状态码语义修正。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：ERR-SYS-002~005 移回 §1.7 系统错误节。 |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：ERR-CTR-002 审计痕迹口径改指 0.0.14 现行（expiry_cascade_delete 必留痕）；api-spec 中文序引用联动。 |
+| 0.0.51 | 2026-08-08 | round22 审计修复批次（changelog 0.0.51）：新增 ERR-SYS-006/007（对应架构 `invalid_flag_composition` / `constitutional_core_unavailable` 启动校验审计事件），错误码 38→40；与债务 D-430 同步。 |
+| 0.0.59 | 2026-08-08 | round26 全面深度审计修复批次（changelog 0.0.59）：新增 `ERR-CTR-003`（403 记忆已锁定）/ `ERR-CTR-004`（409 意图契约未关闭），错误码 40→42；`ERR-DB-004/005` 标注为内部码例外（随 HTTP 响应返回），与 api-spec §7 口径对齐。 |
+| 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
+| 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：新增 `ERR-CTR-005`（409 幂等键冲突，Idempotency-Key 已存在且载荷不一致），错误码 42→43；与 api-spec §7 / troubleshooting §三 同步。详见 changelog 0.0.85 叙述节。 |

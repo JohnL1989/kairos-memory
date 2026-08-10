@@ -72,7 +72,7 @@
     <button onclick="setZoom(1.5)">150%</button>
     <button onclick="setZoom(2)">200%</button>
     <button onclick="fitWidth()">适应宽度</button>
-    <span class="hint">提示：图中节点可点击高亮所属章节；宽屏可横向滚动</span>
+    <span class="hint">提示：用上方按钮缩放；宽屏可横向滚动。节点标注的 §编号对应架构文档章节</span>
   </div>
   <div class="diagram-wrap">
     <div id="diagram">
@@ -157,7 +157,8 @@ flowchart TB
 </main>
 <footer>
   Kairos 记忆系统 · 设计阶段文档 · 权威定义见
-  <code>docs/foundation/architecture-v0.1.0.md</code>
+  <code>docs/foundation/architecture-v0.1.0.md</code> §0.4.1（本页图块为其同步副本）。
+  渲染依赖 CDN 上的 Mermaid 运行时，离线环境下图形不渲染——此时可直接阅读架构文档中的同源图块。
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>

@@ -8,8 +8,8 @@ tags:
   - governance
   - release
 created: 2026-07-21
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -87,12 +87,14 @@ kairos init --seed-path ~/.kairos/seeds/
 kairos health --full
 ```
 
+> **命令定义状态注记**：`kairos health --full` 与 `kairos init --seed-path` 均在 api-spec §3 CLI 表无契约登记（`kairos init --seed-path` 为种子目录参数，未列入 CLI 表；`kairos health --full` 属 11 条待定义命令之一）——已纳入债务 D-430 追缴清单（round25 审计 R25-10 补登），编码启动前须在 api-spec §3 完成契约登记或从本文移除使用引用。
+
 ---
 
 ## §4 发布说明模板
 
 ```markdown
-## vX.Y.Z - YYYY-MM-DD
+### vX.Y.Z - YYYY-MM-DD（版本条目模板，发布时复制并替换版本号/日期）
 
 ### 新功能
 - （列出新增功能及对应 Issue/PR）
@@ -170,3 +172,5 @@ Kairos 存储的记忆数据默认仅存储在本地。收集的数据类型、�
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：E2E 计数口径更新（6→9 条，见 test-plan §3.7）、回滚命令名统一为 `kairos db migrate rollback`（ADR-011）。 |
 | 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：§1 版本号规则 0.0.1 语义修订（草稿起始版本+递增规则）。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-11 种子路径统一目录语义（--seed-path ~/.kairos/seeds/）。 |
+| 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：`## vX.Y.Z` 模板标题降级 `###`（版本条目模板，不打断 §N 序列）。 |

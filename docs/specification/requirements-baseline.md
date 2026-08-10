@@ -9,14 +9,14 @@ tags:
   - requirements
   - baseline
 created: 2026-07-21
-updated: 2026-08-06
-last_reviewed: 2026-08-06
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
 # Kairos 需求基线
 
-> **定位**：将 feature-list（功能清单）、use-cases（使用场景）、nfr-specification（非功能需求）收敛为一份受管的可追踪需求基线。回答「这个系统要做什么、做到什么程度、怎么算做完」。
+> **定位**：将 [feature-list.md](feature-list.md)（功能清单）、[use-cases.md](use-cases.md)（使用场景，8 个典型交互场景）、[nfr-specification.md](nfr-specification.md)（非功能需求）收敛为一份受管的可追踪需求基线。回答「这个系统要做什么、做到什么程度、怎么算做完」。
 >
 > **读者**：实现者、测试编写者、版本规划者
 
@@ -58,7 +58,7 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 | R-03 | 多路径融合 | ≥2 条检索路径同时执行 | 去重融合后返回 | P1 | 交集优先、独有按信息增益准入 |
 | R-04 | 按契约过滤 | 同 R-01 | 仅返回指定契约类型的记忆 | P1 | 过滤结果不含非匹配契约 |
 | R-05 | 按时间范围检索 | 同 R-01 | 返回指定时间窗口内的记忆 | P1 | 时间窗口边缘精度 ≤1s |
-| R-06 | 按情感维度检索 | 有 VAD 元数据 | 按 VAD 相似度返回结果 | P1 | 情感相似度排序正确 |
+| R-06 | 情感维度（VAD）加权检索 | 命中 VAD 元数据且语义相似度 cos≥0.5 | VAD 为条件激活的排序权重提升通道（G-02），非独立检索轴；cos<0.5 时 boost 归零、默认检索忽略情感维度，cos≥0.5 时注入排序权重（boost=max(0,cos-0.5)×2.0）；显式 VAD 查询为 v1.1 | P1 | 高 VAD 匹配记忆经情感提升通道排序提升；cos<0.5 时排序不受情感维度影响 |
 | R-07 | 按关系检索 | 有关联记忆存在 | 返回与目标记忆存在指定关系的记忆集合 | P1 | 关系类型过滤精准 |
 | R-08 | 路径空间浏览（ls/cd/tree） | 系统运行中 | 返回树状目录 | P0 | CLI `kairos tree` 可展开全部路径 |
 
@@ -115,7 +115,7 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 
 ### 1.8 前瞻记忆
 
-> **版本归属**：前瞻记忆为 **v1.1+ 交付**（P2），以 feature-list 标注为准——数据模型与 API 尚未落地（前瞻保持协议见架构 §3.2）。前瞻记忆使用**意图契约**（intention，独立于四类基础契约，不受遗忘调度器评估；意图完成/取消后降级为按需），见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆段与 [data-model.md](data-model.md) `memories.contract`。竖切（v0.1.0-slice）范围不含前瞻记忆。
+> **版本归属**：前瞻记忆的**功能能力**为 **v1.1+ 交付**（P2），以 feature-list 标注为准（前瞻保持协议见架构 §3.2 为架构就绪状态）。前瞻记忆使用**意图契约**（intention，独立于四类基础契约，不受遗忘调度器评估；意图完成/取消后降级为按需），见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §3.2 前瞻记忆段与 [data-model.md](data-model.md) `memories.contract`。**契约层承载已在 v0.1.0 落地**——`contract` 枚举含 `intention` 值及其保护语义（[data-model.md](data-model.md) `memories.contract`），未关闭意图的直接删除返回 409 `ERR-CTR-004`（[api-spec.md](api-spec.md) §1.5）；v1.1+ 待落地的是意图生命周期专用端点与 `intention_activate` / `intention_resolve` 事件。竖切（v0.1.0-slice）范围不含前瞻记忆功能。
 
 | ID | 描述 | 优先级 |
 |:---|:-----|:-----:|
@@ -186,17 +186,17 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 | A-04 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §2.2 种子 | `POST /v1/seeds` | 代码启动后补充 |
 | A-07 | [deployment.md](../ops/deployment.md) | CLI `kairos db migrate` | 代码启动后补充 |
 
-#### 横切项（无独立需求 ID，验收由竖切验收标准承载）
+### 横切项（无独立需求 ID，验收由竖切验收标准承载）
 
 | 横切项 | 设计章节 | 验收归属（[acceptance-criteria.md](../quality/acceptance-criteria.md) §〇 竖切验收标准） | 测试用例 |
 |:--------|:--------|:---------|:------------------------|
-| 事件总线 4 类（use_event / calibration_signal / degradation_switch / latent_trigger） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 事件类型原语表 | 「事件总线」行：4 类事件发布/订阅/背压/优先级可用，trace_id 可审计 | 事件集成测试 |
+| 事件总线 4 类（use_event / calibration_signal / degradation_switch / latent_trigger） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 事件类型枚举表 | 「事件总线」行：4 类事件发布/订阅/背压/优先级可用，trace_id 可审计 | 事件集成测试 |
 | 身份注册表（构造论：初始赋予 + 叙事驱动双向更新） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 身份注册表 | 「身份构造论」行：外部校准触发 is_identity 置信度变更（升降双向），S-10 见证豁免不可绕过 | G-03 v0.1.0 判据；S-10 单测 |
 | 双副本分离（见证锚定主副本 + 使用权重影子副本） | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.1 双副本 | 「双副本分离」行：使用权重写回见证锚定被拒绝 | S-14 单测 |
 | 审计 HMAC 链 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.7 审计日志；HMAC 算法见 [threat-model.md](../security/threat-model.md) HMAC 审计链 | 审计事件经 CAL-05（`GET /v1/audit-log`）查询验证；「质量门禁」行 doc-audit 全绿 | E2E-06 |
 | 19 条安全红线 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §8 安全红线 | 「质量门禁」行：19 条红线逐条单测 | 19 条红线单元测试 |
 
-> 预留用例编号：W-05/W-06、R-04~R-07、M-04、SF-01~04、CAL-02/06 等核心功能对应测试用例编号（TC-W05-001~ 等）待代码启动后补充，编号规则见 [test-plan.md](../quality/test-plan.md)，补充时须与 RTM 一一对应，避免编号冲突（TC-C01 前缀已废弃）。
+> 预留用例编号：W-05/W-06、R-04~R-07、M-04、SF-01~04、CAL-06 等核心功能对应测试用例编号（TC-W05-001~ 等）待代码启动后补充，编号规则见 [test-plan.md](../quality/test-plan.md)，补充时须与 RTM 一一对应，避免编号冲突（TC-C01 前缀已废弃）。（CAL-02 已分配 TC-CAL02-001，见上表与 [test-plan.md](../quality/test-plan.md) §3.6，不再列入预留。）
 
 > 竖切范围外的功能（升华/前瞻/定向遗忘/导出/Connectors 等）待相应迭代补全 RTM。
 
@@ -251,3 +251,9 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 | 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：RTM R-01/R-02 设计章节列引用 §4.2→§5 路径空间/向量空间（1-03，对齐 feature-list）；M-05 端点标注改 api-spec §1.5 注册端点（2-01）；§1.8 前瞻记忆段引用改指 §3.2（1-08 联动）；RTM「arch」缩写统一为「架构」（22 行，4-04）。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：RTM R-18 行版本注记清理（「0.0.14 补充 RTM 行」→「补充 RTM 行」）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：N 表补口径注记（竖切子集，完整以 nfr-specification 为权威）；RTM 补竖切横切项小节；F-02 手动触发补端点承载注记。 |
+| 0.0.61 | 2026-08-08 | 版本记录补登（changelog 0.0.61）：横切项小节标题 `####`→`###` 升级（原变更 round20 0.0.15 批次，漏登记于本文档版本记录，本批补登）。 |
+| 0.0.65 | 2026-08-08 | round31 深度审计修复批次（changelog 0.0.65）：预留用例编号注记移除 CAL-02（已分配 TC-CAL02-001，与 RTM 表及 test-plan §3.6 三处口径统一）。 |
+| 0.0.74 | 2026-08-09 | round38 门禁建议落实批次（changelog 0.0.74）：事件总线行引用「架构 §10.10 事件类型原语表」→「事件类型枚举表」（架构实际标题为「事件类型枚举」，round37 门禁补盲区 6.26 档 4 捕获的三处同源悬空引用之一）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
+| 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：§1.8 块引用意图契约版本归属修正——契约层承载已在 v0.1.0 落地（contract 枚举含 intention 值 + 409 ERR-CTR-004），v1.1+ 待落地生命周期端点与事件；与 feature-list PM-01/02 / data-model / api-spec 对齐；详见 changelog 0.0.83 叙述节。 |
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：定位段补 use-cases 链接入口（近孤儿收口）。 |
