@@ -7,14 +7,16 @@ tags:
   - governance
   - changelog
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
 # CHANGELOG
 
 > **定位**：按日期记录的变更日志，记录从什么变成什么。各文档内嵌的版本记录保留为文档级审计，CHANGELOG 提供跨文档的版本演进全景。
+>
+> **浏览指引**：本文件按批次时序组织（`## 0.0.x（日期）— 标题`），最新批次置顶、文末版本记录表为全景索引。定位方式：按版本号搜索 `## 0.0.x`；按日期搜索 `（2026-MM-DD）`；跨文档变更关系见 [README.md](../README.md) 与各文档内嵌版本记录。
 
 ---
 
@@ -1794,7 +1796,7 @@ status: draft
 - **L-01 路径参数名不统一**：`POST /v1/narrative/threads/{thread_id}/summarize` 与同族 `{id}` 混用——统一为 `{id}`。
 - **L-02 CLI 参数登记**：quick-start 示例 `kairos write --contract ondemand` 在 CLI 命令表（api-spec §3）无登记——补 `--contract` 说明与示例。
 
-**验证**：doc-audit 十八类 + 14a + 6.8a/6.12a/6.13~6.38 全类复跑 exit 0（6.26 WARN 维持 10 条已知噪声，无新增）；deep-audit 复跑 exit 0。受改 15 份文档（architecture §5.2 状态转换纪律声明（M-01）/ detailed-design / api-spec / rl-weight-spec / data-model 引用口径不动 / observability 指标口径同步（H-02）/ reliability 引用口径不动 / configuration / security-specification / threat-model / error-reference / troubleshooting / runbook / README / openapi.yaml）+ changelog 本文件 + documentation-governance §3 执行记录同步 0.0.85；核心计数变动仅 1 项：**错误码 42→43**（新增 ERR-CTR-005），其余（表 57 / 参数 373→374 新增 DISCARD_THRESHOLD / 端点 88 / 术语 76 / 操作 66 / 组件 70 / 功能 168）口径同步；门禁全类验证 exit 0。
+**验证**：doc-audit 十八类 + 14a + 6.8a/6.12a/6.13~6.38 全类复跑 exit 0（6.26 WARN 维持 10 条已知噪声，无新增）；deep-audit 复跑 exit 0。实质受改 13 份 md + openapi.yaml（architecture §5.2 状态转换纪律声明（M-01）/ detailed-design / api-spec / rl-weight-spec / observability 指标口径同步（H-02）/ configuration / security-specification / threat-model / error-reference / troubleshooting / runbook / README；data-model / reliability 经审视判定引用口径不动、无内容变更，不计入受改——0.0.89 勘误，原「受改 15 份」含两审视项）+ changelog 本文件 + documentation-governance §3 执行记录同步 0.0.85；核心计数变动仅 1 项：**错误码 42→43**（新增 ERR-CTR-005），其余（表 57 / 参数 373→374 新增 DISCARD_THRESHOLD / 端点 88 / 术语 76 / 操作 66 / 组件 70 / 功能 168）口径同步；门禁全类验证 exit 0。
 
 ---
 
@@ -1836,7 +1838,7 @@ status: draft
 - **R49-12 technology-stack 投影措辞并称**：§二「线性投影」为映射通俗描述、ADR-012「固定随机正交投影」为具体方案——补「（投影方案：固定随机正交投影，见 ADR-012）」括注消除并称歧义。
 - **R49-13 documentation-governance §4 版本记录表方向例证失实**：原「降序表（最新在表首，如 changelog 版本记录）」——changelog 实际升序、全库抽查 6 份文档均升序、未见降序实例；例证修正为「全库现行为升序表，降序表未见实例（若引入须单文档内一致）」。
 
-**验证**：doc-audit 全类复跑 exit 0（6.26 档仍为 10 条历轮已甄别噪声、无新增）；deep-audit 复跑 exit 0。受改 22 份文档 + changelog 本文件 + documentation-governance §3 执行记录同步 0.0.87；核心计数变动：术语 **76→77**（补「上下文腐烂」）、债务 **D-440→D-442**（新增 D-441/D-442）；其余（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37）零漂移；门禁全类验证 exit 0。
+**验证**：doc-audit 全类复跑 exit 0（6.26 档仍为 10 条历轮已甄别噪声、无新增）；deep-audit 复跑 exit 0。受改 21 份文档（原声明 22 份含 configuration——其经 R49-06 审视判定仅表格来源列豁免、无内容变更，不计入受改；0.0.89 勘误）+ changelog 本文件 + documentation-governance §3 执行记录同步 0.0.87；核心计数变动：术语 **76→77**（补「上下文腐烂」）、债务 **D-440→D-442**（新增 D-441/D-442）；其余（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37）零漂移；门禁全类验证 exit 0。
 
 ---
 
@@ -1860,6 +1862,156 @@ status: draft
 - **R50-09 use-cases 场景 4 外部校准写入表述精确化**（校准信号写入见证锚定主副本触发差异检验并更新校准置信度/见证值，`narrative_coherence_score` 由叙事自洽度评估器生成、非校准信号直接写入，见架构 §5.2）。
 
 **验证**：doc-audit 全类复跑 exit 0（6.26 档仍为 10 条历轮已甄别噪声、无新增）；deep-audit 复跑 exit 0；analysis README 102 条新链接目标全部存在。受改 9 份文档 + changelog 本文件 + documentation-governance §3 执行记录；核心计数（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37 / 术语 77）零漂移。
+
+---
+
+## 0.0.89（2026-08-10）— round51 全面深度审计修复批次（落体核查 + 受改计数勘误 + 结构/格式收口）
+
+> 本轮为 round50（0.0.88）之后的全面深度审计轮（五维度：完整性与一致性 / 缺失与过时 / 结构与组织 / 格式规范 / 核心文档准确性）。机器门禁基线全绿（doc-audit 18 类 + 14a + 6.8a/6.12a/6.13~6.38 exit 0；deep-audit exit 0）；6.26 剩余 10 条 WARN 逐条原文实证**全部为可忽略噪声**（7 条目标章节存在、3 条描述性词），零真实引用错位。语义层共闭环 **0 高 / 7 中 / 13 低** 共 20 项（另观察 1 项：configuration §0.10/§0.11 编号倒挂为受控形态，见 R51-14）。
+
+**【中】落体核查与受改计数勘误（3 项）**
+- **R51-01 debt-collection 摘要表补 D-440/D-441/D-442 三行落体**：0.0.87 R49-09 声称「摘要表补三行」实际未落体（D-439 后直接接 D-312/D-313/D-321）——本轮补行（含 D-443/D-444），并修订摘要表取舍声明（「预期版本」段为状态替代形态）与五段结构双形态声明（D-422~425/D-429/D-430/D-440 保留「可接受成本」段的精确枚举）。
+- **R51-02 0.0.85 受改清单计数勘误**：原「受改 15 份」含 data-model / reliability（标注「引用口径不动」、无 0.0.85 版本记录条目）——受改清单只计实质变更，修正为「实质受改 13 份 md + openapi.yaml」，叙述节与版本记录行同步。
+- **R51-03 0.0.87 受改清单计数勘误**：原「受改 22 份」中 configuration 经 R49-06 审视判定仅表格来源列豁免、无内容变更（无 0.0.87 版本记录条目）——修正为「受改 21 份」，叙述节与版本记录行同步；README 批次索引登记不计入受改清单的口径显式声明。
+
+**【中】结构与组织（2 项）+ 【低】1 项**
+- **R51-04 5 份超 200 行文档补章节导航**：deployment / runbook / test-plan / requirements-baseline / documentation-governance（round43/49 补 11 份后遗漏；导航表「章节 | 主题」两列形态对齐历轮）。
+- **R51-05 feature-list 版本记录归位**：`### 版本记录` 原嵌于「八、系统管理」与「九、扩展功能」之间——升为 `## 版本记录` 并移至文末（最终计数节后）。
+- **R51-06【低】claim-matrix 版本记录居文末**：「版本边界」节移至「版本记录」之前。
+
+**【中】格式规范（2 项）**
+- **R51-07 正文裸文件/裸文档名引用链接化**：架构 7 处（glossary/integration-design/detailed-design/feature-list/api-spec/rl-weight-spec/documentation-governance）+ 去除「用词勘误」过程标记残留 1 处 + §0 速查表 glossary 计数 76→77 修正（round49 遗漏）；blueprint 6 处（api-spec §11/§12/§13×3/§17）；slice-implementation-guide 7 处、engineering-workflow 7 处、integration-design 4 处、design-philosophy-relations 3 处、adr/development-setup/technology-stack 各 1 处。
+- **R51-08 决策/债务编号缺前缀补标**：正文叙述 12 处——认知基础 5 处（D-313/D-16 A1/D-01/D-019(a)×3）、架构 D-01 2 处、blueprint D-17、configuration D-15/D-431、runbook D-430 2 处、social-calibration-roadmap D-305、benchmark-plan D-427；documentation-governance §5 增补**清单/索引形态豁免条款**（列表/表格/版本记录表说明列的编号列举不追溯改写）。
+
+**【低】缺失与过时 + 格式收尾（6 项）**
+- **R51-09 追缴门禁补盲二轮**：登记 D-443（MCP Resources/Prompts 渐进扩展，technology-stack §七）+ D-444（外部理念 4 处「v1.1 评估项」注记批量：MemGen 学习式触发/操作轨迹独立类型/bandit 检索策略/稀疏奖励 RL 配方）——架构 4 处 + technology-stack 1 处加「（债务 D-44x）」指针；摘要表与 §七 评估表补行。
+- **R51-10 first-principles-review 正文过时计数**：总体判断「9 篇论文」→「21 篇论文」（round50 仅修定位行）。
+- **R51-11 5 份近孤儿文档补正文入口**：架构 §0 补 design-philosophy-relations / system-context、架构 §10.18 补 domain_keywords.yaml、认知基础附录 D.13 补 vad-coordinate-algorithm、engineering-workflow 补 coding-conventions。
+- **R51-12 WM 中英空格统一**：架构 8 处 + 认知基础 8 处（正文；代码块内保持原样）。
+- **R51-13 格式收尾 4 项**：架构「校准锚定维度衰退模型」→「衰减」、「摄入侧按内容类型」→「摄取侧」；social-calibration-roadmap 多 Agent/单 Agent/跨 Agent 空格 24 处；test-strategy 版本记录日期范围统一。
+- **R51-14 detailed-design H1 标题**：「# Kairos」→「# Kairos 详细设计」；acceptance-criteria §三 参数权威经核验为设计形态（configuration 附录 A 已登记 + 定义出处列指回，0.0.42 确立），非问题；configuration §0.10/§0.11 编号倒挂为受控形态（6 处引用，重编号将破坏引用链），记录在案不修。
+
+**验证**：doc-audit 全类复跑 exit 0（6.26 档仍为 10 条历轮已甄别噪声、无新增）；deep-audit 复跑 exit 0。受改 22 份文档 + changelog 本文件 + documentation-governance §3 执行记录同步 0.0.89；核心计数变动：债务 **D-442→D-444**（新增 D-443/D-444）；其余（表 57 / 参数 374 / 错误码 43 / 术语 77 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37）零漂移；门禁全类验证 exit 0。
+
+---
+
+## 0.0.90（2026-08-11）— round52 全面深度审计修复批次（追缴补盲三轮 + H1 补齐 + 格式收口）
+
+> 本轮为 round51（0.0.89）之后的全面深度审计轮（五维度：完整性与一致性 / 缺失与过时 / 结构与组织 / 格式规范 / 核心文档准确性）。机器门禁基线全绿（doc-audit 18 类 + 14a + 6.13~6.38 exit 0；deep-audit exit 0）；6.26 剩余 10 条 WARN 复跑与 round51 一致（7 条原文比对目标章节存在、3 条描述性词），零真实引用错位。语义层共闭环 **1 中 / 5 低** 共 6 项（另观察 1 项：configuration §0.10/§0.11 编号倒挂为受控形态，维持）。核心文档精读（认知基础全文 1203 行 + 架构 §0/§1/§3 + 技术选型全文 175 行）未发现实质矛盾。
+
+**【中】追缴门禁补盲三轮（1 项）**
+
+- **R52-01 7 处「v1.1 候选/目标」软承诺无债务承载**：round51 D-444 批量登记后，同批次同型「外部理念吸收 0.0.44/0.0.48」注记仍遗漏 7 处——① §5.2 保留原因字段 v1.1 候选（REPO-03）；② §5.2 技能仓库级落地单元 v1.1 候选（PAPER-04）；③ §5.2 对话历史纳入语义检索 v1.1 目标；④ §5.5 差异检验分级阈值参数化 v1.1 候选（PAPER-08）；⑤ §5.5 错误模式库独立存储 v1.1 候选（PAPER-18/11/12）；⑥ §5.2 嵌入提供商可插拔 v1.1 候选（VID-16）；⑦ §7.3 图激活传播与时间粒度检索 v1.1 候选（PAPER-03）。登记 **D-445**（批量 7 项），架构原文 7 处加「（债务 D-445）」指针。
+
+**【低】结构与格式收口（5 项）**
+
+- **R52-02 architecture/blueprint 补 H1 一级标题**：全库其他核心文档均在 frontmatter 后设 H1，两文档此前直接进入 `## §0` / `## 一、`——补「# Kairos 系统架构」「# Kairos 架构蓝图（v1.1+）」（门禁 16 仅校验 frontmatter 字段、未校验 H1 存在性，属结构缺口）。
+- **R52-03 「多 Agent/单 Agent/跨 Agent」空格统一 20 处**：round51 4-4 仅修 social-calibration-roadmap（29 处），同模式在架构 12 处 / 认知基础 6 处 / debt-collection 1 处 / traceability-map 1 处仍为紧邻中文形态——本轮全部统一。
+- **R52-04 「架构[链接]」「认知基础[链接]」中英空格统一 10 处**：认知基础 9 处 + 架构 1 处为「架构[architecture-v0.1.0.md](...)」紧邻形态，其余 244 处带空格——统一为带空格。
+- **R52-05 P1-P6 半角连字符统一全角 6 处**：architecture 1 / cognitive-foundation 1 / design-philosophy-relations 4（含 ASCII 图内文字，宽度不变不影响对齐）。
+- **R52-06 版本记录链与执行记录同步**：受改 7 份文档（architecture / blueprint / cognitive-foundation / design-philosophy-relations / debt-collection / traceability-map / README 批次索引登记）+ changelog 本文件 + documentation-governance §3 执行记录同步 0.0.90。
+
+**验证**：doc-audit 全类复跑 exit 0（6.26 档仍为 10 条历轮已甄别噪声、无新增）；deep-audit 复跑 exit 0。受改 7 份文档 + changelog 本文件 + documentation-governance §3 执行记录同步 0.0.90；核心计数变动：债务 **D-444→D-445**（新增 D-445）；其余（表 57 / 参数 374 / 错误码 43 / 术语 77 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37）零漂移；门禁全类验证 exit 0。
+
+---
+
+## 0.0.91（2026-08-11）— 外部理念吸收落地批次（LongMemEval 记忆能力评测协议）
+
+> 吸收来源：用户提供《记忆系统能力评测协议 v1.0（LongMemEval 统一基准）》（2026-08-11，用户本地文件，非视频/论文批次素材）——LongMemEval 为公开学术基准（cleaned 数据集 500 条，6 类问题：single-session-user / single-session-preference / single-session-assistant / multi-session / temporal-reasoning / knowledge-update），测「对话→事实提取→检索→推理」完整记忆管道，业界 Mem0 / Zep / Letta 均以统一格式报分可横向对比。落地形态：benchmark-plan 新增 §3.15 记忆能力评测协议（评估协议章节，无新增参数/机制），test-plan 预留 TC-LME 编号，absorption-proposals 登记 AP-53。
+
+**落地清单**：
+- **benchmark-plan 新增 §3.15 记忆能力评测协议**（[benchmark-plan.md](../quality/benchmark-plan.md)）：七步流程（数据下载 / 取样 18 条（可缩至 12 条须报样本数）/ 独立 namespace 隔离 / 灌入 haystack 会话（category=session）/ 检索 top-k≥15 / 生成 UNKNOWN 防编造 / judge 0/1 语义等价判定）+ **Kairos 变体定义**（加工管线变体为主报形态、原始对话直搜为对照形态；检索 / 生成 / judge 模型与样本分布申报）+ 汇报格式硬规则 5 条（变体说明 / 生成模型标注 / 禁止主观自评 / 检索为空或 judge 解析失败记 0 / 检索命中率与总准确率分离归因）+ 参考基线（Mem0 49% / Zep-Graphiti 63.8% / Letta ~83%，**只作参考不作门槛**——须本地校准后方可作门槛，三要素一致才可比）+ 既有机制联动（§3.12 六梯度作 G1~G6 统一评测任务集 / test-strategy §2.7 反事实检验作外部验证集 / §3.11 能力验证门四门声明 / test-plan TC-LME 编号）。
+- **benchmark-plan §3.12 联动注记**：六梯度统一评测任务集建议采用 LongMemEval 公开数据集——公开固定数据集，验证集与经验来源天然分离（满足 §3.11 红线）。
+- **test-plan §2 预留编号**（[test-plan.md](../quality/test-plan.md)）：TC-LME-001~（LongMemEval 记忆能力评测，协议指针到 benchmark-plan §3.15；依赖 LLM 评测链路，代码启动后补充）。
+- **acceptance-criteria §一a 测量任务集补充**（[acceptance-criteria.md](../quality/acceptance-criteria.md)）：任务成功率改善指标补「测量任务集可选用 LongMemEval 公开数据集」（§3.15 反向指针——三态对比测量载体的任务集来源落地）。
+- **吸收建议四e 登记**（[absorption-proposals.md](../analysis/external-videos/absorption-proposals.md)）：AP-53 建议态 → 已落地。
+
+**参数计数**：不变（无新增 KAIROS_* 参数，评估协议形态）。
+
+**验证**：doc-audit 复跑 exit 0。受改 4 份文档（benchmark-plan / test-plan / acceptance-criteria / absorption-proposals）+ changelog 本文件 + documentation-governance §3 执行记录同步 0.0.91 + README 批次索引登记（0.0.89 口径：批次索引登记不计入受改清单）；核心计数（表 57 / 参数 374 / 错误码 43 / 术语 77 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37 / 债务 D-445）零漂移。
+
+---
+
+## 0.0.92（2026-08-11）— 定稿收尾批次（设计基线冻结 + D-431 分类处置 + 工具修复）
+
+> 依定稿评估结论（round52 后审计收敛至 0 高 1 中 5 低、门禁全绿、竖切配套完整），于本批次执行定稿收尾三动作：① D-431 十项待定义参数分类处置（消除「编码启动前须补齐」的硬门禁笼统声明）；② documentation-governance §4 登记设计基线冻结声明（含外部理念吸收边界 0.0.91 止）；③ doc-audit.py GBK 控制台编码崩溃修复（对齐 deep-audit 0.0.6 先例）。**设计基线冻结**：此后至代码启动前修订仅限三类——P0 一致性缺陷 / 冻结后的外部理念吸收（登记边界）/ 登记类机械更新；设计内容变更一律进入 v1.1 域或重建决策。
+
+**落地清单**：
+- **D-431 分类处置**（[configuration.md](../ops/configuration.md) 附录 A 引言 + [debt-collection.md](../governance/debt-collection.md) D-431 五段/摘要表/评估表三处同步）：10 项待定义按来源域分类——8 项源头在 architecture-blueprint-v1.1 的 v1.1 域参数（DERIVED_FROM_MIN_STRENGTH / PLAYBOOK 阈值×2 / PROMPT_DEPENDENCY_STRATEGY / SKILL_EXPERIMENTAL_MAX_AGE / SUBLIMATION_ENCRYPTION_KEY / TEMPORAL_EXTRA_BUFFER_DAYS / KAIROS_PATH（随 detailed-design 实体标签 schema 落地补齐））随对应功能迭代定义；2 项部署环境变量（ADMIN_IPS / DB_PASSWORD）部署时点确定。**竖切（v0.1.0-slice）相关参数核验无待定义项**——硬门禁声明收口为分类处置，D-431 预期版本改「v1.1 域追踪」。
+- **设计基线冻结声明**（[documentation-governance.md](../governance/documentation-governance.md) §4）：冻结后修订仅限三类；外部理念吸收边界声明为 0.0.91 止（LongMemEval 评测协议为冻结前最后一笔吸收），后续新素材默认进入 v1.1 域或债务化。
+- **工具修复**：doc-audit.py 入口 stdout/stderr reconfigure UTF-8（`UnicodeEncodeError` GBK 崩溃——历轮「门禁全绿」均需 `PYTHONIOENCODING=utf-8` 环境方能跑通，本轮修复使裸跑可用；检查逻辑零改动）。
+
+**参数计数**：不变（374 项；10 项待定义标注形态不变，分类处置不新增参数）。
+
+**验证**：doc-audit 复跑 exit 0（本批次起可裸跑，无需 PYTHONIOENCODING）。受改 3 份文档（configuration / debt-collection / documentation-governance）+ scripts/doc-audit.py + changelog 本文件 + README 批次索引登记（不计入受改清单）；核心计数（表 57 / 参数 374 / 错误码 43 / 术语 77 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37 / 债务 D-445）零漂移。
+
+---
+
+## 0.0.93（2026-08-11）— round53 全面深度审计修复批次（追踪项计数收口 + 版本记录补登 + 格式收尾）
+
+> 0.0.92 定稿基线后首轮五维全面深度审计（完整性与一致性 / 缺失与过时 / 结构与组织 / 格式规范 / 核心文档准确性）。机器门禁基线全绿（doc-audit 裸跑 exit 0 + deep-audit exit 0；6.26 档 4 十条 WARN 逐条实证甄别全部为可忽略噪声），语义层新发现 **0 高 / 1 中 / 3 低**（另 2 观察项）全部闭环。
+
+**落地清单**：
+- **R53-01（中）追踪项计数收口**：traceability-map 定位段「104 追踪项」0.0.37 快照更新为指向权威账目——0.0.43 起活跃债务持续新增（D-422~D-445 共 24 条，活跃条目约 87→111）后总量口径随登记动态变化，改为「debt-collection 为权威账目（0.0.92 时点活跃 111【0xx 23 + 1xx 7 + 3xx 36 + 4xx 45】+ 归档闭环 31 + 理念吸收追踪 62 MNM），本表不再维护总量快照」；README 索引行「104 追踪项」同步改指针表述。
+- **R53-02（低）版本记录补登**：traceability-map 补 0.0.90 版本记录行（round52 受改：frontmatter + 「多 Agent」空格 1 处，此前漏登记，「触及即登记」纪律）。
+- **R53-03（低）引用措辞**：slice-implementation-guide 计数口径注记「project-plan §一 竖切组件列」→「竖切范围表组件行」（对齐 project-plan 实际表结构，引用语义不变）。
+- **R53-04（低）changelog 浏览指引**：本文件开头补「如何浏览」指引（按版本号/日期定位、跨文档关系见 README 与各文档版本记录），弥合超长文档导航缺口。
+- **R53-05（低）结尾换行**：[feature-list.md](../specification/feature-list.md) 文末补换行符（deep-audit 捕获，二进制模式修复，无 CRLF 污染）。
+- **观察项**：R53-O1 configuration「## 一/## §11」标题风格混用为门禁硬编码锚点受控形态（doc-audit `cfg.find("## §11")`，不可改名）；R53-O2 六条 WARN 全为噪声——均记录在案不修复。
+
+**参数计数**：不变（374 项）。
+
+**验证**：doc-audit 复跑 exit 0（裸跑）；deep-audit exit 0。受改 6 份文档（traceability-map / README / slice-implementation-guide / changelog 本文件 / documentation-governance / feature-list）+ 审计报告 `2026-08-11-round53-deep-audit.md`（工作区根，gitignored）；核心计数（表 57 / 参数 374 / 错误码 43 / 术语 77 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37 / 债务 D-445）零漂移；README 批次索引登记不计入受改清单（0.0.93 显式声明）。
+
+---
+
+## 0.0.94（2026-08-11）— round54 全面深度审计修复批次（版本记录登记缺陷收口 + 措辞精度）
+
+> 0.0.93 修复批次后首轮五维复验（完整性与一致性 / 缺失与过时 / 结构与组织 / 格式规范 / 核心文档准确性）。机器门禁基线全绿（doc-audit 裸跑 exit 0 + deep-audit exit 0；6.26 档 4 十条 WARN 与 round53 逐条甄别结论一致），语义层新发现 **0 高 / 0 中 / 2 低**（另 2 观察项）全部闭环。主审另完成门禁盲区机械化扫描：H1 全库 53 份无缺失、标题层级跳变 0 真跳变（初扫 9 处均为代码围栏内伪代码/注释误报）、9 份超长文档导航齐备、中英空格三类同源模式正文零残留、版本记录日期全库 YYYY-MM-DD、软承诺追缴全库通过。
+
+**落地清单**：
+- **R54-01（低）版本记录登记缺陷双缺陷收口**：traceability-map 版本记录 0.0.90 行混入本属 0.0.93 的内容（追踪项口径更新为 round53 R53-01 修改，误记入 round52 批次行）且 0.0.93 行缺失——0.0.90 行删除该内容（仅保留「多 Agent」空格统一 1 处 + frontmatter 同步），新增 0.0.93 行（追踪项口径收口 + README 同步）；「触及即登记」纪律违反复发（R53-02 同类）收口。
+- **R54-02（低）措辞精度**：deployment 标准级「宪法主权面」措辞「舍弃（…；外部校准端口为不可裁剪最小承载）」→「舍弃完整形态，继承简化（外部校准端口为不可裁剪最小承载，架构 §0.5 标准级）」——对齐架构 §0.5「继承内核级简化形态」权威口径，消除「完全移除」误读可能。
+- **防复发规则**：documentation-governance §4「触及即登记」纪律补充操作细节——补登版本记录时须核对当批次受改清单内每份文档均已建对应批次行，且补登历史行不得混入本批次内容（R54-01 根因治理）。
+- **门禁 6.39 落地（round54 改进建议第 4 项，WARN 级软门禁）**：doc-audit.py 新增 `check_batch_version_record_coverage`——以 changelog 最新批次叙述节「受改 N 份文档（…）」清单为输入，逐文档核对版本记录是否含该批次行（兼容 `## 版本记录`/`## §12 版本记录` 两种标题；剥 markdown 链接/缩写映射/非 md 条目跳过防误报；清单缺失时跳过不判）。**首跑即捕获真实缺陷**：traceability-map 在 0.0.94 批次受改（版本记录修正）但缺 0.0.94 行——本批次补登（「触及即登记」操作细节落地）。engineering-workflow §四 / project-plan Phase 0 门禁清单镜像同步 6.39。
+- **观察项**：R54-O1 configuration「## 一/## §11」标题风格混用（门禁硬编码锚点受控形态）；R54-O2 [risks.md](risks.md) 风险条目缺「概率/复核周期」字段（文档显式声明为 v0.1.0.x 目标已知缺口）——均记录在案不修复。
+
+**参数计数**：不变（374 项）。
+
+**验证**：doc-audit 复跑 exit 0（裸跑，含 6.39 首跑 0 漏登记）；deep-audit exit 0。受改 7 份文档（traceability-map / deployment / changelog 本文件 / documentation-governance / engineering-workflow / project-plan）+ scripts/doc-audit.py + 审计报告 `2026-08-11-round54-deep-audit.md`（工作区根，gitignored）；核心计数（表 57 / 参数 374 / 错误码 43 / 术语 77 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37 / 债务 D-445）零漂移；README 批次索引登记不计入受改清单（0.0.94 显式声明）。
+
+---
+
+## 0.0.95（2026-08-11）— Obsidian frontmatter 闭合缺陷修复批次（6 份文档 + 门禁 6.16 盲区增强）
+
+> 用户发现 [adr.md](adr.md) 与 [risks.md](risks.md) 在 Obsidian 中显示「无效属性」，排查确认根因：frontmatter 在 `status: draft` 后**缺少立即闭合的 `---`**，后续正文引用块（`> **ADR 一览**` / `> **章节导航**` 等）被 Obsidian 卷入 YAML 解析区导致无效属性。全库扫描发现同类问题共 **6 份文档**，全部修复；并定位门禁 6.16 盲区（非贪婪正则误匹配正文 `---` 分隔线），增强门禁防复发。
+
+**落地清单**：
+- **R55-01（中）frontmatter 缺闭合分隔符批量修复**：6 份文档补 `status: draft` 后立即闭合的 `---`——[adr.md](adr.md)（ADR 一览引用块被卷入）、[risks.md](risks.md)（章节导航引用块被卷入）、slice-implementation-guide / acceptance-criteria / benchmark-plan / test-strategy（章节导航引用块被卷入）。正文原有 `---` 分隔线（H1 前）保留不动，frontmatter 区现为 `---` 开头、字段区、`---` 立即闭合、空行后正文引用块的标准形态。
+- **R55-02（中）门禁 6.16 盲区增强**：原 `\\A---\\n(.*?)\\n---\\n` 非贪婪正则在前置缺陷下会误匹配正文 `---` 分隔线，将引用块/表格卷入 frontmatter 而不报错。增强为字段检查前置「frontmatter 区内容合法性」校验——闭合 `---` 前只允许 YAML 形态行（`key:` / 缩进 / `- 列表` / `# 注释` / 空行），出现 `>` 引用块、`|` 表格、普通文本行即 FAIL（附首处违规行定位）。**突变测试验证**：临时移除 [adr.md](adr.md) 闭合 `---` → 门禁捕获（exit=1）→ 还原全绿（exit=0）。
+- **全库复验**：53 份核心 md + analysis 143 份全部 frontmatter 正常闭合、YAML 可解析（pyyaml safe_load 全通过）、无 CRLF 污染（二进制模式写入）。
+- **观察项**：本次缺陷为历史遗留（非本轮审计引入）——doc-audit 6.16 盲区自门禁建立起即存在，Obsidian 侧可正常渲染属性但部分工具（Obsidian 属性面板）显示无效；门禁增强后根治。
+
+**参数计数**：不变（374 项）。
+
+**验证**：doc-audit 复跑 exit 0（含增强后 6.16 全库 196 份通过）；deep-audit exit 0。受改 6 份文档（adr / risks / slice-implementation-guide / acceptance-criteria / benchmark-plan / test-strategy）+ scripts/doc-audit.py + changelog 本文件 + documentation-governance（执行记录补记）；核心计数（表 57 / 参数 374 / 错误码 43 / 术语 77 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37 / 债务 D-445）零漂移；README 批次索引登记不计入受改清单（0.0.95 显式声明）。
+
+---
+
+## 0.0.96（2026-08-11）— 定稿审查处置批次（四组全量通读发现的低危缺口收口 + D-430 分类处置 + D-446 登记）
+
+> 依「全面了解所有项目文档、完成定稿」要求，对核心文档分四组全量通读（foundation / specification / development+ops / 治理+质量+安全+用户+参考，56 份核心文档），审查结论：**设计层无阻断级缺陷**（0.0.92 冻结后审计收敛至 0 高，竖切配套完整），发现一批低危真实缺口（1 处 P0 事实性错误 + 1 处竖切直接相关无归属缺口 + 若干机械性/口径问题）与 1 项编码启动硬门禁（D-430）分类处置，本批次全部收口。
+
+**落地清单**：
+- **P0 事实性修正（use-cases）**：覆盖范围声明误将竖切组件 3「三信号混合检索」（v0.1.0 首迭代，R-18）归入「场景待 v1.1 补充」——修正声明并补勘误注记（与 feature-list / implementation-map / requirements-baseline 三处权威源对齐）。
+- **竖切直接相关缺口（D-446 新登记）**：架构 §5.2 叙事自洽度评估器「降级默认分数（待定态）」——竖切内 `NARRATIVE_IDENTITY=ON`（宪法核），降级路径无默认值可依；登记 D-446（v0.1.0 首迭代确定默认分数并登记 configuration 附录 A），架构原文加债务指针。
+- **D-430 分类处置**（[debt-collection.md](../governance/debt-collection.md) 五段/摘要表/评估表 + [troubleshooting.md](../ops/troubleshooting.md) 门禁段落）：竖切相关子项 `kairos config show`（竖切 CLI 15 交付项，组件 9）已于本批次在 [api-spec.md](../specification/api-spec.md) §3 登记契约——**竖切启动无待定义命令**；其余 10 条 + `kairos init --seed-path`（灾难恢复/运维/发布验证链路，均不在竖切端点集内）归 v0.1.0 全量阶段登记，不阻塞竖切启动；原「编码启动前须全部登记」笼统硬门禁收口为分类处置。
+- **机械性与口径修正**：cognitive-foundation 章节导航表「社会性校准」归位（E → C.3）；requirements-baseline「CAL-02 见上表」悬空注记改指 test-plan §3.6；operation-catalog OP-054 补口径注记（freshness 条件为操作目录补充语义，协议层以 api-spec §1.5 为权威）；deployment 环境变量表补 `KAIROS_API_KEY_HASH`（轻量模式单 Key 认证，竖切形态——原表仅 `KAIROS_API_KEY` 覆盖不全）；架构 §3.2 宪法主权面引用改指认知基础 §3.1 已升格可评估框架（债务 D-305/D-332）；架构 §5.2 `summarize_thread` 补 v1.1 启用标注（对齐 api-spec §8）；debt-collection §7.2 统计表同步（D-431 移入维持行、D-446 入首版行，合计 91→92）。
+- **设计基线冻结合规**：本批次全部改动属冻结三类中的「P0 一致性缺陷」与「登记类机械更新」，无设计内容变更。
+
+**参数计数**：不变（374 项；D-446 的默认分数参数名与取值待编码启动首迭代登记）。
+
+**验证**：doc-audit 复跑 exit 0；deep-audit exit 0。受改 9 份文档（use-cases / cognitive-foundation / requirements-baseline / operation-catalog / architecture-v0.1.0 / deployment / api-spec / troubleshooting / debt-collection）+ changelog 本文件 + documentation-governance §3 执行记录同步 0.0.96 + README 批次索引登记（不计入受改清单）；核心计数变动：债务 **D-445→D-446**（新增 D-446）；其余（表 57 / 参数 374 / 错误码 43 / 术语 77 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37）零漂移。
 
 ---
 
@@ -1953,7 +2105,15 @@ status: draft
 | 0.0.82 | 2026-08-10 | round44 门禁建议落实批次（changelog 0.0.82，见本文件 0.0.82 叙述节）：落 round43 §四 4.4 门禁增强——新增 6.34 changelog 结构纪律（叙述节升序 + 版本记录邻接，防 R43-09/10 复发）、6.35 红线语义互斥词对检查（S-14 试点，全库 0 违例）；S43-2 暂缓；scripts/doc-audit.py 受改；门禁全类验证 exit 0。 |
 | 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83，见本文件 0.0.83 叙述节）：3 高 / 4 中 / 4 低共 11 项全闭环——intention 契约版本归属改能力粒度切分（feature-list PM-01/02 + requirements-baseline §1.8 与 data-model/api-spec 契约层已落地事实对齐）、api-spec §4 事件枚举范围标签对齐表体（补「首迭代」列 ✅4/⏳6）、架构 §10.11 P6 监控改基线增量制（消除交付态恒触发的自毁规则）并前置三层治理边界承载（关系层不受 P6 压缩约束）；红线违反 HTTP 分派映射、备份容量满载口径与 NFR 磁盘预算反向声明、特征标志默认组合实为双信号、FTS5 分词扩展缺失回落行为、`sort=heat_score` 未启用回落语义、契约 DDL/API 默认分层说明；误报剔除 3 项、观察项 3 项（D-428/D-429/VAD 刻意设计）；受改 9 份文档 + 本文件；核心计数零漂移；门禁全类验证 exit 0。 |
 | 0.0.84 | 2026-08-10 | round46 门禁建议落实批次（changelog 0.0.84，见本文件 0.0.84 叙述节）：落 round45 §四 4.4 门禁增强——新增 6.36 版本归属互斥检查 / 6.37 表格范围词一致性 / 6.38 阈值监控自洽性（三项 WARN 级软门禁首轮，全库 0 违例）；门禁清单镜像同步 6.13~6.38（补齐 round44 漏登的 6.34/6.35）；scripts/doc-audit.py 受改；门禁全类验证 exit 0。 |
-| 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85，见本文件 0.0.85 叙述节）：6 高 / 14 中 / 2 低共 22 项全闭环——状态机死角收口（Reflect done 收敛、遗忘函数极性、宪法修订端口单条记忆出口）、契约语义互斥收敛（幂等键统一 + ERR-CTR-005、乐观锁强制 If-Match）、openapi adminKey 未定义引用替换、锁死锁/归档身份守卫/as_of 双时态/Deep 抽样口径/GSPO 缩减语义/softmax 投影/实体阈值参数化/S-04 术语/S-11 端口混淆等；错误码 42→43、参数 373→374；受改 15 份文档（含 architecture §5.2 纪律声明）+ openapi.yaml + 本文件；门禁全类验证 exit 0。 |
+| 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85，见本文件 0.0.85 叙述节）：6 高 / 14 中 / 2 低共 22 项全闭环——状态机死角收口（Reflect done 收敛、遗忘函数极性、宪法修订端口单条记忆出口）、契约语义互斥收敛（幂等键统一 + ERR-CTR-005、乐观锁强制 If-Match）、openapi adminKey 未定义引用替换、锁死锁/归档身份守卫/as_of 双时态/Deep 抽样口径/GSPO 缩减语义/softmax 投影/实体阈值参数化/S-04 术语/S-11 端口混淆等；错误码 42→43、参数 373→374；实质受改 13 份 md + openapi.yaml（data-model / reliability 审视未动，0.0.89 勘误原「15 份」）+ 本文件；门禁全类验证 exit 0。 |
 | 0.0.86 | 2026-08-10 | round48 遗留问题处理批次（changelog 0.0.86，见本文件 0.0.86 叙述节）：6.26 全文痕迹校验跨行吞噬缺陷修复（round47 新 WARN「衰减口径」误报根因）+ api-spec 引用措辞对齐（仅 §1.3 一处；§1.1/§1.2 两处遗留由 0.0.87 补改，见 R49-02）；6.36/6.37/6.38 三项软门禁观察一轮后晋升 FAIL（round46 承诺兑现，晋升后全库 0 违例）；0.0.85 验证段 WARN 计数勘误（S 级诚实红线）；scripts/doc-audit.py + api-spec + engineering-workflow 受改；门禁全类验证 exit 0。 |
-| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87，见本文件 0.0.87 叙述节）：0 高 / 8 中 / 11 低共 19 项全闭环——既往批次落体核查（round47 H-04 幂等模型正文补改、round48 api-spec 引用措辞两处补改、round47 受改清单勘误）、api-spec If-Match 口径统一、决策/债务编号前缀与正文裸引用收敛、5 份长文档章节导航 + adr ADR 一览表、标题风格约定补全、债务 D-441/D-442 登记、glossary 补「上下文腐烂」（术语 76→77）、use-cases 入口、投影措辞括注、版本记录表方向例证勘误；受改 22 份文档 + 本文件；门禁全类验证 exit 0。 |
+| 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87，见本文件 0.0.87 叙述节）：0 高 / 8 中 / 11 低共 19 项全闭环——既往批次落体核查（round47 H-04 幂等模型正文补改、round48 api-spec 引用措辞两处补改、round47 受改清单勘误）、api-spec If-Match 口径统一、决策/债务编号前缀与正文裸引用收敛、5 份长文档章节导航 + adr ADR 一览表、标题风格约定补全、债务 D-441/D-442 登记、glossary 补「上下文腐烂」（术语 76→77）、use-cases 入口、投影措辞括注、版本记录表方向例证勘误；受改 21 份文档（configuration 审视未改，0.0.89 勘误原「22 份」）+ 本文件；门禁全类验证 exit 0。 |
 | 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88，见本文件 0.0.88 叙述节）：0 高 / 2 中 / 7 低共 9 项全闭环——引用落点错位 5 处（feature-list R-23/R-24/R-27/SF-18 §2.1→§2.6.x、data-model QueryAnalyzer §2.1→§2.6.1）、blueprint DERIVED_FROM 版本边界措辞、分析批次过时计数 4 处（triage/first-principles/absorption/README）、concept-tiers 意图契约注记、use-cases 场景 4 表述精确化；受改 9 份文档 + 本文件；门禁全类验证 exit 0。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89，见本文件 0.0.89 叙述节）：0 高 / 7 中 / 13 低共 20 项全闭环（另观察 1 项）——落体核查（debt-collection 摘要表补 D-440~D-442 三行）+ 受改计数勘误（0.0.85 15→13、0.0.87 22→21）+ 5 份长文档章节导航 + feature-list/claim-matrix 版本记录归位 + 正文裸引用链接化 30+ 处 + 编号前缀补标 + 追缴补盲（D-443/D-444）+ 孤儿入口 5 处 + 格式收尾；债务 D-442→D-444；其余核心计数零漂移；门禁全类验证 exit 0。 |
+| 0.0.90 | 2026-08-11 | round52 全面深度审计修复批次（changelog 0.0.90，见本文件 0.0.90 叙述节）：0 高 / 1 中 / 5 低共 6 项全闭环（另观察 1 项）——追缴补盲三轮（7 处「v1.1 候选/目标」软承诺登记 D-445，架构原文加指针）+ architecture/blueprint 补 H1 + 「多 Agent/单 Agent/跨 Agent」空格统一 20 处 + 「架构[链接]」中英空格统一 10 处 + P1-P6 全角范围符 6 处；债务 D-444→D-445；其余核心计数零漂移；门禁全类验证 exit 0。 |
+| 0.0.91 | 2026-08-11 | 外部理念吸收落地批次（changelog 0.0.91，见本文件 0.0.91 叙述节）：LongMemEval 记忆能力评测协议落地——benchmark-plan 新增 §3.15（七步流程 / Kairos 变体定义 / 汇报硬规则 5 条 / 参考基线非门槛 / 既有机制联动）+ §3.12 联动注记 + test-plan 预留 TC-LME-001~ + acceptance-criteria §一a 测量任务集补充 + absorption-proposals 登记 AP-53；参数计数不变；核心计数零漂移。 |
+| 0.0.92 | 2026-08-11 | 定稿收尾批次（changelog 0.0.92，见本文件 0.0.92 叙述节）：D-431 十项待定义参数分类处置（8 项 v1.1 域 + 2 项部署时点，竖切核验无待定义）+ 设计基线冻结声明（修订仅限三类、外部吸收边界 0.0.91 止）+ doc-audit.py GBK 编码崩溃修复；参数计数不变；核心计数零漂移。 |
+| 0.0.93 | 2026-08-11 | round53 全面深度审计修复批次（changelog 0.0.93，见本文件 0.0.93 叙述节）：0 高 / 1 中 / 3 低全闭环（另 2 观察项）——追踪项计数收口（traceability-map「104 追踪项」快照 → debt-collection 权威账目 + README 同步）+ traceability-map 版本记录补登 0.0.90 + slice-implementation-guide 引用措辞 + changelog 浏览指引 + feature-list 结尾换行；参数计数不变；核心计数零漂移。 |
+| 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94，见本文件 0.0.94 叙述节）：0 高 / 0 中 / 2 低全闭环（另 2 观察项）——traceability-map 版本记录登记缺陷收口（0.0.90 行混入 0.0.93 内容移除 + 0.0.93 行补建，R53-02 同类复发）+ deployment 标准级宪法主权面措辞对齐架构 §0.5 + 「触及即登记」操作细节防复发规则 + **门禁 6.39 新增（受改批次版本记录覆盖性，WARN 级软门禁，首跑捕获 traceability-map 缺 0.0.94 行并补登）**；主审门禁盲区扫描（H1 全库/标题跳变/超长导航/中英空格/日期格式/软承诺追缴）全绿；参数计数不变；核心计数零漂移。 |
+| 0.0.95 | 2026-08-11 | Obsidian frontmatter 闭合缺陷修复批次（changelog 0.0.95，见本文件 0.0.95 叙述节）：6 份文档（adr / risks / slice-implementation-guide / acceptance-criteria / benchmark-plan / test-strategy）frontmatter 缺立即闭合 `---` 修复（Obsidian「无效属性」根因——正文引用块被卷入 YAML 区）+ 门禁 6.16 盲区增强（frontmatter 区内容合法性校验，突变测试验证捕获能力）；参数计数不变；核心计数零漂移。 |
+| 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96，见本文件 0.0.96 叙述节）：四组全量通读低危缺口收口——use-cases 三信号检索误归 v1.1 勘误、架构叙事自洽度评估器降级默认分数登记 D-446、D-430 分类处置（config show 契约登记 + 其余归 v0.1.0 全量阶段）、认知导航表/RTM/OP-054/deployment 环境变量/架构引用与版本标注等机械性修正；债务 D-445→D-446；参数计数不变；其余核心计数零漂移。 |

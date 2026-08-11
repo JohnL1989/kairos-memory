@@ -8,9 +8,10 @@ tags:
   - risk
   - architecture
 created: 2026-07-19
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
+---
 
 > **章节导航**——按下表定位所需章节：
 >
@@ -217,3 +218,4 @@ status: draft
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：T-004 与债务 D-334 口径对齐（v0.1.0.x 目标消除、受控偏离措辞清零）。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：frontmatter 审查日期同步。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：补章节导航表。 |
+| 0.0.95 | 2026-08-11 | round55 Obsidian frontmatter 闭合修复批次（changelog 0.0.95）：frontmatter 补立即闭合 `---`（章节导航引用块此前被卷入 YAML 区导致 Obsidian 无效属性）；frontmatter updated/last_reviewed 同步 2026-08-11。 |

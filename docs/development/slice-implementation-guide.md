@@ -8,9 +8,10 @@ tags:
   - development
   - slice
 created: 2026-07-31
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
+---
 
 > **章节导航**——按下表定位所需章节：
 >
@@ -48,15 +49,15 @@ status: draft
 | 8 | 外部校准 + 降级状态机 | W8 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.2、§10.9、§8（S-11） |
 | 9 | CLI/API 接入与冷启动 | W1-W2 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.1、[api-spec.md](../specification/api-spec.md) |
 
-> **实现落点**：组件 3（三信号混合检索）→ `src/storage/hybrid_search.py`；组件 5（身份注册表）→ `src/storage/identity_registry.py`（见 implementation-map 存储层）。
+> **实现落点**：组件 3（三信号混合检索）→ `src/storage/hybrid_search.py`；组件 5（身份注册表）→ `src/storage/identity_registry.py`（见 [implementation-map.md](../specification/implementation-map.md) 存储层）。
 >
-> **计数口径注记**：本清单按实现批次拆 **9 项**；[project-plan.md](../governance/project-plan.md) §一 竖切组件列按功能域记 **6 项**（统一 LTM+路径空间+三信号混合检索+单曲线衰减遗忘+身份注册表+基础审计日志，事件总线与 CLI/API 并入对应组件）——差异属粒度而非范围，两处口径一致。
+> **计数口径注记**：本清单按实现批次拆 **9 项**；[project-plan.md](../governance/project-plan.md) §一 竖切范围表组件行按功能域记 **6 项**（统一 LTM+路径空间+三信号混合检索+单曲线衰减遗忘+身份注册表+基础审计日志，事件总线与 CLI/API 并入对应组件）——差异属粒度而非范围，两处口径一致。
 
 ---
 
 ## 二、竖切 Schema 清单（15 张表）
 
-> 从 data-model 全量 57 张表筛出，仅含竖切组件消费的表；字段定义与索引以 [data-model.md](../specification/data-model.md) 为准。竖切外表的字段若被竖切表引用（如 memories 的 `domain`），按 data-model 全量定义保留。15 张表的 SQLite 可执行 DDL 见 [schema-slice.sql](../specification/schema-slice.sql)（data-model §13.4 的 W2「schema 迁移」直接输入，字段语义以 data-model 为准）。
+> 从 [data-model.md](../specification/data-model.md) 全量 57 张表筛出，仅含竖切组件消费的表；字段定义与索引以 [data-model.md](../specification/data-model.md) 为准。竖切外表的字段若被竖切表引用（如 memories 的 `domain`），按 [data-model.md](../specification/data-model.md) 全量定义保留。15 张表的 SQLite 可执行 DDL 见 [schema-slice.sql](../specification/schema-slice.sql)（[data-model.md](../specification/data-model.md) §13.4 的 W2「schema 迁移」直接输入，字段语义以 data-model 为准）。
 
 | # | 表 | 服务组件 | 说明 |
 |:-:|:---|:--------|:-----|
@@ -82,7 +83,7 @@ status: draft
 
 ## 三、竖切端点清单（REST 21 + CLI 15）
 
-> **口径**：竖切 CLI 15 条为竖切子集；全量 CLI 25 条（api-spec §3）；implementation-map 的 27 条含规划扩展（竖切 15 + 全量增量）——三处口径不同属有意设计，引用时注明档位。
+> **口径**：竖切 CLI 15 条为竖切子集；全量 CLI 25 条（[api-spec.md](../specification/api-spec.md) §3）；[implementation-map.md](../specification/implementation-map.md) 的 27 条含规划扩展（竖切 15 + 全量增量）——三处口径不同属有意设计，引用时注明档位。
 
 **REST**（方法/路径以 [api-spec.md](../specification/api-spec.md) 为准）：
 
@@ -148,7 +149,7 @@ status: draft
 - **架构**：§5.2 遗忘调度器/潜伏势能重估端口；§10.17 降级契约（skip_forgetting 仅标记不处理）；`KAIROS_FEATURE_FORGETTING_ENGINE` 竖切内 ON。
 - **表**：forgetting_queue / memories（last_access_at、heat_score、status）。
 - **API**：自动调度 + 手动触发；M-05 归档/恢复端点（`POST /v1/memories/{id}/archive` / `restore`，已注册，见 [api-spec.md](../specification/api-spec.md) §1.5）。
-- **配置**：KAIROS_FORGETTING_HALF_LIFE（默认 69 天）、KAIROS_FRESHNESS_ACTIVE_THRESHOLD（0.3）、KAIROS_FRESHNESS_STALE_THRESHOLD（0.1）——见 [configuration.md](../ops/configuration.md) §10。**勘误**：v0.1.0 遗忘算法为 freshness 单曲线（见 [detailed-design.md](../specification/detailed-design.md) §3），不依赖 `KAIROS_AGE_DECAY_CONSTANT`——该参数属于 v1.1 二维遗忘曲面目标（configuration 附录 A 已回填默认 30 天），竖切实现无需定值。
+- **配置**：KAIROS_FORGETTING_HALF_LIFE（默认 69 天）、KAIROS_FRESHNESS_ACTIVE_THRESHOLD（0.3）、KAIROS_FRESHNESS_STALE_THRESHOLD（0.1）——见 [configuration.md](../ops/configuration.md) §10。**勘误**：v0.1.0 遗忘算法为 freshness 单曲线（见 [detailed-design.md](../specification/detailed-design.md) §3），不依赖 `KAIROS_AGE_DECAY_CONSTANT`——该参数属于 v1.1 二维遗忘曲面目标（[configuration.md](../ops/configuration.md) 附录 A 已回填默认 30 天），竖切实现无需定值。
 - **测试**：TC-F01-001、TC-F02-001、TC-F03-001。
 - **验收**：E2E-02（写入→遗忘→复兴）。
 
@@ -168,7 +169,7 @@ status: draft
 - **表**：audit_log。
 - **API**：GET /v1/audit-log（含 HMAC 完整性校验）。
 - **测试**：E2E-06（写入→修改→删除→审计链验证）。
-- **监督平面注记**：竖切内监督平面部分启用（审计庭快照校验/审计日志比对）；完整监督平面随 `KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` 启用（configuration 同口径）。
+- **监督平面注记**：竖切内监督平面部分启用（审计庭快照校验/审计日志比对）；完整监督平面随 `KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` 启用（[configuration.md](../ops/configuration.md) 同口径）。
 
 ### 组件 7：事件总线（4 类）
 
@@ -244,3 +245,6 @@ W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：组件标题（Wx）标注按 implementation-map 勘误口径去除；S-04 误用修正（路径隔离为架构 §8 声明）；playbooks 表名更正为 procedural_playbooks。 |
 | 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-08「5000 行架构文档」→「四千余行的架构文档」（实际 4031 行）。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：补章节导航表。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：正文裸文档名引用链接化 7 处（implementation-map/data-model/api-spec/configuration）。 |
+| 0.0.93 | 2026-08-11 | round53 全面深度审计修复批次（changelog 0.0.93）：§一 计数口径注记措辞对齐（「project-plan §一 竖切组件列」→「竖切范围表组件行」）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
+| 0.0.95 | 2026-08-11 | round55 Obsidian frontmatter 闭合修复批次（changelog 0.0.95）：frontmatter 补立即闭合 `---`（章节导航引用块此前被卷入 YAML 区导致 Obsidian 无效属性）；frontmatter updated/last_reviewed 同步 2026-08-11。 |

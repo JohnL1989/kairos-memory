@@ -133,6 +133,12 @@ import pathlib
 import re
 import sys
 
+# 0.0.92 修复：Windows GBK 控制台下输出含 ⊇ 等字符时 UnicodeEncodeError 崩溃
+# （对齐 deep-audit.py 0.0.6 同类修复先例），门禁逻辑不变。
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 SECTION_MARK = "\u00a7"  # §
 # 中文数字 ↔ 阿拉伯数字（章节引用双向映射，6.26 用）
 CN2AR = {"一": "1", "二": "2", "三": "3", "四": "4", "五": "5",
@@ -1469,8 +1475,22 @@ def check_anchors() -> None:
 
 
 def check_frontmatter() -> None:
-    """16) frontmatter 必填字段：title / created / updated / last_reviewed / status。"""
+    """16) frontmatter 必填字段：title / created / updated / last_reviewed / status。
+
+    0.0.95 扩展（round55 盲区修复）：原非贪婪正则 `\\A---\\n(.*?)\\n---\\n`
+    在 frontmatter 缺少立即闭合 `---` 时会误匹配正文中的 `---` 分隔线，
+    将正文引用块/表格卷入 frontmatter 区而不报错（Obsidian 显示为
+    「无效属性」——adr/risks/slice-implementation-guide/acceptance-criteria/
+    benchmark-plan/test-strategy 六份文档实测复现）。现于字段检查前
+    增加 frontmatter 区内容合法性校验：闭合 `---` 之前的行只允许
+    YAML 形态（`key:` / 缩进 / `- 列表` / `# 注释` / 空行），出现
+    `>` 引用块、`|` 表格、普通文本行即 FAIL。
+    """
     required = ["title", "created", "updated", "last_reviewed", "status"]
+    legal_line = re.compile(
+        r"^(?:[a-zA-Z_][\w.-]*:\s*.*$|^\s+[^\s>|].*$|^\s*-\s+.*$|^\s*#.*$|^\s*$)",
+        re.M,
+    )
     n = 0
     for p in md_files():
         text = p.read_text(encoding="utf-8")
@@ -1482,7 +1502,19 @@ def check_frontmatter() -> None:
             fail(f"frontmatter 格式异常: {p.relative_to(DOCS)}")
             continue
         n += 1
-        fields = set(re.findall(r"^([a-zA-Z_]+):", m.group(1), re.M))
+        fm = m.group(1)
+        # 盲区校验：frontmatter 区不得含正文形态行（引用块/表格/普通文本）
+        bad_lines = [
+            ln for ln in fm.split("\n")
+            if ln.strip() and not legal_line.match(ln)
+        ]
+        if bad_lines:
+            fail(
+                f"frontmatter 区含正文行（缺立即闭合 ---，Obsidian 无效属性）："
+                f"{p.relative_to(DOCS)} 首处 {bad_lines[0].strip()[:50]!r}"
+            )
+            continue
+        fields = set(re.findall(r"^([a-zA-Z_]+):", fm, re.M))
         miss = [k for k in required if k not in fields]
         if miss:
             fail(f"frontmatter 缺字段 {miss}: {p.relative_to(DOCS)}")
@@ -2834,6 +2866,106 @@ def check_threshold_self_consistency() -> None:
     print(f"[6.38] 阈值型监控规则自洽性（S45-3）: {hits} 处监控规则交付态即越阈")
 
 
+def check_batch_version_record_coverage() -> None:
+    """6.39 受改批次版本记录覆盖性（round54 R54-01 防复发，WARN 级软门禁）。
+
+    R54-01 缺陷：traceability-map 版本记录 0.0.90 行混入本属 0.0.93 的
+    内容、且 0.0.93 行整体缺失——「批次声明受改、版本记录无对应行」的
+    登记缺陷（round32 曾系统性补登 14 处、round53 R53-02 同类复发）。
+    本检查以 changelog 最新批次叙述节的「受改 N 份文档（A / B / C）」
+    清单为输入，逐文档核对版本记录是否含该批次行（| 0.0.NN | 行），
+    缺失即 WARN（软门禁，不阻断 exit 0——防「触及即登记」纪律回潮）。
+
+    解析策略（保守防误报）：
+      ① 最新批次号：changelog 版本记录表 | 0.0.NN | 行取 max（同 6.32）；
+      ② 最新批次叙述节：`## 0.0.NN（` 起至下一个 `## 0.0.NN（` 或
+         `## 版本记录` 止；
+      ③ 受改清单：正则 `受改\s*\d+\s*份?文档?（([^）]+)）` 提取括号内容，
+         按 `/` 或 ` + ` 分割条目；
+      ④ 条目解析：剥 markdown 链接（[x](y) → x）、剥 .md 后缀、trim；
+         「本文件」→ changelog.md；跳过含「scripts/」「.py」「.html」
+         「.sql」「.yaml」「.json」「审计报告」「analysis/」的条目；
+         缩写映射：architecture→architecture-v0.1.0、blueprint→
+         architecture-blueprint-v1.1、README→README.md；
+      ⑤ 定位失败或目标非 md（无法在 docs/ 下唯一 basename 匹配）→
+         跳过（不误报）；
+      ⑥ 目标文档版本记录区（兼容 `## 版本记录` / `## §12 版本记录`
+         两种标题）须含 `| 0.0.NN |` 行，缺失 → WARN。
+    豁免：最新批次叙述节无「受改 N 份文档（…）」形态时跳过不判。
+    """
+    changelog = DOCS / "governance" / "changelog.md"
+    if not changelog.exists():
+        return
+    cl_text = changelog.read_text(encoding="utf-8")
+    vers = re.findall(r"^\| (0\.0\.\d+) \|", cl_text, re.M)
+    if not vers:
+        return
+    latest = max(vers, key=lambda v: [int(x) for x in v.split(".")])
+    # 提取最新批次叙述节
+    m_start = re.search(rf"^## {re.escape(latest)}（", cl_text, re.M)
+    if not m_start:
+        return
+    seg = cl_text[m_start.start():]
+    m_end = re.search(r"^## (?:0\.0\.\d+（|版本记录)", seg[m_start.end():], re.M)
+    if m_end:
+        seg = seg[: m_start.end() + m_end.start()]
+    # 提取受改清单
+    list_m = re.search(r"受改\s*\d+\s*份?文档?（([^）]+)）", seg)
+    if not list_m:
+        print(f"[6.39] 受改批次版本记录覆盖性: 最新批次 {latest} 无受改清单（跳过）")
+        return
+    items = re.split(r"\s*(?:/|\+)\s*", list_m.group(1))
+    alias = {
+        "architecture": "architecture-v0.1.0",
+        "blueprint": "architecture-blueprint-v1.1",
+        "README": "README",
+        "本文件": "changelog",
+    }
+    skip_mark = ("scripts/", ".py", ".html", ".sql", ".yaml", ".json", "审计报告", "analysis/")
+    warn_cnt = 0
+    for item in items:
+        raw = item.strip()
+        if not raw:
+            continue
+        # 剥 markdown 链接
+        lm = re.match(r"\[([^\]]+)\]\([^)]+\)", raw)
+        if lm:
+            raw = lm.group(1)
+        if raw.endswith(".md"):
+            raw = raw[:-3]
+        raw = raw.strip()
+        if not raw:
+            continue
+        if any(mk in raw for mk in skip_mark):
+            continue
+        name = alias.get(raw, raw)
+        # basename 唯一匹配 docs/ 下 .md（排除 analysis/ 与 reviews/）
+        cand = DOCS / f"{name}.md"
+        cand_rel = f"{name}.md"
+        hits = [
+            p for p in md_files()
+            if p.name == cand_rel and "analysis" not in p.relative_to(DOCS).parts
+        ]
+        if len(hits) != 1:
+            continue
+        target = hits[0]
+        t_text = target.read_text(encoding="utf-8")
+        # 版本记录区（兼容 ## 版本记录 / ## §12 版本记录）
+        vr = re.search(r"^#{1,6}\s*.*版本记录.*$", t_text, re.M)
+        if not vr:
+            continue
+        vr_sec = t_text[vr.start():]
+        row_pat = rf"^\|\s*{re.escape(latest)}\s*\|"
+        if not re.search(row_pat, vr_sec, re.M):
+            warn(
+                f"6.39 受改批次版本记录覆盖性：changelog {latest} 批次声明受改 "
+                f"「{raw}」（{target.relative_to(DOCS)}），但其版本记录无 {latest} 行"
+                f"（触及即登记，R54-01 防复发）"
+            )
+            warn_cnt += 1
+    print(f"[6.39] 受改批次版本记录覆盖性: 最新批次 {latest}，受改清单 {len(items)} 项，漏登记 {warn_cnt} 项")
+
+
 def main() -> int:
     global DOCS
     if len(sys.argv) > 1:
@@ -2891,6 +3023,7 @@ def main() -> int:
     check_version_mutex()
     check_table_scope_consistency()
     check_threshold_self_consistency()
+    check_batch_version_record_coverage()
     print("-" * 60)
     for w in WARNS:
         print("[WARN]", w)

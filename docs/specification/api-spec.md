@@ -8,8 +8,8 @@ tags:
   - design
   - api
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
@@ -563,6 +563,7 @@ status: draft
 | `kairos restore <id>` | 归档恢复 / 抑制解除 | `POST /v1/memories/{id}/restore` | `kairos restore uuid --reason context_reemerged` |
 | `kairos health` | 健康检查 | `GET /health` | `kairos health` |
 | `kairos config` | 配置管理 | `GET /v1/config`（查看）/ `PATCH /v1/config`（修改） | `kairos config set KAIROS_DAILY_BUDGET_FEN 20000` |
+| `kairos config show` | 配置查看（0.0.95 登记；竖切 CLI 15 交付项，组件 9——此前契约缺失，D-430 分类处置后登记） | `GET /v1/config` | `kairos config show KAIROS_LOG_LEVEL`（可带参数名查单项，缺省输出全部） |
 | `kairos db` | 数据库管理 | 本地执行 | `kairos db init` / `kairos db migrate` / `kairos db verify` / `kairos db backup` / `kairos db vacuum` / `kairos db reindex` |
 | `kairos stop` | 停止服务 | 本地执行 | `kairos stop` |
 | `kairos logs` | 查看日志 | 本地执行 | `kairos logs --tail 100` |
@@ -1711,5 +1712,6 @@ v1.1 规划：
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：幂等键统一——POST /v1/memories 新增 Idempotency-Key 头（同键重复提交返回首次结果）、批量导入支持 idempotency_key、新增错误码 ERR-CTR-005；PATCH If-Match 改必需（乐观锁强制，无最后写入胜出）；POST /v1/constitution 扩展 memory_id + contract_downgrade/state_restore（is_identity 须附判例 case_id）；锁定解锁路径澄清（admin 解锁 PATCH 不受锁定态拒绝约束）；archive 补 is_identity 守卫；CLI write 补 --contract 登记；叙事线 summarize 路径参数 {thread_id}→{id}。详见 changelog 0.0.85 叙述节。 |
 | 0.0.86 | 2026-08-10 | round48 遗留问题处理批次（changelog 0.0.86）：§1.3 并发冲突引用措辞对齐——「§2 写入管线约束②」改「§2 写入管线设计②（幂等 + 乐观锁事务提交）」（候选机制名与 detailed-design 目标节标题一致，消除 6.26 误报）；语义不变。详见 changelog 0.0.86 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：§1.1/§1.2「写入管线约束②」→「写入管线设计②」两处补改（round48 遗留，R49-02）+ L55 If-Match「建议携带」→「必须携带」口径统一（round47 H-05 同步，R49-04）。 |
+| 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：§3 CLI 表登记 `kairos config show` 契约（竖切 CLI 15 交付项，组件 9，D-430 分类处置——此前契约缺失）。 |
 
 > **端点计数口径（决策 D-13 核定）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（注册 `archive`/`restore` 两个竖切端点后 78→80；补 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §1.8）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §6.5），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。

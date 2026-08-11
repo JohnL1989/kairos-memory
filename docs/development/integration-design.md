@@ -8,8 +8,8 @@ tags:
   - design
   - integration
 created: 2026-07-20
-updated: 2026-08-08
-last_reviewed: 2026-08-08
+updated: 2026-08-10
+last_reviewed: 2026-08-10
 status: draft
 ---
 
@@ -80,7 +80,7 @@ Agent 应用
 
 ## 五、事件回调
 
-Kairos 支持通过 Webhook 或事件轮询向 Agent 通知异步事件。Webhook 注册端点已在 api-spec 中定义（POST /v1/webhooks），接收与回调处理标记为 v1.1 持续完善：
+Kairos 支持通过 Webhook 或事件轮询向 Agent 通知异步事件。Webhook 注册端点已在 [api-spec.md](../specification/api-spec.md) 中定义（POST /v1/webhooks），接收与回调处理标记为 v1.1 持续完善：
 
 | 事件 | 触发条件 | 建议 Agent 响应 |
 |:----|:---------|:---------------|
@@ -121,11 +121,11 @@ Kairos 支持通过 Webhook 或事件轮询向 Agent 通知异步事件。Webhoo
 | `success` | 是 | 布尔任务结果 |
 | `metadata` | 否 | 自由扩展（尝试次数、耗时等） |
 
-**v0.1.0 承载**：落 `usage_events` 表（data-model §4）——`event_type='use_event'`（payload `marker='task_outcome'`），任务反馈存入 `context` JSONB，按 `created_at` 分区。Deep 模式日频聚合三态成功率，供 `kairos_task_success_rate` 指标（observability §1.1）与过时调用率联动分析。**不新增表、不新增端点、不新增事件类型**。
+**v0.1.0 承载**：落 `usage_events` 表（[data-model.md](../specification/data-model.md) §4）——`event_type='use_event'`（payload `marker='task_outcome'`），任务反馈存入 `context` JSONB，按 `created_at` 分区。Deep 模式日频聚合三态成功率，供 `kairos_task_success_rate` 指标（[observability.md](../ops/observability.md) §1.1）与过时调用率联动分析。**不新增表、不新增端点、不新增事件类型**。
 
 **泄漏防护**：`task_id` 归属验证集的任务不得同时出现在经验来源中（基准设计红线，见 [benchmark-plan.md](../quality/benchmark-plan.md) §3.11）——集成层在回传时不校验（校验属基准执行侧义务，见 TC-CF-004）。
 
-**竖切范围**：本契约为 v0.1.0 竖切可选项——未实现时 TC-CF 用例标记 `skipped`，不影响竖切验收（验收不设学习效果指标，见 test-strategy §2.7 前置条件）。
+**竖切范围**：本契约为 v0.1.0 竖切可选项——未实现时 TC-CF 用例标记 `skipped`，不影响竖切验收（验收不设学习效果指标，见 [test-strategy.md](../quality/test-strategy.md) §2.7 前置条件）。
 
 ## 六、配置集成
 
@@ -183,3 +183,4 @@ SDK 集成示例见 `src/access/mcp/bridge.py`。MCP 工具与 REST API 的等�
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§五a task_outcome 事件改 use_event payload 标记承载（不新增全局事件类型，枚举保持 10 类，架构 §10.10）；版本记录补勘误注记。 |
 | 0.0.46 | 2026-08-08 | 文档审计修复批次（changelog 0.0.46）：§五a 去除正文散落批次标记「（changelog 0.0.39）」，溯源归版本记录。 |
 | 0.0.61 | 2026-08-08 | 版本记录补登（changelog 0.0.61）：§七 持久状态机口径同步为五态平级（active/stale/archived/suppressed/superseded，见 data-model §1 status），与架构 §5.2 全局一致（前序批次实施、漏登记于本文档版本记录，本批补登）。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：正文裸文档名引用链接化 4 处（api-spec/data-model/observability/test-strategy）。 |

@@ -108,10 +108,10 @@ Kairos 作为记忆基础设施，通过标准化协议和官方 SDK 降低集�
 
 Kairos 对外暴露符合 MCP 规范的 Tool 接口，将 [12 规范操作集](../foundation/architecture-v0.1.0.md)（架构 §7.3.1）中的 create/search/delete 等 3 个规范操作直接映射为 MCP Tool，连同检索/维护/治理类 9 个（共基础工具集 12），再加关系管理 3 个，共暴露 15 个 MCP Tool（构成口径见 [架构 §7.1a](../foundation/architecture-v0.1.0.md)）。Agent 通过 MCP Client 发现并调用 Kairos 的记忆工具，无需理解内部存储模型。
 
-- **MCP Server 实现**：MCP Server 作为**独立子进程**运行（stdio 传输），由 Agent 的 MCP Client 启动，与 Kairos 主进程通过 localhost HTTP 通信（进程模型与 [integration-design.md](../development/integration-design.md) §七、api-spec §6.8 一致——非主进程内嵌）。Server 端实现完整治理门禁（L1 权限 + L2 宪法约束 + L3 身份否决）
+- **MCP Server 实现**：MCP Server 作为**独立子进程**运行（stdio 传输），由 Agent 的 MCP Client 启动，与 Kairos 主进程通过 localhost HTTP 通信（进程模型与 [integration-design.md](../development/integration-design.md) §七、[api-spec.md](../specification/api-spec.md) §6.8 一致——非主进程内嵌）。Server 端实现完整治理门禁（L1 权限 + L2 宪法约束 + L3 身份否决）
 - **Tool 命名规范**：`kairos_<operation>`（如 `kairos_store_memory`、`kairos_search_memories`），完整工具清单（15 个：基础工具集 12——含 create/search/delete 三个规范操作直接映射与检索/维护/治理类 9 个——另加关系管理 3 工具，构成口径见架构 §7.1a）见 [架构 §7.1a MCP Bridge 实现](../foundation/architecture-v0.1.0.md) 与 [api-spec §6.8](../specification/api-spec.md)
 - **Clarify 消歧**：MCP Tool 的 `on_pre_execute` hook 在参数不完整时触发 Clarify 步骤，反问补全后执行，保证工具调用的健壮性
-- **渐进增强**：MCP 为基线协议，后续版本可扩展为支持 Resources（记忆目录浏览）和 Prompts（检索模板），丰富交互模式
+- **渐进增强**：MCP 为基线协议，后续版本（v1.1 目标）可扩展为支持 Resources（记忆目录浏览）和 Prompts（检索模板），丰富交互模式（追缴条目：债务 D-443）
 
 **三语言官方 SDK 战略**（P3-07 系，v1.1 目标）：
 
@@ -172,3 +172,4 @@ File Graph 是 Kairos 路径空间的图论增强层——将 `kairos://` 路径
 | 0.0.67 | 2026-08-09 | round33 全面深度审计修复批次（changelog 0.0.67）：§七「MCP Server 实现（勘误）」去除过程标记后缀（零版本标记纪律收敛，正文仅描述当前状态）。 |
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：§二 投影措辞补「（投影方案：固定随机正交投影，见 ADR-012）」括注（线性/正交并称消歧）。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：§七 MCP 渐进增强补版本边界（v1.1 目标）与债务 D-443 指针；MCP Server 实现行裸 api-spec 引用链接化。 |

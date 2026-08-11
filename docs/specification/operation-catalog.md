@@ -8,8 +8,8 @@ tags:
   - design
   - api
 created: 2026-07-22
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
@@ -94,7 +94,7 @@ status: draft
 | OP-051 | 蒸馏补扫 | 自动（Deep 模式） | — | — | L2→L3→L4 逐级 |
 | OP-052 | P6 合规扫描 | 自动（Deep 模式） | — | — | 压缩比余量监控 |
 | OP-053 | 事实新鲜度过期扫描 | 自动（Deep 模式） | — | — | valid_until→expired→stale |
-| OP-054 | 记忆归档 | POST /v1/memories/{id}/archive | — | — | 竖切功能 M-05（已注册）；须满足遗忘调度器（架构 §5）freshness 阈值条件或经宪法解释层批准；is_identity=true 记忆不可归档（见证豁免） |
+| OP-054 | 记忆归档 | POST /v1/memories/{id}/archive | — | — | 竖切功能 M-05（已注册）；须满足遗忘调度器（架构 §5）freshness 阈值条件或经宪法解释层批准（0.0.95 注记：freshness 条件为操作目录补充语义，协议层约束以 [api-spec.md](api-spec.md) §1.5 为权威）；is_identity=true 记忆不可归档（见证豁免） |
 | OP-055 | 归档恢复 | POST /v1/memories/{id}/restore | — | — | 竖切功能 M-05 配套；须经潜伏势能重估端口（架构 §5）匹配验证——语义向量与当前活跃上下文盲区方向余弦 ≥ 阈值（默认 0.6） |
 | OP-056 | 版本回滚 | POST /v1/memories/{id}/rollback | — | S-08（admin） | 回滚到指定版本 |
 | OP-057 | 版本历史 | GET /v1/memories/{id}/versions | — | — | 获取记忆版本历史 |
@@ -147,3 +147,4 @@ status: draft
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：§四 对应关系操作总数 53→66 补正；覆盖边界声明重算（api-spec §1~§7 实点 64 端点，豁免 10 项按端点计 12 个，覆盖 52/64——单条读取与升华两阶段蒸馏三端点补豁免说明，不新增 OP，总数维持 66）。 |
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
+| 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：OP-054 补口径注记（freshness 条件为操作目录补充语义，协议层约束以 api-spec §1.5 为权威——消除双权威差异）。 |

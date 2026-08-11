@@ -16,7 +16,7 @@ status: draft
 
 > **说明**：本文为施工图纸（设计稿），组件状态见下方索引表。待首迭代完成核心 3 组件后晋升为 v0.1.0。当前 status=draft，非发布版本。
 
-# Kairos
+# Kairos 详细设计
 
 > **定位**：[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) 是「鸟瞰图」，本文是「施工图纸」——每个核心组件的内部结构、状态机、核心算法伪代码、接口定义。代码启动后第一个迭代内完成核心 3 组件（WM 管理器 / 存储引擎 / 遗忘引擎），校准调度器与事件总线同为 P0 但归入第二迭代，其余随开发补齐。
 
@@ -1626,3 +1626,4 @@ Kairos 的存储层维护两套数据视图——**文件系统视图**（`memor
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：状态机死角收口——Reflect done 收敛语义（首次调用建基线、≥2 次比对收敛）、遗忘函数更名 EVALUATE_FRESHNESS + 极性声明 + EXEMPT 哨兵、宪法修订端口补单条记忆出口（contract_downgrade / state_restore，is_identity 须附判例）；幂等键统一（Idempotency-Key + ERR-CTR-005）、乐观锁强制 If-Match；as_of 补软删过滤 + ts 时刻版本选择；Deep C1-C8 全量/哈希 5% 抽检口径澄清；GSPO 补候选集缩减语义；实体置信度阈值改互斥开区间（KAIROS_ENTITY_LLM_DISCARD_THRESHOLD）；陈旧检索不触发复兴口径注记。详见 changelog 0.0.85 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：写入管线设计② 幂等模型改写（Idempotency-Key 可选头 + 同键返回首次结果 + ERR-CTR-005/ERR-DB-005 两码分工）+ 正文裸引用链接化 4 处。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：H1 标题改为「# Kairos 详细设计」。 |

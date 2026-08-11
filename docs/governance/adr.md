@@ -7,9 +7,10 @@ tags:
   - kairos
   - adr
 created: 2026-07-18
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
+---
 
 > **ADR 一览**——12 项已采纳 ADR 快速索引（正文另含「审计决策迁移」与「决策历史条目四元组」两节）：
 >
@@ -336,7 +337,7 @@ SOUL.md 不自动修改。最高行为准则的修改需人工审核。可审计
 
 ### 背景
 
-`data-model.md` 定义 `schema_version` 表、错误码 `ERR-DB-002` 定义「数据库迁移失败」、`kairos db migrate` / `kairos db migrate rollback` 已写入 runbook 与 troubleshooting，但全库此前未选定迁移工具——三处定义悬空，无法落地。
+`data-model.md` 定义 `schema_version` 表、错误码 `ERR-DB-002` 定义「数据库迁移失败」、`kairos db migrate` / `kairos db migrate rollback` 已写入 [runbook.md](../ops/runbook.md) 与 [troubleshooting.md](../ops/troubleshooting.md)，但全库此前未选定迁移工具——三处定义悬空，无法落地。
 
 ### 备选方案
 
@@ -480,3 +481,5 @@ SOUL.md 不自动修改。最高行为准则的修改需人工审核。可审计
 | 0.0.69 | 2026-08-09 | round34 门禁建议落实批次（changelog 0.0.69）：决策 D-10 裁决摘要行号引用 L255 语义化（改「认知基础 §1.2 记忆类型」，L255 已随认知基础文档演化漂移）；同步清除该行半角逗号（6.31）。 |
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：补 ADR 一览表（12 项已采纳 + 设计状态）。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：ADR-011 决策段 runbook/troubleshooting 裸文档名链接化。 |
+| 0.0.95 | 2026-08-11 | round55 Obsidian frontmatter 闭合修复批次（changelog 0.0.95）：frontmatter 补立即闭合 `---`（ADR 一览引用块此前被卷入 YAML 区导致 Obsidian 无效属性）；frontmatter updated/last_reviewed 同步 2026-08-11。 |

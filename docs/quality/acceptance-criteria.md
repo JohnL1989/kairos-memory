@@ -8,9 +8,10 @@ tags:
   - quality
   - verification
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
+---
 
 > **章节导航**——按下表定位所需章节：
 >
@@ -126,6 +127,8 @@ status: draft
 **语义**：回答「记忆让 Agent 变强了没有」——对应视频第1集「学习 = 能力发生可测量的改善」。改善须经**反事实检验**成立才算数（见 [test-strategy.md](test-strategy.md) §2.7）：拿走历史上下文、仅保留系统声称已学到的内容时，改善仍然存在，而非仅靠上下文续写。
 
 **测量方法**：三态对比（完整上下文 / 仅检索记忆 / 无记忆）的 A/B 测试，用例模式见 [test-strategy.md](test-strategy.md) §2.7。任务成功率由外部 Agent 侧反馈回传（Hermes Memory Provider 集成层）。
+
+**测量任务集（0.0.91 补充）**：可选用 LongMemEval 公开数据集作测量任务集（[benchmark-plan.md](benchmark-plan.md) §3.15，六类问题 × 3 条 = 18 条样本，judge 模型 0/1 判定）——公开固定数据集，验证集与经验来源天然分离（满足 §3.11 红线），与反事实检验三态对比组合使用。
 
 **阈值（设计目标）**：记忆态相对无记忆态的成功率净改善 ≥ 10% 判定「记忆有效」；反事实检验中「仅检索记忆」态相对「无记忆」态无显著改善时，判定为伪持续学习（上下文续写型），触发记忆质量审查。
 
@@ -255,3 +258,5 @@ status: draft
 | 0.0.75 | 2026-08-09 | round39 全面深度审计修复批次（changelog 0.0.75）：§三 时序基准参数标题与引言修正——「架构 §10 基准测试配置；参数登记见 configuration §9」→「基准测试验证见架构 §10.5 量化指标；参数登记见 configuration 附录 A」（configuration §9 为 RL 权重优化器参数，`KAIROS_BENCHMARK_*` 实际登记于附录 A 全库参数总索引，引用落点错误）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：补章节导航表。 |
+| 0.0.91 | 2026-08-11 | 外部理念吸收落地批次（changelog 0.0.91）：§一a 任务成功率改善补测量任务集（LongMemEval 公开数据集可作测量任务集，指针 benchmark-plan §3.15）。 |
+| 0.0.95 | 2026-08-11 | round55 Obsidian frontmatter 闭合修复批次（changelog 0.0.95）：frontmatter 补立即闭合 `---`（章节导航引用块此前被卷入 YAML 区导致 Obsidian 无效属性）；frontmatter updated/last_reviewed 同步 2026-08-11。 |

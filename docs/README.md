@@ -7,8 +7,8 @@ tags:
   - kairos
   - documentation
 created: 2026-07-18
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
@@ -115,7 +115,7 @@ status: draft
 |:-----|:-----|
 | [`references/glossary.md`](references/glossary.md) | **术语表** — 77 条中英文术语对照（7 个分类表），含热度层级衰减/摄入侧情绪保护/噪音规则库/编译器/结构化通信单元/编译净化/检索深度分级/命名配置集/竖切/结构性记忆/准见证锚定/身份面否决权/处理完降温/间隔重复复习/支撑集引用/范围性回滚/上下文腐烂等词条 |
 | [`references/error-reference.md`](references/error-reference.md) | **错误参考** — 11 类 43 个错误码 |
-| [`references/traceability-map.md`](references/traceability-map.md) | **需求可追溯性映射表** — 43 能力↔37 声明↔104 追踪项↔16 差距交叉映射 |
+| [`references/traceability-map.md`](references/traceability-map.md) | **需求可追溯性映射表** — 43 能力↔37 声明↔债务追踪↔16 差距交叉映射（追踪项以 [debt-collection.md](governance/debt-collection.md) 为权威账目） |
 | [`references/domain_keywords.yaml`](references/domain_keywords.yaml) | **领域关键词表** — 领域关键词路由表（中英对照；词频统计待代码启动后引入） |
 | [`references/usage-load-algorithm.md`](references/usage-load-algorithm.md) | **使用负载计量算法** |
 | [`references/vad-coordinate-algorithm.md`](references/vad-coordinate-algorithm.md) | **VAD 情感坐标算法** |
@@ -224,3 +224,11 @@ status: draft
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：错误码 42→43（新增 ERR-CTR-005 幂等键冲突）——README §索引 错误参考行计数同步；另补登前序 0.0.81~0.0.84 四行（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-10。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：术语计数 76→77（glossary 补「上下文腐烂」）+ 认知基础引用改数字（§一→§二 → §1.1→§2.1，小节号）。 |
 | 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：引用落点错位 5 处（feature-list R-23/R-24/R-27/SF-18 与 data-model QueryAnalyzer 的架构 §2.1→§2.6.x）+ blueprint DERIVED_FROM 版本边界措辞 + 分析批次过时计数 4 处 + concept-tiers 意图契约注记 + use-cases 场景 4 表述精确化；核心计数零漂移。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89，批次索引登记）：索引与计数同步（5 份长文档补章节导航、feature-list/claim-matrix 结构归位、债务 D-442→D-444；核心计数表 57/参数 374/错误码 43/术语 77/端点 88/操作 66/组件 70/功能 168/ADR 12/声明 37 零漂移）；README 批次索引登记不计入 changelog 受改清单（0.0.89 显式声明）。 |
+| 0.0.90 | 2026-08-11 | round52 全面深度审计修复批次（changelog 0.0.90，批次索引登记）：索引与计数同步（债务 D-444→D-445、architecture/blueprint 补 H1、中英空格三类收口）；核心计数表 57/参数 374/错误码 43/术语 77/端点 88/操作 66/组件 70/功能 168/ADR 12/声明 37 零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.90 显式声明）。 |
+| 0.0.91 | 2026-08-11 | 外部理念吸收批次（changelog 0.0.91，批次索引登记）：LongMemEval 记忆能力评测协议落地（benchmark-plan 新增 §3.15 + §3.12 联动、test-plan 预留 TC-LME-001~、acceptance-criteria §一a 测量任务集补充、absorption-proposals 登记 AP-53）；参数计数与核心计数表 57/参数 374/错误码 43/术语 77/端点 88/操作 66/组件 70/功能 168/ADR 12/声明 37/债务 D-445 零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.91 显式声明）。 |
+| 0.0.92 | 2026-08-11 | 定稿收尾批次（changelog 0.0.92，批次索引登记）：D-431 十项待定义参数分类处置（8 项 v1.1 域 + 2 项部署时点，竖切核验无待定义）+ documentation-governance §4 设计基线冻结声明（外部吸收边界 0.0.91 止）+ doc-audit.py GBK 编码崩溃修复；参数计数与核心计数表 57/参数 374/错误码 43/术语 77/端点 88/操作 66/组件 70/功能 168/ADR 12/声明 37/债务 D-445 零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.92 显式声明）。 |
+| 0.0.93 | 2026-08-11 | round53 全面深度审计修复批次（changelog 0.0.93，批次索引登记）：索引与计数同步（traceability-map 索引行「104 追踪项」改指 debt-collection 权威账目）；核心计数表 57/参数 374/错误码 43/术语 77/端点 88/操作 66/组件 70/功能 168/ADR 12/声明 37/债务 D-445 零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.93 显式声明）。 |
+| 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94，批次索引登记）：索引与计数同步（traceability-map 版本记录登记缺陷收口、deployment 标准级宪法主权面措辞对齐架构 §0.5、documentation-governance §4「触及即登记」操作细节）；核心计数表 57/参数 374/错误码 43/术语 77/端点 88/操作 66/组件 70/功能 168/ADR 12/声明 37/债务 D-445 零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.94 显式声明）。 |
+| 0.0.95 | 2026-08-11 | Obsidian frontmatter 闭合缺陷修复批次（changelog 0.0.95，批次索引登记）：索引与计数同步（adr/risks/slice-implementation-guide/acceptance-criteria/benchmark-plan/test-strategy 六份文档 frontmatter 补立即闭合 `---`、门禁 6.16 盲区增强）；核心计数表 57/参数 374/错误码 43/术语 77/端点 88/操作 66/组件 70/功能 168/ADR 12/声明 37/债务 D-445 零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.95 显式声明）。 |
+| 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96，批次索引登记）：四组全量通读低危缺口收口——use-cases 三信号检索误归 v1.1 勘误、D-446 登记（叙事自洽度评估器降级默认分数）、D-430 分类处置（config show 契约登记 + 其余归 v0.1.0 全量阶段）、认知导航表/RTM/OP-054/deployment 环境变量/架构引用与版本标注等机械性修正 7 处；债务 D-445→D-446；参数计数与其余核心计数零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.96 显式声明）。 |

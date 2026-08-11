@@ -8,9 +8,11 @@ tags:
   - future
 created: 2026-07-29
 status: draft
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 ---
+
+# Kairos 架构蓝图（v1.1+）
 
 > 本文为 Kairos 架构的未来版本规划蓝图，描述 v1.1+ 目标的详细设计。本文内容**不属 v0.1.0 交付范围**（§5.5 见证→使用仲裁除外——决策 D-05 已迁入 v0.1.0 作为正式交付能力，主架构 [architecture-v0.1.0.md](architecture-v0.1.0.md) §5.5 为权威定义，本文 §5.5 不再单独演进），主架构文档 [architecture-v0.1.0.md](architecture-v0.1.0.md) 中的 **§0.1 交付范围**和 **§0.9 差距追踪表**是其与当前版本的映射桥梁。实现者应优先阅读主架构文档，本文仅作为未来版本的参考。
 
@@ -80,7 +82,7 @@ GLiNER2 本地 NER 管线：
 
 **定位**：为外部可信数据源（DFA 确认的事实、Connector 同步的结构化数据、用户显式声明）提供一条绕过 LLM 提取管道的直接写入路径——通过结构化 API `POST /v1/facts` 将 (subject, predicate, object) 三元组直接写入实体知识图谱和关系索引，避免 LLM 提取引入的语义误差和延迟。
 
-**设计要点**：通过 `POST /v1/facts`（见 api-spec §11）将 (subject, predicate, object) 三元组直接写入实体知识图谱和关系索引，绕过 LLM 提取管道。请求体含事实数组（含置信度/来源/证据/时间戳）和选项（跳过 LLM 提取、直接索引、关联记忆 ID）。
+**设计要点**：通过 `POST /v1/facts`（见 [api-spec.md](../specification/api-spec.md) §11）将 (subject, predicate, object) 三元组直接写入实体知识图谱和关系索引，绕过 LLM 提取管道。请求体含事实数组（含置信度/来源/证据/时间戳）和选项（跳过 LLM 提取、直接索引、关联记忆 ID）。
 
 **写入路径对比**：
 
@@ -155,7 +157,7 @@ GLiNER2 本地 NER 管线：
 
 - **收益**：防止 LLM 提取阶段产生语义不合法的关系边（当前 v0.1.0 无约束——任何 (source, target) 均可创建任意 relation_type 的边）。签名验证在写入时拦截非法边，避免后续检索和推理基于错误的关系拓扑。
 - **风险**：过于严格的验证可能阻止合法但未预见的边类型组合——需要 `validation_mode=warn` 模式在初期积累数据后再收紧。边缘类型的 `allowed_combinations` 须易于扩展（配置文件驱动，非硬编码）。
-│   - **管理接口**：通过边类型管理 API（见 api-spec §12）注册新边类型签名、查询已注册签名、更新合法组合（不影响已有边——仅对新写入生效）。
+│   - **管理接口**：通过边类型管理 API（见 [api-spec.md](../specification/api-spec.md) §12）注册新边类型签名、查询已注册签名、更新合法组合（不影响已有边——仅对新写入生效）。
 
 **v0.1.0 占位**：v0.1.0 不实施边类型签名验证——所有边创建请求直接写入关系索引，无标签组合约束。v1.1 在实体知识图谱的实体标签覆盖率 ≥ 80%（即至少 80% 的实体节点已有明确标签）后激活签名验证——先以 `warn` 模式运行一个观察期，审计日志确认无误报后切换至 `strict` 模式。
 
@@ -255,9 +257,9 @@ GLiNER2 本地 NER 管线：
   │   - `active → deprecated`：连续 `KAIROS_SKILL_DEPRECATION_INACTIVE_DAYS`（默认 90 天）
   │     未使用，自动标记 deprecated——降低检索权重但保留在索引中。
   │   - `deprecated → archived`：deprecated 状态持续 > `KAIROS_SKILL_ARCHIVE_DAYS`（默认 180 天）
-  │     archived 技能不参与 find_skills 检索，仅通过技能列表 API 历史查询可见（见 api-spec §13 GET /v1/skills）。
-  │   - `active/deprecated → superseded`：新技能通过技能管理 API 标记替代关系（见 api-spec §13 POST /v1/skills/{id}/supersede），旧技能写入 `superseded_by` 字段。
-  │   - 复活路径：archived 技能可通过技能管理 API 重新激活（见 api-spec §13 POST /v1/skills/{id}/reactivate）为 experimental（置信度重置为 0.5），重新进入验证周期。
+  │     archived 技能不参与 find_skills 检索，仅通过技能列表 API 历史查询可见（见 [api-spec.md](../specification/api-spec.md) §13 GET /v1/skills）。
+  │   - `active/deprecated → superseded`：新技能通过技能管理 API 标记替代关系（见 [api-spec.md](../specification/api-spec.md) §13 POST /v1/skills/{id}/supersede），旧技能写入 `superseded_by` 字段。
+  │   - 复活路径：archived 技能可通过技能管理 API 重新激活（见 [api-spec.md](../specification/api-spec.md) §13 POST /v1/skills/{id}/reactivate）为 experimental（置信度重置为 0.5），重新进入验证周期。
   │   所有状态变更写入 `skill_versions` 表（同 playbook_versions 的快照模式），
   │   操作日志写入审计日志标记 `skill_lifecycle`。
   │
@@ -375,7 +377,7 @@ GLiNER2 本地 NER 管线：
       **是工程层，不映射认知层记忆分类**——认知基础的三层记忆结构（内容层/签名层/关系层）与
       记忆类型学（情景/语义/程序）是认知层定义；L3 模型权重与 L4 配置/种子是工程存储形态。
       「四层记忆分化」中的「记忆」是工程隐喻而非认知断言：(a) L3 参数层承载的是「内化到模型
-      权重的行为知识」（对应 D-17 B1 决策的参数级学习声明），不是认知层的记忆表征；(b) L4 偏好层
+      权重的行为知识」（对应决策 D-17 B1 的参数级学习声明），不是认知层的记忆表征；(b) L4 偏好层
       承载注册表内容（config/seeds/宪法规则）——注册表在认知基础 §1.7 被明确定位为确定性状态存储，
       与记忆互补而非记忆本身。此声明防止实现者将「四层」误读为认知层的记忆分类扩展。
 
@@ -1264,7 +1266,7 @@ Kairos 的知识图谱（实体知识图谱、关系索引、因果链路）以�
 **设计**：
 
 - **可视化对象**：记忆节点（`memories` 表中的条目）、实体节点（`entities` 表）、关系边（`memory_relations` / `causal_links` / `memory_entities`）
-- **渲染引擎**：Mermaid.js 的 `graph` 类型（支持 LR/TD 布局方向）+ Canvas 渲染后端。生成的 Mermaid 图通过 Kairos 内嵌的 Web 仪表盘展示，或通过图谱可视化 API（见 api-spec §17 GET /v1/graph/render）导出为 SVG/PNG
+- **渲染引擎**：Mermaid.js 的 `graph` 类型（支持 LR/TD 布局方向）+ Canvas 渲染后端。生成的 Mermaid 图通过 Kairos 内嵌的 Web 仪表盘展示，或通过图谱可视化 API（见 [api-spec.md](../specification/api-spec.md) §17 GET /v1/graph/render）导出为 SVG/PNG
 - **节点样式映射**：
   - `is_structure=true` → 菱形节点（表示结构性记忆）
   - `is_identity=true` → 双线边框（表示身份记忆）
@@ -1386,3 +1388,5 @@ function check_permission(path, principal, requested_perm):
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
 | 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：四层记忆质量层次 DERIVED_FROM 关系描述由「memory_relations 表的新增关系类型」修正为「关系类型（枚举值已随 v0.1.0 基础六值登记于 data-model §1；本机制为 v1.1 的边创建路径）」，消除与 data-model/claim-matrix/feature-list 既有枚举的版本边界措辞矛盾。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：正文裸 api-spec 引用链接化 6 处（§11/§12/§13×3/§17）；「对应 D-17 B1 决策」补「决策」前缀。 |
+| 0.0.90 | 2026-08-11 | round52 全面深度审计修复批次（changelog 0.0.90）：补 H1 一级标题「# Kairos 架构蓝图（v1.1+）」。 |

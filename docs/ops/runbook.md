@@ -15,13 +15,26 @@ status: draft
 
 # Kairos 运维手册
 
+> **章节导航**——按下表定位所需章节：
+>
+> | 章节 | 主题 |
+> |:----|:----|
+> | §1 日常操作 | 启动停止/状态检查/日志查看 |
+> | §2 备份与恢复 | 数据库/配置备份与恢复验证 |
+> | §3 升级与降级 | 版本升级与回退 |
+> | §4 配置与密钥管理 | 配置生效/API Key 管理 |
+> | §5 故障排查 | 常见故障定位与恢复 |
+> | §6 维护与审计 | 周期维护与审计查询 |
+>
+
+
 > **定位**：[deployment.md](deployment.md) 首次部署后的日常操作手册。三个月后不记得怎么备份、升级、恢复时翻这里。
 >
 > **⚠ 草稿完善声明**：以下 `kairos` 子命令为目标示例。当前文档草稿阶段，无运行代码，命令格式和可用性将在代码启动后最终确认。所有操作以当时版本 CLI 帮助为准。
 >
 > **CLI 命令状态**：本手册使用的 `kairos *` 子命令为设计目标命令；与 [troubleshooting.md](troubleshooting.md) 的命令定义状态表共用——标注"待定义"的命令在代码启动前以 `--help` 为准，启动后以 CLI 实现为准。
 >
-> **待定义命令追缴**：本手册直接使用的待定义命令包括 `kairos health --full`（§1.2 启动检查、§2.3 灾难恢复验证）、`kairos logs --level/--module/--since/--follow`（§1.3 日常操作、§5.2 故障排查）、`kairos config show`（§4.1 配置查看）、`kairos config reset`（§4.1 配置重置）、`kairos admin key revoke`（§4.2 密钥吊销）、`kairos admin key rotate --hmac`（§4.3 密钥轮换）、`kairos audit log`（§6.2/§6.4 审计查询）、`kairos audit approve-forgetting`（§6.2 遗忘审批）——全部纳入**债务 D-430** 追缴（api-spec §3 登记契约或从本手册移除），条目见 [debt-collection.md](../governance/debt-collection.md)。灾难恢复主链路命令（`db repair` / `db restore` / `db migrate rollback`）同属 D-430 范围。
+> **待定义命令追缴**：本手册直接使用的待定义命令包括 `kairos health --full`（§1.2 启动检查、§2.3 灾难恢复验证）、`kairos logs --level/--module/--since/--follow`（§1.3 日常操作、§5.2 故障排查）、`kairos config show`（§4.1 配置查看）、`kairos config reset`（§4.1 配置重置）、`kairos admin key revoke`（§4.2 密钥吊销）、`kairos admin key rotate --hmac`（§4.3 密钥轮换）、`kairos audit log`（§6.2/§6.4 审计查询）、`kairos audit approve-forgetting`（§6.2 遗忘审批）——全部纳入**债务 D-430** 追缴（api-spec §3 登记契约或从本手册移除），条目见 [debt-collection.md](../governance/debt-collection.md)。灾难恢复主链路命令（`db repair` / `db restore` / `db migrate rollback`）同属债务 D-430 范围。
 
 ---
 
@@ -223,7 +236,7 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 
 当系统触发核心命题证伪或轴耦合证伪时：
 1. `kairos status` 确认证伪信号类型
-2. **确认遗忘调度器已暂停**（核心命题证伪响应路径首步，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 证伪信号类型表）——未暂停时手动执行 `kairos forget pause`（待定义命令，追缴同 D-430）或按当时 CLI 帮助处理
+2. **确认遗忘调度器已暂停**（核心命题证伪响应路径首步，见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 证伪信号类型表）——未暂停时手动执行 `kairos forget pause`（待定义命令，追缴同债务 D-430）或按当时 CLI 帮助处理
 3. `kairos audit log` 查看证伪信号负载
 4. 按架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.10 证伪响应路径处理
 5. 输出审查报告
@@ -249,3 +262,4 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 | 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.59 行（错误码 40→42）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：错误码计数 42→43（新增 ERR-CTR-005 幂等键冲突）两处口径同步。详见 changelog 0.0.85 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：快照保留期 30 天硬编码补债务 D-442 指针。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：补章节导航表（§1~§6）；D-430 裸写补「债务」前缀 2 处。 |

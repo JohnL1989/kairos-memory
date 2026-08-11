@@ -8,8 +8,8 @@ tags:
   - development
   - engineering
 created: 2026-08-06
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
@@ -17,7 +17,8 @@ status: draft
 
 > **定位**：定义代码启动后的工程协作流程——分支策略、PR 流程、提交规范、CI 门禁与发布流程。当前处于文档草稿阶段（无运行代码），本流程以代码就绪为前置条件；`docs/` 文档库的变更（doc 批次）以 [documentation-governance.md](../governance/documentation-governance.md) 的更新联动规则为准，不强制走 PR 流程（文档批次按 [changelog.md](../governance/changelog.md) 登记）。
 
-> **与 [release-guide.md](../governance/release-guide.md) 的关系**：本文件定义「怎么协作」的日常工程流程；release-guide 定义「怎么发布」的版本规则与发布检查清单——发布步骤执行本文件 §五 的发布流程，版本号规则以 release-guide 为权威。
+> **与 [release-guide.md](../governance/release-guide.md) 的关系**：本文件定义「怎么协作」的日常工程流程；[release-guide.md](../governance/release-guide.md) 定义「怎么发布」的版本规则与发布检查清单——发布步骤执行本文件 §五 的发布流程，版本号规则以 [release-guide.md](../governance/release-guide.md) 为权威。
+> **代码规范**：命名/结构/错误处理/日志等编码规范见 [coding-conventions.md](./coding-conventions.md)（提交前对照自检）。
 
 ---
 
@@ -41,9 +42,9 @@ status: draft
 1. **PR 创建**：功能分支完成 → 创建 PR 至 `develop`（文档批次可不走 PR，见定位）。
 2. **必过门禁**（PR 合并前置条件，全部通过才可合并）：
    - CI 流水线全绿：`python scripts/doc-audit.py`（exit 0）+ `python scripts/deep-audit.py`（exit 0）——文档一致性门禁，任何失败项须先闭环；
-   - 单元测试/集成测试通过（代码就绪后按 test-plan 执行）；
+   - 单元测试/集成测试通过（代码就绪后按 [test-plan.md](../quality/test-plan.md) 执行）；
    - 无未解决的安全红线冲突（S-01~S-19 相关改动须过 [security-specification.md](../security/security-specification.md) 复核）。
-3. **人工复核清单**：结构性变更（章节迁移/更名/删除）须完成 documentation-governance §2.2 连锁复核并登记结果；新增参数/术语/债务编号先注册（configuration/glossary/debt-collection 登记优先，见 documentation-governance §5）；计数类改动（表/端点/参数/文档数）同步 README 声明。
+3. **人工复核清单**：结构性变更（章节迁移/更名/删除）须完成 [documentation-governance.md](../governance/documentation-governance.md) §2.2 连锁复核并登记结果；新增参数/术语/债务编号先注册（[configuration.md](../ops/configuration.md)/[glossary.md](../references/glossary.md)/[debt-collection.md](../governance/debt-collection.md) 登记优先，见 [documentation-governance.md](../governance/documentation-governance.md) §5）；计数类改动（表/端点/参数/文档数）同步 README 声明。
 4. **合并方式**：`develop` 用 squash merge（单提交入集成分支，提交信息保留功能描述）；`main` 用 merge commit（保留发布历史）。
 
 ## 三、提交规范
@@ -60,7 +61,7 @@ status: draft
 
 进入开发阶段后，CI 流水线必过步骤（按序执行，任一失败即阻断合并）：
 
-1. `python scripts/doc-audit.py` —— 18 类 + 14a + 6.8a + 6.12a + 6.13 + 6.14 + 6.15 + 6.16 + 6.17 + 6.18 + 6.19 + 6.20 + 6.21 + 6.22 + 6.23 + 6.24 + 6.25 + 6.26 + 6.27 + 6.28 + 6.29 + 6.30 + 6.31 + 6.32 + 6.33 + 6.34 + 6.35 + 6.36 + 6.37 + 6.38 门禁全绿（exit 0）；**级别注记**：6.36 版本归属互斥 / 6.37 表格范围词一致性 / 6.38 阈值监控自洽性 为 **FAIL 级硬门禁**（round46 以 WARN 软门禁首轮、round47 全库 0 违例观察、round48 晋升 FAIL，见 changelog 0.0.86）；6.26 档 4 为 WARN 级软提示（供人工审计）。
+1. `python scripts/doc-audit.py` —— 18 类 + 14a + 6.8a + 6.12a + 6.13 + 6.14 + 6.15 + 6.16 + 6.17 + 6.18 + 6.19 + 6.20 + 6.21 + 6.22 + 6.23 + 6.24 + 6.25 + 6.26 + 6.27 + 6.28 + 6.29 + 6.30 + 6.31 + 6.32 + 6.33 + 6.34 + 6.35 + 6.36 + 6.37 + 6.38 + 6.39 门禁全绿（exit 0）；**级别注记**：6.36 版本归属互斥 / 6.37 表格范围词一致性 / 6.38 阈值监控自洽性 为 **FAIL 级硬门禁**（round46 以 WARN 软门禁首轮、round47 全库 0 违例观察、round48 晋升 FAIL，见 changelog 0.0.86）；6.26 档 4 为 WARN 级软提示（供人工审计）；6.39 受改批次版本记录覆盖性 为 **WARN 级软门禁**（round54 首跑，防「触及即登记」登记缺陷复发——以 changelog 最新批次受改清单核对各文档版本记录是否含该批次行，见 changelog 0.0.94）。
 2. `python scripts/deep-audit.py` —— 链接/出入度/数字声明/占位盘点无阻断项（exit 0）；
 3. 代码检查（代码就绪后）：lint + 类型检查 + 单元测试 + 集成测试 + **证伪测试**（`[FALSIFICATION]` 套件——架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0.8 编码纪律：没有证伪测试的特征标志不应合入主分支）；测试矩阵按三种命名配置集执行（CI 默认 `kairos-slice`，发布前全量三集，见 [test-strategy.md](../quality/test-strategy.md) §六、[test-plan.md](../quality/test-plan.md) §1 配置集矩阵与 [slice-implementation-guide.md](slice-implementation-guide.md) 竖切验收标准）；
 4. 安全扫描：依赖漏洞扫描 + 密钥扫描（防密钥入库）。
@@ -73,9 +74,9 @@ status: draft
 
 1. `develop` 门禁全绿 → 切 `release/<版本>` 分支；
 2. release 分支仅接受发布阻断级修复（修复后回归门禁）；
-3. 发布检查清单（release-guide §2）逐项执行，含文档同步（changelog 版本记录与批次登记）；
+3. 发布检查清单（[release-guide.md](../governance/release-guide.md) §2）逐项执行，含文档同步（changelog 版本记录与批次登记）；
 4. 打 tag → 合并 `main` → 合并回 `develop`；
-5. 发布说明模板见 release-guide §4。
+5. 发布说明模板见 [release-guide.md](../governance/release-guide.md) §4。
 
 ---
 
@@ -99,3 +100,5 @@ status: draft
 | 0.0.74 | 2026-08-09 | round38 门禁建议落实批次（changelog 0.0.74）：§四 CI 门禁清单补 6.33（feature-list「对应架构组件」列引用落点全量校验——round37 建议落地，首跑验证 0 漂移）+ 6.26 扩展「引用文本所指机制名存在性」档 4（WARN 级软提示，防 R37-04~09 类悬空引用复发）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.84 | 2026-08-10 | round46 门禁建议落实批次（changelog 0.0.84）：§四 CI 门禁清单补 6.34/6.35/6.36/6.37/6.38（门禁口径同步 6.13~6.38，补齐 round44 漏登的 6.34/6.35）；frontmatter updated/last_reviewed 同步 2026-08-10。 |
 | 0.0.86 | 2026-08-10 | round48 遗留问题处理批次（changelog 0.0.86）：§四 CI 门禁清单补级别注记——6.36/6.37/6.38 为 FAIL 级硬门禁（round46 WARN 首轮 → round47 全库 0 违例观察 → round48 晋升），6.26 档 4 为 WARN 级软提示；frontmatter updated/last_reviewed 同步 2026-08-10。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：正文裸文档名引用链接化 7 处（release-guide/test-plan/documentation-governance 等）+ 补 coding-conventions 正文入口。 |
+| 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94）：§四 CI 门禁清单补 6.39（受改批次版本记录覆盖性，WARN 级软门禁，round54 首跑 0 漏登记——R54-01 防复发）；frontmatter updated/last_reviewed 同步 2026-08-11。 |

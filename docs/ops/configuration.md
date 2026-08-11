@@ -8,8 +8,8 @@ tags:
   - ops
   - configuration
 created: 2026-07-18
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
@@ -470,7 +470,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 ### §0.11 核心度量代理参数（编号为历史遗留：本节位于 §11 之后）
 
-以下参数承载 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 中三项核心度量的**可操作代理定义**（D-15 方案 A）。三项度量原定义均含不可计算成分（CRI 无权重/窗口、认知完整性含不可知分母、可及性轴无数据源），此处的参数化是使其可实现的最小充分集。
+以下参数承载 [cognitive-foundation.md](../foundation/cognitive-foundation.md) 中三项核心度量的**可操作代理定义**（决策 D-15 方案 A）。三项度量原定义均含不可计算成分（CRI 无权重/窗口、认知完整性含不可知分母、可及性轴无数据源），此处的参数化是使其可实现的最小充分集。
 
 | 参数 | 默认值 | 度量域 | 说明 |
 |:-----|:-------|:-------|:-----|
@@ -496,7 +496,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 > **用途**：本文正文各节收录 227 项核心参数；全库另有 **147 项** `KAIROS_*` 参数散落在架构、规格、部署、质量等文档中定义，此前无任何集中索引。本附录建立完整映射，使「配置参数入口」名副其实。（附录仅收录正文未定义的参数；计数口径：正文 227 项 + 附录 147 项 = 374 项。）
 >
-> **权威性**：默认值一栏自各参数的**定义出处**抄录，语义以出处文档为准；出处未给出默认值的标注 `—（待定义）`（共 10 项），编码启动前须补齐（追缴见 [D-431](../governance/debt-collection.md)）。
+> **权威性**：默认值一栏自各参数的**定义出处**抄录，语义以出处文档为准；出处未给出默认值的标注 `—（待定义）`（共 10 项）。**分类处置（0.0.92 批次，追缴见 [债务 D-431](../governance/debt-collection.md)）**：8 项源头在 architecture-blueprint-v1.1 的 v1.1 域参数（`KAIROS_DERIVED_FROM_MIN_STRENGTH` / `KAIROS_PLAYBOOK_NEGATIVE_THRESHOLD` / `KAIROS_PLAYBOOK_PROMOTION_THRESHOLD` / `KAIROS_PROMPT_DEPENDENCY_STRATEGY` / `KAIROS_SKILL_EXPERIMENTAL_MAX_AGE` / `KAIROS_SUBLIMATION_ENCRYPTION_KEY` / `KAIROS_TEMPORAL_EXTRA_BUFFER_DAYS` / `KAIROS_PATH`（随 detailed-design 实体标签 schema 落地补齐））随对应功能迭代定义，不构成编码启动阻塞；2 项为部署环境变量（`KAIROS_ADMIN_IPS` / `KAIROS_DB_PASSWORD`）部署时点确定，非设计缺口。**竖切（v0.1.0-slice）相关参数无待定义项**。
 >
 > **维护约定**：新增 `KAIROS_*` 参数须同时登记至本文正文对应章节或本附录，二者取其一，不得只在架构文档中出现。
 
@@ -688,3 +688,5 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
 | 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：KAIROS_FTS5_CHINESE_SEGMENTATION 扩展缺失行为补定义（本表为行为权威）——降级告警 + 回落 unicode61 不阻断启动，属可用性 fail-open 留痕、不适用安全失败关闭纪律，分词器状态须启动日志与 GET /health 可见；详见 changelog 0.0.83 叙述节。 |
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：§6.6 新增 `KAIROS_ENTITY_LLM_DISCARD_THRESHOLD`（默认 0.5，实体提取丢弃阈值下界，与 CONFIDENCE_THRESHOLD 构成互斥开区间判定），参数 373→374；详见 changelog 0.0.85 叙述节。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：§0.11 决策 D-15 与附录 A 债务 D-431 补前缀。 |
+| 0.0.92 | 2026-08-11 | 定稿收尾批次（changelog 0.0.92）：附录 A 引言 10 项待定义参数分类处置声明（8 项 v1.1 域随功能迭代定义 + 2 项部署时点确定，竖切无待定义项；追缴 D-431 同步分类处置）。 |

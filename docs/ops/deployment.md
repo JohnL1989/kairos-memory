@@ -8,12 +8,28 @@ tags:
   - deployment
   - ops
 created: 2026-07-18
-updated: 2026-08-08
-last_reviewed: 2026-08-08
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
 # Kairos 部署指南
+
+> **章节导航**——按下表定位所需章节：
+>
+> | 章节 | 主题 |
+> |:----|:----|
+> | 一、三级部署模式 | 轻量/标准/全量三级部署 |
+> | 二、数据目录 | 持久化目录与文件布局 |
+> | 三、环境变量 | 环境变量清单 |
+> | 四、启动与健康检查 | 启动流程与健康探针 |
+> | 五、Docker 部署参考 | 容器化部署参考 |
+> | 六、数据库初始化 | 数据库初始化与迁移 |
+> | 七、日志与监控 | 日志与指标 |
+> | 八、版本升级 | 升级流程 |
+> | 九、进程级隔离演进路径 | 多进程演进路径（外部建议 R-2） |
+>
+
 
 > **文档定位：** 本指南描述 Kairos 的部署模式、配置项、数据目录结构和运维基础。不包含系统架构设计（见 [docs/foundation/architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md)）或可靠性策略（见 [docs/ops/reliability.md](reliability.md)）。
 >
@@ -36,7 +52,7 @@ status: draft
 | **升华层** | 受限（空闲单线） | 可用 | 完整多线 |
 | **策略层** | 内置（使用权重衰减） | 完整激活调度 | 完整 + 探索投资 |
 | **元认知层** | — | — | 完整监测器族 |
-| **宪法主权面** | 简化（仅外部校准端口 + 必选宪法约束，架构 §0.5 内核级） | 舍弃（架构 §0.5 标准级；外部校准端口为不可裁剪最小承载） | 完整（外部校准 + 宪法修订端口 + 监督平面） |
+| **宪法主权面** | 简化（仅外部校准端口 + 必选宪法约束，架构 §0.5 内核级） | 舍弃完整形态，继承简化（外部校准端口为不可裁剪最小承载，架构 §0.5 标准级） | 完整（外部校准 + 宪法修订端口 + 监督平面） |
 | **推理皮层** | — | — | 完整（架构 §0.5 全量级组成） |
 | **适用场景** | 个人开发、试用 | 正式生产 | 全功能部署 |
 
@@ -70,7 +86,8 @@ status: draft
 | `KAIROS_LOG_LEVEL` | 否 | `info` | 日志级别：`debug` / `info` / `warn` / `error`（见 §五 日志级别说明） |
 | `KAIROS_LITE_MODE` | 否 | `true` | 轻量模式开关（true=SQLite/false=PostgreSQL）。设为 false 时需配置 `KAIROS_DB_DSN` |
 | `KAIROS_DB_PASSWORD` | 标准模式需 | — | PostgreSQL 密码（docker-compose 部署用，非 DSN 内部含密码时不需要） |
-| `KAIROS_API_KEY` | 是 | — | API 认证密钥 |
+| `KAIROS_API_KEY` | 标准模式是；轻量模式否 | — | API 认证密钥（标准模式用；轻量模式以 `KAIROS_API_KEY_HASH` 单 Key 校验代替，见下行与 [security-specification.md](../security/security-specification.md) §2.1） |
+| `KAIROS_API_KEY_HASH` | 轻量模式是；标准模式否 | — | 轻量模式单 Key 认证（密钥哈希口径，文件权限 600；竖切形态，见 [slice-implementation-guide.md](../development/slice-implementation-guide.md) §一 组件 9 与 [configuration.md](../ops/configuration.md) 附录 A） |
 | `KAIROS_SALT` | 是 | — | PBKDF2 盐值（S-05） |
 | `KAIROS_SECRET_KEY` | 是 | — | AES-256-GCM 敏感字段加密密钥 |
 | `KAIROS_AUDIT_HMAC_KEY` | 是 | — | HMAC-SHA256 审计链签名密钥 |
@@ -254,3 +271,6 @@ Kairos 输出结构化 JSON 日志到 stdout（容器部署模式）；本地运
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：§八 版本升级压缩为指针（runbook §3 权威）；--pg 规划扩展注记；「试用」笔误。 |
 | 0.0.51 | 2026-08-08 | round22 审计修复批次（changelog 0.0.51）：§一 认知组件声明改写为部分正交语义（部署模式决定基础设施维度、命名配置集决定认知组件；全量模式绑定 kairos-full 为唯一例外）。 |
 | 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：补章节导航表（一~九）。 |
+| 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94）：标准级宪法主权面措辞对齐（「舍弃」→「舍弃完整形态，继承简化」——与架构 §0.5「继承内核级简化形态」表述一致，消除「完全移除」误读可能）。 |
+| 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：§三 环境变量表补 `KAIROS_API_KEY_HASH`（轻量模式单 Key 认证，密钥哈希口径，竖切形态——原表仅 KAIROS_API_KEY 覆盖不全），KAIROS_API_KEY 行补模式区分。 |

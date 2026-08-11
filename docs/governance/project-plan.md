@@ -8,8 +8,8 @@ tags:
   - governance
   - planning
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
@@ -74,7 +74,7 @@ status: draft
 
 | Phase | 交付物 | 验收标准（acceptance-criteria） | 门禁/E2E 覆盖 |
 |:-----|:------|:-------------------------------|:-------------|
-| **Phase 0 基建** | 项目骨架、DB 迁移、CI | §〇 竖切验收（schema 迁移可回滚项） | `scripts/doc-audit.py` 全绿（18 类 + 14a + 6.8a + 6.12a + 6.13~6.38，清单以 [engineering-workflow.md](../development/engineering-workflow.md) §四 为准）；迁移用例 TC-A07-001~003（test-plan §3.9） |
+| **Phase 0 基建** | 项目骨架、DB 迁移、CI | §〇 竖切验收（schema 迁移可回滚项） | `scripts/doc-audit.py` 全绿（18 类 + 14a + 6.8a + 6.12a + 6.13~6.39，清单以 [engineering-workflow.md](../development/engineering-workflow.md) §四 为准）；迁移用例 TC-A07-001~003（test-plan §3.9） |
 | **Phase 1 核心存储与检索** | CRUD+双副本、路径空间+事件总线、三信号检索、遗忘+潜伏势能 | §〇 竖切验收（检索/写入/遗忘判据）+ §二 非功能检查 | E2E-01/02/06/07；TC-W01~04/R01~03/F01~03（test-plan §3） |
 | **Phase 2 身份与治理闭环** | 身份注册表、校准+降级+审计 | §〇 竖切验收（校准/降级/审计判据）+ G-03 v0.1.0 判据 | E2E-04/05/06/08；TC-CAL01~04；S-10/S-11/S-14 红线单测 |
 | **Phase 3 集成验证与验收** | 基准、文档对齐、竖切验收 | §〇 竖切验收全项 + §二 发布检查项 | E2E 全 9 条（竖切 7/9 口径见 test-plan §2 注记）；19 红线；`deep-audit.py` 全绿 |
@@ -113,3 +113,4 @@ status: draft
 | 0.0.72 | 2026-08-09 | round36 全面深度审计修复批次（changelog 0.0.72）：Phase 0 门禁口径同步 6.13~6.32（0.0.71 批次工程流程门禁清单补 6.32 后，本文 Phase ↔ 验收 ↔ 门禁对照表镜像滞后一轮——round35 教训同源）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.74 | 2026-08-09 | round38 门禁建议落实批次（changelog 0.0.74）：Phase 0 门禁口径同步 6.13~6.33（round38 门禁扩展批次——6.33 feature-list 引用列全量校验入检 + 6.26 档 4 机制名存在性扩展，清单以 engineering-workflow §四 为准）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.84 | 2026-08-10 | round46 门禁建议落实批次（changelog 0.0.84）：Phase 0 门禁口径同步 6.13~6.38（门禁清单镜像补齐 round44 漏登的 6.34/6.35 + 本轮 6.36/6.37/6.38，清单以 engineering-workflow §四 为准）；frontmatter updated/last_reviewed 同步 2026-08-10。 |
+| 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94）：Phase 0 门禁口径同步 6.13~6.39（6.39 受改批次版本记录覆盖性为 WARN 级软门禁，清单以 engineering-workflow §四 为准）；frontmatter updated/last_reviewed 同步 2026-08-11。 |

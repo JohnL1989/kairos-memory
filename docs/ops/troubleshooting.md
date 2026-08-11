@@ -8,8 +8,8 @@ tags:
   - ops
   - troubleshooting
 created: 2026-07-18
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
@@ -38,9 +38,10 @@ status: draft
 | `kairos audit approve-forgetting <id>` | 无（runbook §6.2 使用中） | ⚠ 待定义 |
 | `kairos health --full` | 无（runbook §1.2/§2.3 使用中） | ⚠ 待定义 |
 | `kairos logs --level / --module / --since / --follow` | 无（runbook §1.3 使用中；api-spec §3 仅定义 `kairos logs --tail`） | ⚠ 待定义 |
-| `kairos config show` / `kairos config reset <param>` | 无（runbook §4.1 使用中；api-spec §3 仅定义 `kairos config set`） | ⚠ 待定义 |
+| `kairos config show` | [api-spec.md](../specification/api-spec.md) §3 | 已定义（0.0.96 登记，竖切 CLI 15 交付项，组件 9） |
+| `kairos config reset <param>` | 无（runbook §4.1 使用中；api-spec §3 仅定义 `kairos config set` / `config show`） | ⚠ 待定义（v0.1.0 全量阶段登记，D-430） |
 
-> 上述 3 条灾难恢复主命令（db repair / db restore / db migrate rollback）在 [api-spec.md](../specification/api-spec.md) §3 中无定义，此缺口已在 [governance/cognitive-architecture-gap.md](../governance/cognitive-architecture-gap.md) 之外单列。**全部待定义命令须于编码启动前在 api-spec §3 登记契约，或从使用方文档（runbook/security-spec）移除**，否则将成为实现盲区。该门禁已登记债务 **D-430**（见 [governance/debt-collection.md](../governance/debt-collection.md)），到期未闭环将阻塞编码启动。
+> 上述 3 条灾难恢复主命令（db repair / db restore / db migrate rollback）在 [api-spec.md](../specification/api-spec.md) §3 中无定义，此缺口已在 [governance/cognitive-architecture-gap.md](../governance/cognitive-architecture-gap.md) 之外单列。**待定义命令处置（0.0.96 分类处置，债务 D-430）**：竖切相关命令 `kairos config show` 已于 0.0.96 在 api-spec §3 登记契约（竖切 CLI 15 交付项）——竖切启动无待定义命令；其余 10 条（含 3 条灾难恢复主命令）为灾难恢复/运维/发布验证链路命令，均不在竖切端点集内，归 v0.1.0 全量阶段（Phase 2 后、发布前）在 api-spec §3 登记契约或从使用方文档（runbook/security-spec）移除，否则将成为实现盲区。该门禁已登记债务 **D-430**（见 [governance/debt-collection.md](../governance/debt-collection.md)）。
 
 ---
 
@@ -171,3 +172,4 @@ status: draft
 | 0.0.59 | 2026-08-08 | round26 全面深度审计修复批次（changelog 0.0.59）：§三 错误码 40→42（补 `ERR-CTR-003` 记忆已锁定 / `ERR-CTR-004` 意图契约未关闭）；`ERR-DB-004/005` 返回方式标为例外（API 直接返回）。 |
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：§三 错误码 42→43（补 `ERR-CTR-005` 幂等键冲突）；错误码速查标题与口径声明计数同步。详见 changelog 0.0.85 叙述节。 |
+| 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：CLI 定义状态表 `config show` 状态改「已定义」（api-spec §3 登记，竖切交付项）+ 门禁段落改分类处置声明（D-430：竖切无待定义命令，其余 10 条归 v0.1.0 全量阶段）。 |

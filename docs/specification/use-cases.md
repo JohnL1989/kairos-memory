@@ -8,8 +8,8 @@ tags:
   - design
   - requirements
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
@@ -132,7 +132,7 @@ status: draft
 
 ---
 
-> **覆盖范围声明**：本文 8 个场景覆盖 v0.1.0 竖切核心路径；技能/Playbook/端云同步/压缩/叙事线/三信号混合检索等 2026-08 新增能力的场景待 v1.1 补充。
+> **覆盖范围声明（0.0.96 勘误）**：本文 8 个场景覆盖 v0.1.0 竖切核心路径；技能/Playbook/端云同步/压缩/叙事线等 2026-08 新增能力的场景待 v1.1 补充。**勘误**：三信号混合检索（R-18）为竖切组件 3（v0.1.0 首迭代，见 [slice-implementation-guide.md](../development/slice-implementation-guide.md) §一 组件 3 与 feature-list 竖切表），原声明误归「待 v1.1 补充」，0.0.96 批次移除（竖切检索场景由场景 2/3 承载，融合检索用例见 TC-R03-001~002）。
 
 ---
 ## 版本记录
@@ -151,3 +151,4 @@ status: draft
 | 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
 | 0.0.67 | 2026-08-09 | round33 全面深度审计修复批次（changelog 0.0.67）：场景 5「复兴触发口径（勘误）」去除过程标记后缀（零版本标记纪律收敛，正文仅描述当前状态）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：场景 4 步骤 3 表述精确化——外部校准写入见证锚定主副本触发差异检验并更新校准置信度/见证值，`narrative_coherence_score` 由叙事自洽度评估器生成、非校准信号直接写入（架构 §5.2）。 |
+| 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：覆盖范围声明勘误——三信号混合检索（R-18，竖切组件 3）从「待 v1.1 补充」移除（P0 事实修正，对齐 feature-list/implementation-map/requirements-baseline）。 |

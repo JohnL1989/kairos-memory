@@ -9,12 +9,25 @@ tags:
   - requirements
   - baseline
 created: 2026-07-21
-updated: 2026-08-10
-last_reviewed: 2026-08-10
+updated: 2026-08-11
+last_reviewed: 2026-08-11
 status: draft
 ---
 
 # Kairos 需求基线
+
+> **章节导航**——按下表定位所需章节：
+>
+> | 章节 | 主题 |
+> |:----|:----|
+> | §0 项目愿景 | 项目定位与目标 |
+> | §1 功能需求 | 功能需求清单（写入/检索/管理/遗忘等） |
+> | §2 非功能需求 | NFR 量化指标 |
+> | §3 约束与假设 | 外部约束与设计假设 |
+> | §4 需求追踪矩阵（RTM） | 需求↔功能↔声明追溯 |
+> | §5 版本边界 | v0.1.0 覆盖/暂不覆盖/竖切范围 |
+>
+
 
 > **定位**：将 [feature-list.md](feature-list.md)（功能清单）、[use-cases.md](use-cases.md)（使用场景，8 个典型交互场景）、[nfr-specification.md](nfr-specification.md)（非功能需求）收敛为一份受管的可追踪需求基线。回答「这个系统要做什么、做到什么程度、怎么算做完」。
 >
@@ -196,7 +209,7 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 | 审计 HMAC 链 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §1.7 审计日志；HMAC 算法见 [threat-model.md](../security/threat-model.md) HMAC 审计链 | 审计事件经 CAL-05（`GET /v1/audit-log`）查询验证；「质量门禁」行 doc-audit 全绿 | E2E-06 |
 | 19 条安全红线 | 架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §8 安全红线 | 「质量门禁」行：19 条红线逐条单测 | 19 条红线单元测试 |
 
-> 预留用例编号：W-05/W-06、R-04~R-07、M-04、SF-01~04、CAL-06 等核心功能对应测试用例编号（TC-W05-001~ 等）待代码启动后补充，编号规则见 [test-plan.md](../quality/test-plan.md)，补充时须与 RTM 一一对应，避免编号冲突（TC-C01 前缀已废弃）。（CAL-02 已分配 TC-CAL02-001，见上表与 [test-plan.md](../quality/test-plan.md) §3.6，不再列入预留。）
+> 预留用例编号：W-05/W-06、R-04~R-07、M-04、SF-01~04、CAL-06 等核心功能对应测试用例编号（TC-W05-001~ 等）待代码启动后补充，编号规则见 [test-plan.md](../quality/test-plan.md)，补充时须与 RTM 一一对应，避免编号冲突（TC-C01 前缀已废弃）。（CAL-02 已分配 TC-CAL02-001，见 [test-plan.md](../quality/test-plan.md) §3.6，不再列入预留。）
 
 > 竖切范围外的功能（升华/前瞻/定向遗忘/导出/Connectors 等）待相应迭代补全 RTM。
 
@@ -257,3 +270,5 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 | 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
 | 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：§1.8 块引用意图契约版本归属修正——契约层承载已在 v0.1.0 落地（contract 枚举含 intention 值 + 409 ERR-CTR-004），v1.1+ 待落地生命周期端点与事件；与 feature-list PM-01/02 / data-model / api-spec 对齐；详见 changelog 0.0.83 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：定位段补 use-cases 链接入口（近孤儿收口）。 |
+| 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：补章节导航表（§0~§5）。 |
+| 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：预留用例编号注记「CAL-02 已分配 TC-CAL02-001，见上表」改指 test-plan §3.6（RTM 表无 CAL-02 行，悬空注记收口）。 |
