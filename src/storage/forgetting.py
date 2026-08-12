@@ -21,7 +21,7 @@ import math
 import uuid
 from dataclasses import dataclass
 from datetime import UTC
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import select, text
 
@@ -33,6 +33,9 @@ from src.storage.models import (
     MemoryState,
     utc_now,
 )
+
+if TYPE_CHECKING:
+    from src.supervision.audit_tribunal import AuditTribunal
 
 # 参数默认值（configuration §10）
 DEFAULT_HALF_LIFE = 69  # KAIROS_FORGETTING_HALF_LIFE（天）
@@ -90,6 +93,7 @@ class ForgettingScheduler:
         active_threshold: float = DEFAULT_ACTIVE_THRESHOLD,
         stale_threshold: float = DEFAULT_STALE_THRESHOLD,
         revival_match_threshold: float = DEFAULT_REVIVAL_MATCH_THRESHOLD,
+        tribunal: AuditTribunal | None = None,
     ) -> None:
         self.db = db
         self.half_life = half_life
@@ -97,6 +101,7 @@ class ForgettingScheduler:
         self.stale_threshold = stale_threshold
         self.revival_match_threshold = revival_match_threshold
         self.degraded = False  # 降级契约（§10.17 skip_forgetting）：True 时仅标记不处理
+        self.tribunal = tribunal  # 审计庭（forgetAfter 留痕 HMAC 链）
 
     # ------------------------------------------------------------------
     # 遗忘扫描
@@ -300,3 +305,47 @@ class ForgettingScheduler:
             )
             await session.commit()
             return {"memory_id": memory_id, "status": "active", "previous_state": previous}
+
+    # ------------------------------------------------------------------
+    # forgetAfter 到期扫描（temporary 契约专用，KAIROS_FORGETAFTER_SCAN_INTERVAL）
+    # ------------------------------------------------------------------
+
+    async def forget_after_scan(self) -> list[str]:
+        """temporary 契约到期硬删除扫描（架构 §5.2 forgetAfter 被动过期）。
+
+        - expires_at <= now 且 contract=temporary → 硬删除（不进入冷存储）
+        - 清理前写审计标记 expiry_cascade_delete（架构 §8 外部来源铁律：
+          已入库临时记忆清除必留痕）
+        - 级联清理（FK ON DELETE CASCADE：usage_weight/witness_anchor 等）
+        """
+        from datetime import datetime
+
+        now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+        async with self.db.session() as session:
+            rows = (
+                await session.execute(
+                    text(
+                        "SELECT id FROM memories WHERE contract = 'temporary' "
+                        "AND expires_at IS NOT NULL AND expires_at <= :now "
+                        "AND is_deleted = 0 AND is_latest = 1"
+                    ),
+                    {"now": now},
+                )
+            ).fetchall()
+            expired_ids = [r[0] for r in rows]
+            for memory_id in expired_ids:
+                await session.execute(
+                    text("DELETE FROM memories WHERE id = :id"), {"id": memory_id}
+                )
+            await session.commit()
+        # 审计留痕（S-16/架构 §8：已入库临时记忆清除必留痕，经审计庭 HMAC 链）
+        if self.tribunal is not None:
+            for memory_id in expired_ids:
+                await self.tribunal.record(
+                    operator="scheduler",
+                    action="expiry_cascade_delete",
+                    target_type="memory",
+                    target_id=memory_id,
+                    redline_id="S-16",
+                )
+        return expired_ids

@@ -26,6 +26,7 @@ from src.supervision.audit_tribunal import AuditTribunal
 from src.utils.embeddings import HashEmbedder
 
 if TYPE_CHECKING:
+    from src.scheduler import KairosScheduler
     from src.sovereignty.calibration import CalibrationPort
     from src.sovereignty.degradation import DegradationStateMachine
     from src.sovereignty.freeze import FreezePort
@@ -49,8 +50,11 @@ class KairosApp:
     calibration: CalibrationPort
     degradation: DegradationStateMachine
     freeze: FreezePort
+    scheduler: KairosScheduler | None = None
 
     async def close(self) -> None:
+        if self.scheduler is not None:
+            await self.scheduler.shutdown()
         await self.db.close()
 
 
@@ -75,11 +79,18 @@ def build_app(settings: Settings | None = None, *, db: Database | None = None) -
     # 嵌入（竖切开发默认 HashEmbedder；BGE-M3 接入点见 utils.embeddings）
     embedder = HashEmbedder()
 
-    # 存储层
-    store = MemoryStore(db, embedder=embedder)
+    # 存储层（bus 注入：use_event 发布）
+    store = MemoryStore(db, embedder=embedder, bus=bus)
     path_index = PathIndex(db)
     dual_copy = DualCopyManager(db)
-    search = HybridSearch(db, embedder=embedder)
+    # QueryAnalyzer（首迭代增强：意图分类 + 时间锚定，注入检索管线）
+    from src.storage.query_analyzer import QueryAnalyzer
+
+    search = HybridSearch(db, embedder=embedder, bus=bus, analyzer=QueryAnalyzer(db))
+    # 事件订阅者注册（use_event → 影子副本更新，首迭代接线）
+    from src.events.subscribers import UsageEventSubscriber
+
+    bus.subscribe("use_event", UsageEventSubscriber(db).handle)
     forgetting = ForgettingScheduler(
         db,
         half_life=settings.get("KAIROS_FORGETTING_HALF_LIFE"),
@@ -101,8 +112,10 @@ def build_app(settings: Settings | None = None, *, db: Database | None = None) -
     # CAL-03 冻结守卫接入存储层写路径（冻结期间所有写操作拒绝）
     store.freeze_guard = freeze.guard
 
-    # 组装容器（主权面组件为正式字段，供 API/CLI 类型安全访问）
-    return KairosApp(
+    # 调度器（APScheduler 空闲驱动；kairos serve 启动时 start）
+    from src.scheduler import KairosScheduler
+
+    app = KairosApp(
         settings=settings,
         db=db,
         bus=bus,
@@ -118,6 +131,8 @@ def build_app(settings: Settings | None = None, *, db: Database | None = None) -
         degradation=degradation,
         freeze=freeze,
     )
+    app.scheduler = KairosScheduler(app)
+    return app
 
 
 def _load_settings() -> Settings:

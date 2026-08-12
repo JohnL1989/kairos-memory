@@ -90,6 +90,8 @@ def _bootstrap(kairos: KairosApp) -> Callable[[], Awaitable[None]]:
     async def _run() -> None:
         await kairos.db.run_migrations()
         await kairos.db.verify_schema()
+        if kairos.scheduler is not None:
+            kairos.scheduler.start()  # 空闲驱动调度（遗忘/潜伏重估/forgetAfter/降级 tick）
 
     return _run
 

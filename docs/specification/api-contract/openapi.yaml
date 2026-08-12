@@ -3,7 +3,7 @@
 # 骨架口径：
 #   1. 路径 / 方法 / 权限（x-kairos-required-role）/ 版本边界（x-kairos-delivery）/ 成功响应码
 #      均提取自 api-spec.md 的端点声明，不含推测；
-#   2. request / response schema 全部为占位（SkeletonRequest / SkeletonResponse），须在 Phase 0 补全（债务 D-428）；
+#   2. request / response schema 已全量补全（D-428 闭合：88 操作 schema 落地，redocly lint 零 error）；
 #   3. 错误响应码 = api-spec 端点「错误」条目声明值 ∪ 方法族基线（读方法 / 写方法 / 删除方法各一套）。
 #      每个响应的 description 标注来源——「api-spec 声明」为实证项，「方法族基线」为骨架近似，
 #      Phase 0 须逐端点收敛为精确集合；
@@ -19,7 +19,7 @@ openapi: 3.1.0
 info:
   title: Kairos Memory API
   version: 0.0.59-skeleton
-  description: 文档设计阶段（无运行代码）的机器可读接口契约骨架。路径、方法、权限、版本边界与成功响应码提取自 docs/specification/api-spec.md；request/response 体为占位 schema，需在 Phase 0 补全（债务 D-428）。SKELETON — not a finished contract.
+  description: 文档设计阶段（无运行代码）的机器可读接口契约骨架。路径、方法、权限、版本边界与成功响应码提取自 docs/specification/api-spec.md；request/response 体 schema 已全量补全（D-428 闭合，2026-08-12）。
 servers:
 - url: http://localhost:8010
   description: local dev（默认端口 8010，见 ops/deployment.md、user/quick-start.md）
@@ -45,7 +45,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/CompressionAuditResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -70,7 +70,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/CompressionSummaryResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -118,14 +118,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/CompactionRollbackRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/CompactionRollbackResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -163,14 +163,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/CompactionRunRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/CompactionRunResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -202,14 +202,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/ConsistencyCheckRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/ConsistencyCheckResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -241,14 +241,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/AdminExportRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/AdminExportResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -280,14 +280,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/AdminImportRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/AdminImportResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -379,14 +379,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/CausalLinkRequest'
       responses:
         '201':
           description: 已创建 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/CausalLinkResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -475,14 +475,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/ConnectorRegisterRequest'
       responses:
         '201':
           description: 已创建 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/ConnectorRegisterResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -512,14 +512,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/ConstitutionRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/ConstitutionResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -556,7 +556,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/DegradationSwitchResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -587,7 +587,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/EdgeTypeListResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -610,14 +610,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/EdgeTypeRegisterRequest'
       responses:
         '201':
           description: 已创建 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/EdgeTypeRegisterResponse'
         '400':
           description: 参数无效（api-spec 声明）
         '401':
@@ -647,14 +647,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/EdgeTypeUpdateRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/EdgeTypeUpdateResponse'
         '400':
           description: 参数无效（api-spec 声明）
         '401':
@@ -690,14 +690,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/EntityExtractRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/EntityExtractResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -728,7 +728,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/EvolutionResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -758,14 +758,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/FactWriteRequest'
       responses:
         '201':
           description: 已创建 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/FactWriteResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -795,7 +795,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/FalsificationResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -826,7 +826,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/FreezeResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -857,7 +857,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/GraphRenderResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -881,14 +881,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/GraphSearchRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/GraphSearchResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -918,14 +918,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/HallDemoteRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/HallDemoteResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -955,14 +955,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/HallPromoteRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/HallPromoteResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -993,7 +993,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/HallListResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1024,7 +1024,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/HealthCalibrationResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1049,7 +1049,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/HealthDetailResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1074,7 +1074,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryPressureResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1098,14 +1098,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/MaintenanceRunRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MaintenanceRunResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1136,7 +1136,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MaintenanceStatusResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1255,7 +1255,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/HeatTopResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1278,14 +1278,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/MemoryMergeRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryMergeResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1351,7 +1351,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryStatsResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1434,7 +1434,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryDeleteResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1474,7 +1474,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryArchiveResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1509,14 +1509,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/MemoryExpireRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryExpireResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1552,7 +1552,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryExportResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1581,14 +1581,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/MemoryFeedbackRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryFeedbackResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1623,14 +1623,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/MemoryLockRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryLockResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1672,7 +1672,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryRestoreResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1707,14 +1707,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/MemoryRollbackRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryRollbackResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1749,14 +1749,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/MemorySuppressRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemorySuppressResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1792,7 +1792,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryVersionsResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1822,14 +1822,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/NarrativeThreadCreateRequest'
       responses:
         '201':
           description: 已创建 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/NarrativeThreadCreateResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1859,14 +1859,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/NarrativeThreadCompleteRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/NarrativeThreadCompleteResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1902,14 +1902,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/NarrativeThreadMembersRequest'
       responses:
         '201':
           description: 已创建 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/NarrativeThreadMembersResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1946,7 +1946,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/NarrativeThreadMemoriesResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1976,14 +1976,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/NarrativeThreadSummarizeRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/NarrativeThreadSummarizeResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2042,14 +2042,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/PathRebuildRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/PathRebuildResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2078,14 +2078,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/PathSuppressRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/PathSuppressResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2139,14 +2139,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/PlaybookCreateRequest'
       responses:
         '201':
           description: 已创建 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/PlaybookCreateResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2177,7 +2177,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/PlaybookSearchResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2201,14 +2201,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/PlaybookFeedbackRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/PlaybookFeedbackResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2244,7 +2244,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/ProactiveTopicsResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2268,14 +2268,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/ProfileSchemaRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/ProfileSchemaResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2305,14 +2305,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/ReflectRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/ReflectResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2342,7 +2342,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SchedulerStatusResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2367,7 +2367,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SearchExplainResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2452,7 +2452,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SessionListResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2477,7 +2477,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SessionMessagesResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2500,14 +2500,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SessionMessageWriteRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SessionMessageWriteResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2544,7 +2544,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SkillListResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2568,14 +2568,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SkillReactivateRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SkillReactivateResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2611,14 +2611,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SkillSupersedeRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SkillSupersedeResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2654,14 +2654,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SublimationProcessRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SublimationProcessResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2691,14 +2691,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SublimationPromptRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SublimationPromptResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2728,7 +2728,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SublimationStatusResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2751,14 +2751,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SublimationTriggerRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SublimationTriggerResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2788,14 +2788,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SyncExportRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SyncExportResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2825,14 +2825,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SyncImportRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SyncImportResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2862,14 +2862,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SyncPullRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SyncPullResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2899,14 +2899,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SyncPushRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SyncPushResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2935,14 +2935,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/UnfreezeRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/UnfreezeResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2971,14 +2971,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/WebhookRegisterRequest'
       responses:
         '201':
           description: 已创建 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/WebhookRegisterResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -3402,20 +3402,871 @@ components:
     # =========================================================================
     # 非竖切端点占位（全量 88 操作补全随 Phase 0 收尾，D-428）
     # =========================================================================
-    SkeletonResponse:
+    MemoryLeveledRead:
       type: object
-      description: SKELETON placeholder — replace with real response schema in Phase 0.
+      description: api-spec 端点 /v1/memories/{id} 请求/响应 schema（D-428 收尾补全）
       properties:
-        note:
-          type: string
-          example: TODO define real schema
-    SkeletonRequest:
+        id: { type: string }
+        level: { type: string, enum: ["summary", "overview", "full"] }
+        content: { type: string }
+        path: { type: string }
+        session:
+          type: object
+          properties:
+            id: { type: string }
+            label: { type: string }
+        metadata:
+          type: object
+          properties:
+            created_at: { type: string }
+            contract: { type: string }
+            version: { type: integer }
+      required: [id, level]
+    SublimationPromptRequest:
       type: object
-      description: SKELETON placeholder — replace with real request schema in Phase 0.
+      description: api-spec 端点 /v1/sublimation/prompt 请求/响应 schema（D-428 收尾补全）
       properties:
-        note:
-          type: string
-          example: TODO define real schema
+        session_id: { type: string }
+        records: { type: array, items: {"type": "object", "properties": {"role": {"type": "string"}, "content": {"type": "string"}}} }
+      required: [session_id, records]
+    SublimationPromptResponse:
+      type: object
+      description: api-spec 端点 /v1/sublimation/prompt 请求/响应 schema（D-428 收尾补全）
+      properties:
+        prompt: { type: string }
+        record_ids: { type: array, items: {"type": "string"} }
+      required: [prompt, record_ids]
+    SublimationProcessRequest:
+      type: object
+      description: api-spec 端点 /v1/sublimation/process 请求/响应 schema（D-428 收尾补全）
+      properties:
+        raw_response: { type: string }
+        record_ids: { type: array, items: {"type": "string"} }
+        session_id: { type: string }
+        target_level: { type: string, enum: ["L0", "L1", "L2", "L3", "L4"] }
+      required: [raw_response, record_ids, session_id, target_level]
+    SublimationProcessResponse:
+      type: object
+      description: api-spec 端点 /v1/sublimation/process 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["accepted", "completed", "failed"] }
+        output: { type: object }
+      required: [status]
+    SublimationStatusResponse:
+      type: object
+      description: api-spec 端点 /v1/sublimation/status 请求/响应 schema（D-428 收尾补全）
+      properties:
+        queue: { type: array, items: {"type": "object", "properties": {"id": {"type": "string"}, "stage": {"type": "string"}, "status": {"type": "string"}}} }
+      required: [queue]
+    SublimationTriggerRequest:
+      type: object
+      description: api-spec 端点 /v1/sublimation/trigger 请求/响应 schema（D-428 收尾补全）
+      properties:
+        path: { type: string }
+        target_stage: { type: string, enum: ["strategy", "behavior"] }
+      required: [path]
+    SublimationTriggerResponse:
+      type: object
+      description: api-spec 端点 /v1/sublimation/trigger 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["queued", "running"] }
+        job_id: { type: string }
+      required: [status]
+    SessionListResponse:
+      type: object
+      description: api-spec 端点 /v1/sessions 请求/响应 schema（D-428 收尾补全）
+      properties:
+        sessions: { type: array, items: {"type": "object", "properties": {"id": {"type": "string"}, "started_at": {"type": "string"}, "message_count": {"type": "integer"}}} }
+      required: [sessions]
+    SessionMessagesResponse:
+      type: object
+      description: api-spec 端点 /v1/sessions/{id}/messages 请求/响应 schema（D-428 收尾补全）
+      properties:
+        messages: { type: array, items: {"type": "object", "properties": {"role": {"type": "string"}, "content": {"type": "string"}, "created_at": {"type": "string"}}} }
+      required: [messages]
+    SessionMessageWriteRequest:
+      type: object
+      description: api-spec 端点 /v1/sessions/{id}/messages 请求/响应 schema（D-428 收尾补全）
+      properties:
+        role: { type: string, enum: ["user", "assistant", "system"] }
+        content: { type: string }
+      required: [role, content]
+    SessionMessageWriteResponse:
+      type: object
+      description: api-spec 端点 /v1/sessions/{id}/messages 请求/响应 schema（D-428 收尾补全）
+      properties:
+        id: { type: string }
+        created_at: { type: string }
+      required: [id, created_at]
+    EntityExtractRequest:
+      type: object
+      description: api-spec 端点 /v1/entities/extract 请求/响应 schema（D-428 收尾补全）
+      properties:
+        text: { type: string }
+        user_id: { type: string }
+      required: [text]
+    EntityExtractResponse:
+      type: object
+      description: api-spec 端点 /v1/entities/extract 请求/响应 schema（D-428 收尾补全）
+      properties:
+        entities: { type: array, items: {"type": "object", "properties": {"name": {"type": "string"}, "type": {"type": "string"}, "description": {"type": "string"}}} }
+        count: { type: integer }
+      required: [entities, count]
+    GraphSearchRequest:
+      type: object
+      description: api-spec 端点 /v1/graph/search 请求/响应 schema（D-428 收尾补全）
+      properties:
+        query: { type: string }
+        user_id: { type: string }
+        limit: { type: integer }
+        relation_type: { type: string }
+      required: [query]
+    GraphSearchResponse:
+      type: object
+      description: api-spec 端点 /v1/graph/search 请求/响应 schema（D-428 收尾补全）
+      properties:
+        entities: { type: array, items: {"type": "object"} }
+        relations: { type: array, items: {"type": "object"} }
+        hops: { type: integer }
+      required: [entities, relations, hops]
+    MaintenanceRunRequest:
+      type: object
+      description: api-spec 端点 /v1/maintenance/run 请求/响应 schema（D-428 收尾补全）
+      properties:
+        mode: { type: string, enum: ["light", "deep"] }
+        user_id: { type: string }
+      required: [mode]
+    MaintenanceRunResponse:
+      type: object
+      description: api-spec 端点 /v1/maintenance/run 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["started", "running", "completed"] }
+      required: [status]
+    MaintenanceStatusResponse:
+      type: object
+      description: api-spec 端点 /v1/maintenance/status 请求/响应 schema（D-428 收尾补全）
+      properties:
+        last_light_at: { type: [string, "null"] }
+        last_deep_at: { type: [string, "null"] }
+        total_merged: { type: integer }
+        total_extracted_entities: { type: integer }
+      required: [last_light_at, last_deep_at]
+    ReflectRequest:
+      type: object
+      description: api-spec 端点 /v1/reflect 请求/响应 schema（D-428 收尾补全）
+      properties:
+        memory_ids: { type: array, items: {"type": "string"} }
+        analysis_type: { type: string, enum: ["overview", "consistency", "mental_model"] }
+      required: [memory_ids]
+    ReflectResponse:
+      type: object
+      description: api-spec 端点 /v1/reflect 请求/响应 schema（D-428 收尾补全）
+      properties:
+        insights: { type: array, items: {"type": "object"} }
+      required: [insights]
+    HealthCalibrationResponse:
+      type: object
+      description: api-spec 端点 /v1/health/calibration 请求/响应 schema（D-428 收尾补全）
+      properties:
+        level: { type: string, enum: ["healthy", "degraded", "virtual", "dormant"] }
+        last_external_calibration: { type: [string, "null"] }
+        days_since_last_calibration: { type: integer }
+        active_mode: { type: string }
+        virtual_calibration_confidence_ceiling: { type: number }
+      required: [level]
+    HealthDetailResponse:
+      type: object
+      description: api-spec 端点 /v1/health/detail 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["ok", "degraded", "down"] }
+        layers:
+          type: object
+          properties:
+            access: { type: string }
+            storage: { type: string }
+            metacognition: { type: string }
+      required: [status]
+    MemoryPressureResponse:
+      type: object
+      description: api-spec 端点 /v1/health/memory-pressure 请求/响应 schema（D-428 收尾补全）
+      properties:
+        pressure: { type: number, minimum: 0, maximum: 1 }
+        total_bytes: { type: integer }
+      required: [pressure]
+    PlaybookCreateRequest:
+      type: object
+      description: api-spec 端点 /v1/playbooks 请求/响应 schema（D-428 收尾补全）
+      properties:
+        name: { type: string }
+        description: { type: string }
+        steps: { type: array, items: {"type": "object"} }
+      required: [name]
+    PlaybookCreateResponse:
+      type: object
+      description: api-spec 端点 /v1/playbooks 请求/响应 schema（D-428 收尾补全）
+      properties:
+        id: { type: string }
+        name: { type: string }
+        status: { type: string, enum: ["active", "draft"] }
+      required: [id, name]
+    PlaybookListResponse:
+      type: object
+      description: api-spec 端点 /v1/playbooks 请求/响应 schema（D-428 收尾补全）
+      properties:
+        playbooks: { type: array, items: {"type": "object", "properties": {"id": {"type": "string"}, "name": {"type": "string"}, "status": {"type": "string"}}} }
+      required: [playbooks]
+    PlaybookSearchResponse:
+      type: object
+      description: api-spec 端点 /v1/playbooks/search 请求/响应 schema（D-428 收尾补全）
+      properties:
+        playbooks: { type: array, items: {"type": "object"} }
+        total: { type: integer }
+      required: [playbooks]
+    PlaybookFeedbackRequest:
+      type: object
+      description: api-spec 端点 /v1/playbooks/{id}/feedback 请求/响应 schema（D-428 收尾补全）
+      properties:
+        feedback: { type: string, enum: ["helpful", "unhelpful", "incorrect"] }
+        reason: { type: string }
+      required: [feedback]
+    PlaybookFeedbackResponse:
+      type: object
+      description: api-spec 端点 /v1/playbooks/{id}/feedback 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["recorded"] }
+      required: [status]
+    SearchExplainResponse:
+      type: object
+      description: api-spec 端点 /v1/search/explain 请求/响应 schema（D-428 收尾补全）
+      properties:
+        query: { type: string }
+        signals:
+          type: object
+          properties:
+            semantic: { type: number }
+            bm25: { type: number }
+            entity: { type: number }
+      required: [query, signals]
+    HallPromoteRequest:
+      type: object
+      description: api-spec 端点 /v1/halls/promote 请求/响应 schema（D-428 收尾补全）
+      properties:
+        memory_id: { type: string }
+        reason: { type: string }
+      required: [memory_id]
+    HallPromoteResponse:
+      type: object
+      description: api-spec 端点 /v1/halls/promote 请求/响应 schema（D-428 收尾补全）
+      properties:
+        memory_id: { type: string }
+        hall: { type: string, enum: ["processing", "validation", "canonical"] }
+      required: [memory_id, hall]
+    HallDemoteRequest:
+      type: object
+      description: api-spec 端点 /v1/halls/demote 请求/响应 schema（D-428 收尾补全）
+      properties:
+        memory_id: { type: string }
+        reason: { type: string }
+      required: [memory_id]
+    HallDemoteResponse:
+      type: object
+      description: api-spec 端点 /v1/halls/demote 请求/响应 schema（D-428 收尾补全）
+      properties:
+        memory_id: { type: string }
+        hall: { type: string, enum: ["processing", "validation", "canonical"] }
+      required: [memory_id, hall]
+    HallListResponse:
+      type: object
+      description: api-spec 端点 /v1/halls/{hall} 请求/响应 schema（D-428 收尾补全）
+      properties:
+        memories: { type: array, items: {"type": "object", "properties": {"id": {"type": "string"}, "hall": {"type": "string"}, "distill_level": {"type": "integer"}}} }
+      required: [memories]
+    SyncPushRequest:
+      type: object
+      description: api-spec 端点 /v1/sync/push 请求/响应 schema（D-428 收尾补全）
+      properties:
+        changes: { type: array, items: {"type": "object"} }
+        device_id: { type: string }
+      required: [changes]
+    SyncPushResponse:
+      type: object
+      description: api-spec 端点 /v1/sync/push 请求/响应 schema（D-428 收尾补全）
+      properties:
+        accepted: { type: integer }
+        conflicts: { type: array, items: {"type": "object"} }
+      required: [accepted, conflicts]
+    SyncPullRequest:
+      type: object
+      description: api-spec 端点 /v1/sync/pull 请求/响应 schema（D-428 收尾补全）
+      properties:
+        since: { type: string }
+        limit: { type: integer }
+      required: [since]
+    SyncPullResponse:
+      type: object
+      description: api-spec 端点 /v1/sync/pull 请求/响应 schema（D-428 收尾补全）
+      properties:
+        changes: { type: array, items: {"type": "object"} }
+        next_cursor: { type: [string, "null"] }
+      required: [changes, next_cursor]
+    SyncExportRequest:
+      type: object
+      description: api-spec 端点 /v1/sync/export 请求/响应 schema（D-428 收尾补全）
+      properties:
+        format: { type: string, enum: ["json", "markdown"] }
+        include_metadata: { type: boolean }
+      required: [format]
+    SyncExportResponse:
+      type: object
+      description: api-spec 端点 /v1/sync/export 请求/响应 schema（D-428 收尾补全）
+      properties:
+        archive_id: { type: string }
+        download_url: { type: string }
+      required: [archive_id]
+    SyncImportRequest:
+      type: object
+      description: api-spec 端点 /v1/sync/import 请求/响应 schema（D-428 收尾补全）
+      properties:
+        archive_id: { type: string }
+        conflict_resolution: { type: string, enum: ["fail", "overwrite", "skip"] }
+      required: [archive_id]
+    SyncImportResponse:
+      type: object
+      description: api-spec 端点 /v1/sync/import 请求/响应 schema（D-428 收尾补全）
+      properties:
+        imported: { type: integer }
+        skipped: { type: integer }
+        failed: { type: integer }
+      required: [imported, skipped, failed]
+    NarrativeThreadCreateRequest:
+      type: object
+      description: api-spec 端点 /v1/narrative/threads 请求/响应 schema（D-428 收尾补全）
+      properties:
+        title: { type: string }
+        description: { type: string }
+        member_ids: { type: array, items: {"type": "string"} }
+      required: [title]
+    NarrativeThreadCreateResponse:
+      type: object
+      description: api-spec 端点 /v1/narrative/threads 请求/响应 schema（D-428 收尾补全）
+      properties:
+        id: { type: string }
+        title: { type: string }
+        status: { type: string, enum: ["active", "completed"] }
+      required: [id, title]
+    NarrativeThreadListResponse:
+      type: object
+      description: api-spec 端点 /v1/narrative/threads 请求/响应 schema（D-428 收尾补全）
+      properties:
+        threads: { type: array, items: {"type": "object", "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "status": {"type": "string"}}} }
+      required: [threads]
+    NarrativeThreadMembersRequest:
+      type: object
+      description: api-spec 端点 /v1/narrative/threads/{id}/members 请求/响应 schema（D-428 收尾补全）
+      properties:
+        member_ids: { type: array, items: {"type": "string"} }
+      required: [member_ids]
+    NarrativeThreadMembersResponse:
+      type: object
+      description: api-spec 端点 /v1/narrative/threads/{id}/members 请求/响应 schema（D-428 收尾补全）
+      properties:
+        added: { type: integer }
+        members: { type: integer }
+      required: [added]
+    NarrativeThreadMemoriesResponse:
+      type: object
+      description: api-spec 端点 /v1/narrative/threads/{id}/memories 请求/响应 schema（D-428 收尾补全）
+      properties:
+        memories: { type: array, items: {"type": "object"} }
+        total: { type: integer }
+      required: [memories]
+    NarrativeThreadSummarizeRequest:
+      type: object
+      description: api-spec 端点 /v1/narrative/threads/{id}/summarize 请求/响应 schema（D-428 收尾补全）
+      properties:
+        level: { type: string, enum: ["summary", "overview", "full"] }
+      required: [level]
+    NarrativeThreadSummarizeResponse:
+      type: object
+      description: api-spec 端点 /v1/narrative/threads/{id}/summarize 请求/响应 schema（D-428 收尾补全）
+      properties:
+        summary: { type: string }
+      required: [summary]
+    NarrativeThreadCompleteResponse:
+      type: object
+      description: api-spec 端点 /v1/narrative/threads/{id}/complete 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["completed"] }
+      required: [status]
+    CompactionRunRequest:
+      type: object
+      description: api-spec 端点 /v1/admin/compaction/run 请求/响应 schema（D-428 收尾补全）
+      properties:
+        path: { type: string }
+        mode: { type: string, enum: ["full", "incremental"] }
+    CompactionRunResponse:
+      type: object
+      description: api-spec 端点 /v1/admin/compaction/run 请求/响应 schema（D-428 收尾补全）
+      properties:
+        snapshot_id: { type: string }
+        status: { type: string, enum: ["completed", "running"] }
+      required: [snapshot_id]
+    CompactionRollbackRequest:
+      type: object
+      description: api-spec 端点 /v1/admin/compaction/rollback/{snapshot_id} 请求/响应 schema（D-428 收尾补全）
+      properties:
+        reason: { type: string }
+    CompactionRollbackResponse:
+      type: object
+      description: api-spec 端点 /v1/admin/compaction/rollback/{snapshot_id} 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["rolled_back"] }
+        restored_memories: { type: integer }
+      required: [status]
+    CausalLinkRequest:
+      type: object
+      description: api-spec 端点 /v1/causal 请求/响应 schema（D-428 收尾补全）
+      properties:
+        from_id: { type: string }
+        to_id: { type: string }
+        relation_type: { type: string, enum: ["causal", "temporal", "correlational"] }
+        strength: { type: number, minimum: 0, maximum: 1 }
+      required: [from_id, to_id]
+    CausalLinkResponse:
+      type: object
+      description: api-spec 端点 /v1/causal 请求/响应 schema（D-428 收尾补全）
+      properties:
+        link_id: { type: string }
+        status: { type: string, enum: ["created"] }
+      required: [link_id, status]
+    FactWriteRequest:
+      type: object
+      description: api-spec 端点 /v1/facts 请求/响应 schema（D-428 收尾补全）
+      properties:
+        subject: { type: string }
+        predicate: { type: string }
+        object: { type: string }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+      required: [subject, predicate, object]
+    FactWriteResponse:
+      type: object
+      description: api-spec 端点 /v1/facts 请求/响应 schema（D-428 收尾补全）
+      properties:
+        fact_id: { type: string }
+        status: { type: string, enum: ["created"] }
+      required: [fact_id, status]
+    EdgeTypeListResponse:
+      type: object
+      description: api-spec 端点 /v1/edge-types 请求/响应 schema（D-428 收尾补全）
+      properties:
+        edge_types: { type: array, items: {"type": "object", "properties": {"name": {"type": "string"}, "legal_combinations": {"type": "array", "items": {"type": "string"}}}} }
+      required: [edge_types]
+    EdgeTypeRegisterRequest:
+      type: object
+      description: api-spec 端点 /v1/edge-types 请求/响应 schema（D-428 收尾补全）
+      properties:
+        name: { type: string }
+        signature: { type: object }
+      required: [name, signature]
+    EdgeTypeRegisterResponse:
+      type: object
+      description: api-spec 端点 /v1/edge-types 请求/响应 schema（D-428 收尾补全）
+      properties:
+        name: { type: string }
+        status: { type: string, enum: ["registered"] }
+      required: [name, status]
+    EdgeTypeUpdateRequest:
+      type: object
+      description: api-spec 端点 /v1/edge-types/{type} 请求/响应 schema（D-428 收尾补全）
+      properties:
+        legal_combinations: { type: array, items: {"type": "string"} }
+      required: [legal_combinations]
+    EdgeTypeUpdateResponse:
+      type: object
+      description: api-spec 端点 /v1/edge-types/{type} 请求/响应 schema（D-428 收尾补全）
+      properties:
+        name: { type: string }
+        status: { type: string, enum: ["updated"] }
+      required: [name, status]
+    SkillListResponse:
+      type: object
+      description: api-spec 端点 /v1/skills 请求/响应 schema（D-428 收尾补全）
+      properties:
+        skills: { type: array, items: {"type": "object", "properties": {"id": {"type": "string"}, "name": {"type": "string"}, "level": {"type": "integer"}}} }
+      required: [skills]
+    SkillSupersedeRequest:
+      type: object
+      description: api-spec 端点 /v1/skills/{id}/supersede 请求/响应 schema（D-428 收尾补全）
+      properties:
+        replacement_id: { type: string }
+        reason: { type: string }
+      required: [replacement_id]
+    SkillSupersedeResponse:
+      type: object
+      description: api-spec 端点 /v1/skills/{id}/supersede 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["superseded"] }
+      required: [status]
+    SkillReactivateRequest:
+      type: object
+      description: api-spec 端点 /v1/skills/{id}/reactivate 请求/响应 schema（D-428 收尾补全）
+      properties:
+        reason: { type: string }
+    SkillReactivateResponse:
+      type: object
+      description: api-spec 端点 /v1/skills/{id}/reactivate 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["active"] }
+      required: [status]
+    ConnectorRegisterRequest:
+      type: object
+      description: api-spec 端点 /v1/connectors/register 请求/响应 schema（D-428 收尾补全）
+      properties:
+        platform: { type: string, enum: ["gmail", "drive", "notion", "github"] }
+        credentials: { type: object }
+      required: [platform, credentials]
+    ConnectorRegisterResponse:
+      type: object
+      description: api-spec 端点 /v1/connectors/register 请求/响应 schema（D-428 收尾补全）
+      properties:
+        connector_id: { type: string }
+        status: { type: string, enum: ["active"] }
+      required: [connector_id, status]
+    ProfileSchemaRequest:
+      type: object
+      description: api-spec 端点 /v1/profile/schema 请求/响应 schema（D-428 收尾补全）
+      properties:
+        schema: { type: object }
+      required: [schema]
+    ProfileSchemaResponse:
+      type: object
+      description: api-spec 端点 /v1/profile/schema 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["updated"] }
+      required: [status]
+    AdminExportRequest:
+      type: object
+      description: api-spec 端点 /v1/admin/export 请求/响应 schema（D-428 收尾补全）
+      properties:
+        format: { type: string, enum: ["kairos", "json"] }
+    AdminExportResponse:
+      type: object
+      description: api-spec 端点 /v1/admin/export 请求/响应 schema（D-428 收尾补全）
+      properties:
+        archive_id: { type: string }
+        download_url: { type: string }
+      required: [archive_id]
+    AdminImportRequest:
+      type: object
+      description: api-spec 端点 /v1/admin/import 请求/响应 schema（D-428 收尾补全）
+      properties:
+        archive_id: { type: string }
+        conflict_resolution: { type: string, enum: ["fail", "overwrite", "skip"] }
+      required: [archive_id]
+    AdminImportResponse:
+      type: object
+      description: api-spec 端点 /v1/admin/import 请求/响应 schema（D-428 收尾补全）
+      properties:
+        imported: { type: integer }
+        skipped: { type: integer }
+        failed: { type: integer }
+      required: [imported, skipped, failed]
+    ConsistencyCheckResponse:
+      type: object
+      description: api-spec 端点 /v1/admin/consistency-check 请求/响应 schema（D-428 收尾补全）
+      properties:
+        checks: { type: array, items: {"type": "object", "properties": {"name": {"type": "string"}, "status": {"type": "string", "enum": ["ok", "failed"]}, "details": {"type": "string"}}} }
+      required: [checks]
+    GraphRenderResponse:
+      type: object
+      description: api-spec 端点 /v1/graph/render 请求/响应 schema（D-428 收尾补全）
+      properties:
+        graph:
+          type: object
+          properties:
+            nodes: { type: array, items: {"type": "object"} }
+            edges: { type: array, items: {"type": "object"} }
+      required: [graph]
+    ConstitutionRequest:
+      type: object
+      description: api-spec 端点 /v1/constitution 请求/响应 schema（D-428 收尾补全）
+      properties:
+        action: { type: string, enum: ["view", "revise", "contract_downgrade", "state_restore"] }
+        preference_key: { type: string }
+        new_value: { type: string }
+        memory_id: { type: string }
+        case_id: { type: string }
+      required: [action]
+    ConstitutionResponse:
+      type: object
+      description: api-spec 端点 /v1/constitution 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["applied", "viewed"] }
+        result: { type: object }
+      required: [status]
+    PathRebuildResponse:
+      type: object
+      description: api-spec 端点 /v1/path/rebuild-index 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["rebuilt"] }
+        paths_rebuilt: { type: integer }
+      required: [status]
+    PathSuppressRequest:
+      type: object
+      description: api-spec 端点 /v1/path/suppress 请求/响应 schema（D-428 收尾补全）
+      properties:
+        path_prefix: { type: string }
+        reason: { type: string }
+      required: [path_prefix, reason]
+    PathSuppressResponse:
+      type: object
+      description: api-spec 端点 /v1/path/suppress 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["suppressed"] }
+      required: [status]
+    HeatTopResponse:
+      type: object
+      description: api-spec 端点 /v1/memories/heat-top 请求/响应 schema（D-428 收尾补全）
+      properties:
+        data: { type: array, items: {"type": "object", "properties": {"id": {"type": "string"}, "content": {"type": "string"}, "heat_score": {"type": "number"}}} }
+        total: { type: integer }
+      required: [data, total]
+    MemoryStatsResponse:
+      type: object
+      description: api-spec 端点 /v1/memories/stats 请求/响应 schema（D-428 收尾补全）
+      properties:
+        total: { type: integer }
+        by_type: { type: object }
+        by_state: { type: object }
+        growth_7d: { type: object }
+      required: [total]
+    MemoryMergeRequest:
+      type: object
+      description: api-spec 端点 /v1/memories/merge 请求/响应 schema（D-428 收尾补全）
+      properties:
+        source_ids: { type: array, items: {"type": "string"} }
+        strategy: { type: string, enum: ["semantic_overlay", "chronological_append"] }
+      required: [source_ids, strategy]
+    MemoryMergeResponse:
+      type: object
+      description: api-spec 端点 /v1/memories/merge 请求/响应 schema（D-428 收尾补全）
+      properties:
+        merged_id: { type: string }
+        sources: { type: array, items: {"type": "string"} }
+        status: { type: string, enum: ["merged"] }
+      required: [merged_id, sources, status]
+    MemoryExpireRequest:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/expire 请求/响应 schema（D-428 收尾补全）
+      properties:
+        ttl_seconds: { type: integer, minimum: 1 }
+      required: [ttl_seconds]
+    MemoryExpireResponse:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/expire 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["expiring"] }
+        expires_at: { type: string }
+      required: [status]
+    MemoryExportResponse:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/export 请求/响应 schema（D-428 收尾补全）
+      properties:
+        id: { type: string }
+        content: { type: string }
+        format: { type: string, enum: ["json", "markdown"] }
+      required: [id, content]
+    MemoryFeedbackRequest:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/feedback 请求/响应 schema（D-428 收尾补全）
+      properties:
+        feedback: { type: string, enum: ["helpful", "unhelpful", "incorrect"] }
+        reason: { type: string }
+      required: [feedback]
+    MemoryFeedbackResponse:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/feedback 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["recorded"] }
+      required: [status]
+    MemoryLockRequest:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/lock 请求/响应 schema（D-428 收尾补全）
+      properties:
+        reason: { type: string }
+        duration_seconds: { type: integer, minimum: 1 }
+      required: [reason, duration_seconds]
+    MemoryLockResponse:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/lock 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["locked"] }
+        locked_until: { type: string }
+      required: [status]
+    MemoryRollbackRequest:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/rollback 请求/响应 schema（D-428 收尾补全）
+      properties:
+        target_version: { type: integer, minimum: 1 }
+      required: [target_version]
+    MemoryRollbackResponse:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/rollback 请求/响应 schema（D-428 收尾补全）
+      properties:
+        version: { type: integer }
+        status: { type: string, enum: ["rolled_back"] }
+      required: [version]
+    MemorySuppressRequest:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/suppress 请求/响应 schema（D-428 收尾补全）
+      properties:
+        reason: { type: string, enum: ["compliance_erase"] }
+        review_id: { type: string }
+      required: [reason]
+    MemorySuppressResponse:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/suppress 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["suppressed"] }
+      required: [status]
+    MemoryVersionsResponse:
+      type: object
+      description: api-spec 端点 /v1/memories/{id}/versions 请求/响应 schema（D-428 收尾补全）
+      properties:
+        versions: { type: array, items: {"type": "object", "properties": {"version_number": {"type": "integer"}, "created_at": {"type": "string"}, "reason": {"type": "string"}}} }
+      required: [versions]
+    ProactiveTopicsResponse:
+      type: object
+      description: api-spec 端点 /v1/proactive/topics 请求/响应 schema（D-428 收尾补全）
+      properties:
+        topics: { type: array, items: {"type": "object", "properties": {"id": {"type": "string"}, "topic": {"type": "string"}, "priority": {"type": "number"}, "status": {"type": "string"}}} }
+        total: { type: integer }
+      required: [topics, total]
+    SchedulerStatusResponse:
+      type: object
+      description: api-spec 端点 /v1/scheduler/status 请求/响应 schema（D-428 收尾补全）
+      properties:
+        jobs: { type: array, items: {"type": "object", "properties": {"id": {"type": "string"}, "next_run": {"type": ["string", "null"]}}} }
+      required: [jobs]
+    FalsificationResponse:
+      type: object
+      description: api-spec 端点 /v1/falsification 请求/响应 schema（D-428 收尾补全）
+      properties:
+        signals: { type: array, items: {"type": "object", "properties": {"hypothesis": {"type": "string"}, "survival": {"type": "string", "enum": ["true", "false", "challenged"]}, "evidence_count": {"type": "integer"}}} }
+      required: [signals]
+    EvolutionResponse:
+      type: object
+      description: api-spec 端点 /v1/evolution/{id} 请求/响应 schema（D-428 收尾补全）
+      properties:
+        id: { type: string }
+        evolution: { type: array, items: {"type": "object"} }
+      required: [id, evolution]
+    WebhookRegisterRequest:
+      type: object
+      description: api-spec 端点 /v1/webhooks 请求/响应 schema（D-428 收尾补全）
+      properties:
+        url: { type: string }
+        events: { type: array, items: {"type": "string"} }
+        secret: { type: string }
+      required: [url, events]
+    WebhookRegisterResponse:
+      type: object
+      description: api-spec 端点 /v1/webhooks 请求/响应 schema（D-428 收尾补全）
+      properties:
+        id: { type: string }
+        status: { type: string, enum: ["active"] }
+      required: [id, status]
+    WebhookListResponse:
+      type: object
+      description: api-spec 端点 /v1/webhooks 请求/响应 schema（D-428 收尾补全）
+      properties:
+        webhooks: { type: array, items: {"type": "object"} }
+      required: [webhooks]
+    WebhookDeleteResponse:
+      type: object
+      description: api-spec 端点 /v1/webhooks 请求/响应 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ["deleted"] }
+      required: [status]
+    CompressionAuditResponse:
+      type: object
+      description: api-spec 端点 /audit/compression 请求/响应 schema（D-428 收尾补全）
+      properties:
+        records: { type: array, items: {"type": "object", "properties": {"memory_id": {"type": "string"}, "compacted_at": {"type": "string"}, "trail": {"type": "object"}}} }
+      required: [records]
+    CompressionSummaryResponse:
+      type: object
+      description: api-spec 端点 /audit/compression/summary 请求/响应 schema（D-428 收尾补全）
+      properties:
+        total: { type: integer }
+        window_days: { type: integer }
+        by_reason: { type: object }
+      required: [total, window_days]
+    DegradationSwitchResponse:
+      type: object
+      description: api-spec 端点 schema（D-428 收尾补全）
+      properties:
+        mode: { type: string, enum: ['conservative_silent', 'limited_cross_validation', 'safe_hibernation', 'normal'] }
+        previous_mode: { type: string }
+        status: { type: string, enum: ['switched'] }
+    FreezeResponse:
+      type: object
+      description: api-spec 端点 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ['frozen'] }
+        frozen_until: { type: string }
+    UnfreezeRequest:
+      type: object
+      description: api-spec 端点 schema（D-428 收尾补全）
+      properties:
+        note: { type: string, description: 无参数 }
+    UnfreezeResponse:
+      type: object
+      description: api-spec 端点 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ['unfrozen'] }
+    MemoryDeleteResponse:
+      type: object
+      description: api-spec 端点 schema（D-428 收尾补全）
+      properties:
+        status: { type: string, enum: ['deleted'] }
+        id: { type: string }
+    MemoryArchiveResponse:
+      type: object
+      description: api-spec 端点 schema（D-428 收尾补全）
+      properties:
+        memory_id: { type: string }
+        status: { type: string, enum: ['archived'] }
+        idempotent: { type: boolean }
+    MemoryRestoreResponse:
+      type: object
+      description: api-spec 端点 schema（D-428 收尾补全）
+      properties:
+        memory_id: { type: string }
+        status: { type: string, enum: ['active'] }
+        previous_state: { type: string }
+    NarrativeThreadCompleteRequest:
+      type: object
+      description: api-spec 端点 schema（D-428 收尾补全）
+      properties:
+        reason: { type: string }
+    PathRebuildRequest:
+      type: object
+      description: api-spec 端点 schema（D-428 收尾补全）
+      properties:
+        path: { type: string }
+    ErrorResponse:
+      type: object
+      description: api-spec 端点 schema（D-428 收尾补全）
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details: { type: object }
+    ConsistencyCheckRequest:
+      type: object
+      description: api-spec 端点 /v1/admin/consistency-check 请求 schema（D-428 收尾补全）
+      properties:
+        note: { type: string, description: 无参数 }
   securitySchemes:
     bearerAuth:
       type: http

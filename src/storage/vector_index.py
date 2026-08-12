@@ -67,18 +67,23 @@ class VectorIndex:
         *,
         top_k: int = DEFAULT_CANDIDATE_POOL_SIZE,
         path_prefix: str | None = None,
+        time_range: tuple[str, str] | None = None,
     ) -> list[dict[str, object]]:
-        """余弦相似度 top-K 候选（numpy 批量扫描，跳过 NULL 嵌入）。"""
+        """余弦相似度 top-K 候选（numpy 批量扫描，跳过 NULL 嵌入）。
+
+        time_range：(start, end) 时间硬过滤（架构 §7.3a 第二重硬过滤边界；
+        occurred_at 优先、空回退 created_at）。
+        """
         if len(query_vector) != EMBEDDING_DIM:
             raise ValueError(f"查询嵌入维度必须为 {EMBEDDING_DIM}，当前 {len(query_vector)}")
         top_k = max(1, min(top_k, 500))
         q = np.asarray(query_vector, dtype="<f4")
 
-        # 无路径过滤时走矩阵缓存（1 万条基准关键路径）；带路径过滤时实时扫描
-        if path_prefix is None:
+        # 无路径/时间过滤时走矩阵缓存（1 万条基准关键路径）；否则实时扫描
+        if path_prefix is None and time_range is None:
             matrix, norms = await self._cached_matrix()
         else:
-            matrix, norms = await self._load_matrix(path_prefix=path_prefix)
+            matrix, norms = await self._load_matrix(path_prefix=path_prefix, time_range=time_range)
 
         if matrix is None or norms is None or len(matrix) == 0:
             return []
@@ -131,7 +136,9 @@ class VectorIndex:
         return self._matrix, self._norms
 
     async def _load_matrix(
-        self, path_prefix: str | None = None
+        self,
+        path_prefix: str | None = None,
+        time_range: tuple[str, str] | None = None,
     ) -> tuple[np.ndarray | None, np.ndarray | None]:
         """加载嵌入矩阵（id/path/embedding 同序三列；单次大块 frombuffer）。"""
         sql = (
@@ -142,6 +149,14 @@ class VectorIndex:
         if path_prefix:
             sql = sql.replace("WHERE", "WHERE path GLOB :prefix AND", 1)
             params["prefix"] = f"{path_prefix}*"
+        if time_range:
+            sql = sql.replace(
+                "WHERE",
+                "WHERE ((occurred_at BETWEEN :tr_start AND :tr_end) OR "
+                "(occurred_at IS NULL AND created_at BETWEEN :tr_start AND :tr_end)) AND",
+                1,
+            )
+            params["tr_start"], params["tr_end"] = time_range
         async with self.db.session() as session:
             rows = (await session.execute(text(sql), params)).fetchall()
         if not rows:

@@ -17,13 +17,17 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import text
 
 from src.storage.db import Database
 from src.storage.vector_index import DEFAULT_CANDIDATE_POOL_SIZE, VectorIndex
 from src.utils.embeddings import Embedder, HashEmbedder
+
+if TYPE_CHECKING:
+    from src.events.bus import EventBus
+    from src.storage.query_analyzer import QueryAnalyzer
 
 # 三信号权重默认值（configuration §6.1；权重和恒为 1）
 DEFAULT_WEIGHTS = {"semantic": 0.50, "bm25": 0.35, "entity": 0.15}
@@ -56,10 +60,14 @@ class HybridSearch:
         db: Database,
         embedder: Embedder | None = None,
         weights: dict[str, float] | None = None,
+        bus: EventBus | None = None,
+        analyzer: QueryAnalyzer | None = None,
     ) -> None:
         self.db = db
         self.embedder = embedder or HashEmbedder()
         self.vector_index = VectorIndex(db)
+        self.bus = bus  # 事件总线（检索 use_event 发布；首迭代接线）
+        self.analyzer = analyzer  # QueryAnalyzer（首迭代增强：意图 + 时间锚定）
         weights = weights or DEFAULT_WEIGHTS
         total = sum(weights.values())
         self.weights = {k: v / total for k, v in weights.items()}  # 权重和恒为 1
@@ -76,11 +84,14 @@ class HybridSearch:
         weights: dict[str, float] | None = None,
         limit: int = 10,
         filters: SearchFilter | None = None,
+        time_range: tuple[str, str] | None = None,
     ) -> dict[str, Any]:
         """三信号混合检索。
 
         mode：hybrid（三信号融合）/ semantic / bm25（单信号，架构 §7.3a 检索模式）。
         weights：请求级权重覆盖（api-spec §1.2；默认 0.50/0.35/0.15）。
+        time_range：(start, end) 时间硬过滤（架构 §7.3a 第二重硬过滤边界；
+        首迭代由 QueryAnalyzer 时间锚定注入）。
         """
         limit = max(1, min(limit, 100))
         filters = filters or SearchFilter()
@@ -90,15 +101,29 @@ class HybridSearch:
             total = sum(merged.values()) or 1.0
             active_weights = {k: v / total for k, v in merged.items()}
 
+        # QueryAnalyzer 增强（首迭代）：意图分类 + 时间锚定 → 注入时间过滤
+        effective_query = query
+        if self.analyzer is not None:
+            descriptor = await self.analyzer.analyze(query)
+            if descriptor.temporal_constraint is not None:
+                tc = descriptor.temporal_constraint
+                if tc.start and tc.end and not tc.optional:
+                    time_range = time_range or (tc.start, tc.end)
+                effective_query = descriptor.effective_query
+
         # 1. 候选域：路径前缀硬过滤边界（语义/BM25/实体均限此域）
         prefix = filters.path_prefix
         if prefix and not prefix.endswith("/"):
             prefix += "/"
 
         # 2. 三信号召回（并行无依赖，顺序执行即可）
-        semantic_hits = await self._semantic_recall(query, prefix=prefix)
-        bm25_hits = await self._bm25_recall(query, prefix=prefix)
-        entity_hits = await self._entity_recall(query, prefix=prefix)
+        semantic_hits = await self._semantic_recall(
+            effective_query, prefix=prefix, time_range=time_range
+        )
+        bm25_hits = await self._bm25_recall(effective_query, prefix=prefix, time_range=time_range)
+        entity_hits = await self._entity_recall(
+            effective_query, prefix=prefix, time_range=time_range
+        )
 
         # 3. 候选池合并（按记忆去重；同一记忆不重复出现，TC-R03-001）
         candidates: dict[str, dict[str, float | None]] = {}
@@ -183,20 +208,50 @@ class HybridSearch:
                     "created_at": content.get("created_at"),
                 }
             )
+        # 检索 use_event（架构 §10.10：检索侧维度丢失以 use_event payload 标记）
+        if self.bus is not None:
+            await self._publish_retrieval_events([d["id"] for d in final])
         return {"data": final, "total": len(final), "meta": {}}
+
+    async def _publish_retrieval_events(self, memory_ids: list[str]) -> None:
+        """检索使用事件（影子副本升温；发布失败不阻断检索结果）。"""
+        if not memory_ids:
+            return
+        try:
+            from src.events.types import PRIORITY_USE_EVENT, USE_EVENT
+
+            bus = self.bus
+            assert bus is not None
+            for memory_id in memory_ids[:20]:  # 上限 20 条防事件洪泛
+                await bus.publish(
+                    USE_EVENT,
+                    "storage",
+                    payload={"action": "memory_retrieved"},
+                    priority=PRIORITY_USE_EVENT,
+                    memory_id=memory_id,
+                )
+        except Exception:
+            pass  # 事件发布失败仅留痕
 
     # ------------------------------------------------------------------
     # 三信号召回
     # ------------------------------------------------------------------
 
-    async def _semantic_recall(self, query: str, *, prefix: str | None) -> list[dict[str, Any]]:
+    async def _semantic_recall(
+        self, query: str, *, prefix: str | None, time_range: tuple[str, str] | None = None
+    ) -> list[dict[str, Any]]:
         """信号一：语义余弦 top-K（K=KAIROS_HYBRID_CANDIDATE_POOL_SIZE）。"""
         query_vector = await self.embedder.embed(query)
         return await self.vector_index.cosine_search(
-            query_vector, top_k=DEFAULT_CANDIDATE_POOL_SIZE, path_prefix=prefix
+            query_vector,
+            top_k=DEFAULT_CANDIDATE_POOL_SIZE,
+            path_prefix=prefix,
+            time_range=time_range,
         )
 
-    async def _bm25_recall(self, query: str, *, prefix: str | None) -> list[dict[str, Any]]:
+    async def _bm25_recall(
+        self, query: str, *, prefix: str | None, time_range: tuple[str, str] | None = None
+    ) -> list[dict[str, Any]]:
         """信号二：FTS5 BM25（contentless-external 表；bm25() 越小越相关）。"""
         # FTS5 查询词规范化：移除标点，空格分词（unicode61 tokenizer 对齐）
         terms = [t for t in re.split(r"\s+", query.strip()) if t]
@@ -213,13 +268,19 @@ class HybridSearch:
         if prefix:
             sql += " AND m.path GLOB :prefix"
             params["prefix"] = f"{prefix}*"  # GLOB 通配符
+        if time_range:
+            sql += " AND ((m.occurred_at BETWEEN :tr_start AND :tr_end) OR "
+            sql += "(m.occurred_at IS NULL AND m.created_at BETWEEN :tr_start AND :tr_end))"
+            params["tr_start"], params["tr_end"] = time_range
         sql += " ORDER BY score DESC LIMIT :k"
         params["k"] = DEFAULT_CANDIDATE_POOL_SIZE
         async with self.db.session() as session:
             rows = (await session.execute(text(sql), params)).fetchall()
         return [{"id": str(r[0]), "path": str(r[1]), "score": max(0.0, float(r[2]))} for r in rows]
 
-    async def _entity_recall(self, query: str, *, prefix: str | None) -> list[dict[str, Any]]:
+    async def _entity_recall(
+        self, query: str, *, prefix: str | None, time_range: tuple[str, str] | None = None
+    ) -> list[dict[str, Any]]:
         """信号三：实体加成（词典匹配简化方案，RC-03 加性口径）。
 
         score_entity = |Q ∩ E_R| / |Q|——Q 为查询文本中命中 entities 词典的实体名，
@@ -240,6 +301,10 @@ class HybridSearch:
         if prefix:
             sql += " AND m.path GLOB :prefix"
             params["prefix"] = f"{prefix}*"  # GLOB 通配符
+        if time_range:
+            sql += " AND ((m.occurred_at BETWEEN :tr_start AND :tr_end) OR "
+            sql += "(m.occurred_at IS NULL AND m.created_at BETWEEN :tr_start AND :tr_end))"
+            params["tr_start"], params["tr_end"] = time_range
         sql += " AND hit_count > 0 ORDER BY hit_count DESC LIMIT :k"
         params["k"] = DEFAULT_CANDIDATE_POOL_SIZE
         async with self.db.session() as session:

@@ -35,6 +35,7 @@ from src.errors import (
     SecurityRedlineError,
     VersionConflictError,
 )
+from src.events.types import PRIORITY_USE_EVENT, USE_EVENT
 from src.storage.db import Database
 from src.storage.models import (
     CONTRACTS,
@@ -49,6 +50,7 @@ from src.storage.models import (
 from src.utils.embeddings import Embedder
 
 if TYPE_CHECKING:
+    from src.events.bus import EventBus
     from src.sovereignty.freeze import FreezeGuard
 
 # 路径深度上限（error-reference ERR-INPUT-003：超过 10 层）
@@ -154,11 +156,34 @@ class MemoryStore:
         gate: IngestionGate | None = None,
         embedder: Embedder | None = None,
         freeze_guard: FreezeGuard | None = None,
+        bus: EventBus | None = None,
     ) -> None:
         self.db = db
         self.gate = gate or IngestionGate()
         self.embedder = embedder  # W5 起注入；嵌入为派生视图（可重建，失败不阻断写入）
         self.freeze_guard = freeze_guard  # CAL-03 冻结守卫（W9 组装注入）
+        self.bus = bus  # 事件总线（use_event 发布；首迭代接线）
+
+    async def _publish_use_event(
+        self, memory_id: str, *, action: str, extra: dict[str, Any] | None = None
+    ) -> None:
+        """发布 use_event（Outbox 语义；发布失败不阻断主操作——事件为派生信号可重放）。"""
+        if self.bus is None:
+            return
+        try:
+            payload = {"action": action}
+            if extra:
+                payload.update(extra)
+            await self.bus.publish(
+                USE_EVENT,
+                "storage",
+                payload=payload,
+                priority=PRIORITY_USE_EVENT,
+                memory_id=memory_id,
+            )
+        except Exception:
+            # 事件发布失败仅留痕（影子副本可经维护重放，不阻断主写入）
+            pass
 
     async def _check_frozen(self) -> None:
         """写操作前置检查：强制冻结期间所有写操作一律拒绝（api-spec §1.3 优先级）。"""
@@ -297,6 +322,8 @@ class MemoryStore:
 
         # 嵌入生成（派生视图；W5 起注入 embedder 时启用）
         await self._embed_after_write(memory_id, content)
+        # use_event 发布（影子副本/审计依赖；首迭代接线）
+        await self._publish_use_event(memory_id, action="memory_written")
         return MemoryCreated(id=memory_id, path=stored_path, version=1)
 
     async def _lookup_idempotency(self, session: AsyncSession, key: str) -> dict[str, str] | None:
@@ -472,6 +499,7 @@ class MemoryStore:
             await session.commit()
             # 嵌入重算（更新内容后语义向量须同步；派生视图，失败不阻断）
             await self._embed_after_write(new_memory.id, new_memory.content)
+            await self._publish_use_event(new_memory.id, action="memory_updated")
             return _to_memory_dict(new_memory)
 
     # ------------------------------------------------------------------
@@ -521,6 +549,7 @@ class MemoryStore:
                 )
 
             await session.commit()
+            await self._publish_use_event(memory_id, action="memory_deleted")
 
     async def _record_state(
         self,
@@ -581,6 +610,7 @@ class MemoryStore:
             memory.updated_at = now
             await self._record_state(session, memory, reason="archive", operator="api", now=now)
             await session.commit()
+            await self._publish_use_event(memory_id, action="memory_archived")
             return {"memory_id": memory_id, "status": "archived", "idempotent": False}
 
     # ------------------------------------------------------------------
