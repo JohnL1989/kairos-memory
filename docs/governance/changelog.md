@@ -2035,10 +2035,20 @@ status: draft
 
 **接口契约**：openapi.yaml 竖切 21 端点 schema 落地（MemoryWriteRequest/SearchResponse/HybridSearchRequest 等 26 个 schema 组件）+ mcp-tools.json 15 工具 inputSchema 补全；`redocly lint --extends minimal` 零 error 达成 D-428 竖切部分验收判据。
 
-**验证**：doc-audit 复跑 exit 0；deep-audit exit 0。受改 3 份文档（README / debt-collection / changelog 本文件）+ 契约 2 份（openapi.yaml / mcp-tools.json，非 md 不计入文档受改清单）；核心计数变动：债务 **D-446→D-448**（新增 D-447/D-448）；其余（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168）零漂移。
+**验证**：doc-audit 复跑 exit 0；deep-audit exit 0。结构性受改 3 份文档（README / debt-collection / changelog 本文件，均已登记 0.0.97 版本记录行）+ 机械性受改 0 份；契约 2 份（openapi.yaml / mcp-tools.json，非 md 不计入文档受改清单）；核心计数变动：债务 **D-446→D-448**（新增 D-447/D-448）；其余（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168）零漂移。
 
 ---
 
+## 0.0.98（2026-08-12）— 版本记录双轨制规则修订批次（结构性变更即登记）
+
+> 落实「版本记录优化」决策（方案 B 双轨制）：各文档版本记录从「触及即登记」（任何改动批次逐条登记，随批次增长无限膨胀）改为「**结构性变更即登记**」——版本记录只登记影响文档语义/结构的变更，机械性变更（frontmatter 同步、引用链接化、措辞微调、批次索引登记等）只进 changelog 不登记版本记录。changelog 保持跨文档全量叙述层定位。
+
+**落地清单**：
+- **documentation-governance §4 规则修订**：「触及即登记」纪律（0.0.66 批次）与操作细节（0.0.94 批次）改写为「结构性变更即登记」纪律——定义结构性/机械性两类变更边界；批次叙述须声明「结构性受改 N 份文档（A / B / C）」清单（门禁 6.39 核对输入）。
+- **doc-audit 6.39 门禁适配**：受改清单解析优先「结构性受改 N 份文档」形态（0.0.98 起）；无该形态时回退旧「受改 N 份文档」格式兼容历史批次；机械性受改不检查版本记录。
+- **changelog 0.0.97 受改清单标注**：原「受改 3 份文档」标注为「结构性受改 3 份文档」+ 机械性 0 份（新格式立即生效验证）。
+
+**验证**：doc-audit 复跑 exit 0；deep-audit exit 0。结构性受改 2 份文档（documentation-governance / changelog 本文件）+ 机械性 1 份（scripts/doc-audit.py，非文档不计入清单）；核心计数零漂移（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / 债务 D-449）。
 
 ---
 
@@ -2145,3 +2155,4 @@ status: draft
 | 0.0.95 | 2026-08-11 | Obsidian frontmatter 闭合缺陷修复批次（changelog 0.0.95，见本文件 0.0.95 叙述节）：6 份文档（adr / risks / slice-implementation-guide / acceptance-criteria / benchmark-plan / test-strategy）frontmatter 缺立即闭合 `---` 修复（Obsidian「无效属性」根因——正文引用块被卷入 YAML 区）+ 门禁 6.16 盲区增强（frontmatter 区内容合法性校验，突变测试验证捕获能力）；参数计数不变；核心计数零漂移。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96，见本文件 0.0.96 叙述节）：四组全量通读低危缺口收口——use-cases 三信号检索误归 v1.1 勘误、架构叙事自洽度评估器降级默认分数登记 D-446、D-430 分类处置（config show 契约登记 + 其余归 v0.1.0 全量阶段）、认知导航表/RTM/OP-054/deployment 环境变量/架构引用与版本标注等机械性修正；债务 D-445→D-446；参数计数不变；其余核心计数零漂移。 |
 | 0.0.97 | 2026-08-11 | 竖切代码启动批次（changelog 0.0.97，见本文件 0.0.97 叙述节）：W1~W9 全量交付——项目骨架（Typer 定档）、15 张竖切表迁移（Alembic + schema-slice 权威 DDL）、记忆 CRUD + 双副本（S-14 隔离）、路径空间（GLOB 前缀 + 污染率 0%）、事件总线（4 类 + 背压 + trace_id）、三信号检索（numpy 余弦 + FTS5 BM25 + 实体加成）、遗忘 + 潜伏势能、身份注册表（构造论 + 否决裁决器）、校准/降级/冻结 + 审计 HMAC 链；REST 21 端点 + CLI 15 条；基准（写 P50 16.6ms / 路径 / 语义 1 万条）；D-428 竖切部分闭合（redocly 零 error）；实现偏差登记 D-447/D-448；README 状态声明更新。 |
+| 0.0.98 | 2026-08-12 | 版本记录双轨制规则修订批次（changelog 0.0.98，见本文件 0.0.98 叙述节）：「触及即登记」→「结构性变更即登记」——版本记录只登记结构性变更，机械性变更只进 changelog；doc-audit 6.39 适配结构性受改清单解析（旧格式兼容）；changelog 0.0.97 受改清单标注为新格式。 |

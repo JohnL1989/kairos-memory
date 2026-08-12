@@ -2909,8 +2909,11 @@ def check_batch_version_record_coverage() -> None:
     m_end = re.search(r"^## (?:0\.0\.\d+（|版本记录)", seg[m_start.end():], re.M)
     if m_end:
         seg = seg[: m_start.end() + m_end.start()]
-    # 提取受改清单
-    list_m = re.search(r"受改\s*\d+\s*份?文档?（([^）]+)）", seg)
+    # 提取受改清单（0.0.98 起双轨制：结构性受改清单优先——机械性受改不登记
+    # 版本记录；无「结构性受改」形态时回退旧「受改 N 份文档」格式兼容历史批次）
+    list_m = re.search(r"结构性受改\s*\d+\s*份?文档?（([^）]+)）", seg)
+    if not list_m:
+        list_m = re.search(r"受改\s*\d+\s*份?文档?（([^）]+)）", seg)
     if not list_m:
         print(f"[6.39] 受改批次版本记录覆盖性: 最新批次 {latest} 无受改清单（跳过）")
         return

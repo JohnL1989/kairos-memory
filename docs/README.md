@@ -7,8 +7,8 @@ tags:
   - kairos
   - documentation
 created: 2026-07-18
-updated: 2026-08-11
-last_reviewed: 2026-08-11
+updated: 2026-08-12
+last_reviewed: 2026-08-12
 status: draft
 ---
 
@@ -233,3 +233,4 @@ status: draft
 | 0.0.95 | 2026-08-11 | Obsidian frontmatter 闭合缺陷修复批次（changelog 0.0.95，批次索引登记）：索引与计数同步（adr/risks/slice-implementation-guide/acceptance-criteria/benchmark-plan/test-strategy 六份文档 frontmatter 补立即闭合 `---`、门禁 6.16 盲区增强）；核心计数表 57/参数 374/错误码 43/术语 77/端点 88/操作 66/组件 70/功能 168/ADR 12/声明 37/债务 D-445 零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.95 显式声明）。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96，批次索引登记）：四组全量通读低危缺口收口——use-cases 三信号检索误归 v1.1 勘误、D-446 登记（叙事自洽度评估器降级默认分数）、D-430 分类处置（config show 契约登记 + 其余归 v0.1.0 全量阶段）、认知导航表/RTM/OP-054/deployment 环境变量/架构引用与版本标注等机械性修正 7 处；债务 D-445→D-446；参数计数与其余核心计数零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.96 显式声明）。 |
 | 0.0.97 | 2026-08-11 | 竖切代码启动批次（changelog 0.0.97）：状态声明由「文档草稿阶段，无运行代码」更新为「竖切代码开发中（W1~W9 已交付）」；竖切组件代码落点指引（src/ + reports/benchmark-baseline-0.1.0.json）。 |
+| 0.0.98 | 2026-08-12 | 版本记录双轨制规则修订批次（changelog 0.0.98，批次索引登记）：索引无实质变更；核心计数零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.98 显式声明）。 |
