@@ -319,6 +319,14 @@ def health() -> None:
 
 
 @app.command()
+def mcp() -> None:
+    """MCP Server（stdio 传输；由 Agent MCP Client 启动，与主进程 localhost HTTP 通信）。"""
+    from src.access.mcp.bridge import run as _mcp_run
+
+    _mcp_run()
+
+
+@app.command()
 def serve(
     port: int | None = typer.Option(None, "--port", help="监听端口（默认 8010）"),
     reload: bool = typer.Option(False, "--reload", help="热重载（开发）"),

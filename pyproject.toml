@@ -22,6 +22,9 @@ dependencies = [
     "cryptography>=42.0",
     # 周期性任务（空闲驱动调度，ADR-006）
     "apscheduler>=3.10",
+    # MCP 协议（Bridge 独立子进程，api-spec §6.8；1.x 内置 FastMCP）
+    "mcp>=1.0,<2",
+    "httpx>=0.27",
 ]
 
 [project.scripts]
