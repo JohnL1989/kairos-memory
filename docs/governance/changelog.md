@@ -2094,6 +2094,20 @@ status: draft
 
 ---
 
+## 0.0.101（2026-08-12）— 接入层全通道交付批次（Agent Tool + MCP Bridge + StorageBackend）
+
+> 竖切验收核对后的接入层补齐——Agent Tool 层（api-spec §2 五工具）、MCP Bridge（§6.8 15 工具独立子进程）、StorageBackend 抽象（D-449 前置落实）。v0.1.0 接入层三大通道齐备：REST API（21 端点）+ CLI（15 条）+ Agent Tool（5 工具）+ MCP（15 工具）。
+
+**落地清单**：
+- **Agent Tool 层**（`src/access/tools.py`）：memories_write（S-15 provenance 必填）/ memories_search（三信号+路径过滤）/ path_browse（树状浏览+截断标记）/ memories_list_recent（影子副本排序）/ memories_merge（语义合并+S-14+源软删除）。
+- **MCP Bridge**（`src/access/mcp/bridge.py`，FastMCP 1.x）：15 工具注册（mcp-tools.json 契约对齐）；独立子进程 stdio 传输、与主进程 localhost HTTP 通信（主进程 base URL 环境变量配置）；治理门禁经主进程 REST 继承（L1 鉴权/L2 宪法/L3 身份否决）；`kairos mcp` CLI 入口。
+- **StorageBackend 抽象**（`src/storage/backend.py`）：detailed-design §2 五方法契约 + SQLiteBackend（薄适配）+ MockPGBackend（接口可替换性，acceptance-criteria「存储后端」判据）——D-449 前置落实。
+- **GET /health 增强**：components 补 scheduler/embedding 状态（observability 口径）。
+
+**验证**：doc-audit 复跑 exit 0；deep-audit exit 0。结构性受改 1 份文档（changelog 本文件）+ 机械性 0 份；核心计数零漂移（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / 债务 D-447~449）。
+
+---
+
 ## 版本记录
 
 > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
@@ -2200,3 +2214,4 @@ status: draft
 | 0.0.98 | 2026-08-12 | 版本记录双轨制规则修订批次（changelog 0.0.98，见本文件 0.0.98 叙述节）：「触及即登记」→「结构性变更即登记」——版本记录只登记结构性变更，机械性变更只进 changelog；doc-audit 6.39 适配结构性受改清单解析（旧格式兼容）；changelog 0.0.97 受改清单标注为新格式。 |
 | 0.0.99 | 2026-08-12 | 竖切首迭代批次（changelog 0.0.99，见本文件 0.0.99 叙述节）：事件总线全链路接线（use_event→影子副本）、APScheduler 空闲驱动调度（4 任务）、QueryAnalyzer（意图+时间锚定）、特征标志配置集校验+证伪套件、D-428 全量闭合（88 操作 schema，redocly 零 error）。 |
 | 0.0.100 | 2026-08-12 | 竖切验收核对批次（changelog 0.0.100，见本文件 0.0.100 叙述节）：验收 9 项逐条核对（8 项代码侧达成 + 定稿评审待评审人）；事件总线入队非阻塞修复（基准挂起根因，恢复 PASS 4.7/3.4/1.4ms）；Agent Tool 层五工具；GET /health 补 scheduler/embedding 状态。 |
+| 0.0.101 | 2026-08-12 | 接入层全通道交付批次（changelog 0.0.101，见本文件 0.0.101 叙述节）：Agent Tool 层五工具 + MCP Bridge 15 工具（独立子进程 stdio）+ StorageBackend 抽象（D-449 前置）+ GET /health 增强——v0.1.0 接入层四通道齐备（REST/CLI/AgentTool/MCP）。 |
