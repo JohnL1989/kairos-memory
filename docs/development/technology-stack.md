@@ -144,25 +144,7 @@ File Graph 是 Kairos 路径空间的图论增强层——将 `kairos://` 路径
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
 | 0.0.1 | 2026-07-31 | 技术选型全景：Python/Litestar/PostgreSQL/pgvector 主技术栈与版本兼容矩阵。 |
-| 0.0.2 | 2026-08-04 | 全库深度审计修复：OpenTelemetry 标注 v1.1 目标引入（v0.1.0 以日志关联追踪为主）；补 LLM 模型路由梯队（Tier 1~4）引用（架构 §5.9）。 |
-| 0.0.3 | 2026-08-04 | 文档职责剥离承接（changelog 0.0.9 批次）：新增 §七 MCP 协议与多语言 SDK（P3-07）——MCP 集成战略、三语言官方 SDK（Python/TS/Go）、File Graph 深层能力，承接自架构 §10.23。 |
-| 0.0.4~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.4~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |
-| 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：MCP/File Graph 裸章节引用补链接。 |
-| 0.0.11 | 2026-08-04 | 开发就绪度修复批次：Prometheus v0.1.0 直出说明（无 OTel 时）。 |
-| 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：MCP Server 进程模型勘误（独立子进程，非内嵌）；工具命名规范对齐实际工具清单（kairos_store_memory，15 个）。 |
-| 0.0.15~0.0.18 | 2026-08-05 | （合并占位：changelog 0.0.15~0.0.18 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |
-| 0.0.19 | 2026-08-05 | 第四轮全库深度审计修复批次（changelog 0.0.19）：File Graph 详细规格迁至 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-19（本节改摘要+指针，标注 v1.1 目标）；三语言 SDK 战略补版本归属标注（v1.1 目标）。 |
-| 0.0.20 | 2026-08-05 | 第五轮全库深度审计修复批次（changelog 0.0.20）：三语言 SDK 表补「版本对齐策略」注记（SDK ≥3.10 为独立交付物，与后端 3.11–3.13 基线互不约束）。 |
-| 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：版本记录补 0.0.15~0.0.18 合并占位行（2-5）。 |
-| 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-05 MCP Bridge 落点 §7.3→§7.1a。 |
-| 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：MCP 工具集构成公式重写（C-01）——「12 规范操作直接映射」修正为「基础工具集 12（3 规范操作直接映射 + 检索/维护/治理类 9）+ 关系管理 3」。 |
-| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：/metrics 端点弱化为待定义口径（与 observability 同步）。 |
-| 0.0.39 | 2026-08-07 | （合并占位：changelog 0.0.39 外部理念吸收批次——6 项借鉴落地于 acceptance-criteria/test-strategy/data-model/architecture/troubleshooting/benchmark-plan，未变更本文档技术选型，见 [changelog.md](../governance/changelog.md) 全景） |
-| 0.0.40 | 2026-08-07 | （合并占位：changelog 0.0.40 外部视频分析批次——新建 analysis/external-videos/ 分析产物目录，未变更本文档技术选型） |
-| 0.0.41 | 2026-08-07 | （合并占位：changelog 0.0.41 外部理念吸收落地批次 AP-01~28——认知基础 8 声明 + 架构 22 机制 + 规格层 7 文档，未变更本文档技术选型） |
-| 0.0.42 | 2026-08-07 | （合并占位：changelog 0.0.42 文档审计修复批次——§6 豁免 2 修订、§6.1 声明承载矩阵版本边界剥离，未变更本文档技术选型） |
-| 0.0.43 | 2026-08-07 | 文档审计修复批次（changelog 0.0.43）：§七 MCP/SDK 工具数口径统一为「15 个 MCP Tool（基础工具集 12 + 关系管理 3）」（原「12 规范操作集」与同文档「15 个工具」矛盾，审计报告 F2）；updated 同步至 2026-08-07。 |
-| 0.0.46 | 2026-08-08 | 文档审计修复批次（changelog 0.0.46）：§五 补 CI/CD 工具链交叉引用（定义见 engineering-workflow §四），技术选型视角不重复承载。 |
+| 0.0.2~0.0.46 | 2026-08-08 | （合并占位：changelog 0.0.2~0.0.46 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |
 | 0.0.51 | 2026-08-08 | round22 审计修复批次（changelog 0.0.51）：§二 投影层补交叉引用（ADR-012 与 data-model §13.5），消除「需自行实现」误导。 |
 | 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-03 OpenTelemetry 行补「（追缴条目：债务 D-432）」、Prometheus 行补「（追缴条目：债务 D-429）」指针。 |
 | 0.0.59 | 2026-08-08 | round26 深度审计修复批次（changelog 0.0.59）：U-01 §三 补本地推理运行时（sentence-transformers / transformers / PyTorch）与两个本地小模型（intent-t5-small / timestamp-t5-small）登记 + 三模型底座注记（对应 threat-model §三a 引用）；U-02 §一 补 CLI 框架（Click / Typer，W1 定档）选型行；U-05 Grafana 行补 v1.1 目标与债务 D-432 指针。 |
@@ -173,3 +155,4 @@ File Graph 是 Kairos 路径空间的图论增强层——将 `kairos://` 路径
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：§二 投影措辞补「（投影方案：固定随机正交投影，见 ADR-012）」括注（线性/正交并称消歧）。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：§七 MCP 渐进增强补版本边界（v1.1 目标）与债务 D-443 指针；MCP Server 实现行裸 api-spec 引用链接化。 |
+

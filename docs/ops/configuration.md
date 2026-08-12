@@ -657,29 +657,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
 | 0.0.1 | 2026-07-31 | 配置参数参考：约 176 项参数与运行时动态调整规则。 |
-| 0.0.2 | 2026-08-03 | 核定正文参数为 186 项；新增附录 A 全库参数总索引（148 项，含定义出处与默认值），全库参数总数 334 项；修正「本文非完整枚举」的口径声明。 |
-| 0.0.3 | 2026-08-03 | 新增 §0.11 核心度量代理参数（6 项，承载 D-15 方案 A 的 CRI / 认知完整性 / 可及性轴可操作代理定义）；正文参数 186→194 项，全库总数 334→342 项，同步 README 与 implementation-map 计数。 |
-| 0.0.4 | 2026-08-03 | 废止 `KAIROS_ENTITY_BOOST_*` 三项（RC-03，原 PER_MATCH / MAX / WEIGHT 具名参数）——实体信号已由乘性加成因子统一为加性交集比例，前两项失去语义，第三项与 `KAIROS_HYBRID_ENTITY_WEIGHT` 重复且默认值冲突（0.10 vs 0.15）。实体权重统一由 `KAIROS_HYBRID_ENTITY_WEIGHT`=0.15 单一承载。正文参数 194→191 项，全库总数 342→339 项。 |
-| 0.0.5 | 2026-08-04 | 市场理念吸收（2026-08-04 决策）：§6.1 新增 `KAIROS_TIME_FILTER_ENABLED`（时间过滤约束开关，默认 true，false 时检索行为与无时间过滤完全一致）。正文参数 191→193 项，全库总数 339→341 项。 |
-| 0.0.6 | 2026-08-04 | 全库深度审计修复——取值范围列修正（PARETO_FRONT_MAX/COMPOSITION_*_WEIGHT/PREDICTOR_ATTRIBUTION_TTL）、三环不变量引用、新增 LLM 成本上限与熔断参数（正文参数 193→196 项，附录 A 148→151 项，全库总数 341→347 项）。 |
-| 0.0.7 | 2026-08-04 | 文档职责剥离引用更新（changelog 0.0.9 批次）：§6.2/§6.3/§6.4/§6.6/§8.7/§8.8 的参数来源引用改指承接文档（GSPO/MMR/spaCy/双策略 → detailed-design §9.1-9.4、断点续训 → detailed-design §10.5、MCP/SDK → technology-stack §七）。 |
-| 0.0.11 | 2026-08-04 | 开发就绪度修复批次：附录去重（正文 210+附录 148=358）、新增 14 项参数（LLM 超时/限流容量/磁盘阈值/运维/告警投递）、待定义回填 12 项、特征标志 NARRATIVE_IDENTITY 默认 ON（宪法核）、历史计数链勘误注记。 |
-| 0.0.12 | 2026-08-04 | 门禁盲区闭环批次：勘误注记去历史计数字样（归版本记录），消除陈旧值检查误报。 |
-| 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：虚拟校准触发链换算注记（900s=3 次静默术语口径 vs 联动逻辑 6×300s）；校准冲突阈值双参数（次数 vs cosine）区分注记；5D 权重框架废弃声明加口径注记；KAIROS_FORGETTING_SCORE_THRESHOLD 归属勘误（v1.1 口径，v0.1.0 用 freshness 三阈值）。 |
-| 0.0.15 | 2026-08-05 | 全面深度审计修复批次（changelog 0.0.15）：**当前核定值锚定行**——正文 210 项 + 附录 A 148 项 = 全库总数 358 项（历史计数链见上方 0.0.2~0.0.11 各条目，现值以本行为准）。 |
-| 0.0.16 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.16，建议一/二/四落地）：新增 10 项参数——校准衰减 3 项（DECAY_LAMBDA/DECAY_FLOOR/AUTO_DORMANT_DAYS）、structural_value 3 项（HIGH_FORK/CONFIRMED_THRESHOLD/REVIEW_INTERVAL）、记忆压力 4 项（WM_OCCUPANCY/LOW_HIT_RATIO/REDUNDANCY_RATIO/BACKLOG_RATIO）。 |
-| 0.0.22 | 2026-08-05 | 外部项目理念吸收批次（changelog 0.0.22）：§6 新增 3 项参数——噪音规则库层开关（INGEST_NOISE_FILTER_ENABLED）、摄入侧情绪爆发关键词表（EMOTIONAL_BURST_KEYWORDS）、摄入侧情绪保护总开关（EMOTIONAL_BURST_PROTECTION_ENABLED）。正文参数 220→223 项，附录 A 148 项不变，全库总数 368→371 项。 |
-| 0.0.24 | 2026-08-05 | 第六/七轮全库深度审计修复批次（changelog 0.0.24）：附录 A 引言正文参数计数 210→223（2-02，口径补注 0.0.16/0.0.22 增长链）；「12 项待定义」核验仍准确。 |
-| 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-01 三环不变量引用 §6/§10.3→§10.3；M-11 附录 A KAIROS_SEED_PATH 来源行号 189→192。 |
-| 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：附录 A「来源」列 136 处硬行号引用整体废除（C-03/F-01）——改为「文档 §章节」语义引用（含权威落点核查：38 处原引用文档无定义、落点修正至 detailed-design/blueprint 等权威段；KAIROS_PATH 标注待定义）。 |
-| 0.0.34 | 2026-08-06 | 第十四轮全库深度审计修复批次（changelog 0.0.34）：`KAIROS_RETRIEVAL_LINK_WEIGHTS` 由「—（待定义）」补填默认值 `{"semantic": 0.50, "cooc": 0.20, "knn": 0.10, "causal": 0.20}`，来源列指向架构 §5.2 链路融合与检索扩展（唯一权威）。 |
-| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：附录 A「待定义」计数 12→11（0.0.34 已回填 `KAIROS_RETRIEVAL_LINK_WEIGHTS`）；`KAIROS_FEATURE_CONSTITUTIONAL_GOVERNANCE` OFF 行为补竖切例外注记（竖切内监督平面部分启用——审计庭快照校验/审计日志比对，见 slice-implementation-guide 组件 6）。 |
-| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：§11 特征标志补 KAIROS_FEATURE_CONNECTORS（11→12）；KAIROS_SDK_PYTHON_MIN_VERSION 统一 3.10；身份映射参数名统一为 KAIROS_USER_ALIASES；正文 224 + 附录 A 146 = 370 计数核定；附录/§0.10 格式注记；动态调参约束注记。 |
-| 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：§0.11 补 CRI 触发压缩外部参考值注记（压缩触发阈值 0.5 / 压缩目标 0.2 / 保护最近 20 条，外部实证：Hermes VID-45）——注记形式落地，未新增参数，参数计数不变（正文 224 + 附录 A 146 = 370）。 |
-| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：KAIROS_BENCHMARK_* 来源列指正（§三）；σ 双用途互注（VAD 告警+权重衰减）；dormant 笔误；附录 USER_ALIASES 收录例外注记。 |
-| 0.0.46 | 2026-08-08 | 文档审计修复批次（changelog 0.0.46）：`KAIROS_RETRIEVAL_LINK_WEIGHTS` 来源列与版本记录中小节名「三链路融合与检索扩展」→「链路融合与检索扩展」（唯一权威口径同步）。 |
-| 0.0.52 | 2026-08-08 | round22 结构性建议落地批次（changelog 0.0.52）：附录 A 引言「编码启动前须补齐（共 10 项）」自设硬门禁补 D-431 追缴指针（configuration → debt-collection D-431）。 |
-| 0.0.64 | 2026-08-08 | round30 全面深度审计修复批次（changelog 0.0.64，补登）：§6.2 补登 `KAIROS_GSPO_MIN_CLUSTER_SIZE`（默认 2，≥2 整数）、§6.9 补登 `KAIROS_CROSS_ENCODER_ENABLED`（默认 false，{true,false}）；附录 A 补登 `KAIROS_EVENT_QUEUE_CAPACITY`（默认 128，来源架构 §10.10）；参数计数 370→373（正文 224→226、附录 A 146→147）。 |
+| 0.0.2~0.0.64 | 2026-08-08 | （合并占位：changelog 0.0.2~0.0.64 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |
 | 0.0.65 | 2026-08-08 | round31 深度审计修复批次（changelog 0.0.65）：附录 A `KAIROS_FTS5_*` 四参数来源改指 v0.1.0 权威（data-model §11 全文检索——基础 FTS5 contentless-external 为 v0.1.0 已交付，jieba 精细分词与 Playbook 索引增强归属 v1.1 蓝图 §P3-21）；附录 A 引言「蓝图 v1.1 参数 v0.1.0 不实现」补 FTS5 基础参数族例外注记。 |
 | 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.64 行（三参数补登 + 计数 373）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.67 | 2026-08-09 | round33 全面深度审计修复批次（changelog 0.0.67）：§0.2 `KAIROS_VIRTUAL_CALIBRATION_TIMEOUT` 行「触发口径（勘误）」去除过程标记后缀（零版本标记纪律收敛，正文仅描述当前状态）。 |
@@ -690,3 +668,4 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：§6.6 新增 `KAIROS_ENTITY_LLM_DISCARD_THRESHOLD`（默认 0.5，实体提取丢弃阈值下界，与 CONFIDENCE_THRESHOLD 构成互斥开区间判定），参数 373→374；详见 changelog 0.0.85 叙述节。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：§0.11 决策 D-15 与附录 A 债务 D-431 补前缀。 |
 | 0.0.92 | 2026-08-11 | 定稿收尾批次（changelog 0.0.92）：附录 A 引言 10 项待定义参数分类处置声明（8 项 v1.1 域随功能迭代定义 + 2 项部署时点确定，竖切无待定义项；追缴 D-431 同步分类处置）。 |
+

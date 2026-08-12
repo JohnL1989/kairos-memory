@@ -1684,25 +1684,7 @@ v1.1 规划：
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
 | 0.0.1 | 2026-07-31 | 接口规格：REST API 78 端点、Agent Tool、CLI、MCP 工具与事件消息格式。 |
-| 0.0.2 | 2026-08-04 | RC-19 补顶层 REST 端点与 Agent Tool 响应定义；D-13 端点计数口径（78 业务端点 + 1 探针 = 79）。 |
-| 0.0.3 | 2026-08-04 | 全库深度审计修复：回滚端点安全红线 S-14（语境自指禁令）误标修正为 S-08（未授权管理访问拒绝）。 |
-| 0.0.4 | 2026-08-04 | 全库深度审计修复：§7 错误码表补权威来源声明（error-reference 为准）、stats/health-detail by_state 合计修正为与 total 一致、memories_list_recent/memories_merge JSON 块对调、§6.8 冗余端点行删除。 |
-| 0.0.5 | 2026-08-04 | 文档职责剥离承接（changelog 0.0.9 批次）：新增 §18 资源摄取与多模态——§18.1 资源摄取 API（add_resource 四类资源）、§18.2 多模态消息 Part 统一接口（5 种 Part schema），承接自架构 §7.3e/§7.3i。 |
-| 0.0.6~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.6~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |
-| 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：§18.2 空表清理；§6.8 MCP 工具清单引用改指 §7.3.1。 |
-| 0.0.11 | 2026-08-04 | 开发就绪度修复批次：契约枚举唯一化、五项悬空端点补机制指针、priority 示例修正、chat_messages 表名修正、临时契约审计痕迹统一。 |
-| 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：DELETE 契约删除语义统一（permanent 拒删/ondemand+environmental 软删/temporary 硬删留痕）；S-07 导出脱敏「掩码+截断」口径与参数名统一（clearance=level）；HMAC 审计链公式统一为 threat-model 权威 5 项输入；memories_write 契约枚举补 intention 第五值；CLI 示例 `kairos_create_memory`→`kairos_store_memory`；MCP 工具集 15 个计数口径注记。 |
-| 0.0.15 | 2026-08-05 | 全面深度审计修复批次（changelog 0.0.15，依 comprehensive-documentation-audit P1-01/P1-02）：资源摄取端点 contract 枚举补 intention 第五值（四值→五值，注释改指 data-model 权威）；注册竖切 M-05 归档端点 `POST /v1/memories/{id}/archive` 与配套 `POST /v1/memories/{id}/restore`（对应架构 12 规范操作集 archive/restore，含幂等性/契约约束/潜伏势能重估匹配验证）；业务端点计数 78→80、物理总数 79→81（口径注记同步）。 |
-| 0.0.16 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.16，建议一/四/五/七落地）：检索响应补 meta.calibration_status 与 nudge 可选字段；新增 GET /v1/health/calibration、GET /v1/health/memory-pressure、GET /audit/compression、GET /audit/compression/summary 四端点；§8 叙事线 API 补 v0.1.0 子集声明与 create/members/memories 三端点。（0.0.25 勘误补登：业务端点计数 80→85、物理总数 81→88，口径注记同步） |
-| 0.0.20 | 2026-08-05 | 第五轮全库深度审计修复批次（changelog 0.0.20）：§6.5/§8/§9/§10 补「被架构引用」反向注记（架构引用本章节时须同步回改，防章节号漂移）。 |
-| 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：端点计数重算 80→85、物理总数 81→88（口径注记同步 + 0.0.16 条目勘误补登）；顶层章节标题统一数字（一~十八→1~18）与中文序引用同步；前瞻记忆引用 §8→§3.2。 |
-| 0.0.26~0.0.27 | 2026-08-06 | (合并占位：changelog 0.0.26/0.0.27 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景) |
-| 0.0.28 | 2026-08-06 | 第十轮全库深度审计修复批次（changelog 0.0.28）：§6.8 MCP Bridge 工具表补关系管理 3 工具（kairos_link/kairos_unlink/kairos_relations，15 口径统一）；指引段 §7.3.1→§7.1a 并注明 15 构成；§1.4 archive 引用 §7.3→§7.3.1；sessions/evolution 路径占位符统一为 {id}。 |
-| 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题风格统一——「N、」改「§N」（18 个大章并入 §N 数字序形态，引用零联动）。 |
-| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：§4 事件优先级口径改写（当前已使用 0（校准/降级）/3（use_event）/6（latent_trigger），0-2 不被背压阻塞）；§3 CLI 表补注册 `kairos degradation switch`（CLI 24→25，对齐竖切实现指南与 test-plan 使用）；§8 叙事线已完结拒新成员错误 400→409（状态冲突，无新错误码）。 |
-| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：端点计数口径去版本化；batch/import 冲突策略枚举互引注记；图片语义向量版本边界（v0.1.0 仅存储）；degradation_switch 接收者按架构 §10.10 收敛；竖切 M-05 注册注记去版本号；路径空间统一下划线命名；RL 初始化注记。 |
-| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：叙事线响应 status "open"→"active"（对齐 data-model 枚举）；§1.2 检索响应示例修正（虚拟校准 ceiling/active_mode）；§6.8 MCP 引用格式；任务感知评分流程指 benchmark-plan §3.14。 |
-| 0.0.51 | 2026-08-08 | round22 审计修复批次（changelog 0.0.51）：§7 错误码口径 38→40（新增 ERR-SYS-006/007，对应启动校验审计事件，内部日志码不计入 API 返回子集）。 |
+| 0.0.2~0.0.51 | 2026-08-08 | （合并占位：changelog 0.0.2~0.0.51 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |
 | 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
 | 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
 | 0.0.73 | 2026-08-09 | round37 全面深度审计修复批次（changelog 0.0.73）：§1.2 记忆检索 GET /v1/memories 补 `sort` 参数承载（`created_at` 时间序/`heat_score` 热度序/默认相关性）——feature-list R-10「时间序检索 sort=created_at」接口落点补全（此前功能声明无接口承载）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
@@ -1713,5 +1695,6 @@ v1.1 规划：
 | 0.0.86 | 2026-08-10 | round48 遗留问题处理批次（changelog 0.0.86）：§1.3 并发冲突引用措辞对齐——「§2 写入管线约束②」改「§2 写入管线设计②（幂等 + 乐观锁事务提交）」（候选机制名与 detailed-design 目标节标题一致，消除 6.26 误报）；语义不变。详见 changelog 0.0.86 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：§1.1/§1.2「写入管线约束②」→「写入管线设计②」两处补改（round48 遗留，R49-02）+ L55 If-Match「建议携带」→「必须携带」口径统一（round47 H-05 同步，R49-04）。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：§3 CLI 表登记 `kairos config show` 契约（竖切 CLI 15 交付项，组件 9，D-430 分类处置——此前契约缺失）。 |
+
 
 > **端点计数口径（决策 D-13 核定）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（注册 `archive`/`restore` 两个竖切端点后 78→80；补 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §1.8）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §6.5），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。

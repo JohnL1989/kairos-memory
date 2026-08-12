@@ -1391,29 +1391,7 @@ SQLite 无时区类型，故：
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
 | 0.0.1 | 2026-07-31 | 数据模型：55 张表 Schema、索引与记忆状态机（56 个 `###` 条目中 `retrieval_enhancement_config` 为配置参数清单，非物理表）。 |
-| 0.0.2 | 2026-08-03 | 表数核定为 **56 张**：`proactive_topics` 小节标题此前被误写为 `\|### proactive_topics`（管道符前缀导致标题不成立、计数遗漏），本次修复标题并重新核定——57 个 `###` 条目中 `retrieval_enhancement_config` 非物理表，故物理表 56 张。同步修复 `memories` 索引列表 4 项误用表格语法、`memory_relations.relation_type` 与 `memory_entities` UNIQUE 约束行的列数。 |
-| 0.0.3 | 2026-08-03 | 新增 `api_keys` 表（RC-02）——安全规格 §2.1 声明的「内部密钥表」此前无数据承载，API Key 三级权限、轮换宽限、吊销均无处落地。表数 56 → **57**（58 个 `###` 条目减 `retrieval_enhancement_config`）。同步更新 README、implementation-map、slice-implementation-guide 的表数与竖切排除理由。 |
-| 0.0.4 | 2026-08-04 | 市场理念吸收（2026-08-04 决策）：`memories` 新增 `occurred_at`（事件时间，双时态）与版本链四字段（parent/root/next/is_latest，对齐架构 §5.2 版本链模型声明）；`knowledge_evolution` 新增 `valid_from/valid_to`（演化关系有效区间，对齐 §5.2 半开区间时间语义）。表数不变（57）。 |
-| 0.0.5 | 2026-08-04 | 全库深度审计修复：`api_keys.key_hash` 哈希算法 SHA-256 → PBKDF2-HMAC-SHA512（256,000 次迭代，与安全规格 §2.1 统一）。 |
-| 0.0.6 | 2026-08-04 | 全库深度审计修复——检索配置键名映射声明、§8 编号重排、relation_type 术语注释。 |
-| 0.0.7 | 2026-08-04 | 文档职责剥离引用更新（changelog 0.0.9 批次）：`image_blobs`/`schema_info`/`training_checkpoints`/`prepared_stmt_stats`/`memories_fts`/`skills_fts`/`permission_acl` 等表的架构引用改指承接文档（P3-21~23 → blueprint、断点续训 → detailed-design §10.5、ACL → blueprint §P3-25、多模态 → api-spec §18.2）。 |
-| 0.0.8~0.0.9 | 2026-08-04 | （合并占位：changelog 0.0.8~0.0.9 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |
-| 0.0.10 | 2026-08-04 | 第二轮全库深度审计修复（changelog 0.0.10）：memories.contract 增 intention 意图契约枚举（对齐架构 §8 与 feature-list PM-01）。 |
-| 0.0.11 | 2026-08-04 | 开发就绪度修复批次：§8 编号重排、FTS5 同步机制勘误、类型错配 3 处、缺失索引/UNIQUE 补齐、数组类型映射、知识演化触发机制改指架构 §5.2、计数与表名勘误。 |
-| 0.0.12 | 2026-08-04 | 门禁盲区闭环批次：决策 D-12 引用标注「决策」前缀（2 处）。 |
-| 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：memory_relations.relation_type 补语义标记扩展说明（supplement/refutation/reference/contextual/temporal）；memories.contract 补写时默认建议值+运行时覆盖注记；proactive_topics.priority 改 FLOAT [0,1]（对齐架构 ≥0.7 判据）；quality_tier 引用改指 blueprint；HMAC 审计链公式统一为 threat-model 权威 5 项输入。 |
-| 0.0.16 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.16，建议二/七落地）：memories 表新增 structural_value（0/1/2 半定量）/structural_value_reasons/structural_value_updated_at 三字段与 is_structure 双向同步注记；新增 compression_trail JSONB 逐记忆压缩审计字段。 |
-| 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：顶层章节标题统一数字（一~十三→1~13）与中文序引用同步；前瞻记忆引用 §8→§3.2。 |
-| 0.0.29 | 2026-08-06 | 第十轮全库深度审计 P1 修复批次（changelog 0.0.29）：S-01 大章标题风格统一——「N、」改「§N」（13 个大章并入 §N 数字序形态，引用零联动）。 |
-| 0.0.37 | 2026-08-06 | round15 深度审计修复批次：api_keys.level 枚举统一为 read（含 CHECK 约束，与 api-spec §1 三级口径一致）；§8.1 conversation_messages 补 parts 列（对齐 api-spec §18.2 v0.1.0 交付承诺）；journal_entries 补 node_episode_index_map 列（架构 §5.2 Episode 归因索引）；api_keys 表补 v0.1.0 核心鉴权承载注记。 |
-| 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：rl_weights 归一化口径统一（初始化不归一化/更新投影强制 Σ=1）；实体类型存储枚举映射注记；配置键名映射示例修正；表标题 v0.1.0 交付口径；零版本标记收敛。 |
-| 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：encoding_context 补 `conditions` 子结构约定（条件性经验适用范围显式化）。 |
-| 0.0.41 | 2026-08-07 | 外部理念吸收落地批次（changelog 0.0.41）：memories 表新增显式时效字段 `valid_until`/`expiration_date`（时间轴结构互补；`superseded_by` 为既有字段，不重复添加），并同步 schema-slice.sql 补列（6.13 门禁联动）；§0 补物理分库取向注记（外部实证：OpenClaw VID-16 评估记录——Kairos 维持逻辑域隔离，物理分库为 v1.1+ 演进选项）。表数不变（57）。 |
-| 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：实体加成乘性参数废止标注（RC-03 口径）；知识演化触发机制括注阈值收敛为指针；§8.12 技能/质量层次引用改指 blueprint；§10 注册表压缩为指针（架构权威）；D-311 债务前缀补标。 |
-| 0.0.43 | 2026-08-07 | 文档审计修复批次（changelog 0.0.43）：补 DDL 承载说明（DDL 集中于 schema-slice.sql，文档层仅描述逻辑模型，审计报告 F7）；门禁 6.13 DDL<->data-model 字段集比对 0 差异。 |
-| 0.0.53 | 2026-08-08 | round23 深度审计修复批次（changelog 0.0.53）：R23-04 字段描述「（新增）」标记清除（tier/升档原因/升降档时间/压缩审计日志）。 |
-| 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
-| 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
+| 0.0.2~0.0.57 | 2026-08-08 | （合并占位：changelog 0.0.2~0.0.57 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |
 | 0.0.61 | 2026-08-08 | round27 深度审计修复批次（changelog 0.0.61）：§11 memories_fts 约束项中文分词口径对齐——v0.1.0 DDL 默认 `tokenize='unicode61'`，jieba 为需编译扩展的可选精细中文分词（由 `KAIROS_FTS5_CHINESE_SEGMENTATION` 配置控制），与 schema-slice §14 一致；消除「中文分词通过 jieba 实现」表述与自身 DDL 矛盾。 |
 | 0.0.63 | 2026-08-08 | round29 全面深度审计修复批次（changelog 0.0.63）：§11 定位补「版本归属」注记——七张表的结构随 v0.1.0 数据模型落库，消费组件版本归属以架构 §5.20 与债务登记为准（SQLCipher D-416 / PreparedStatementCache D-418 / 受控前向兼容 D-419 / Permission ACL D-421 为 v1.1 组件，数据承载先行落库），消除标题「（v0.1.0 交付）」的读解歧义。 |
 | 0.0.64 | 2026-08-08 | round30 全面深度审计修复批次（changelog 0.0.64，补登）：§配置键表补点分键 2 项——`kairos.retrieval.gspo.min_cluster_size`（GSPO 最小聚类规模）、`kairos.retrieval.cross_encoder.enabled`（Cross-encoder 总开关）；「与 configuration 一一对应」声明改为「与 configuration §6.1/§6.2/§6.3/§6.9 四节环境变量满射」表述。 |
@@ -1424,3 +1402,4 @@ SQLite 无时区类型，故：
 | 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：memories.contract 两层默认值说明（DDL DEFAULT 'ondemand' 仅兜底，/v1/ingest 按资源类型预填以 API 预填为准，非口径冲突，链接 api-spec §18）；详见 changelog 0.0.83 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：L85「D-311 衔接」补「债务」前缀。 |
 | 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：§8.18 query_analysis_cache 定位段 QueryAnalyzer 引用架构 §2.1→§2.6.1（§2.6.1 为 QueryAnalyzer 查询理解层实际章节）。 |
+

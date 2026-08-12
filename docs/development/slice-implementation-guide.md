@@ -233,11 +233,7 @@ W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
 | 0.0.1 | 2026-07-31 | 竖切实现指南：组件清单、15 张表、REST/CLI 端点、逐组件实现规格与实现顺序。 |
-| 0.0.2 | 2026-08-04 | 挂接 schema-slice.sql 可执行 DDL 引用（§二 引言 + §六 阅读路径），对齐 data-model §13.4。 |
-| 0.0.3 | 2026-08-04 | 全库深度审计修复：竖切组件代码落点注记、AGE_DECAY_CONSTANT 待定义状态注记、CLI 计数三档口径说明。 |
-| 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：组件 4 遗忘配置勘误（freshness 三阈值，AGE_DECAY 归 v1.1）；TC-C01-001→TC-CAL01-001；竖切组件计数 9 vs 6 口径注记。 |
-| 0.0.15 | 2026-08-05 | 全面深度审计修复批次（changelog 0.0.15，依 comprehensive-documentation-audit P1-02）：M-05 归档端点「待 api-spec 注册」标注移除（已注册，见 [api-spec.md](../specification/api-spec.md) §1.5），组件 4 API 行同步补 restore 配套端点。 |
-| 0.0.16 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.16，建议三落地）：组件 3 补 QueryAnalyzer 首迭代增强注记（意图分类规则优先+时间锚定，竖切后首迭代实现优先级）。 |
+| 0.0.2~0.0.16 | 2026-08-05 | （合并占位：changelog 0.0.2~0.0.16 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §三→§3 引用联动。 |
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-07 存活探针端点 GET /v1/health→GET /health。 |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：REST 20→21（补 `POST /v1/memories/{id}/restore` 行，M-05 恢复端点）；DELETE 行 M-03 标注修正（软删除语义，M-03 显式遗忘经 CLI `kairos forget` 承载）；组件 6 补监督平面部分启用注记；CLI 全量 24→25 联动（api-spec §3 补注册）。 |
@@ -248,3 +244,4 @@ W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：正文裸文档名引用链接化 7 处（implementation-map/data-model/api-spec/configuration）。 |
 | 0.0.93 | 2026-08-11 | round53 全面深度审计修复批次（changelog 0.0.93）：§一 计数口径注记措辞对齐（「project-plan §一 竖切组件列」→「竖切范围表组件行」）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
 | 0.0.95 | 2026-08-11 | round55 Obsidian frontmatter 闭合修复批次（changelog 0.0.95）：frontmatter 补立即闭合 `---`（章节导航引用块此前被卷入 YAML 区导致 Obsidian 无效属性）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
+

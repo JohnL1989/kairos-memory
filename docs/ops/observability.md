@@ -149,9 +149,7 @@ status: draft
 | 版本 | 日期 | 说明 |
 |:----|:----|:-----|
 | 0.0.1 | 2026-07-31 | 可观测性设计：指标/日志/追踪/告警与检测器可见性。 |
-| 0.0.2 | 2026-08-04 | 全库深度审计修复：/health 示例对齐 deployment 契约（deployment_mode 字段、标准模式 embedding）、告警投递渠道声明（§4a）、校准中断告警关联 TIMEOUT 参数。 |
-| 0.0.11 | 2026-08-04 | 开发就绪度修复批次：可观测性四支柱、补拟真校准失稳告警行。 |
-| 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：校准中断严重告警改「触发降级告警」并注明 N/M 契约为准；§4a 告警投递渠道勘误（KAIROS_ALERT_* 已参数化）；硬编码阈值加基线注记（健康检查 3 次/预算 10%）。 |
+| 0.0.2~0.0.14 | 2026-08-05 | （合并占位：changelog 0.0.2~0.0.14 批次的变更未逐条登记于本文档，见 [changelog.md](../governance/changelog.md) 全景） |
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：/metrics 端点断言式陈述弱化为设计目标（标注「端点待定义，api-spec §1.8 登记前为设计目标」）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：configuration 章节引用修正（§2→§4）。 |
 | 0.0.39 | 2026-08-06 | 外部理念吸收批次（changelog 0.0.39）：运行时指标补 `kairos_stale_call_ratio` / `kairos_task_success_rate`（记忆质量评估，指标定义见 acceptance-criteria §一a）；告警规则补「过时调用率超阈」。 |
@@ -162,3 +160,4 @@ status: draft
 | 0.0.67 | 2026-08-09 | round33 全面深度审计修复批次（changelog 0.0.67）：§4a「告警投递渠道（勘误）」去除过程标记后缀（零版本标记纪律收敛，正文仅描述当前状态）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：§1.1 `kairos_forgetting_score` 指标说明改 freshness 口径（值越高越新鲜，与 detailed-design §3 EVALUATE_FRESHNESS 返回值一致，豁免记忆不计入）。详见 changelog 0.0.85 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：健康检查/告警比例基线硬编码补债务 D-442 指针（2 处）。 |
+
