@@ -96,6 +96,7 @@ async def create_memories_batch(
                     provenance=item["provenance"],
                     contract=item.get("contract", "ondemand"),
                     memory_types=item.get("memory_types", ["semantic"]),
+                    occurred_at=item.get("occurred_at"),
                 )
             )
             success += 1

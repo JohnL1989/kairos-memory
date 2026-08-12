@@ -29,6 +29,9 @@ logger = logging.getLogger("kairos.scheduler")
 # 防抖间隔（架构 §2.6.3）
 LATENT_REEVALUATION_INTERVAL = 5
 FORGETTING_SCAN_INTERVAL = 10
+# 事件队列消费间隔（use_event → 影子副本 + last_access_at 刷新；drain 确定性消费，
+# 架构 §10.10 分发语义——无消费端则订阅器永不执行，闭环断裂）
+BUS_DRAIN_INTERVAL = 2
 # configuration 参数（KAIROS_FORGETAFTER_SCAN_INTERVAL / KAIROS_SCHEDULER_INTERVAL）
 DEFAULT_FORGETAFTER_SCAN = 3600
 DEFAULT_DEGRADATION_TICK = 300
@@ -78,10 +81,18 @@ class KairosScheduler:
             coalesce=True,
             replace_existing=True,
         )
+        scheduler.add_job(
+            self._run_task(self._bus_drain),
+            IntervalTrigger(seconds=BUS_DRAIN_INTERVAL),
+            id="bus_drain",
+            max_instances=1,
+            coalesce=True,
+            replace_existing=True,
+        )
         scheduler.start()
         self._scheduler = scheduler
         logger.info(
-            "kairos scheduler started (forgetting_scan/latent_reevaluation/forget_after_scan/degradation_tick)"
+            "kairos scheduler started (forgetting_scan/latent_reevaluation/forget_after_scan/degradation_tick/bus_drain)"
         )
 
     async def shutdown(self) -> None:
@@ -129,3 +140,13 @@ class KairosScheduler:
         mode = await self.app.degradation.tick(last_calibration_at=last_cal)
         if mode != "normal":
             logger.info("degradation_tick: mode=%s", mode)
+
+    async def _bus_drain(self) -> None:
+        """消费事件队列（use_event → 影子副本增量 + memories.last_access_at 刷新）。
+
+        架构 §10.10 分发语义：publish 持久化 + 入队，drain 确定性消费——无消费端
+        则订阅器永不执行（使用不驱动新鲜度，"记忆即使用"闭环断裂）。
+        """
+        processed = await self.app.bus.drain()
+        if processed:
+            logger.debug("bus_drain: %d events dispatched", processed)

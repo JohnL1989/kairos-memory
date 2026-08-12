@@ -176,7 +176,7 @@ def load_settings(env: dict[str, str] | None = None, dotenv_path: Path | None = 
         if default is not None:
             raw[name] = str(default)
 
-    # 2. .env 文件（显式路径 > 默认 $KAIROS_DATA_DIR/.env）
+    # 2. .env 文件（显式路径 > KAIROS_DATA_DIR > 默认数据目录 $HOME/.kairos）
     candidates: list[Path] = []
     if dotenv_path is not None:
         candidates.append(dotenv_path)
@@ -184,6 +184,13 @@ def load_settings(env: dict[str, str] | None = None, dotenv_path: Path | None = 
         data_dir = env_map.get("KAIROS_DATA_DIR")
         if data_dir:
             candidates.append(Path(_expand_home(data_dir)) / ".env")
+        elif env is None:
+            # 从 os.environ 读取时（真实运行），与 _PARAM_SPECS 中
+            # KAIROS_DATA_DIR 默认值（$HOME/.kairos）保持一致：未显式设置
+            # KAIROS_DATA_DIR 仍读取默认数据目录的 .env，否则必填密钥
+            # （S-01）缺失。显式传入 env dict（测试/嵌入场景）不读默认
+            # .env——保持环境完全隔离语义。
+            candidates.append(Path.home() / ".kairos" / ".env")
     for path in candidates:
         if path and path.is_file():
             for line in path.read_text(encoding="utf-8").splitlines():
