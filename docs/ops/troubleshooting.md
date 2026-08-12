@@ -17,7 +17,7 @@ status: design-freeze
 
 > **文档定位：** 常见问题的排查步骤和恢复命令。不包含系统设计或配置细节——部署配置见 [docs/ops/deployment.md](deployment.md)，可靠性策略见 [docs/ops/reliability.md](reliability.md)，设计约束见 [docs/foundation/architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §8「安全红线」。值班速查子集（启动失败/运行时异常/错误码）见 [runbook.md](runbook.md) §5。
 
-> **⚠ 草稿完善声明**：本文所有 CLI 命令（`kairos db restore`、`kairos db repair`、`kairos admin key rotate` 等）与 SQL 语句均为**设计示例**，当前无构建产物、无可执行命令。项目处于设计冻结阶段，代码尚未启动。**请勿将本文当作可执行的灾难恢复手册使用**——在代码实现前，本文的价值在于定义"应当具备哪些恢复能力"，而非"如何执行恢复"。具体命令语法在实现后可能变化，读者应关注排查思路与恢复语义而非命令文本。
+> **⚠ 命令状态**：本文涉及的 CLI 命令（`kairos db restore`、`kairos db repair`、`kairos admin key rotate` 等）部分尚未实现（竖切 18 命令见 `kairos --help`；`db` 子命令可用性以 `kairos db --help` 为准）。本文的价值在于定义「应当具备哪些恢复能力」——执行前以当时 CLI 帮助为准，读者应关注排查思路与恢复语义而非命令文本。
 
 ---
 

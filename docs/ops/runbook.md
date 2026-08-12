@@ -30,9 +30,7 @@ status: design-freeze
 
 > **定位**：[deployment.md](deployment.md) 首次部署后的日常操作手册。三个月后不记得怎么备份、升级、恢复时翻这里。
 >
-> **⚠ 草稿完善声明**：以下 `kairos` 子命令为目标示例。当前文档草稿阶段，无运行代码，命令格式和可用性将在代码启动后最终确认。所有操作以当时版本 CLI 帮助为准。
->
-> **CLI 命令状态**：本手册使用的 `kairos *` 子命令为设计目标命令；与 [troubleshooting.md](troubleshooting.md) 的命令定义状态表共用——标注"待定义"的命令在代码启动前以 `--help` 为准，启动后以 CLI 实现为准。
+> **命令状态**：竖切交付的 `kairos` 子命令以 CLI 实现为准（`kairos --help`）。本文涉及的以下待定义命令尚未实现，以 `--help` 为准（见追缴清单）。
 >
 > **待定义命令追缴**：本手册直接使用的待定义命令包括 `kairos health --full`（§1.2 启动检查、§2.3 灾难恢复验证）、`kairos logs --level/--module/--since/--follow`（§1.3 日常操作、§5.2 故障排查）、`kairos config show`（§4.1 配置查看）、`kairos config reset`（§4.1 配置重置）、`kairos admin key revoke`（§4.2 密钥吊销）、`kairos admin key rotate --hmac`（§4.3 密钥轮换）、`kairos audit log`（§6.2/§6.4 审计查询）、`kairos audit approve-forgetting`（§6.2 遗忘审批）——全部纳入**债务 D-430** 追缴（api-spec §3 登记契约或从本手册移除），条目见 [debt-collection.md](../governance/debt-collection.md)。灾难恢复主链路命令（`db repair` / `db restore` / `db migrate rollback`）同属债务 D-430 范围。
 

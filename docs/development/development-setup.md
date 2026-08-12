@@ -15,11 +15,11 @@ status: design-freeze
 
 # Kairos 开发环境搭建
 
-> **状态声明**：本文描述的命令（`git clone` → `uv pip install -e ".[dev]"` → `kairos init` → `kairos serve`）为**设计目标**。CLI 尚未构建，本文待 CLI 构建后重写。
+> **状态声明**：本文描述的命令（`git clone` → `uv pip install -e ".[dev]"` → `kairos init` → `kairos serve`）以竖切交付的 CLI 实现为准（18 命令，`kairos --help`）。
 
 > **定位**：开发者从零开始搭建 Kairos 开发环境。
 >
-> **⚠ 草稿完善声明**：以下所有命令为架构设计阶段的目标示例。项目当前处于草稿完善阶段期（见 changelog），CLI 尚未构建。命令格式和参数将在代码启动后最终确认。
+> **⚠ 声明**：以下命令以竖切交付的 CLI 实现为准（`kairos --help`，18 命令）；示例中的版本/路径参数以当时 CLI 帮助为准。
 
 ---
 

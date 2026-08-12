@@ -23,6 +23,7 @@ status: design-freeze
 > | 二、数据目录 | 持久化目录与文件布局 |
 > | 三、环境变量 | 环境变量清单 |
 > | 四、启动与健康检查 | 启动流程与健康探针 |
+> | 四·a、接入层部署 | MCP Bridge + Hermes Memory Provider 接入 |
 > | 五、Docker 部署参考 | 容器化部署参考 |
 > | 六、数据库初始化 | 数据库初始化与迁移 |
 > | 七、日志与监控 | 日志与指标 |
@@ -33,7 +34,7 @@ status: design-freeze
 
 > **文档定位：** 本指南描述 Kairos 的部署模式、配置项、数据目录结构和运维基础。不包含系统架构设计（见 [docs/foundation/architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md)）或可靠性策略（见 [docs/ops/reliability.md](reliability.md)）。
 >
-> **⚠ 草稿完善声明**：以下部署步骤（`pip install kairos`、`kairos/kairos:latest` 等）为目标示例。当前草稿完善阶段期无构建产物或 Docker 镜像，部署命令将在代码启动后交付。
+> **⚠ 声明**：以下部署步骤（`pip install kairos`、`kairos/kairos:latest` 等）中——Python wheel 已构建（`dist/kairos-0.1.0*`，`pip install` 可用），Docker 镜像待发布（见 [debt-collection.md](../governance/debt-collection.md)）；命令以当时 CLI 帮助为准。
 >
 > **单租户声明**：Kairos 为单租户系统（见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §10.7）。单部署实例服务于单用户——`{user_id}` 仅为内部路径组织，不表示多租户隔离。三级 API Key（read/write/admin）用于操作权限分级，非租户隔离。部署时不需配置多租户代理。部署模式中的「正式生产/全功能」指功能完整度（含 Docker/备份/告警），不改变单租户约束。
 
@@ -164,6 +165,32 @@ curl http://localhost:8010/health  # 健康检查端点
 
 > **轻量模式说明**：components 中不含 `sublimation`、`calibration`、`embedding`（BGE-M3 本地推理不暴露为独立组件），`db` 使用 SQLite（无连接池指标）。**校准能力注记**：轻量模式不含 calibration **组件**（不暴露为 health 独立组件），但保留外部校准端口能力（架构内核级梯度「外部校准端口不可裁剪」——校准信号接收与处理仍可用，仅不单独呈现为健康检查组件）。
 
+## 四·a、接入层部署（MCP Bridge + Hermes Memory Provider）
+
+接入层三通道（Agent Tool / MCP Bridge / Hermes Memory Provider）的 Agent 侧接入配置（架构 [§7.1a](../foundation/architecture-v0.1.0.md) 权威；工具清单以 [api-spec.md](../specification/api-spec.md) §6.8 为准）。
+
+**MCP Bridge（独立子进程 stdio）**：
+
+- 进程模型：FastMCP Server 独立子进程，与 Kairos 主进程经 localhost HTTP 通信——`KAIROS_MCP_BASE_URL`（默认 `http://127.0.0.1:8010`）指向主进程 REST API，工具调用继承主进程全部门禁（L1 权限 + L2 宪法约束 + L3 身份否决）。
+- 启动：`kairos mcp-bridge`（或等价子命令，见 [api-spec.md](../specification/api-spec.md) §3 CLI 清单）。
+- 注册：在支持 MCP 的 Agent（Hermes Agent / Claude Code / Codex 等）的 MCP 配置中注册为 stdio 子进程，传入 `KAIROS_API_KEY`（与 Kairos 服务鉴权一致）。
+- 工具：15 个（`kairos_store_memory` 等，清单见 [api-spec.md](../specification/api-spec.md) §6.8）。
+
+**Hermes Memory Provider（生命周期钩子，非工具）**：
+
+- 部署：将 `src/access/provider/hermes_plugin/` 目录（插件壳 + plugin.yaml）复制到 `$HERMES_HOME/plugins/kairos/`，激活：
+
+  ```bash
+  hermes config set memory.provider kairos
+  ```
+
+- 配置（优先级：`hermes memory setup` 向导 > config.json > 环境变量 > 默认值）：
+  - `KAIROS_BASE_URL`——Kairos 服务地址（默认 `http://127.0.0.1:8010`）
+  - `KAIROS_API_KEY`——API Key（与 Kairos 服务鉴权一致；secret，走 .env 不入 config.json）
+  - config.json 模式：`$HERMES_HOME/kairos/config.json` —— `{"base_url": ..., "api_key": ...}`（hindsight 同型）
+- 行为：会话启动时 `initialize`（健康检查 + 记录 agent_context——非 primary 上下文跳过写入）、每轮 `prefetch`/`queue_prefetch` 召回高相关记忆（三信号混合检索）注入上下文、每轮后 `sync_turn` 写入对话、会话结束 `on_session_end` 蒸馏、压缩前 `on_pre_compress` 提取、外部写入 `on_memory_write` 镜像、子代理完成 `on_delegation` 记录、校准经 `calibrate`（Hermes 无原生校准钩子，经方法/工具面暴露）。
+- 依赖：插件壳依赖 Hermes 包 `agent.memory_provider`（MemoryProvider ABC）与 httpx，随 Hermes venv 安装；HTTP 逻辑委托 Kairos 参考实现（`src/access/provider/kairos_provider.py`，经 `KAIROS_SRC` 环境变量指向项目路径，aion-memory 同模式）。
+
 ---
 
 ## 五、Docker 部署参考
@@ -272,5 +299,6 @@ Kairos 输出结构化 JSON 日志到 stdout（容器部署模式）；本地运
 | 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94）：标准级宪法主权面措辞对齐（「舍弃」→「舍弃完整形态，继承简化」——与架构 §0.5「继承内核级简化形态」表述一致，消除「完全移除」误读可能）。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：§三 环境变量表补 `KAIROS_API_KEY_HASH`（轻量模式单 Key 认证，密钥哈希口径，竖切形态——原表仅 KAIROS_API_KEY 覆盖不全），KAIROS_API_KEY 行补模式区分。 |
 | 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+| 0.1.1 | 2026-08-12 | Hermes Memory Provider 接入批次（changelog 0.1.1）：新增 §四·a 接入层部署（MCP Bridge stdio 注册 + Hermes Provider 插件部署/配置/行为）——补齐架构 §7.1a「部署配置见部署指南」引用落空缺口。 |
 
 

@@ -19,7 +19,7 @@ status: design-freeze
 
 > **定位**：面向 Agent 开发者的操作文档。deployment 解决「怎么装」，本文解决「怎么用」。`kairos suppress` 为 v0.1.0 功能。定向遗忘（suppress，M-04）属 v0.1.0 全量功能，**不在竖切（v0.1.0-slice）首迭代内**（竖切范围见 [slice-implementation-guide](../development/slice-implementation-guide.md)）；竖切交付后随全量功能启用。
 >
-> **⚠ 草稿完善声明**：以下所有命令与 SDK 调用（`pip install kairos`、`from kairos import KairosClient` 等）为设计示例，当前无构建产物、无可执行命令、无 Python SDK。全部 CLI 命令（`kairos write`、`kairos search` 等）为虚构——当前文档处于设计冻结阶段，代码尚未启动。具体命令语法在代码实现后可能变化。读者应关注接口语义而非命令文本。
+> **⚠ 命令状态**：以下命令与 SDK 调用（`pip install kairos`、`from kairos import KairosClient` 等）中——CLI 命令（`kairos write`、`kairos search` 等）已实现（18 命令，`kairos --help`），Python SDK 尚未实现（接入方式见 [deployment.md](../ops/deployment.md) 四·a）。读者应关注接口语义而非具体命令文本。
 
 ---
 
@@ -48,7 +48,7 @@ kairos serve --port 8010
 ### 2.1 写入记忆
 
 ```python
-# 使用 KairosClient（目标 SDK，当前草稿完善阶段期无构建产物）
+# 使用 KairosClient（目标 SDK——Python SDK 尚未实现，竖切经 REST / CLI / MCP Bridge 三通道接入，见 [deployment.md](../ops/deployment.md) 四·a）
 from kairos import KairosClient
 
 client = KairosClient(api_key="sk-...")

@@ -15,7 +15,7 @@ status: design-freeze
 
 # Kairos 技术选型全景
 
-> **⚠ 草稿完善声明**：本文列出的技术栈和版本约束为设计选型目标。当前草稿完善阶段无运行代码，技术选型将在代码启动后最终确认。
+> **选型状态**：竖切技术栈已落地（Python 3.11+ / Litestar / SQLite + FTS5 / HashEmbedder）；标准模式（PostgreSQL + pgvector / BGE-M3 等）为规划目标，见 [debt-collection.md](../governance/debt-collection.md)。
 
 > **定位**：Kairos 系统全栈技术选型一览。ADR 记录了「为什么选」，本文记录「选了什么」——含版本约束和兼容矩阵。
 

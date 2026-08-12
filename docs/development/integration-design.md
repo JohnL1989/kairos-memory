@@ -15,7 +15,7 @@ status: design-freeze
 
 # Kairos 集成设计
 
-> **⚠ 草稿完善声明**：`from kairos import KairosClient` 等 SDK 调用为目标示例。当前文档草稿阶段，无运行代码。
+> **SDK 状态**：`from kairos import KairosClient` 等 SDK 调用为设计目标——Python SDK 尚未实现（竖切经 REST / CLI / MCP Bridge 三通道接入，见 [deployment.md](../ops/deployment.md) 四·a）。
 
 > **定位**：定义 Kairos 与宿主 Agent 的交互全生命周期。覆盖会话初始化、写入、检索、升华、事件回调、错误传播语义、并发约束、超时契约。
 

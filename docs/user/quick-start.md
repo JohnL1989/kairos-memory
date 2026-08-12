@@ -15,11 +15,11 @@ status: design-freeze
 
 # Kairos 快速入门
 
-> **状态声明**：本文描述的 CLI 命令（`kairos init`、`kairos serve` 等）为**设计目标**。CLI 工具尚未构建。
+> **状态声明**：本文描述的 CLI 命令（`kairos init`、`kairos serve` 等）以竖切交付的 CLI 实现为准（18 命令，`kairos --help`）；Python wheel 已构建（`dist/kairos-0.1.0*`）。
 
 > **定位**：约 2 分钟跑通 Kairos 最小闭环（**不含首次模型权重下载耗时**，见第四步）。无需 PostgreSQL，轻量模式（SQLite）开箱即用。
 >
-> **⚠ 草稿完善声明**：以下所有命令（`pip install kairos`、`kairos serve` 等）为目标示例。当前草稿完善阶段期无构建产物或可执行包，命令将在代码启动后交付。
+> **⚠ 说明**：以下命令（`pip install kairos`、`kairos serve` 等）以 CLI 实现为准；wheel 已构建（`dist/kairos-0.1.0*`），Docker 镜像待发布（见 [deployment.md](../ops/deployment.md)）。
 
 ---
 

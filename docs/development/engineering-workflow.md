@@ -15,7 +15,7 @@ status: design-freeze
 
 # Kairos 工程流程
 
-> **定位**：定义代码启动后的工程协作流程——分支策略、PR 流程、提交规范、CI 门禁与发布流程。当前处于文档草稿阶段（无运行代码），本流程以代码就绪为前置条件；`docs/` 文档库的变更（doc 批次）以 [documentation-governance.md](../governance/documentation-governance.md) 的更新联动规则为准，不强制走 PR 流程（文档批次按 [changelog.md](../governance/changelog.md) 登记）。
+> **定位**：定义 Kairos 的工程协作流程——分支策略、PR 流程、提交规范、CI 门禁与发布流程。竖切实现已交付，本流程生效；CI 流水线（`.github/workflows/ci.yml`）已落地，发布管线中尚未落地的部分见 [debt-collection.md](../governance/debt-collection.md)。`docs/` 文档库的变更（doc 批次）以 [documentation-governance.md](../governance/documentation-governance.md) 的更新联动规则为准，不强制走 PR 流程（文档批次按 [changelog.md](../governance/changelog.md) 登记）。
 
 > **与 [release-guide.md](../governance/release-guide.md) 的关系**：本文件定义「怎么协作」的日常工程流程；[release-guide.md](../governance/release-guide.md) 定义「怎么发布」的版本规则与发布检查清单——发布步骤执行本文件 §五 的发布流程，版本号规则以 [release-guide.md](../governance/release-guide.md) 为权威。
 > **代码规范**：命名/结构/错误处理/日志等编码规范见 [coding-conventions.md](./coding-conventions.md)（提交前对照自检）。

@@ -15,7 +15,7 @@ status: design-freeze
 
 # Kairos 可靠性策略
 
-> **⚠ 草稿完善声明**：本文定义的 RTO/RPO、备份策略和自动恢复机制为设计目标。当前草稿完善阶段无运行代码。轻量模式（bare Python 进程）不含 sidecar 自动恢复能力——RTO ≤30s 自动恢复适用于标准/全量部署（Docker/sidecar），轻量模式需手动重启。
+> **⚠ 声明**：本文定义的 RTO/RPO、备份策略和自动恢复机制中，竖切已落地的部分（SQLite 备份/恢复）按本文执行；未实现部分（sidecar 自动恢复等）见 [debt-collection.md](../governance/debt-collection.md)。轻量模式（bare Python 进程）不含 sidecar 自动恢复能力——RTO ≤30s 自动恢复适用于标准/全量部署（Docker/sidecar），轻量模式需手动重启。
 
 ---
 

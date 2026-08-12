@@ -17,20 +17,20 @@ status: design-freeze
 
 > **时间单位定义**：本文中「个调度周期」为相对时间单位，1 调度周期 = `KAIROS_SCHEDULER_INTERVAL` 配置值（默认 300 秒 / 5 分钟）。所有以「调度周期」为单位的参数均以此值为基准换算。
 
-> **参数名约定**：所有配置参数通过环境变量或配置文件设置，统一使用 `KAIROS_` 前缀。本文正文列出 227 项核心参数（v0.1.0 设计阶段的参数主索引）。可靠性参数（如 LLM 超时/熔断阈值）在正文 §7 定义；部署模式特有参数（如 [deployment.md](deployment.md) 中的 `KAIROS_DB_DSN`、`KAIROS_LITE_MODE`）在对应文档中定义，并已在**附录 A** 中建立全量索引（147 项）。**全库参数总数 = 227 + 147 = 374 项**，本文为唯一完整入口。（附录收录规则：正文已定义参数不入附录——`KAIROS_LLM_MAX_COST_PER_CALL_FEN`/`KAIROS_LLM_CIRCUIT_BREAK_FAILURES`/`KAIROS_LLM_CIRCUIT_BREAK_COOLDOWN_S` 曾两处重复登记，已按此规则在附录去重；历史计数链见版本记录。）
+> **参数名约定**：所有配置参数通过环境变量或配置文件设置，统一使用 `KAIROS_` 前缀。本文正文列出 227 项核心参数（v0.1.0 设计阶段的参数主索引）。可靠性参数（如 LLM 超时/熔断阈值）在正文 §7 定义；部署模式特有参数（如 [deployment.md](deployment.md) 中的 `KAIROS_DB_DSN`、`KAIROS_LITE_MODE`）在对应文档中定义，并已在**附录 A** 中建立全量索引（152 项）。**全库参数总数 = 227 + 152 = 379 项**，本文为唯一完整入口。（附录收录规则：正文已定义参数不入附录——`KAIROS_LLM_MAX_COST_PER_CALL_FEN`/`KAIROS_LLM_CIRCUIT_BREAK_FAILURES`/`KAIROS_LLM_CIRCUIT_BREAK_COOLDOWN_S` 曾两处重复登记，已按此规则在附录去重；历史计数链见版本记录。）
 
-> **计数口径：登记总数 ≠ v0.1.0 生效子集**。374（227 + 147）为**登记总数**，用于跨文档对账；实现方按下述子集取用，勿将登记总数当作"必须实现 373 个开关"。
+> **计数口径：登记总数 ≠ v0.1.0 生效子集**。379（227 + 152）为**登记总数**，用于跨文档对账；实现方按下述子集取用，勿将登记总数当作"必须实现 373 个开关"。
 >
 > | 口径 | 数量 | 构成 |
 > |:-----|:----:|:-----|
 > | 正文登记 | 227 | v0.1.0 参数主索引 |
 > | 正文中 **v0.1.0 不生效** | 7 | `KAIROS_SEARCH_WEIGHT_VECTOR` / `_BM25` / `_TIME` / `_RELIABILITY` / `_HEAT`（5 项，§8.3 废弃声明——5D 权重框架已被 §6.1 三信号检索替代）、`KAIROS_VIRTUAL_CALIBRATION_TIMEOUT`（§1，非独立生效，实际由 `KAIROS_CALIBRATION_*` 三参数联动承载）、`KAIROS_FORGETTING_SCORE_THRESHOLD`（§3，v1.1 二维遗忘曲面口径，v0.1.0 用 freshness 三阈值） |
 > | **正文 v0.1.0 生效子集** | **220** | 227 − 7 |
-> | 附录 A 索引 | 147 | 部署模式特有参数 + 蓝图 v1.1 参数（后者「来源」列指向 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md)，v0.1.0 不实现）——**例外注记（round31 收敛）**：`KAIROS_FTS5_*` 基础参数族（ENABLED/TOKENIZER/CHINESE_SEGMENTATION/OPTIMIZE_INTERVAL）为 v0.1.0 已交付（轻量模式 BM25 承载，见架构 §7.3a / data-model §11），「来源」列已改指 v0.1.0 权威；蓝图 §P3-21 保留 jieba 精细分词与 Playbook 全文索引的 v1.1 增强语义 |
+> | 附录 A 索引 | 152 | 部署模式特有参数 + 蓝图 v1.1 参数 + 接入层运行参数（后者「来源」列指向 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md)，v0.1.0 不实现；接入层运行参数 `KAIROS_BASE_URL`/`KAIROS_MCP_BASE_URL`/`KAIROS_SRC`/`KAIROS_PORT`/`KAIROS_DATA_DIR` 为 0.1.1 批次登记）——**例外注记（round31 收敛）**：`KAIROS_FTS5_*` 基础参数族（ENABLED/TOKENIZER/CHINESE_SEGMENTATION/OPTIMIZE_INTERVAL）为 v0.1.0 已交付（轻量模式 BM25 承载，见架构 §7.3a / data-model §11），「来源」列已改指 v0.1.0 权威；蓝图 §P3-21 保留 jieba 精细分词与 Playbook 全文索引的 v1.1 增强语义 |
 >
 > 「不生效」项**保留登记**而非删除：废弃项保留供旧部署迁移比对（§8.3 迁移说明），v1.1 项保留供版本衔接，两类均在各自条目内已标注，读者按标注取用。
 
-> **状态声明**：以下参数为草稿完善阶段的设计值。框架实现版本锁定后可能微调。
+> **状态声明**：以下参数为竖切实现的实际配置键（`KAIROS_*` 环境变量，[configuration.md](configuration.md) 权威）；标准模式扩展参数为设计值，待对应模块落地后锁定。
 
 > **新增列说明（RC-08）**：自 2026-08-03 起，正文 §1–§10 参数表表头由 `| 参数 | 默认值 | 说明 |` 扩展为 `| 参数 | 默认值 | 取值范围 | 生效时机 | 说明 |`。「取值范围」按参数语义推断（权重/阈值/概率类为 [0,1]，周期类为 ≥1 周期，布尔类为 {true,false}）；「生效时机」标注配置热加载能力（核心参数多为重启生效）。
 
@@ -40,7 +40,7 @@ status: design-freeze
 > | 一、架构层参数（按章节） | 227 项正文参数主索引（§1~§10，按架构章节组织） |
 > | 二、运行时动态调整规则 | 动态调参模式、授权者与不变量 |
 > | §11 特征标志默认值 | 特征标志默认值对照（含竖切例外注记） |
-> | 附录 A：全库参数总索引 | 147 项正文未收录参数索引（合计 374 项）
+> | 附录 A：全库参数总索引 | 152 项正文未收录参数索引（合计 379 项）
 
 ## 一、架构层参数（按章节）
 
@@ -494,7 +494,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 ## 附录 A：全库参数总索引（正文未收录部分）
 
-> **用途**：本文正文各节收录 227 项核心参数；全库另有 **147 项** `KAIROS_*` 参数散落在架构、规格、部署、质量等文档中定义，此前无任何集中索引。本附录建立完整映射，使「配置参数入口」名副其实。（附录仅收录正文未定义的参数；计数口径：正文 227 项 + 附录 147 项 = 374 项。）
+> **用途**：本文正文各节收录 227 项核心参数；全库另有 **152 项** `KAIROS_*` 参数散落在架构、规格、部署、质量等文档中定义，此前无任何集中索引。本附录建立完整映射，使「配置参数入口」名副其实。（附录仅收录正文未定义的参数；计数口径：正文 227 项 + 附录 152 项 = 379 项。）
 >
 > **权威性**：默认值一栏自各参数的**定义出处**抄录，语义以出处文档为准；出处未给出默认值的标注 `—（待定义）`（共 10 项）。**分类处置（0.0.92 批次，追缴见 [债务 D-431](../governance/debt-collection.md)）**：8 项源头在 architecture-blueprint-v1.1 的 v1.1 域参数（`KAIROS_DERIVED_FROM_MIN_STRENGTH` / `KAIROS_PLAYBOOK_NEGATIVE_THRESHOLD` / `KAIROS_PLAYBOOK_PROMOTION_THRESHOLD` / `KAIROS_PROMPT_DEPENDENCY_STRATEGY` / `KAIROS_SKILL_EXPERIMENTAL_MAX_AGE` / `KAIROS_SUBLIMATION_ENCRYPTION_KEY` / `KAIROS_TEMPORAL_EXTRA_BUFFER_DAYS` / `KAIROS_PATH`（随 detailed-design 实体标签 schema 落地补齐））随对应功能迭代定义，不构成编码启动阻塞；2 项为部署环境变量（`KAIROS_ADMIN_IPS` / `KAIROS_DB_PASSWORD`）部署时点确定，非设计缺口。**竖切（v0.1.0-slice）相关参数无待定义项**。
 >
@@ -507,6 +507,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_API_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_API_KEY_HASH` | —（必填，轻量模式单 Key 校验场景；文件权限 600） | `security-specification.md §2.1 API Key 生命周期` |
 | `KAIROS_AUDIT_HMAC_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
+| `KAIROS_BASE_URL` | `http://127.0.0.1:8010` | `ops/deployment.md §四·a 接入层部署`（Hermes Memory Provider 客户端默认，0.1.1 批次登记） |
 | `KAIROS_BATCH_TRANSACTION_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_BENCHMARK_OFF_BY_ONE_SCORE` | `0.80` | `acceptance-criteria.md §三 时序基准参数` |
 | `KAIROS_BENCHMARK_OFF_BY_TWO_SCORE` | `0.50` | `acceptance-criteria.md §三 时序基准参数` |
@@ -541,6 +542,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_CONSISTENCY_MAX_FIX_PER_CYCLE` | `1000` | `specification/detailed-design.md §11.5 文件系统-向量索引一致性检查` |
 | `KAIROS_CORE_LIMIT_BYTES` | `25KB` | `ops/deployment.md §三 环境变量` |
 | `KAIROS_CORE_LIMIT_LINES` | `200` | `ops/deployment.md §三 环境变量` |
+| `KAIROS_DATA_DIR` | `$HOME/.kairos` | `ops/deployment.md §二 数据目录`（竖切服务参数族，src/config.py 定义；.env 发现依赖显式设置本变量，0.1.1 批次登记） |
 | `KAIROS_DB_DSN` | `sqlite:///$HOME/.kairos/kairos.db`（轻量模式，与 backup/restore 路径一致） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_DB_PASSWORD` | —（待定义） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_DEBOUNCE_DEFAULT_AFTER_SECONDS` | `3 秒` | `architecture-v0.1.0.md §2.6.3 防抖反射执行器（Debounced Reflex Executor）` |
@@ -584,6 +586,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_LLM_API_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_LLM_ENDPOINT` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_LOG_LEVEL` | `info` | `ops/deployment.md §三 环境变量` |
+| `KAIROS_MCP_BASE_URL` | `http://127.0.0.1:8010` | `ops/deployment.md §四·a 接入层部署`（MCP Bridge 子进程客户端默认，0.1.1 批次登记） |
 | `KAIROS_MEMORY_VERSIONING_ENABLED` | `true` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_MEMORY_VERSION_LIMIT` | `50` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_NARRATIVE_COHERENCE_ALERT_THRESHOLD` | `0.4` | `architecture-v0.1.0.md §5.2 组件` |
@@ -598,6 +601,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_PROFILE_MAX_FIELDS` | `30` | `specification/detailed-design.md §11.3 可配置 Profile Schema（Configurable Profile Schema）` |
 | `KAIROS_PROFILE_REFRESH_INTERVAL_HOURS` | `24` | `specification/detailed-design.md §11.3 可配置 Profile Schema（Configurable Profile Schema）` |
 | `KAIROS_PROFILE_SCHEMA_ID` | `general-v1` | `specification/detailed-design.md §11.3 可配置 Profile Schema（Configurable Profile Schema）` |
+| `KAIROS_PORT` | `8010` | `ops/deployment.md §四 启动与健康检查`（竖切服务参数族，src/main.py serve --port；api-spec 基础 URL 8010，0.1.1 批次登记） |
 | `KAIROS_PROMPT_DEPENDENCY_STRATEGY` | —（待定义） | `architecture-blueprint-v1.1.md §P3-15 Prompt 依赖关系图` |
 | `KAIROS_QUERY_ANALYSIS_CACHE_TTL` | `300 秒` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
 | `KAIROS_QUERY_ANALYZER_ENABLED` | `true` | `architecture-v0.1.0.md §2.6.1 QueryAnalyzer 查询理解层` |
@@ -616,6 +620,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_SKILL_PROMOTION_MIN_RATE` | `0.7` | `architecture-blueprint-v1.1.md §技能管理系统（Skill Management System）` |
 | `KAIROS_SKILL_PROMOTION_MIN_SUCCESS` | `10` | `architecture-blueprint-v1.1.md §三级技能进化（Skill Evolution）` |
 | `KAIROS_SKILL_PROMOTION_MIN_USAGE` | `5` | `architecture-blueprint-v1.1.md §技能管理系统（Skill Management System）` |
+| `KAIROS_SRC` | —（可选，默认 Kairos 项目路径） | `ops/deployment.md §四·a 接入层部署`（Hermes 插件壳经本变量指向 Kairos 参考实现，aion-memory 同模式，0.1.1 批次登记） |
 | `KAIROS_SQLCIPHER_ENABLED` | `false` | `foundation/architecture-blueprint-v1.1.md §P3-20 SQLCipher 静态加密` |
 | `KAIROS_SQLCIPHER_KDF_ITER` | `256000` | `foundation/architecture-blueprint-v1.1.md §P3-20 SQLCipher 静态加密` |
 | `KAIROS_SQLCIPHER_KEY` | `—（必填，启用时）` | `foundation/architecture-blueprint-v1.1.md §P3-20 SQLCipher 静态加密` |
@@ -669,5 +674,6 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：§0.11 决策 D-15 与附录 A 债务 D-431 补前缀。 |
 | 0.0.92 | 2026-08-11 | 定稿收尾批次（changelog 0.0.92）：附录 A 引言 10 项待定义参数分类处置声明（8 项 v1.1 域随功能迭代定义 + 2 项部署时点确定，竖切无待定义项；追缴 D-431 同步分类处置）。 |
 | 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+| 0.1.1 | 2026-08-12 | Hermes Memory Provider 接入批次（changelog 0.1.1）：附录 A 登记接入层运行参数 5 项（KAIROS_BASE_URL / KAIROS_MCP_BASE_URL / KAIROS_SRC / KAIROS_PORT / KAIROS_DATA_DIR），参数 374→379（正文 227 + 附录 A 152）。 |
 
 

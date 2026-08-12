@@ -10,7 +10,7 @@ tags: [行为规范, Kairos, Hermes, AGENTS-v2]
 
 > 本文件由 Hermes / Claude Code / Codex 自动读取（AGENTS.md 仅当前目录生效；本目录已初始化 git（2026-08-06），不使用 .hermes.md）。
 > 结构：0 优先级 → 1 元规则 → 2 项目配置 → 3 红线（S/A）→ 4 项目规范 → 5 闭环
-> 项目性质：**文档草稿阶段，无运行代码**。Kairos 为全面重新设计的记忆系统，168 项能力（43 核心 + 125 扩展）处于架构就绪状态，核心引擎未启动。
+> 项目性质：**竖切实现已交付**（REST 21 端点 / CLI 18 命令 / MCP Bridge 15 工具 / Agent Tool 5 个，186 项测试覆盖率 83%）。168 项能力（43 核心 + 125 扩展）中竖切范围外的部分处于架构就绪状态，见 [debt-collection.md](docs/governance/debt-collection.md) 与 [slice-implementation-guide.md](docs/development/slice-implementation-guide.md)。
 
 ## 0. 规则优先级（两维）
 

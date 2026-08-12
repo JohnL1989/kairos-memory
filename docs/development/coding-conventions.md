@@ -17,9 +17,9 @@ status: design-freeze
 
 > **定位**：Kairos 项目代码编写约定。防止实现漂移，降低多模块协作成本。
 >
-> **状态声明**：以下项目结构为**设计目标**。当前尚无运行代码，代码启动后按本结构创建模块。
+> **状态声明**：项目结构已按竖切实现落地（`src/` 下 access/storage/sovereignty/supervision/events 等模块）；竖切范围外模块（升华管道/图谱/WM 等）为设计目标，见 [debt-collection.md](../governance/debt-collection.md)。
 >
-> **⚠ 草稿完善声明**：以下命令（`uv run kairos`、`docker build` 等）为目标示例。当前草稿完善阶段期尚无运行代码。
+> **命令说明**：以下命令（`uv run kairos`、`docker build` 等）以 CLI 实现为准（`kairos --help`）；Docker 部署参考 [deployment.md](../ops/deployment.md)。
 
 ---
 
