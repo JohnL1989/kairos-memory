@@ -2068,6 +2068,32 @@ status: draft
 
 ---
 
+## 0.0.100（2026-08-12）— 竖切验收核对批次（W10 正式收尾前置 + 运行补强）
+
+> 竖切验收标准（acceptance-criteria 〇 项）9 条逐项核对：8 条判据代码侧全部达成（证据见下表），第 9 条「定稿评审/版本号升级」待评审人执行（前置条件已全部满足）。首迭代后的运行补强与挂起修复本批登记。
+
+**落地清单**：
+- **事件总线入队非阻塞修复**（基准挂起根因）：publish 后内存分发队列满时曾阻塞主操作路径（写入采样 128 条后挂起）——改为满队列丢弃分发并计数（事件已持久化到 usage_events 表，分发通道可丢、影子副本可经维护重放）；基准恢复 PASS。
+- **Agent Tool 层**（api-spec §2 五工具）：memories_write / memories_search / path_browse / memories_list_recent / memories_merge（S-14 约束 + 源软删除）。
+- **GET /health 增强**：components 补 scheduler/embedding 状态（observability 口径：运行态在 /health 可见）。
+- **竖切验收核对**（acceptance-criteria 〇 项）：
+
+| 验收项 | 判据 | 证据 | 状态 |
+|:--|:--|:--|:--|
+| 功能闭环 | E2E-01/02/04/05/06/07/08 | tests/e2e/test_e2e.py（7 用例） | ✅ |
+| 双副本分离 | S-14 使用权重写回见证被拒绝 | tests/unit/test_dual_copy.py TestS14Isolation | ✅ |
+| 遗忘闭环 | TC-F01~F03 | tests/unit/test_forgetting.py | ✅ |
+| 身份构造论 | G-03 + S-10 | tests/unit/test_identity_registry.py | ✅ |
+| 事件总线 | 4 类 + trace_id 审计 | tests/integration/test_event_bus.py + test_event_wiring.py | ✅ |
+| 存储后端 | SQLite 全功能 + StorageBackend 可替换 | tests/unit/test_backend.py（MockPG 可替换性） | ✅ |
+| 性能基准 | 写≤50 / 路径≤20 / 语义≤100ms | reports/benchmark-baseline-0.1.0.json（PASS：4.7/3.4/1.4ms） | ✅ |
+| 质量门禁 | 覆盖率≥80% / 红线 / doc-audit / RTM | 覆盖率 85.23% / test_redlines.py / doc-audit 全绿 | ✅ |
+| 定稿评审 | 版本号升级 0.0.1→0.1.0 | 代码侧前置全达成 | ⏳ 待评审人 |
+
+**验证**：doc-audit 复跑 exit 0；deep-audit exit 0；redocly lint 零 error。结构性受改 1 份文档（changelog 本文件）+ 机械性 0 份；核心计数零漂移（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / 债务 D-447~449）。
+
+---
+
 ## 版本记录
 
 > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
@@ -2173,3 +2199,4 @@ status: draft
 | 0.0.97 | 2026-08-11 | 竖切代码启动批次（changelog 0.0.97，见本文件 0.0.97 叙述节）：W1~W9 全量交付——项目骨架（Typer 定档）、15 张竖切表迁移（Alembic + schema-slice 权威 DDL）、记忆 CRUD + 双副本（S-14 隔离）、路径空间（GLOB 前缀 + 污染率 0%）、事件总线（4 类 + 背压 + trace_id）、三信号检索（numpy 余弦 + FTS5 BM25 + 实体加成）、遗忘 + 潜伏势能、身份注册表（构造论 + 否决裁决器）、校准/降级/冻结 + 审计 HMAC 链；REST 21 端点 + CLI 15 条；基准（写 P50 16.6ms / 路径 / 语义 1 万条）；D-428 竖切部分闭合（redocly 零 error）；实现偏差登记 D-447/D-448；README 状态声明更新。 |
 | 0.0.98 | 2026-08-12 | 版本记录双轨制规则修订批次（changelog 0.0.98，见本文件 0.0.98 叙述节）：「触及即登记」→「结构性变更即登记」——版本记录只登记结构性变更，机械性变更只进 changelog；doc-audit 6.39 适配结构性受改清单解析（旧格式兼容）；changelog 0.0.97 受改清单标注为新格式。 |
 | 0.0.99 | 2026-08-12 | 竖切首迭代批次（changelog 0.0.99，见本文件 0.0.99 叙述节）：事件总线全链路接线（use_event→影子副本）、APScheduler 空闲驱动调度（4 任务）、QueryAnalyzer（意图+时间锚定）、特征标志配置集校验+证伪套件、D-428 全量闭合（88 操作 schema，redocly 零 error）。 |
+| 0.0.100 | 2026-08-12 | 竖切验收核对批次（changelog 0.0.100，见本文件 0.0.100 叙述节）：验收 9 项逐条核对（8 项代码侧达成 + 定稿评审待评审人）；事件总线入队非阻塞修复（基准挂起根因，恢复 PASS 4.7/3.4/1.4ms）；Agent Tool 层五工具；GET /health 补 scheduler/embedding 状态。 |

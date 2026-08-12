@@ -100,16 +100,23 @@ class EventBus:
         return event
 
     async def _enqueue(self, event: Event) -> None:
+        """入队分发（非阻塞——事件已持久化到 usage_events 表，队列仅为
+        分发通道；满队列时丢弃分发并计数，绝不阻塞主操作路径）。"""
         if event.priority <= BACKPRESSURE_EXEMPT_MAX:
             # 优先级 0-2 不被背压阻塞：进入无界高优通道（队列头部等价语义）
             self._priority_events.append(event)
             return
-        if self._queue.full() and event.priority >= BACKPRESSURE_DROP_MIN:
-            # 队列满且优先级 7-9：超限时优先丢弃
-            self.dropped_count += 1
+        if self._queue.full():
+            # 队列满：丢弃分发（事件持久化已完成；影子副本可经维护重放）
+            if event.priority >= BACKPRESSURE_DROP_MIN:
+                self.dropped_count += 1
+            else:
+                self.dropped_count += 1  # 3-6 优先级满队列同样不阻塞（避免写路径挂起）
             return
-        # 其余（3-6）：等待空位（缓发）
-        await self._queue.put(event)
+        try:
+            self._queue.put_nowait(event)
+        except Exception:
+            self.dropped_count += 1
 
     # ------------------------------------------------------------------
     # 订阅与分发
