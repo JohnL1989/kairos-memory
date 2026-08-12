@@ -378,12 +378,25 @@ async def audit_log(
 
 @get("/health", guards=[_api_key_guard], exception_handlers={KairosError: _error_handler})
 async def health(request: Request[Any, Any, Any]) -> dict[str, Any]:
-    """健康检查（A-01，无 /v1 前缀）。"""
+    """健康检查（A-01，无 /v1 前缀）。
+
+    components 含 scheduler 与 embedding 状态（observability 口径：
+    调度器/分词器等运行态须在 /health 可见）。
+    """
     app: KairosApp = request.app.state["kairos"]
     result = await app.db.verify_schema()
+    scheduler_state = (
+        "running" if app.scheduler is not None and app.scheduler._scheduler else "stopped"
+    )
     return {
         "status": "ok",
-        "components": {"api": "ok", "db": "ok", "tables": result["tables"]},
+        "components": {
+            "api": "ok",
+            "db": "ok",
+            "tables": result["tables"],
+            "scheduler": scheduler_state,
+            "embedding": app.search.embedder.name,
+        },
         "uptime_seconds": 0,
     }
 
