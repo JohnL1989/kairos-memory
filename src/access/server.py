@@ -73,6 +73,8 @@ def create_app(kairos: KairosApp | None = None) -> Litestar:
     """创建 Litestar 应用（注入组装好的 KairosApp）。"""
     kairos = kairos or build_app()
 
+    import os as _os
+
     app = Litestar(
         route_handlers=[root, *_HANDLERS],
         on_startup=[_bootstrap(kairos)],
@@ -80,6 +82,8 @@ def create_app(kairos: KairosApp | None = None) -> Litestar:
         state=State({"kairos": kairos}),
         # 全局异常处理器：覆盖 guard/参数解析阶段的 KairosError（如鉴权 401）
         exception_handlers={KairosError: _error_handler},
+        # KAIROS_DEBUG=true 时返回异常详情（冒烟/故障定位；生产默认关闭）
+        debug=_os.environ.get("KAIROS_DEBUG", "false").lower() == "true",
     )
     return app
 
@@ -91,7 +95,11 @@ def _bootstrap(kairos: KairosApp) -> Callable[[], Awaitable[None]]:
         await kairos.db.run_migrations()
         await kairos.db.verify_schema()
         if kairos.scheduler is not None:
-            kairos.scheduler.start()  # 空闲驱动调度（遗忘/潜伏重估/forgetAfter/降级 tick）
+            # KAIROS_SCHEDULER_ENABLED 开关（默认 true；测试/冒烟可关）
+            import os as _os
+
+            if _os.environ.get("KAIROS_SCHEDULER_ENABLED", "true").lower() != "false":
+                kairos.scheduler.start()  # 空闲驱动调度（遗忘/潜伏重估/forgetAfter/降级 tick）
 
     return _run
 

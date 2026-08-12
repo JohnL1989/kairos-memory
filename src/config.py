@@ -57,6 +57,9 @@ _PARAM_SPECS: dict[str, tuple[Any, type, str]] = {
     # 安全（security-specification §2.1 / deployment §三；S-01 启动校验）
     "KAIROS_API_KEY_HASH": (None, str, "API Key 哈希（轻量模式单 Key，文件权限 600）"),
     "KAIROS_AUDIT_HMAC_KEY": (None, str, "审计链 HMAC 密钥（必填，无默认值）"),
+    # 安全密钥族（security-specification §2.1：S-05 加盐 / S-07 AES-256-GCM 加密）
+    "KAIROS_SALT": (None, str, "API Key 加盐值（S-05，PBKDF2 派生输入）"),
+    "KAIROS_SECRET_KEY": (None, str, "敏感字段加密密钥（S-07，AES-256-GCM 32 字节 hex）"),
     # FTS5（data-model §11；附录 A 基础参数族为 v0.1.0 已交付）
     "KAIROS_FTS5_ENABLED": (True, bool, "FTS5 全文索引开关"),
     "KAIROS_FTS5_TOKENIZER": ("unicode61", str, "FTS5 分词器（unicode61；jieba 需编译扩展）"),
