@@ -8,9 +8,9 @@ tags:
   - deployment
   - ops
 created: 2026-07-18
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 部署指南
@@ -271,4 +271,6 @@ Kairos 输出结构化 JSON 日志到 stdout（容器部署模式）；本地运
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：补章节导航表（一~九）。 |
 | 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94）：标准级宪法主权面措辞对齐（「舍弃」→「舍弃完整形态，继承简化」——与架构 §0.5「继承内核级简化形态」表述一致，消除「完全移除」误读可能）。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：§三 环境变量表补 `KAIROS_API_KEY_HASH`（轻量模式单 Key 认证，密钥哈希口径，竖切形态——原表仅 KAIROS_API_KEY 覆盖不全），KAIROS_API_KEY 行补模式区分。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

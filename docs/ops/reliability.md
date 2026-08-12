@@ -8,9 +8,9 @@ tags:
   - ops
   - reliability
 created: 2026-07-18
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 可靠性策略
@@ -129,3 +129,5 @@ pg_dump -d kairos -f ~/.kairos/backups/kairos-$(date +%Y%m%d-%H%M%S).sql
 | 0.0.65 | 2026-08-08 | round31 深度审计修复批次（changelog 0.0.65）：§四 恢复演练触发方式修正（健康检查触发 → 系统调度器月度周期触发，与日频健康检查解耦）。 |
 | 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：§三 备份容量核算口径修正——按实际数据量规划，补满载口径（100 万条≈20GB 单次 / ≈600GB 30 天保留），声明 NFR 50GB 预算仅覆盖主库/索引/日志、备份须独立存储；与 nfr-specification §二 对齐；详见 changelog 0.0.83 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：快照保留期参数化软承诺补债务 D-442 指针。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

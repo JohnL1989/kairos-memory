@@ -8,9 +8,9 @@ tags:
   - traceability
   - requirements
 created: 2026-07-22
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # 需求可追溯性映射表
@@ -140,3 +140,5 @@ status: draft
 | 0.0.90 | 2026-08-11 | round52 全面深度审计修复批次（changelog 0.0.90）：「多 Agent」空格统一 1 处；frontmatter updated/last_reviewed 同步 2026-08-11。 |
 | 0.0.93 | 2026-08-11 | round53 全面深度审计修复批次（changelog 0.0.93）：定位段追踪项口径更新（0.0.37 快照 104 → 指向 debt-collection 权威账目，注明活跃条目 111 + 归档 31 + MNM 62 构成，本表不再维护总量快照）；README 索引行同步；frontmatter updated/last_reviewed 同步 2026-08-11。 |
 | 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94）：版本记录登记缺陷修复（0.0.90 行移除误记的 0.0.93 内容、补建 0.0.93 行——「触及即登记」操作细节落地，见 [documentation-governance.md](../governance/documentation-governance.md) §4）；frontmatter 同步 2026-08-11。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

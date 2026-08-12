@@ -8,9 +8,9 @@ tags:
   - design
   - requirements
 created: 2026-07-20
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 功能清单
@@ -338,6 +338,8 @@ status: draft
 | 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：Phase 2 引用落点修正 4 处——R-23 QueryAnalyzer §2.1→§2.6.1、R-24 时间覆盖采样 §2.1→§2.6.2、R-27 时间覆盖检索 §2.1→§2.6.2、SF-18 防抖反射执行器 §2.1→§2.6.3（架构关联组件实际章节；§2.1 为元认知层定位）。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：版本记录节归位文末并升为 ## 层级（原嵌于八/九之间）。 |
 | 0.0.93 | 2026-08-11 | round53 全面深度审计修复批次（changelog 0.0.93）：文末补结尾换行符（deep-audit 捕获，格式类）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 
 
 ---

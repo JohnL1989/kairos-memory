@@ -8,9 +8,9 @@ tags:
   - design
   - architecture
 created: 2026-07-18
-status: draft
-updated: 2026-08-11
-last_reviewed: 2026-08-11
+status: design-freeze
+updated: 2026-08-12
+last_reviewed: 2026-08-12
 ---
 
 # Kairos 系统架构
@@ -4028,4 +4028,6 @@ P6 全局闸门规定累计压缩比上限为 30%。v0.1.0 因从五维规范目
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：4 处「v1.1 评估项」注记补债务 D-444 指针（MemGen 学习式触发/操作轨迹独立类型/bandit 检索策略/稀疏奖励 RL 配方）；正文裸文档名引用链接化 7 处（glossary/integration-design/detailed-design/feature-list/api-spec/rl-weight-spec/documentation-governance）+ 去除「用词勘误」过程标记残留；§0 速查表 glossary 计数 76→77 修正（round49 遗漏）；决策 D-01 前缀补标 2 处（L116）；WM 中英空格正文 8 处统一；「校准锚定维度衰退模型」→「衰减」；「摄入侧按内容类型」→「摄取侧」。 |
 | 0.0.90 | 2026-08-11 | round52 全面深度审计修复批次（changelog 0.0.90）：7 处「v1.1 候选/目标」注记补债务 D-445 指针（保留原因字段/技能仓库级/对话历史语义检索/差异检验阈值参数化/错误模式库/嵌入提供商可插拔/图激活传播与时间粒度检索）；补 H1 一级标题「# Kairos 系统架构」；「多 Agent/单 Agent/跨 Agent」空格统一 12 处；「认知基础[链接]」空格 1 处；P1–P6 全角范围符 1 处。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：§5.2 叙事自洽度评估器「降级默认分数（待定态）」补债务 D-446 指针；§3.2 宪法主权面引用改指认知基础 §3.1（校准源充分性建模已升格可评估框架，架构未承载——债务 D-305/D-332 追踪）；§5.2 summarize_thread 补 v1.1 启用标注（对齐 api-spec §8 权威）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

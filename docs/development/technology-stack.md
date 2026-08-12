@@ -8,9 +8,9 @@ tags:
   - design
   - technology
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 技术选型全景
@@ -155,4 +155,6 @@ File Graph 是 Kairos 路径空间的图论增强层——将 `kairos://` 路径
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：§二 投影措辞补「（投影方案：固定随机正交投影，见 ADR-012）」括注（线性/正交并称消歧）。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：§七 MCP 渐进增强补版本边界（v1.1 目标）与债务 D-443 指针；MCP Server 实现行裸 api-spec 引用链接化。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

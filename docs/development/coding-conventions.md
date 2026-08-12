@@ -8,9 +8,9 @@ tags:
   - development
   - conventions
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 开发规范
@@ -123,3 +123,5 @@ kairos/
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：层间传播错误事件改指真实事件类型——「发送 `error_event`」改「发送 `use_event`（payload 标记错误）或按架构 §10.6 注册门禁新增事件类型」。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：路径空间统一下划线命名。 |
 | 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：§三 错误处理红线违反 HTTP 映射分派（S-01 启动拒绝 / S-02→429 / S-03→413 / S-15→422 / S-06·S-08→403 / 其余→403 ERR-SEC-001），权威指向 security-specification §1；详见 changelog 0.0.83 叙述节。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

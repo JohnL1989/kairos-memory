@@ -8,9 +8,9 @@ tags:
   - governance
   - release
 created: 2026-07-21
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 发布流程
@@ -174,3 +174,5 @@ Kairos 存储的记忆数据默认仅存储在本地。收集的数据类型、�
 | 0.0.26 | 2026-08-06 | 第九轮全库深度审计修复批次（changelog 0.0.26）：M-11 种子路径统一目录语义（--seed-path ~/.kairos/seeds/）。 |
 | 0.0.57 | 2026-08-08 | round25 全面深度审计修复批次（changelog 0.0.57）：架构元认知层第五层编号/完结叙事线 409/deleted_at 承载补列/技能管理定位改指 blueprint/S-17 法定擦除例外同步/README 版本链补登/KAIROS_ 参数前缀等 21 项闭环。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：`## vX.Y.Z` 模板标题降级 `###`（版本条目模板，不打断 §N 序列）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

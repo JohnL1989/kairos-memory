@@ -8,9 +8,9 @@ tags:
   - references
   - error
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 错误参考
@@ -147,3 +147,5 @@ status: draft
 | 0.0.59 | 2026-08-08 | round26 全面深度审计修复批次（changelog 0.0.59）：新增 `ERR-CTR-003`（403 记忆已锁定）/ `ERR-CTR-004`（409 意图契约未关闭），错误码 40→42；`ERR-DB-004/005` 标注为内部码例外（随 HTTP 响应返回），与 api-spec §7 口径对齐。 |
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：新增 `ERR-CTR-005`（409 幂等键冲突，Idempotency-Key 已存在且载荷不一致），错误码 42→43；与 api-spec §7 / troubleshooting §三 同步。详见 changelog 0.0.85 叙述节。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

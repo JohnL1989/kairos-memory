@@ -8,9 +8,9 @@ tags:
   - quality
   - performance
 created: 2026-07-20
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 > **章节导航**——按下表定位所需章节：
@@ -319,4 +319,6 @@ status: draft
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：L219 D-427 补「债务」前缀。 |
 | 0.0.91 | 2026-08-11 | 外部理念吸收落地批次（changelog 0.0.91）：新增 §3.15 记忆能力评测协议（LongMemEval 统一基准——七步流程 / Kairos 第三变体定义 / 汇报三要素纪律 / 参考基线非门槛 / 既有机制联动）；§3.12 补评测任务集联动注记（LongMemEval 作 G1~G6 统一评测任务集）。 |
 | 0.0.95 | 2026-08-11 | round55 Obsidian frontmatter 闭合修复批次（changelog 0.0.95）：frontmatter 补立即闭合 `---`（章节导航引用块此前被卷入 YAML 区导致 Obsidian 无效属性）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

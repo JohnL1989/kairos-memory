@@ -7,9 +7,9 @@ tags:
   - kairos
   - references
 created: 2026-08-05
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 概念体系分级速查表
@@ -117,3 +117,5 @@ graph TD
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：双时态英文拼写统一（Bitemporality→Bitemporal，对齐 glossary 权威）。 |
 | 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：L1 四类契约行补系统内部第五契约「意图契约」注记（与架构 §3.7 / data-model contract 五值口径一致）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

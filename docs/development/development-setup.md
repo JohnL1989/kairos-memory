@@ -8,9 +8,9 @@ tags:
   - development
   - setup
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 开发环境搭建
@@ -141,3 +141,5 @@ kairos serve --port 8010 --reload
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：Docker 密码硬编码改为 ${KAIROS_DB_PASSWORD} 注入。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：部署引用改指 deployment §三；frontmatter 审查日期同步。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：L68 deployment 裸文件名引用链接化。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

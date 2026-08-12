@@ -8,9 +8,9 @@ tags:
   - user
   - quickstart
 created: 2026-07-20
-updated: 2026-08-09
-last_reviewed: 2026-08-09
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 快速入门
@@ -131,3 +131,5 @@ kairos status
 | 0.0.25 | 2026-08-05 | 第八轮全库深度审计修复批次（changelog 0.0.25）：api-spec §三→§3 引用联动（4-1）。 |
 | 0.0.59 | 2026-08-08 | round26 全面深度审计修复批次（changelog 0.0.59）：U-04「约 2 分钟」口径澄清为不含首次模型权重下载；第四步补首次启动 BGE-M3 权重下载注记与 development-setup / troubleshooting 指针。 |
 | 0.0.68 | 2026-08-09 | round34 全面深度审计修复批次（changelog 0.0.68）：第五/七步演示路径 `kairos://playground/` 改指 `kairos://_user/default/playground/`（用户持久域，对齐架构 §3.4 域路由表与 api-spec CLI 示例路径惯例）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

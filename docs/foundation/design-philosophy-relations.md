@@ -7,9 +7,9 @@ tags:
   - 理念
   - 设计
 created: 2026-07-19
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 设计理念关系图
@@ -183,3 +183,5 @@ status: draft
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：正文裸 architecture 引用链接化 3 处（§5.5/§3.3/§3.2.1）。 |
 | 0.0.90 | 2026-08-11 | round52 全面深度审计修复批次（changelog 0.0.90）：P1–P4/P1–P5 全角范围符 4 处（含 ASCII 图内文字）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

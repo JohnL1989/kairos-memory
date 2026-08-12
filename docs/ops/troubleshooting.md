@@ -8,9 +8,9 @@ tags:
   - ops
   - troubleshooting
 created: 2026-07-18
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 故障排查指南
@@ -169,4 +169,6 @@ status: draft
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：§三 错误码 42→43（补 `ERR-CTR-005` 幂等键冲突）；错误码速查标题与口径声明计数同步。详见 changelog 0.0.85 叙述节。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：CLI 定义状态表 `config show` 状态改「已定义」（api-spec §3 登记，竖切交付项）+ 门禁段落改分类处置声明（D-430：竖切无待定义命令，其余 10 条归 v0.1.0 全量阶段）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

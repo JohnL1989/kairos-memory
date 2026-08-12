@@ -10,7 +10,7 @@ tags:
 created: 2026-07-21
 updated: 2026-08-12
 last_reviewed: 2026-08-12
-status: draft
+status: design-freeze
 ---
 
 # 文档治理规范
@@ -307,4 +307,6 @@ status: draft
 | 0.0.99 | 2026-08-12 | 竖切首迭代批次（changelog 0.0.99）：§3 执行记录补记本批次（事件总线/调度器/QueryAnalyzer/特征标志/证伪/D-428 全量闭合，含本批次自身——6.32 门禁首检对象随批次更新）；frontmatter updated/last_reviewed 同步 2026-08-12。 |
 | 0.0.100 | 2026-08-12 | 竖切验收核对批次（changelog 0.0.100）：§3 执行记录补记本批次（验收核对 8/9 达成 + 事件总线入队修复 + Agent Tool + 健康检查，含本批次自身——6.32 门禁首检对象随批次更新）；frontmatter updated/last_reviewed 同步 2026-08-12。 |
 | 0.0.101 | 2026-08-12 | 接入层全通道交付批次（changelog 0.0.101）：§3 执行记录补记本批次（Agent Tool + MCP Bridge + StorageBackend + 健康检查增强，含本批次自身——6.32 门禁首检对象随批次更新）；frontmatter updated/last_reviewed 同步 2026-08-12。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

@@ -8,9 +8,9 @@ tags:
   - user
   - guide
 created: 2026-07-20
-updated: 2026-08-09
-last_reviewed: 2026-08-09
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 用户指南
@@ -191,3 +191,5 @@ KAIROS_SEED_PATH=~/.kairos/seeds/   # 可选。未设置则使用内置默认种
 | 0.0.55 | 2026-08-08 | round24 全面深度审计修复批次（changelog 0.0.55）：认知基础去版本化 30 处改写；引用错位修正（api-spec §6.5 等）；S-19 行为层验收承载；CLI 追缴对齐；blueprint 无编号承诺追缴 D-433~D-438 补登；摘要表 D-422~D-428 补行。 |
 | 0.0.59 | 2026-08-08 | round26 全面深度审计修复批次（changelog 0.0.59）：U-03 §2.1 CLI write 示例补 `--source`（S-15 必填，与 api-spec §3 一致）；U-06 §2.4 `kairos status` 输出示例 `active`→`healthy` 并补四值枚举注记（api-spec §6.5）；U-07 §3.4 种子路径设置裸行加代码围栏（原被渲染为 H1 标题）。 |
 | 0.0.68 | 2026-08-09 | round34 全面深度审计修复批次（changelog 0.0.68）：§3.1 路径规划 `kairos://knowledge/` 改指 `kairos://_user/{user_id}/knowledge/`（用户持久域承载「全局知识库」语义；`kairos://knowledge/` 通用路径为会话本地，与架构 §3.4 域路由表对齐）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

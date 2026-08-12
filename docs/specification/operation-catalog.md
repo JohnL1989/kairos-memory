@@ -8,9 +8,9 @@ tags:
   - design
   - api
 created: 2026-07-22
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 操作目录
@@ -144,4 +144,6 @@ status: draft
 | 0.0.80 | 2026-08-09 | round42 全面深度审计修复批次（changelog 0.0.80）：引用/口径收口 + 格式收尾 + 术语登记（glossary 70→76）——详见 changelog 0.0.80 叙述节。 |
 | 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：OP-054 补口径注记（freshness 条件为操作目录补充语义，协议层约束以 api-spec §1.5 为权威——消除双权威差异）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

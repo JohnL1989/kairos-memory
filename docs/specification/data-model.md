@@ -8,9 +8,9 @@ tags:
   - design
   - data-model
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 数据模型设计
@@ -1402,4 +1402,6 @@ SQLite 无时区类型，故：
 | 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：memories.contract 两层默认值说明（DDL DEFAULT 'ondemand' 仅兜底，/v1/ingest 按资源类型预填以 API 预填为准，非口径冲突，链接 api-spec §18）；详见 changelog 0.0.83 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：L85「D-311 衔接」补「债务」前缀。 |
 | 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：§8.18 query_analysis_cache 定位段 QueryAnalyzer 引用架构 §2.1→§2.6.1（§2.6.1 为 QueryAnalyzer 查询理解层实际章节）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

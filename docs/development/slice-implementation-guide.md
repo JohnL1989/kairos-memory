@@ -8,9 +8,9 @@ tags:
   - development
   - slice
 created: 2026-07-31
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 > **章节导航**——按下表定位所需章节：
@@ -244,4 +244,6 @@ W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：正文裸文档名引用链接化 7 处（implementation-map/data-model/api-spec/configuration）。 |
 | 0.0.93 | 2026-08-11 | round53 全面深度审计修复批次（changelog 0.0.93）：§一 计数口径注记措辞对齐（「project-plan §一 竖切组件列」→「竖切范围表组件行」）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
 | 0.0.95 | 2026-08-11 | round55 Obsidian frontmatter 闭合修复批次（changelog 0.0.95）：frontmatter 补立即闭合 `---`（章节导航引用块此前被卷入 YAML 区导致 Obsidian 无效属性）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

@@ -8,9 +8,9 @@ tags:
   - security
   - privacy
 created: 2026-07-21
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 安全规格
@@ -191,4 +191,6 @@ status: draft
 | 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.64 行（§4 命令/端点改已登记）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：红线汇总表 S-04 术语混层修正——「轻量模式绑定 127.0.0.1」改「默认绑定 127.0.0.1；[P] 模式经反向代理」（部署模式与运行模式 [L]/[P] 区分，对齐 §1 表）。详见 changelog 0.0.85 叙述节。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

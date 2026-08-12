@@ -7,9 +7,9 @@ tags:
   - reference
   - algorithm
 created: 2026-07-19
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # 多样性守护——价值维度熵值算法参考
@@ -84,3 +84,5 @@ H = -Σ(p_t × log₂(p_t))
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：结尾残句补齐。 |
 | 0.0.42 | 2026-08-07 | 0.0.42 文档审计修复批次（changelog 0.0.42）：坍缩检测器对齐架构 §2.2（使用权重分布监测器/usage_entropy/反周期校正）。 |
 | 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

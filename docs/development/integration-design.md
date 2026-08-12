@@ -8,9 +8,9 @@ tags:
   - design
   - integration
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 集成设计
@@ -184,3 +184,5 @@ SDK 集成示例见 `src/access/mcp/bridge.py`。MCP 工具与 REST API 的等�
 | 0.0.46 | 2026-08-08 | 文档审计修复批次（changelog 0.0.46）：§五a 去除正文散落批次标记「（changelog 0.0.39）」，溯源归版本记录。 |
 | 0.0.61 | 2026-08-08 | 版本记录补登（changelog 0.0.61）：§七 持久状态机口径同步为五态平级（active/stale/archived/suppressed/superseded，见 data-model §1 status），与架构 §5.2 全局一致（前序批次实施、漏登记于本文档版本记录，本批补登）。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：正文裸文档名引用链接化 4 处（api-spec/data-model/observability/test-strategy）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

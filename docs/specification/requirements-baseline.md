@@ -9,9 +9,9 @@ tags:
   - requirements
   - baseline
 created: 2026-07-21
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 需求基线
@@ -264,4 +264,6 @@ Kairos 是一个面向 AI Agent 的记忆系统——不是传统数据库，也
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：定位段补 use-cases 链接入口（近孤儿收口）。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：补章节导航表（§0~§5）。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：预留用例编号注记「CAL-02 已分配 TC-CAL02-001，见上表」改指 test-plan §3.6（RTM 表无 CAL-02 行，悬空注记收口）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

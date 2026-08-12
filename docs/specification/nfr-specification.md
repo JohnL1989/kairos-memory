@@ -8,9 +8,9 @@ tags:
   - design
   - requirements
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 非功能需求规格
@@ -93,3 +93,5 @@ status: draft
 | 0.0.65 | 2026-08-08 | round31 深度审计修复批次（changelog 0.0.65）：§三 测量方法列修正——启动时间改指 benchmark-plan §3.10、故障恢复改指 benchmark-plan §3.6、系统可用性/降级可用性补 `kairos_availability_ratio` 观测指针；RPO 行补适用范围注记（数据库组件，升华层等可重建产物 ≤1 天，以 reliability §二 组件粒度为准）。 |
 | 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
 | 0.0.83 | 2026-08-10 | round45 全面深度审计修复批次（changelog 0.0.83）：§二 磁盘行备注列补「预算仅覆盖主库/索引/日志；备份/WAL 归档/升华快照须独立存储」；与 reliability §三 满载口径对齐；详见 changelog 0.0.83 叙述节。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

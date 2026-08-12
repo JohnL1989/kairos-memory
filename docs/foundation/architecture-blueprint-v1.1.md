@@ -7,9 +7,9 @@ tags:
   - blueprint
   - future
 created: 2026-07-29
-status: draft
-updated: 2026-08-11
-last_reviewed: 2026-08-11
+status: design-freeze
+updated: 2026-08-12
+last_reviewed: 2026-08-12
 ---
 
 # Kairos 架构蓝图（v1.1+）
@@ -1378,4 +1378,6 @@ function check_permission(path, principal, requested_perm):
 | 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：四层记忆质量层次 DERIVED_FROM 关系描述由「memory_relations 表的新增关系类型」修正为「关系类型（枚举值已随 v0.1.0 基础六值登记于 data-model §1；本机制为 v1.1 的边创建路径）」，消除与 data-model/claim-matrix/feature-list 既有枚举的版本边界措辞矛盾。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：正文裸 api-spec 引用链接化 6 处（§11/§12/§13×3/§17）；「对应 D-17 B1 决策」补「决策」前缀。 |
 | 0.0.90 | 2026-08-11 | round52 全面深度审计修复批次（changelog 0.0.90）：补 H1 一级标题「# Kairos 架构蓝图（v1.1+）」。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

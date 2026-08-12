@@ -8,7 +8,7 @@ tags:
   - changelog
 created: 2026-07-20
 updated: 2026-08-11
-last_reviewed: 2026-08-11
+last_reviewed: 2026-08-12
 status: draft
 ---
 
@@ -2108,6 +2108,20 @@ status: draft
 
 ---
 
+## 0.1.0（2026-08-12）— v0.1.0 首版发布批次（定稿评审通过 + 全库版本升级）
+
+> **评审结论**：竖切验收标准（acceptance-criteria 〇 项）9 项全部达成——8 项代码侧判据（功能闭环 E2E 7 条 / 双副本 S-14 / 遗忘 TC-F01~F03 / 身份 G-03+S-10 / 事件总线 / 存储后端可替换 / 性能基准 PASS / 质量门禁 85.23%+双门禁全绿）+ 定稿评审执行（release-guide §2 检查清单 10 项全过 + §3 构建/安装/版本验证通过）。**全库文档版本号统一升级（0.0.x → 0.1.0）**——release-guide §1 定稿规则落地：设计定稿 + 代码首版 v0.1.0（`src/__init__.py` / pyproject 0.1.0）；文档状态 draft → design-freeze（documentation-governance §4 晋升规则执行）。
+
+**落地清单**：
+- **定稿评审执行**：release-guide §2 检查清单逐项（P0=0 / 覆盖率 85.23% / E2E 竖切 7 条 / 红线竖切项 / CHANGELOG / 版本号 / doc-audit / 迁移回滚实机验证 / 备份 N/A 首版 / `uv build` wheel+sdist 成功）；§3 步骤 2-3（构建 + 干净 venv 安装验证 `kairos --version` = Kairos 0.1.0）。
+- **全库版本升级**：52 份文档版本记录统一升级至 0.1.0（升序表尾追加升级行）；frontmatter status draft → design-freeze（代码启动后晋升规则执行）；updated/last_reviewed 同步 2026-08-12。
+- **版本记录双轨制衔接**：升级行为结构性登记（全库一次性），后续 0.1.x 系列按「结构性变更即登记」纪律执行。
+- **代码交付回顾**（自 0.0.97 起）：竖切 W1~W10 → 首迭代（事件总线接线/调度器/QueryAnalyzer/特征标志/证伪）→ D-428 全量闭合 → StorageBackend 抽象 → Agent Tool → MCP Bridge → 真实服务冒烟 → 运行补强（事件入队非阻塞/健康检查增强）——244 项测试、覆盖率 85.23%、双门禁全绿、redocly 零 error。
+
+**验证**：doc-audit 复跑 exit 0；deep-audit exit 0。结构性受改 53 份文档（全库版本升级——52 份 + changelog 本文件）；核心计数零漂移（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / 债务 D-447~449）。
+
+---
+
 ## 版本记录
 
 > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
@@ -2215,3 +2229,4 @@ status: draft
 | 0.0.99 | 2026-08-12 | 竖切首迭代批次（changelog 0.0.99，见本文件 0.0.99 叙述节）：事件总线全链路接线（use_event→影子副本）、APScheduler 空闲驱动调度（4 任务）、QueryAnalyzer（意图+时间锚定）、特征标志配置集校验+证伪套件、D-428 全量闭合（88 操作 schema，redocly 零 error）。 |
 | 0.0.100 | 2026-08-12 | 竖切验收核对批次（changelog 0.0.100，见本文件 0.0.100 叙述节）：验收 9 项逐条核对（8 项代码侧达成 + 定稿评审待评审人）；事件总线入队非阻塞修复（基准挂起根因，恢复 PASS 4.7/3.4/1.4ms）；Agent Tool 层五工具；GET /health 补 scheduler/embedding 状态。 |
 | 0.0.101 | 2026-08-12 | 接入层全通道交付批次（changelog 0.0.101，见本文件 0.0.101 叙述节）：Agent Tool 层五工具 + MCP Bridge 15 工具（独立子进程 stdio）+ StorageBackend 抽象（D-449 前置）+ GET /health 增强——v0.1.0 接入层四通道齐备（REST/CLI/AgentTool/MCP）。 |
+| 0.1.0 | 2026-08-12 | v0.1.0 首版发布批次（changelog 0.1.0，见本文件 0.1.0 叙述节）：定稿评审通过（release-guide §2 十项全过 + §3 构建安装验证）——全库版本统一升级 0.0.x → 0.1.0、文档状态 draft → design-freeze。 |

@@ -8,9 +8,9 @@ tags:
   - quality
   - testing
 created: 2026-07-20
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 > **章节导航**——按下表定位所需章节：
@@ -277,3 +277,5 @@ status: draft
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：补章节导航表。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：版本记录合并占位行日期范围格式统一（2026-08-04~06 → 2026-08-04）。 |
 | 0.0.95 | 2026-08-11 | round55 Obsidian frontmatter 闭合修复批次（changelog 0.0.95）：frontmatter 补立即闭合 `---`（章节导航引用块此前被卷入 YAML 区导致 Obsidian 无效属性）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

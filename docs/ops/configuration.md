@@ -8,9 +8,9 @@ tags:
   - ops
   - configuration
 created: 2026-07-18
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 配置参数
@@ -668,4 +668,6 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：§6.6 新增 `KAIROS_ENTITY_LLM_DISCARD_THRESHOLD`（默认 0.5，实体提取丢弃阈值下界，与 CONFIDENCE_THRESHOLD 构成互斥开区间判定），参数 373→374；详见 changelog 0.0.85 叙述节。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：§0.11 决策 D-15 与附录 A 债务 D-431 补前缀。 |
 | 0.0.92 | 2026-08-11 | 定稿收尾批次（changelog 0.0.92）：附录 A 引言 10 项待定义参数分类处置声明（8 项 v1.1 域随功能迭代定义 + 2 项部署时点确定，竖切无待定义项；追缴 D-431 同步分类处置）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

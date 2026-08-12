@@ -7,9 +7,9 @@ tags:
   - kairos
   - security
 created: 2026-07-18
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 威胁模型与安全对抗
@@ -147,3 +147,5 @@ status: draft
 | 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.59 行（D-439 追缴新增）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.81 | 2026-08-10 | round43 审计修复（见 changelog 0.0.81）|
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：§四 S-11 防护措辞修正——「外部校准端口为宪法修订唯一入口」改「外部校准端口接收信号，宪法修订端口为修改宪法级偏好的唯一合法入口」（两端口为不同组件，对齐架构 §1.2）。详见 changelog 0.0.85 叙述节。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

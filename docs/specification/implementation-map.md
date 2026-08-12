@@ -8,9 +8,9 @@ tags:
   - design
   - implementation
 created: 2026-07-20
-updated: 2026-08-09
-last_reviewed: 2026-08-09
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 架构实现映射
@@ -172,4 +172,6 @@ status: draft
 | 0.0.61 | 2026-08-08 | 版本记录补登（changelog 0.0.61）：记忆状态机行口径由「四态+Suppressed 软标记（子态）」修正为五态平级（active/stale/archived/suppressed/superseded，无子态），与架构 §5.2 一致（前序批次实施、漏登记于本文档版本记录，本批补登）。 |
 | 0.0.64 | 2026-08-08 | round30 全面深度审计修复批次（changelog 0.0.64，补登）：配置参数计数同步 370→373（正文 226 + 附录 A 147）。 |
 | 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.64 行（参数计数 373 同步）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

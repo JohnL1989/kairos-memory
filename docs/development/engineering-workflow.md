@@ -8,9 +8,9 @@ tags:
   - development
   - engineering
 created: 2026-08-06
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 工程流程
@@ -98,4 +98,6 @@ status: draft
 | 0.0.86 | 2026-08-10 | round48 遗留问题处理批次（changelog 0.0.86）：§四 CI 门禁清单补级别注记——6.36/6.37/6.38 为 FAIL 级硬门禁（round46 WARN 首轮 → round47 全库 0 违例观察 → round48 晋升），6.26 档 4 为 WARN 级软提示；frontmatter updated/last_reviewed 同步 2026-08-10。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：正文裸文档名引用链接化 7 处（release-guide/test-plan/documentation-governance 等）+ 补 coding-conventions 正文入口。 |
 | 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94）：§四 CI 门禁清单补 6.39（受改批次版本记录覆盖性，WARN 级软门禁，round54 首跑 0 漏登记——R54-01 防复发）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

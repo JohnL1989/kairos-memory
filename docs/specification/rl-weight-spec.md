@@ -8,9 +8,9 @@ tags:
   - rl
   - specification
 created: 2026-07-22
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # RL 权重优化器规格
@@ -138,3 +138,5 @@ status: draft
 | 0.0.37 | 2026-08-06 | round15 深度审计修复批次：版本注记纪律收敛（正文删除 0.0.14/0.0.32 前缀与产品名，保留技术信息）；RCW 映射规则补口径注记（维度表来源为输入集，RCW 为奖励信号子集——knowledge/research 经 relevance、task_history 经 recency 加权）。 |
 | 0.0.38 | 2026-08-06 | round16 全面深度审计修复批次（changelog 0.0.38）：初始化段补「首次更新后 Σ 恒为 1」注记。 |
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：Bounded Simplex Projection 改用 capped simplex 欧氏投影（二分求 λ，双重约束 Σ=1 与各维 [min,max] 一次满足），删除 softmax+clamp+重归一化描述（softmax 已保证 Σ=1，其后重归一化破坏归一化性质）。详见 changelog 0.0.85 叙述节。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

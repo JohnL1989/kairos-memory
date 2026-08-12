@@ -12,7 +12,7 @@ tags:
 created: 2026-07-19
 updated: 2026-08-12
 last_reviewed: 2026-08-12
-status: draft
+status: design-freeze
 ---
 
 > **代码状态声明**：Kairos 为全面重新设计的系统，全系统尚无可运行的完整 Kairos 发行版。本文债务追踪基于架构设计就绪状态，不基于代码实现状态。
@@ -1555,4 +1555,6 @@ status: draft
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：D-430 分类处置（竖切相关 config show 已登记契约 + 其余 10 条归 v0.1.0 全量阶段）；登记 D-446（叙事自洽度评估器降级默认分数，v0.1.0 首迭代）；§7.2 统计表同步（D-431 移入维持行、D-446 入首版行，合计 91→92）。 |
 | 0.0.97 | 2026-08-11 | 竖切代码启动批次（changelog 0.0.97）：D-428 竖切部分闭合（openapi 竖切 21 端点 schema + mcp-tools.json 15 工具 inputSchema，redocly 零 error）；登记实现偏差 D-447（sqlite-vec Windows 不可加载，numpy 扫描替代）/ D-448（BGE-M3 待接入，开发默认 HashEmbedder）；§四 摘要表补 D-447/D-448 行。 |
 | 0.0.99 | 2026-08-12 | 竖切首迭代批次（changelog 0.0.99）：D-428 全量闭合（88 操作 schema 落地，redocly 零 error）——正文五段/§六 关键路径表同步；Skeleton 占位定义移除。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

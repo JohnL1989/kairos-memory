@@ -8,9 +8,9 @@ tags:
   - ops
   - monitoring
 created: 2026-07-20
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 可观测性设计
@@ -160,4 +160,6 @@ status: draft
 | 0.0.67 | 2026-08-09 | round33 全面深度审计修复批次（changelog 0.0.67）：§4a「告警投递渠道（勘误）」去除过程标记后缀（零版本标记纪律收敛，正文仅描述当前状态）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：§1.1 `kairos_forgetting_score` 指标说明改 freshness 口径（值越高越新鲜，与 detailed-design §3 EVALUATE_FRESHNESS 返回值一致，豁免记忆不计入）。详见 changelog 0.0.85 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：健康检查/告警比例基线硬编码补债务 D-442 指针（2 处）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

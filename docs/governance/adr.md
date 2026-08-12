@@ -7,9 +7,9 @@ tags:
   - kairos
   - adr
 created: 2026-07-18
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 > **ADR 一览**——12 项已采纳 ADR 快速索引（正文另含「审计决策迁移」与「决策历史条目四元组」两节）：
@@ -480,4 +480,6 @@ SOUL.md 不自动修改。最高行为准则的修改需人工审核。可审计
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：补 ADR 一览表（12 项已采纳 + 设计状态）。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：ADR-011 决策段 runbook/troubleshooting 裸文档名链接化。 |
 | 0.0.95 | 2026-08-11 | round55 Obsidian frontmatter 闭合修复批次（changelog 0.0.95）：frontmatter 补立即闭合 `---`（ADR 一览引用块此前被卷入 YAML 区导致 Obsidian 无效属性）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

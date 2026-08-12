@@ -8,9 +8,9 @@ tags:
   - quality
   - testing
 created: 2026-07-21
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 测试计划
@@ -252,4 +252,6 @@ seeds = [
 | 0.0.65 | 2026-08-08 | round31 深度审计修复批次（changelog 0.0.65）：§3.5a 标题纠正（「M-01~M-05，竖切」→「M-03/M-05 竖切用例；M-01/M-02/M-04/M-06 预留」）；预留编号表补 TC-A01-001~ 占位（健康检查，P0 级）。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：补章节导航表（§1~§5）。 |
 | 0.0.91 | 2026-08-11 | 外部理念吸收落地批次（changelog 0.0.91）：预留编号表补 TC-LME-001~（LongMemEval 记忆能力评测，协议定义见 benchmark-plan §3.15，代码启动后补充）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

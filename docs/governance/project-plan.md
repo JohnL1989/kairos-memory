@@ -8,9 +8,9 @@ tags:
   - governance
   - planning
 created: 2026-07-20
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 项目计划
@@ -111,4 +111,6 @@ status: draft
 | 0.0.74 | 2026-08-09 | round38 门禁建议落实批次（changelog 0.0.74）：Phase 0 门禁口径同步 6.13~6.33（round38 门禁扩展批次——6.33 feature-list 引用列全量校验入检 + 6.26 档 4 机制名存在性扩展，清单以 engineering-workflow §四 为准）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.84 | 2026-08-10 | round46 门禁建议落实批次（changelog 0.0.84）：Phase 0 门禁口径同步 6.13~6.38（门禁清单镜像补齐 round44 漏登的 6.34/6.35 + 本轮 6.36/6.37/6.38，清单以 engineering-workflow §四 为准）；frontmatter updated/last_reviewed 同步 2026-08-10。 |
 | 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94）：Phase 0 门禁口径同步 6.13~6.39（6.39 受改批次版本记录覆盖性为 WARN 级软门禁，清单以 engineering-workflow §四 为准）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 

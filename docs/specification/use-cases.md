@@ -8,9 +8,9 @@ tags:
   - design
   - requirements
 created: 2026-07-20
-updated: 2026-08-11
-last_reviewed: 2026-08-11
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 使用场景
@@ -152,3 +152,5 @@ status: draft
 | 0.0.67 | 2026-08-09 | round33 全面深度审计修复批次（changelog 0.0.67）：场景 5「复兴触发口径（勘误）」去除过程标记后缀（零版本标记纪律收敛，正文仅描述当前状态）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.0.88 | 2026-08-10 | round50 全面深度审计修复批次（changelog 0.0.88）：场景 4 步骤 3 表述精确化——外部校准写入见证锚定主副本触发差异检验并更新校准置信度/见证值，`narrative_coherence_score` 由叙事自洽度评估器生成、非校准信号直接写入（架构 §5.2）。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：覆盖范围声明勘误——三信号混合检索（R-18，竖切组件 3）从「待 v1.1 补充」移除（P0 事实修正，对齐 feature-list/implementation-map/requirements-baseline）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

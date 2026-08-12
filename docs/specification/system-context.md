@@ -8,9 +8,9 @@ tags:
   - design
   - architecture
 created: 2026-07-20
-updated: 2026-08-09
-last_reviewed: 2026-08-09
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 系统边界与上下文
@@ -106,3 +106,5 @@ status: draft
 | 0.0.2 | 2026-08-04 | 全库深度审计修复：P6 维度保护假设定性由「受控偏离」修正为「已知超限（非受控偏离）」，对齐认知基础 §E.7 追认口径。 |
 | 0.0.14 | 2026-08-05 | 开发就绪度审计修复批次（changelog 0.0.14）：对话管理边界声明细化（不管理对话状态机/编排，提供持久化与检索）。 |
 | 0.0.79 | 2026-08-09 | round41 全面深度审计修复批次（changelog 0.0.79）：frontmatter updated/last_reviewed 同步 2026-08-09（本轮五维审计覆盖，无内容变更）。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+

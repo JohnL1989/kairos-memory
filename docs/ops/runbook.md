@@ -8,9 +8,9 @@ tags:
   - ops
   - runbook
 created: 2026-07-21
-updated: 2026-08-10
-last_reviewed: 2026-08-10
-status: draft
+updated: 2026-08-12
+last_reviewed: 2026-08-12
+status: design-freeze
 ---
 
 # Kairos 运维手册
@@ -260,4 +260,6 @@ kairos admin key rotate --hmac    # 轮换审计 HMAC 密钥
 | 0.0.85 | 2026-08-10 | round47 全面深度审计修复批次（changelog 0.0.85）：错误码计数 42→43（新增 ERR-CTR-005 幂等键冲突）两处口径同步。详见 changelog 0.0.85 叙述节。 |
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：快照保留期 30 天硬编码补债务 D-442 指针。 |
 | 0.0.89 | 2026-08-10 | round51 全面深度审计修复批次（changelog 0.0.89）：补章节导航表（§1~§6）；D-430 裸写补「债务」前缀 2 处。 |
+| 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+
 
