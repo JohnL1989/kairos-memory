@@ -24,6 +24,8 @@ dependencies = [
     "apscheduler>=3.10",
     # MCP 协议（Bridge 独立子进程，api-spec §6.8；1.x 内置 FastMCP）
     "mcp>=1.0,<2",
+    # PostgreSQL 后端（D-449：pgvector 适配，ADR-001）
+    "asyncpg>=0.29",
     "httpx>=0.27",
 ]
 

@@ -12,8 +12,11 @@ CI 友好、管线正确性验证；BGE-M3 模型接入点保留（sentence-tran
 from __future__ import annotations
 
 import hashlib
+import os
 import struct
 from abc import ABC, abstractmethod
+from pathlib import Path
+from typing import Any
 
 # 嵌入维度（schema-slice §约定：VECTOR(1536)，DDL 以 1536 为准）
 EMBEDDING_DIM = 1536
@@ -71,31 +74,73 @@ class HashEmbedder(Embedder):
 
 
 class BgeM3Embedder(Embedder):
-    """BGE-M3 本地嵌入（轻量模式默认，technology-stack §三）。
+    """BGE-M3 本地嵌入（轻量模式默认，technology-stack §三）——D-448 闭合。
 
-    1024 维原生 → 固定随机正交投影 W ∈ R^{1536×1024} 映射至 1536 维（ADR-012）。
-    sentence-transformers 未安装/模型缺失时启动告警回落 HashEmbedder。
+    管线：sentence-transformers 加载 BGE-M3（原生 1024 维）→ 固定随机正交投影
+    W ∈ R^{1536×1024} 映射至 1536 维（ADR-012；投影矩阵确定性生成并随
+    schema 持久化）→ 归一化。
+    依赖：sentence-transformers + torch 为可选组（`pip install kairos[bge-m3]`）；
+    模型缺失/依赖缺失时构造失败 → 工厂回落 HashEmbedder（fail-open 留痕，
+    D-448 升级触发条件：模型就绪后切换 KAIROS_EMBEDDER=bge-m3）。
     """
 
-    def __init__(self, model_path: str = "./models/bge-m3") -> None:
+    def __init__(
+        self,
+        model_path: str = "./models/bge-m3",
+        projection_path: str | None = None,
+        projection_seed: int = 42,
+    ) -> None:
         from pathlib import Path
 
         self.model_path = model_path
+        self.projection_seed = projection_seed
         if not Path(model_path).exists():
             # 模型未就绪：构造失败 → 工厂回落 HashEmbedder（D-448 留痕）
             raise RuntimeError(f"BGE-M3 模型缺失: {model_path}")
-        self._model = None
-        self._projection = None  # 1536×1024 固定随机正交投影（矩阵随 schema 持久化，ADR-012）
+        try:
+            from sentence_transformers import SentenceTransformer  # type: ignore[import-not-found]
+        except ImportError as exc:
+            raise RuntimeError(
+                "sentence-transformers 未安装（D-448：pip install kairos[bge-m3]）"
+            ) from exc
+        self._model = SentenceTransformer(model_path)
+        self._projection = self._load_or_build_projection(projection_path)
 
     @property
     def name(self) -> str:
         return "bge-m3"
 
     async def embed(self, text: str) -> list[float]:
-        raise NotImplementedError(
-            "BGE-M3 模型接入待模型就绪（sentence-transformers + 投影矩阵持久化，"
-            "ADR-012）；当前运行使用 HashEmbedder（开发默认）"
+        """BGE-M3 嵌入 → 正交投影 1536 维 → 归一化（单位向量）。"""
+        import numpy as np
+
+        raw = self._model.encode(text, normalize_embeddings=True)  # 1024 维
+        # x(1024) @ Wᵀ(1024×1536) → 1536 维（W ∈ R^{1536×1024}，ADR-012）
+        vector = np.asarray(raw, dtype="<f4") @ self._projection.T
+        norm = float(np.linalg.norm(vector)) or 1.0
+        return [float(x) for x in (vector / norm)]
+
+    # ------------------------------------------------------------------
+    # 投影矩阵（ADR-012：固定随机正交投影，矩阵随 schema 持久化）
+    # ------------------------------------------------------------------
+
+    def _load_or_build_projection(self, projection_path: str | None) -> Any:
+        """加载持久化投影矩阵；缺失时确定性生成（固定种子）并持久化。"""
+        import numpy as np
+
+        path = projection_path or os.path.join(
+            os.environ.get("KAIROS_DATA_DIR", str(Path.home() / ".kairos")),
+            "bge_m3_projection.npy",
         )
+        if os.path.exists(path):
+            return np.load(path)
+        # 确定性生成：固定种子 → QR 正交化（1536×1024 列正交）
+        rng = np.random.default_rng(self.projection_seed)
+        w = rng.standard_normal((1536, 1024)).astype("<f4")
+        q, _r = np.linalg.qr(w)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        np.save(path, q)
+        return q
 
 
 def create_embedder(kind: str = "hash") -> Embedder:
@@ -104,5 +149,10 @@ def create_embedder(kind: str = "hash") -> Embedder:
         try:
             return BgeM3Embedder()
         except Exception:
-            pass  # 模型不可用 → 回落 hash（fail-open 留痕，启动日志告警）
+            # 模型/依赖不可用 → 回落 hash（D-448 fail-open 留痕，启动日志告警）
+            import logging
+
+            logging.getLogger("kairos.utils.embeddings").warning(
+                "BGE-M3 不可用（模型或依赖缺失），回落 HashEmbedder（D-448）"
+            )
     return HashEmbedder()

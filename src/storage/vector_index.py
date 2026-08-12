@@ -19,7 +19,9 @@ TTL 仅防「版本键全表扫描」在连续查询间重复（基准关键路�
 
 from __future__ import annotations
 
+import logging
 import time
+from typing import Any
 
 import numpy as np
 from sqlalchemy import text
@@ -27,14 +29,56 @@ from sqlalchemy import text
 from src.storage.db import Database
 from src.utils.embeddings import EMBEDDING_DIM, vector_to_bytes
 
+logger = logging.getLogger("kairos.storage.vector_index")
+
 # 语义召回候选池大小（configuration §6.1 KAIROS_HYBRID_CANDIDATE_POOL_SIZE）
 DEFAULT_CANDIDATE_POOL_SIZE = 100
 # 版本键检查间隔（秒）：写入路径经 upsert 即时清缓存，TTL 仅防重复全表扫描
 VERSION_CHECK_TTL = 1.0
 
 
+_SQLITE_VEC_AVAILABLE: bool | None = None
+
+
+def _probe_sqlite_vec(connection: Any) -> bool:
+    """sqlite-vec 扩展探针（D-447 闭合）：可加载时用 SQL vec_distance_cosine。
+
+    返回 True 表示扩展可用（扩展就绪环境——Linux/macOS 官方 Python 或
+    自编译 SQLite）；False 回落 numpy 路径。探针结果缓存。
+    """
+    global _SQLITE_VEC_AVAILABLE
+    if _SQLITE_VEC_AVAILABLE is not None:
+        return _SQLITE_VEC_AVAILABLE
+    try:
+        from pathlib import Path
+
+        import sqlite_vec  # type: ignore[import-untyped]
+
+        dll = Path(sqlite_vec.__file__).parent / "vec0.dll"
+        if not dll.exists():  # POSIX 环境：.so/.dylib
+            dll = Path(sqlite_vec.__file__).parent / "vec0.so"
+        if not dll.exists():
+            _SQLITE_VEC_AVAILABLE = False
+            return False
+        connection.enable_load_extension(True)
+        connection.load_extension(str(dll))
+        connection.enable_load_extension(False)
+        _SQLITE_VEC_AVAILABLE = True
+        logger.info("sqlite-vec 扩展已加载（SQL 向量路径启用）")
+        return True
+    except Exception:
+        _SQLITE_VEC_AVAILABLE = False
+        logger.info("sqlite-vec 扩展不可加载（numpy 向量路径）")
+        return False
+
+
 class VectorIndex:
-    """向量索引（numpy 批量余弦扫描；brute-force 精确召回 + 矩阵缓存）。"""
+    """向量索引（numpy 批量余弦扫描；brute-force 精确召回 + 矩阵缓存）。
+
+    D-447 自适应：sqlite-vec 扩展可加载的环境（Linux/自编译 SQLite）经
+    探针切回 SQL  路径；不可加载环境（Windows 官方
+    Python）回落 numpy（与 schema-slice 注记的精确扫描语义一致）。
+    """
 
     def __init__(self, db: Database) -> None:
         self.db = db
