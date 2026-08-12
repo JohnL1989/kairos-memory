@@ -1227,7 +1227,7 @@ status: draft
 | 段 | 内容 |
 |:--|:-----|
 | **认知意图** | [detailed-design.md](../specification/detailed-design.md) §2 后端抽象接口（`StorageBackend` ABC：write / path_retrieve / vector_search / update_witness / update_usage）——业务代码仅依赖抽象，方言差异（FTS5 vs tsvector、JSONB 等）收敛于各后端实现内部；ADR-001 实施顺序：SQLite 首迭代，PostgreSQL 竖切验收后适配 |
-| **工程简化** | 竖切实现（`src/storage/` 各模块）直接使用 SQLAlchemy 会话与方言能力（aiosqlite + SQLite JSON1/FTS5），未建立 `StorageBackend` 抽象层——竖切组件全部基于 SQLite 实现，方言差异尚未产生 |
+| **工程简化** | 竖切实现（`src/storage/` 各模块）直接使用 SQLAlchemy 会话与方言能力（aiosqlite + SQLite JSON1/FTS5）；**0.0.99 后前置落实**——`src/storage/backend.py` 建立 `StorageBackend` 抽象（detailed-design §2 五方法契约）+ `SQLiteBackend`（薄适配委托现有组件）+ `MockPGBackend`（接口可替换性单测，acceptance-criteria「存储后端」判据达成）；`PostgresBackend` 待 PG 适配时实现 |
 | **可接受成本** | PostgreSQL + pgvector 适配（ADR-001 竖切验收后）时需抽取抽象层并迁移既有调用；当前无方言分叉，抽象缺失不产生行为差异 |
 | **升级触发条件** | 竖切验收通过进入 PG 适配迭代时：抽取 `StorageBackend` 抽象（对齐 detailed-design §2 五方法）+ SQLite/PG 双实现 + mock PG 单测（acceptance-criteria 竖切验收「StorageBackend 接口可替换」项） |
 | **历史背景** | 0.0.97 代码批次（W3~W9）实现时选择——竖切验收标准「存储后端」项要求 SQLite 全功能可用（已达成）与接口可替换（待 PG 适配）；为控制竖切范围未提前建抽象（YAGNI，方言分叉尚不存在） |
