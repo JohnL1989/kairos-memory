@@ -2052,6 +2052,22 @@ status: draft
 
 ---
 
+## 0.0.99（2026-08-12）— 竖切首迭代批次（事件总线接线/调度器/QueryAnalyzer/特征标志/证伪/D-428 全量闭合）
+
+> 竖切验收后的首迭代交付（slice-implementation-guide 组件 3 注记 + 架构 §0.8/§2.6.1 + 工程流程证伪纪律落地）。代码 222 项测试全绿，双门禁 exit 0。
+
+**落地清单**：
+- **事件总线全链路接线**（组件 7 验收补强）：use_event 发布（记忆写入/检索/归档/删除 → 影子副本订阅者升温）；4 类事件 trace_id 全链路可审计。
+- **APScheduler 空闲驱动调度**（ADR-006/架构 §2.6.3）：forgetting_scan（10s 防抖）/ latent_reevaluation（5s 防抖）/ forget_after_scan（temporary 契约到期硬删除 + expiry_cascade_delete 审计 HMAC 链）/ degradation_tick（300s）；任务错误隔离不阻断调度循环。
+- **QueryAnalyzer 首迭代**（架构 §2.6.1）：意图分类五+1 类（规则优先 + 模型兜底接入点）、时间锚定四类解析（相对窗口/日历周/绝对/事件锚定 optional 降级）、fallback_query 剥离、时间硬过滤注入三信号检索（occurred_at 优先、空回退 created_at）。
+- **特征标志配置集**（架构 §0.8）：kairos-slice/minimal/full 命名配置集声明与启动校验（invalid_flag_composition / constitutional_core_unavailable 拒绝路径）、宪法核不可禁用、标志硬上限 24、H1/H2/H3 核心假设绑定；竖切口径注记（ENTITY_GRAPH 三信号落地）。
+- **证伪测试套件**（[FALSIFICATION] 标记，工程流程 CI 门禁）：H2 证伪降级路径（→kairos-minimal 合法配置集）、H3 fail-closed containment、证伪日志格式。
+- **D-428 全量闭合**：88 操作 request/response schema 全部落地（71 端点语义化补全 + 错误响应统一 ErrorResponse），Skeleton 占位定义移除，`redocly lint` 零 error（7 项 WARN 级提示不阻断）——[debt-collection.md](../governance/debt-collection.md) 正文五段/§六 关键路径表同步关闭。
+
+**验证**：doc-audit 复跑 exit 0；deep-audit exit 0；redocly lint 零 error。结构性受改 2 份文档（debt-collection / changelog 本文件）+ 机械性 0 份；核心计数变动：债务 **D-428 闭合**（D-447/D-448/D-449 维持）；其余（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168）零漂移。
+
+---
+
 ## 版本记录
 
 > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
@@ -2156,3 +2172,4 @@ status: draft
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96，见本文件 0.0.96 叙述节）：四组全量通读低危缺口收口——use-cases 三信号检索误归 v1.1 勘误、架构叙事自洽度评估器降级默认分数登记 D-446、D-430 分类处置（config show 契约登记 + 其余归 v0.1.0 全量阶段）、认知导航表/RTM/OP-054/deployment 环境变量/架构引用与版本标注等机械性修正；债务 D-445→D-446；参数计数不变；其余核心计数零漂移。 |
 | 0.0.97 | 2026-08-11 | 竖切代码启动批次（changelog 0.0.97，见本文件 0.0.97 叙述节）：W1~W9 全量交付——项目骨架（Typer 定档）、15 张竖切表迁移（Alembic + schema-slice 权威 DDL）、记忆 CRUD + 双副本（S-14 隔离）、路径空间（GLOB 前缀 + 污染率 0%）、事件总线（4 类 + 背压 + trace_id）、三信号检索（numpy 余弦 + FTS5 BM25 + 实体加成）、遗忘 + 潜伏势能、身份注册表（构造论 + 否决裁决器）、校准/降级/冻结 + 审计 HMAC 链；REST 21 端点 + CLI 15 条；基准（写 P50 16.6ms / 路径 / 语义 1 万条）；D-428 竖切部分闭合（redocly 零 error）；实现偏差登记 D-447/D-448；README 状态声明更新。 |
 | 0.0.98 | 2026-08-12 | 版本记录双轨制规则修订批次（changelog 0.0.98，见本文件 0.0.98 叙述节）：「触及即登记」→「结构性变更即登记」——版本记录只登记结构性变更，机械性变更只进 changelog；doc-audit 6.39 适配结构性受改清单解析（旧格式兼容）；changelog 0.0.97 受改清单标注为新格式。 |
+| 0.0.99 | 2026-08-12 | 竖切首迭代批次（changelog 0.0.99，见本文件 0.0.99 叙述节）：事件总线全链路接线（use_event→影子副本）、APScheduler 空闲驱动调度（4 任务）、QueryAnalyzer（意图+时间锚定）、特征标志配置集校验+证伪套件、D-428 全量闭合（88 操作 schema，redocly 零 error）。 |

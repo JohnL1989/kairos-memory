@@ -10,8 +10,8 @@ tags:
   - debt
   - gap-analysis
 created: 2026-07-19
-updated: 2026-08-11
-last_reviewed: 2026-08-11
+updated: 2026-08-12
+last_reviewed: 2026-08-12
 status: draft
 ---
 
@@ -991,9 +991,9 @@ status: draft
 | 段 | 内容 |
 |:--|:-----|
 | **认知意图** | `openapi.yaml`（81 路径 / 88 操作 OpenAPI 3.1 骨架）与 `mcp-tools.json`（15 MCP 工具契约）目前仅含占位 schema——openapi 已补 path 参数 / requestBody / security / tags 使文件通过结构校验，但 88 操作的 request/response 与 15 工具的 inputSchema 仍为 Skeleton 占位，无法用于 codegen / Mock / CI 校验 |
-| **工程简化** | 0.0.43 新建契约骨架时头部声明「须在 Phase 0 补全」「切勿将其当作已完成契约」，但未同步登记追缴条目（违反 §2.3 追缴门禁与「写了=做了」红线，审计报告 R18-07）；0.0.45 已补 path 参数 / requestBody / security / tags 使结构有效，本条目追踪 schema 内容补全 |
+| **工程简化** | 0.0.43 新建契约骨架时头部声明「须在 Phase 0 补全」「切勿将其当作已完成契约」，但未同步登记追缴条目（违反 §2.3 追缴门禁与「写了=做了」红线，审计报告 R18-07）；0.0.45 已补 path 参数 / requestBody / security / tags 使结构有效；0.0.97 竖切 21 端点 schema + mcp-tools.json 15 工具 inputSchema 补全；**0.0.99 首迭代批次全量闭合**——88 操作 request/response schema 全部落地（71 端点语义化补全 + 竖切 21 端点 + 错误响应统一 ErrorResponse），Skeleton 占位定义移除，`redocly lint` 零 error（7 项 WARN 级提示不阻断） |
 | **可接受成本** | 不补全则 Markdown 设计与实现漂移无检测手段，契约无法生成客户端 SDK 骨架 / 校验器 / Mock Server（F5 立项目的落空） |
-| **升级触发条件** | Phase 0 结束前须闭合——openapi 88 操作 request/response schema 落地 + mcp-tools.json 15 工具 inputSchema 补全，以 `redocly lint` 零 error 为验收判据（见 [project-plan.md](../governance/project-plan.md) Phase 0 W2） |
+| **升级触发条件** | ~~Phase 0 结束前须闭合~~ **已闭合（0.0.99 首迭代批次）**——openapi 88 操作 request/response schema 全量落地 + mcp-tools.json 15 工具 inputSchema 补全，`redocly lint` 零 error 验收通过；本条目关闭 |
 | **历史背景** | 0.0.45 文档审计修复批次（changelog 0.0.45，审计报告 R18-07）补登；现状结构校验见 0.0.45 批次说明 |
 
 ### D-429 `/metrics` Prometheus 暴露端点待登记（round21 审计追缴，R21-04）
@@ -1508,7 +1508,7 @@ status: draft
 | D-422~425 | 已在首版范围 | 四项「参数待登记」须在 v0.1.0 配置冻结前注册进 [configuration.md](../ops/configuration.md)（含默认值与调优区间），否则对应机制无法完整实现 |
 | D-426 | 已在首版范围 | v0.1.0.x——外部依赖安全审查结论（引入/参考/自研）须登记 [adr.md](adr.md)，评估本身不依赖 v1.1 能力 |
 | D-427 | 维持 v1.1 | 研究议程——随容量-效用曲线实验立项纳入，无 v0.1.0 交付物 |
-| D-428 | 已在首版范围 | Phase 0 W2 结束前闭合，验收判据为契约校验零 error（[project-plan.md](project-plan.md) Phase 0） |
+| D-428 | ✅ 已闭合（0.0.99 首迭代批次） | openapi 88 操作 request/response schema 全量落地 + mcp-tools.json 15 工具 inputSchema 补全，`redocly lint` 零 error 验收通过（[project-plan.md](project-plan.md) Phase 0 W2 判据达成） |
 | D-429 | 已在首版范围 | `/metrics` 端点须在 [api-spec.md](../specification/api-spec.md) §1.8 正式登记并纳入端点计数后关闭 |
 | D-430 | 分类处置（0.0.95 修订） | 竖切相关子项 `kairos config show` 已登记契约（0.0.95，api-spec §3 CLI 表，竖切 CLI 15 交付项）——子项关闭；其余 10 条（db repair/db restore/db migrate rollback/admin key revoke/rotate --hmac/audit log/audit approve-forgetting/health --full/logs 扩展参数/config reset）+ `kairos init --seed-path` 为灾难恢复/运维/发布验证链路命令，均不在竖切端点集内，归 v0.1.0 全量阶段（Phase 2 后、发布前）在 [api-spec.md](../specification/api-spec.md) §3 登记契约或从使用方移除（[troubleshooting.md](../ops/troubleshooting.md) §一 门禁声明已同步） |
 | D-431 | 分类处置（0.0.92 修订） | 10 项待定义参数按来源域分类：8 项 v1.1 域（blueprint 源头）随对应功能迭代定义、`KAIROS_PATH` 随 detailed-design 实体标签 schema 落地补齐、2 项部署环境变量（ADMIN_IPS/DB_PASSWORD）部署时点确定；竖切（v0.1.0-slice）相关参数核验无待定义项——原「编码启动前须补齐」硬门禁收口为分类处置（[configuration.md](../ops/configuration.md) 附录 A 引言已同步） |
@@ -1554,4 +1554,5 @@ status: draft
 | 0.0.92 | 2026-08-11 | 定稿收尾批次（changelog 0.0.92）：D-431 分类处置修订（10 项待定义按来源域分类：8 项 v1.1 域 + 2 项部署时点，竖切核验无待定义；预期版本改「v1.1 域追踪」，摘要表/评估表同步）。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：D-430 分类处置（竖切相关 config show 已登记契约 + 其余 10 条归 v0.1.0 全量阶段）；登记 D-446（叙事自洽度评估器降级默认分数，v0.1.0 首迭代）；§7.2 统计表同步（D-431 移入维持行、D-446 入首版行，合计 91→92）。 |
 | 0.0.97 | 2026-08-11 | 竖切代码启动批次（changelog 0.0.97）：D-428 竖切部分闭合（openapi 竖切 21 端点 schema + mcp-tools.json 15 工具 inputSchema，redocly 零 error）；登记实现偏差 D-447（sqlite-vec Windows 不可加载，numpy 扫描替代）/ D-448（BGE-M3 待接入，开发默认 HashEmbedder）；§四 摘要表补 D-447/D-448 行。 |
+| 0.0.99 | 2026-08-12 | 竖切首迭代批次（changelog 0.0.99）：D-428 全量闭合（88 操作 schema 落地，redocly 零 error）——正文五段/§六 关键路径表同步；Skeleton 占位定义移除。 |
 
