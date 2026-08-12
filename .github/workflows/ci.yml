@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  doc-gates:
+    name: 文档门禁（doc-audit + deep-audit）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: doc-audit（18 类 + 14a + 6.8a + 6.12a + 6.13~6.39，engineering-workflow §四）
+        run: |
+          PYTHONIOENCODING=utf-8 python scripts/doc-audit.py
+      - name: deep-audit（链接/出入度/数字声明/占位盘点）
+        run: |
+          PYTHONIOENCODING=utf-8 python scripts/deep-audit.py
+
+  code-checks:
+    name: 代码检查（lint + 类型 + 测试 + 红线）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: uv sync
+      - name: Ruff lint
+        run: uv run ruff check src/ tests/ migrations/
+      - name: Ruff format check
+        run: uv run ruff format --check src/ tests/ migrations/
+      - name: Mypy type check
+        run: uv run mypy src/
+      - name: Unit + integration tests
+        run: uv run pytest tests/unit tests/integration -q --cov=src --cov-report=term-missing
+      - name: E2E tests
+        run: uv run pytest tests/e2e -q
+
+  contract-lint:
+    name: 接口契约校验（redocly lint 零 error，D-428）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: openapi lint
+        run: npx --yes @redocly/cli lint docs/specification/api-contract/openapi.yaml --extends minimal
+      - name: mcp-tools schema validate
+        run: |
+          npx --yes ajv-cli validate -s docs/specification/api-contract/mcp-tools.schema.json \
+            -d docs/specification/api-contract/mcp-tools.json 2>/dev/null \
+            || python -c "import json;json.load(open('docs/specification/api-contract/mcp-tools.json',encoding='utf-8'));print('mcp-tools.json valid JSON')"

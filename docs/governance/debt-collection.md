@@ -1198,6 +1198,42 @@ status: draft
 
 ---
 
+### D-447 向量检索实现路径偏差（sqlite-vec 扩展在 Windows 官方 Python 不可加载）（0.0.97 代码批次登记）
+
+| 段 | 内容 |
+|:--|:-----|
+| **认知意图** | [technology-stack.md](../development/technology-stack.md) §二 轻量模式向量检索选型 sqlite-vec（`vec_distance_cosine` SQL 函数）；[schema-slice.sql](../specification/schema-slice.sql) 头部声明依赖扩展 |
+| **工程简化** | 竖切实现（`src/storage/vector_index.py`）以 numpy 批量余弦扫描替代 sqlite-vec SQL 函数——Windows 官方 Python 的 sqlite3 模块未编译 `SQLITE_ENABLE_LOAD_EXTENSION`，扩展加载不可用（挂起而非报错）；numpy 路径为纯 Python 实现、brute-force 精确召回（与 schema-slice 注记的「SQLite 侧 v0.1.0 不建向量索引、精确扫描」语义一致），1 万条 × 1536 维基准 P50 满足 ≤100ms 验收 |
+| **可接受成本** | 向量距离计算从 SQL 侧移至应用侧（多一次 BLOB 批量解码）；扩展就绪环境（Linux/macOS 官方 Python 或自编译 SQLite）可切回 SQL 路径，模块保持同一返回契约 |
+| **升级触发条件** | 部署环境确认 sqlite-vec 扩展可加载（`vec_version()` 返回版本）且基准显示 numpy 路径不达标时，切回 SQL 侧 `vec_distance_cosine` |
+| **历史背景** | 0.0.97 代码批次（W5）实现时确认——竖切开发环境 Windows 11 + Python 3.12 官方构建，扩展加载挂起；numpy 已在竖切依赖内（向量运算），选其为确定性实现路径 |
+
+---
+
+### D-448 轻量模式默认嵌入器实现偏差（BGE-M3 待接入，开发默认 HashEmbedder）（0.0.97 代码批次登记）
+
+| 段 | 内容 |
+|:--|:-----|
+| **认知意图** | [technology-stack.md](../development/technology-stack.md) §三 轻量模式默认嵌入 BGE-M3（1024 维经固定随机正交投影映射 1536 维，ADR-012）；[configuration.md](../ops/configuration.md) 轻量模式默认嵌入路径 |
+| **工程简化** | 竖切实现（`src/utils/embeddings.py`）默认 `HashEmbedder`（确定性伪随机 1536 维）——零外部依赖、CI 友好、管线正确性验证；`BgeM3Embedder` 接入点已留（sentence-transformers + 投影矩阵持久化），模型未就绪时回落 hash 并留痕（与 KAIROS_FTS5_CHINESE_SEGMENTATION 扩展缺失回落模式同构） |
+| **可接受成本** | 开发默认嵌入器不承载真实语义质量（HashEmbedder 近正交随机方向）——三信号检索的语义信号在 BGE-M3 接入前为占位语义；BM25/实体信号不受影响 |
+| **升级触发条件** | BGE-M3 模型权重就绪（`./models/bge-m3`）+ 投影矩阵随 schema 持久化（ADR-012）后切换 嵌入器配置切换为 bge-m3；语义检索基准（W9 判据）在真实嵌入下复测 |
+| **历史背景** | 0.0.97 代码批次（W5）实现时选择——sentence-transformers + torch 为重型依赖且模型需下载，竖切开发与 CI 环境不可依赖；HashEmbedder 确定性保证测试可复现 |
+
+---
+
+### D-449 存储后端抽象层未建（竖切直接 SQLAlchemy，PG 适配时引入）（0.0.97 代码批次登记）
+
+| 段 | 内容 |
+|:--|:-----|
+| **认知意图** | [detailed-design.md](../specification/detailed-design.md) §2 后端抽象接口（`StorageBackend` ABC：write / path_retrieve / vector_search / update_witness / update_usage）——业务代码仅依赖抽象，方言差异（FTS5 vs tsvector、JSONB 等）收敛于各后端实现内部；ADR-001 实施顺序：SQLite 首迭代，PostgreSQL 竖切验收后适配 |
+| **工程简化** | 竖切实现（`src/storage/` 各模块）直接使用 SQLAlchemy 会话与方言能力（aiosqlite + SQLite JSON1/FTS5），未建立 `StorageBackend` 抽象层——竖切组件全部基于 SQLite 实现，方言差异尚未产生 |
+| **可接受成本** | PostgreSQL + pgvector 适配（ADR-001 竖切验收后）时需抽取抽象层并迁移既有调用；当前无方言分叉，抽象缺失不产生行为差异 |
+| **升级触发条件** | 竖切验收通过进入 PG 适配迭代时：抽取 `StorageBackend` 抽象（对齐 detailed-design §2 五方法）+ SQLite/PG 双实现 + mock PG 单测（acceptance-criteria 竖切验收「StorageBackend 接口可替换」项） |
+| **历史背景** | 0.0.97 代码批次（W3~W9）实现时选择——竖切验收标准「存储后端」项要求 SQLite 全功能可用（已达成）与接口可替换（待 PG 适配）；为控制竖切范围未提前建抽象（YAGNI，方言分叉尚不存在） |
+
+---
+
 ## 四、已归档：认知-工程差距摘要（快速参考）
 > **决策 D-03 拆分说明**：D-005~D-019 在本文同时出现于「活跃区（工程级待办）」与「§5.4（文档级已闭环）」。二者记录不同维度的状态——§5.4 指认知层文档声明已补写，活跃区指架构层工程落地待办，非同一事实的矛盾。各活跃条目已加「状态（决策 D-03 拆分）」字段明示。
 >
@@ -1280,6 +1316,9 @@ status: draft
 | D-444 | 外部理念吸收 v1.1 评估项批量登记（4 项架构注记） | v1.1 | 📋 新登记（正文 0.0.89 登记，摘要表 round51 补行） |
 | D-445 | 外部理念吸收 v1.1 候选/目标批量登记（7 项架构注记） | v1.1 | 📋 新登记（正文 0.0.90 登记，摘要表 round52 补行） |
 | D-446 | 叙事自洽度评估器降级默认分数待定（架构 §5.2，竖切内 NARRATIVE_IDENTITY=ON 直接相关） | v0.1.0 首迭代 | 📋 新登记（0.0.95 定稿审查登记） |
+| D-447 | 向量检索实现路径偏差（sqlite-vec 扩展在 Windows 官方 Python 不可加载，numpy 扫描替代） | v0.1.0 | 📋 新登记（0.0.97 代码批次登记） |
+| D-448 | 轻量模式默认嵌入器实现偏差（BGE-M3 待接入，开发默认 HashEmbedder） | v0.1.0 | 📋 新登记（0.0.97 代码批次登记） |
+| D-449 | 存储后端抽象层未建（竖切直接 SQLAlchemy，PG 适配时引入） | v0.1.0 全量阶段 | 📋 新登记（0.0.97 代码批次登记） |
 | D-312 | **认知完整性轴参与帕累托计算** | v1.1 | 📅 路线图（前置条件） |
 | D-313 | **可及性轴完整实现** | v1.1 | 📅 路线图（协议槽位） |
 | D-321 | 裁决结果由单解改为解集（载荷解集化） | v0.1.0 | 📋 已在首版范围（v0.1.0 硬承诺，不可延后——延后即保留 P6 违规） |
@@ -1538,3 +1577,4 @@ status: draft
 | 0.0.90 | 2026-08-11 | round52 全面深度审计修复批次（changelog 0.0.90）：登记 D-445（外部理念吸收 v1.1 候选批量 7 项架构注记）；「多 Agent」空格 1 处。 |
 | 0.0.92 | 2026-08-11 | 定稿收尾批次（changelog 0.0.92）：D-431 分类处置修订（10 项待定义按来源域分类：8 项 v1.1 域 + 2 项部署时点，竖切核验无待定义；预期版本改「v1.1 域追踪」，摘要表/评估表同步）。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：D-430 分类处置（竖切相关 config show 已登记契约 + 其余 10 条归 v0.1.0 全量阶段）；登记 D-446（叙事自洽度评估器降级默认分数，v0.1.0 首迭代）；§7.2 统计表同步（D-431 移入维持行、D-446 入首版行，合计 91→92）。 |
+| 0.0.97 | 2026-08-11 | 竖切代码启动批次（changelog 0.0.97）：D-428 竖切部分闭合（openapi 竖切 21 端点 schema + mcp-tools.json 15 工具 inputSchema，redocly 零 error）；登记实现偏差 D-447（sqlite-vec Windows 不可加载，numpy 扫描替代）/ D-448（BGE-M3 待接入，开发默认 HashEmbedder）；§四 摘要表补 D-447/D-448 行。 |

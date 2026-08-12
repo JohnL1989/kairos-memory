@@ -1,0 +1,94 @@
+[project]
+name = "kairos"
+version = "0.1.0"
+description = "Kairos Memory System — AI agent 记忆系统（竖切 v0.1.0-slice）"
+readme = "docs/README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+dependencies = [
+    # CLI 框架（W1 定档：Typer——与 Litestar 类型安全理念一致，mypy 友好）
+    "typer>=0.12",
+    # Web 框架（REST API）
+    "litestar>=2.0",
+    "uvicorn>=0.22",
+    # 存储（轻量模式 SQLite；标准模式 PostgreSQL 竖切验收后适配，ADR-001）
+    "sqlalchemy>=2.0",
+    "aiosqlite",
+    "alembic>=1.13",
+    # 向量检索（轻量模式 sqlite-vec；嵌入维度 1536）
+    "sqlite-vec>=0.1",
+    "numpy>=1.26",
+    # 密码学（审计 HMAC 链 / API Key 哈希，S-01/S-05/S-16）
+    "cryptography>=42.0",
+    # 周期性任务（空闲驱动调度，ADR-006）
+    "apscheduler>=3.10",
+]
+
+[project.scripts]
+kairos = "src.main:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-asyncio",
+    "httpx>=0.27",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "types-python-dateutil",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "migrations", "tests", "scripts"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+asyncio_mode = "auto"
+markers = [
+    "unit: 单元测试",
+    "integration: 集成测试",
+    "e2e: 端到端测试",
+    "redline: 安全红线验证（S-01~S-19）",
+    "falsification: 证伪测试（[FALSIFICATION] 套件）",
+    "benchmark: 性能基准",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "N"]
+ignore = ["N801"]  # 类名允许非首字母大写缩写
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+# 目标 3.12：numpy 新版 stub 使用 3.12 type 语句语法，3.11 模式无法解析；
+# 运行兼容性仍为 >=3.11（python_requires），mypy 仅检查语法目标
+python_version = "3.12"
+strict = true
+warn_unused_configs = true
+exclude = ["tests/"]
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+check_untyped_defs = true
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true

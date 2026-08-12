@@ -25,8 +25,11 @@ servers:
   description: local dev（默认端口 8010，见 ops/deployment.md、user/quick-start.md）
 tags:
 - name: audit
+  description: 审计与可追溯性端点（S-16 HMAC 链；无 /v1 前缀）
 - name: health
+  description: 健康检查与存活探针（无 /v1 前缀）
 - name: v1
+  description: /v1 业务端点（记忆/检索/校准/治理/系统管理）
 paths:
   /audit/compression:
     get:
@@ -91,7 +94,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/HealthResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -316,7 +319,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/AuditLogResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -339,14 +342,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/CalibrateRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/CalibrateResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -413,7 +416,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/ConfigResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -435,14 +438,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/ConfigUpdateRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/ConfigResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -546,7 +549,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/DegradationSwitchRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
@@ -816,7 +819,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/FreezeRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
@@ -1157,7 +1160,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SearchResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1179,14 +1182,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/MemoryWriteRequest'
       responses:
         '201':
           description: 已创建 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryCreated'
         '400':
           description: 参数无效（api-spec 声明）
         '401':
@@ -1215,14 +1218,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/BatchWriteRequest'
       responses:
         '207':
           description: 部分成功（Multi-Status，逐条返回结果） — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/BatchWriteResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1311,14 +1314,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/HybridSearchRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SearchResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1373,7 +1376,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryDetail'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1395,14 +1398,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/MemoryUpdateRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/MemoryDetail'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -1464,7 +1467,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/ArchiveRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
@@ -1662,7 +1665,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/RestoreRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
@@ -2016,7 +2019,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/PathListResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2112,7 +2115,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/PathTreeResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2388,7 +2391,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SeedsListResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2411,14 +2414,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkeletonRequest'
+              $ref: '#/components/schemas/SeedCreateRequest'
       responses:
         '200':
           description: 成功 — SKELETON：response schema 待 Phase 0 补全
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SkeletonResponse'
+                $ref: '#/components/schemas/SeedResponse'
         '400':
           description: 参数无效（方法族基线，Phase 0 逐端点收敛）
         '401':
@@ -2994,6 +2997,411 @@ paths:
           description: 限流或预算耗尽（ERR-RATE-*）（方法族基线，Phase 0 逐端点收敛）
 components:
   schemas:
+    # =========================================================================
+    # 竖切 21 端点 schema（D-428 补全；来源：api-spec.md §1，字段语义以 data-model 为准）
+    # =========================================================================
+    # --- 记忆写入（POST /v1/memories） ---
+    MemoryWriteRequest:
+      type: object
+      description: 记忆写入请求（api-spec §1.1；S-15 provenance 必填，缺失返回 422）
+      required: [path, content, provenance]
+      properties:
+        path:
+          type: string
+          description: kairos:// 路径（前缀索引与域路由，架构 §5.2）
+        content:
+          type: string
+          maxLength: 65536
+          description: 记忆内容（64KB 硬上限，KAIROS_INPUT_LIMIT_CONTENT_BYTES）
+        contract:
+          type: string
+          enum: [permanent, ondemand, environmental, temporary, intention]
+          default: ondemand
+          description: 契约五值（架构 §5.2；intention 仅系统内部路径使用）
+        memory_types:
+          type: array
+          items:
+            type: string
+            enum: [episodic, semantic, procedural]
+          description: 记忆类型列表（多重记忆认知模型）
+        provenance:
+          type: string
+          enum: [external_calibration, internal_inference, user_input, system_generated, exploration]
+          description: 来源标识（S-15 必填）
+        vad:
+          type: object
+          description: 情感坐标（VAD 三维，各维 [-1,1]）
+          properties:
+            v: { type: number, format: float, minimum: -1, maximum: 1 }
+            a: { type: number, format: float, minimum: -1, maximum: 1 }
+            d: { type: number, format: float, minimum: -1, maximum: 1 }
+        relations:
+          type: array
+          description: 关系列表（可选；关系索引表非竖切范围，v0.1.0 忽略）
+          items:
+            type: object
+            properties:
+              target_id: { type: string, format: uuid }
+              relation_type: { type: string }
+              strength: { type: number, minimum: 0, maximum: 1 }
+        encoding_context:
+          type: object
+          description: 编码上下文（时空/任务目标/情感状态，架构 §5.2）
+          additionalProperties: true
+        occurred_at:
+          type: string
+          format: date-time
+          description: 事件时间（双时态，可空——无法判定时不填）
+    MemoryCreated:
+      type: object
+      description: 记忆写入响应（201；含 version 供 PATCH 乐观锁 If-Match）
+      required: [id, path, version]
+      properties:
+        id: { type: string, format: uuid }
+        path: { type: string }
+        version: { type: integer, minimum: 1 }
+    # --- 批量写入（POST /v1/memories/batch，W-03） ---
+    BatchWriteRequest:
+      type: object
+      description: 批量导入请求（最大 100 条；幂等键语义与单条一致）
+      required: [items]
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          items: { $ref: '#/components/schemas/MemoryWriteRequest' }
+        on_conflict:
+          type: string
+          enum: [skip, overwrite]
+          default: skip
+          description: 冲突条目逐条跳过/覆盖（207 逐条返回，无 fail 档）
+    BatchWriteResponse:
+      type: object
+      description: 批量导入响应（207 Multi-Status）
+      required: [success_count, failed_count, results]
+      properties:
+        success_count: { type: integer }
+        failed_count: { type: integer }
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              index: { type: integer }
+              status: { type: string, enum: [created, skipped, overwritten, error] }
+              id: { type: string, format: uuid }
+              code: { type: string }
+              message: { type: string }
+    # --- 记忆对象（GET/PATCH /v1/memories/{id}） ---
+    MemoryDetail:
+      type: object
+      description: 记忆对象（读取/更新响应；字段以 data-model memories 表为权威）
+      required: [id, path, version, content, contract, memory_types, provenance, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        path: { type: string }
+        version: { type: integer, minimum: 1 }
+        content: { type: string }
+        content_summary: { type: string }
+        contract:
+          type: string
+          enum: [permanent, ondemand, environmental, temporary, intention]
+        memory_types:
+          type: array
+          items: { type: string, enum: [episodic, semantic, procedural] }
+        provenance:
+          type: string
+          enum: [external_calibration, internal_inference, user_input, system_generated, exploration]
+        status:
+          type: string
+          enum: [active, stale, archived, suppressed, superseded]
+        is_identity: { type: boolean }
+        identity_confidence: { type: number, minimum: 0, maximum: 1 }
+        is_sensitive: { type: boolean }
+        vad:
+          type: object
+          properties:
+            v: { type: number, minimum: -1, maximum: 1 }
+            a: { type: number, minimum: -1, maximum: 1 }
+            d: { type: number, minimum: -1, maximum: 1 }
+        heat_score: { type: number, minimum: 0, maximum: 1 }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        last_access_at: { type: [string, "null"], format: date-time }
+        occurred_at: { type: [string, "null"], format: date-time }
+    MemoryUpdateRequest:
+      type: object
+      description: 记忆更新请求（PATCH；乐观锁强制——须携带 If-Match 请求头（当前版本号），冲突 409 ERR-DB-005）
+      properties:
+        content: { type: string, maxLength: 65536 }
+        content_summary: { type: string }
+        vad:
+          type: object
+          properties:
+            v: { type: number, minimum: -1, maximum: 1 }
+            a: { type: number, minimum: -1, maximum: 1 }
+            d: { type: number, minimum: -1, maximum: 1 }
+        memory_types:
+          type: array
+          items: { type: string, enum: [episodic, semantic, procedural] }
+        occurred_at: { type: [string, "null"], format: date-time }
+    # --- 归档/恢复（M-05） ---
+    ArchiveRequest:
+      type: object
+      description: 归档原因（可选，写入审计日志）
+      properties:
+        reason: { type: string }
+    RestoreRequest:
+      type: object
+      description: 恢复原因（可选，写入审计日志；恢复须经潜伏势能重估端口匹配验证）
+      properties:
+        reason: { type: string }
+    # --- 检索（POST /v1/memories/search / GET /v1/memories?q=） ---
+    HybridSearchRequest:
+      type: object
+      description: 三信号混合检索请求（架构 §7.3a：语义 0.50 + BM25 0.35 + 实体 0.15）
+      required: [query]
+      properties:
+        query:
+          type: string
+          maxLength: 500
+          description: 查询内容（KAIROS_INPUT_LIMIT_QUERY_CHARS）
+        mode:
+          type: string
+          enum: [hybrid, semantic, bm25]
+          default: hybrid
+        weights:
+          type: object
+          description: 三信号权重（候选域内融合；默认 α_s=0.50/α_b=0.35/α_e=0.15，权重和恒为 1）
+          properties:
+            semantic: { type: number, minimum: 0, maximum: 1 }
+            bm25: { type: number, minimum: 0, maximum: 1 }
+            entity: { type: number, minimum: 0, maximum: 1 }
+        limit: { type: integer, minimum: 1, maximum: 100, default: 10 }
+        filters:
+          type: object
+          description: 过滤条件（硬过滤边界：路径前缀 + 契约）
+          properties:
+            contract:
+              type: string
+              enum: [permanent, ondemand, environmental, temporary, intention]
+            path_prefix: { type: string }
+    SearchResultItem:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        path: { type: string }
+        content: { type: string }
+        contract:
+          type: string
+          enum: [permanent, ondemand, environmental, temporary, intention]
+        score: { type: number, minimum: 0, maximum: 1 }
+        created_at: { type: string, format: date-time }
+        explanation:
+          type: object
+          description: 各维度贡献说明（POST /v1/memories/search 返回）
+          properties:
+            semantic: { type: number }
+            bm25: { type: number }
+            entity: { type: number }
+    SearchResponse:
+      type: object
+      description: 检索响应（含可选校准状态与 nudge 元数据，api-spec §1.2）
+      required: [data, total]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/SearchResultItem' }
+        total: { type: integer }
+        path: { type: string }
+        meta:
+          type: object
+          description: 校准状态元数据（外部校准静默 >7 天时出现）
+          properties:
+            calibration_status:
+              type: object
+              properties:
+                level: { type: string, enum: [healthy, degraded, virtual, dormant] }
+                last_external_calibration: { type: [string, "null"], format: date-time }
+                days_since_last_calibration: { type: integer }
+                active_mode: { type: string }
+                virtual_calibration_confidence_ceiling: { type: number }
+        nudge:
+          type: object
+          description: 退化态主动校准提示（subtle=7-14 天 / noticeable=14-30 天 / prominent=>30 天）
+          properties:
+            active: { type: boolean }
+            message: { type: string }
+            level: { type: string, enum: [subtle, noticeable, prominent] }
+            dismissible: { type: boolean }
+    # --- 路径操作（GET /v1/path、GET /v1/path/tree） ---
+    PathListResponse:
+      type: object
+      description: 路径下记忆列表（api-spec §1.6）
+      required: [data, total]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/MemoryDetail' }
+        total: { type: integer }
+        path: { type: string }
+    PathTreeNode:
+      type: object
+      properties:
+        path: { type: string }
+        memory_count: { type: integer }
+        children:
+          type: array
+          items: { $ref: '#/components/schemas/PathTreeNode' }
+    PathTreeResponse:
+      type: object
+      description: 路径空间树状浏览（api-spec §1.6）
+      required: [tree, truncated]
+      properties:
+        tree:
+          type: array
+          items: { $ref: '#/components/schemas/PathTreeNode' }
+        truncated: { type: boolean }
+    # --- 校准与治理（POST /v1/calibrate、freeze、unfreeze、degradation/switch） ---
+    CalibrateRequest:
+      type: object
+      description: 外部校准信号（CAL-01；S-11 宪法修订唯一入口）
+      required: [memory_id, narrative_coherence_score, source]
+      properties:
+        memory_id: { type: string, format: uuid }
+        narrative_coherence_score: { type: number, minimum: 0, maximum: 1 }
+        source: { type: string }
+    CalibrateResponse:
+      type: object
+      required: [status, memory_id]
+      properties:
+        status: { type: string, enum: [accepted] }
+        memory_id: { type: string, format: uuid }
+        previous_score: { type: [number, "null"] }
+        new_score: { type: number }
+    FreezeRequest:
+      type: object
+      description: 强制冻结（CAL-03，admin Key；到期自动解冻）
+      required: [duration_seconds]
+      properties:
+        duration_seconds: { type: integer, minimum: 1 }
+        scope:
+          type: string
+          enum: [all]
+          default: all
+    DegradationSwitchRequest:
+      type: object
+      description: 降级模式切换（CAL-04，admin Key；三模式状态机见架构 §10.9）
+      required: [mode]
+      properties:
+        mode:
+          type: string
+          enum: [conservative_silent, limited_cross_validation, safe_hibernation]
+    # --- 审计日志（GET /v1/audit-log，CAL-05） ---
+    AuditLogEntry:
+      type: object
+      description: 审计记录（HMAC 链条目，S-16；字段以 data-model audit_log 为权威）
+      properties:
+        id: { type: integer }
+        timestamp: { type: string, format: date-time }
+        operator: { type: string }
+        action: { type: string }
+        target_type: { type: [string, "null"] }
+        target_id: { type: [string, "null"] }
+        content_hash: { type: [string, "null"] }
+        previous_hash: { type: [string, "null"] }
+        hmac: { type: string }
+        details: { type: [object, "null"] }
+        redline_id: { type: [string, "null"] }
+    AuditLogResponse:
+      type: object
+      required: [logs, chain_valid, total]
+      properties:
+        logs:
+          type: array
+          items: { $ref: '#/components/schemas/AuditLogEntry' }
+        chain_valid: { type: boolean, description: HMAC 链完整性校验结果 }
+        total: { type: integer }
+    # --- 系统管理（GET /health、GET/PATCH /v1/config、GET/POST /v1/seeds） ---
+    HealthResponse:
+      type: object
+      description: 健康检查（A-01，GET /health 无 /v1 前缀）
+      required: [status, components]
+      properties:
+        status: { type: string, enum: [ok, degraded, down] }
+        components:
+          type: object
+          properties:
+            api: { type: string }
+            db: { type: string }
+            scheduler: { type: string }
+            embedding: { type: string }
+            sublimation: { type: string }
+        uptime_seconds: { type: integer }
+    ConfigEntryItem:
+      type: object
+      properties:
+        key: { type: string }
+        value: { type: string }
+        scope: { type: string, enum: [static, dynamic, override] }
+        updated_at: { type: string, format: date-time }
+    ConfigResponse:
+      type: object
+      required: [config]
+      properties:
+        config:
+          type: array
+          items: { $ref: '#/components/schemas/ConfigEntryItem' }
+    ConfigUpdateRequest:
+      type: object
+      description: 运行时配置修改（A-02；仅接受竖切参数族内参数，越界 400）
+      required: [updates]
+      properties:
+        updates:
+          type: array
+          items:
+            type: object
+            required: [key, value]
+            properties:
+              key: { type: string, pattern: '^KAIROS_[A-Z][A-Z0-9_]*$' }
+              value: { type: string }
+    SeedCreateRequest:
+      type: object
+      description: 种子锚点创建（admin Key；种子生命周期约束见架构 §1.2）
+      required: [seed_type, path, initial_confidence, current_confidence]
+      properties:
+        seed_type: { type: string, enum: [config, identity, calibration] }
+        path:
+          type: string
+          description: 种子路径（kairos://_system/seeds/ 前缀）
+        content: { type: object, additionalProperties: true }
+        initial_confidence: { type: number, minimum: 0, maximum: 1 }
+        current_confidence: { type: number, minimum: 0, maximum: 1 }
+    SeedItem:
+      type: object
+      properties:
+        path: { type: string }
+        seed_type: { type: string, enum: [config, identity, calibration] }
+        status: { type: string, enum: [active, degrading, retired] }
+        degradation_level: { type: number, minimum: 0, maximum: 1 }
+        initial_confidence: { type: number }
+        current_confidence: { type: number }
+        review_count: { type: integer }
+    SeedResponse:
+      type: object
+      required: [seed]
+      properties:
+        seed: { $ref: '#/components/schemas/SeedItem' }
+    SeedsListResponse:
+      type: object
+      required: [seeds]
+      properties:
+        seeds:
+          type: array
+          items: { $ref: '#/components/schemas/SeedItem' }
+    # =========================================================================
+    # 非竖切端点占位（全量 88 操作补全随 Phase 0 收尾，D-428）
+    # =========================================================================
     SkeletonResponse:
       type: object
       description: SKELETON placeholder — replace with real response schema in Phase 0.

@@ -14,7 +14,7 @@ status: draft
 
 # Kairos 文档索引
 
-> **当前状态**：**文档草稿阶段，无运行代码**。Kairos 为全面重新设计的系统，本文档库尚无可运行的完整 Kairos 系统。feature-list 列出的 **168 项能力（43 核心 + 125 扩展；traceability-map 追溯其中 43 项与认知声明的映射）** 处于架构就绪状态，核心引擎代码未启动。
+> **当前状态**：**竖切代码开发中（v0.1.0-slice，W1~W9 已交付）**。Kairos 为全面重新设计的系统，本文档库的竖切组件已有可运行代码（`src/` 下 15 张竖切表、记忆 CRUD/双副本、路径空间、事件总线、三信号检索、遗忘、身份注册表、审计 HMAC 链、校准/降级/冻结、REST 21 端点 + CLI 15 条）；全量 v0.1.0 的 168 项能力（43 核心 + 125 扩展）仍处于架构就绪状态，核心引擎（升华/图谱/WM 等竖切外组件）未启动。代码启动与竖切交付进展见 [changelog](governance/changelog.md)。
 
 > **快速入口：** [系统架构](foundation/architecture-v0.1.0.md) · [认知基础](foundation/cognitive-foundation.md) · [待实现债务清单](governance/debt-collection.md)
 
@@ -232,3 +232,4 @@ status: draft
 | 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94，批次索引登记）：索引与计数同步（traceability-map 版本记录登记缺陷收口、deployment 标准级宪法主权面措辞对齐架构 §0.5、documentation-governance §4「触及即登记」操作细节）；核心计数表 57/参数 374/错误码 43/术语 77/端点 88/操作 66/组件 70/功能 168/ADR 12/声明 37/债务 D-445 零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.94 显式声明）。 |
 | 0.0.95 | 2026-08-11 | Obsidian frontmatter 闭合缺陷修复批次（changelog 0.0.95，批次索引登记）：索引与计数同步（adr/risks/slice-implementation-guide/acceptance-criteria/benchmark-plan/test-strategy 六份文档 frontmatter 补立即闭合 `---`、门禁 6.16 盲区增强）；核心计数表 57/参数 374/错误码 43/术语 77/端点 88/操作 66/组件 70/功能 168/ADR 12/声明 37/债务 D-445 零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.95 显式声明）。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96，批次索引登记）：四组全量通读低危缺口收口——use-cases 三信号检索误归 v1.1 勘误、D-446 登记（叙事自洽度评估器降级默认分数）、D-430 分类处置（config show 契约登记 + 其余归 v0.1.0 全量阶段）、认知导航表/RTM/OP-054/deployment 环境变量/架构引用与版本标注等机械性修正 7 处；债务 D-445→D-446；参数计数与其余核心计数零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.96 显式声明）。 |
+| 0.0.97 | 2026-08-11 | 竖切代码启动批次（changelog 0.0.97）：状态声明由「文档草稿阶段，无运行代码」更新为「竖切代码开发中（W1~W9 已交付）」；竖切组件代码落点指引（src/ + reports/benchmark-baseline-0.1.0.json）。 |

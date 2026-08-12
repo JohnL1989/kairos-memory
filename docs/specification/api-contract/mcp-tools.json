@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Kairos MCP Tool Registry (SKELETON)",
-  "description": "AUTO-GENERATED from docs/specification/api-spec.md §6.8 MCP Bridge tool table (changelog 0.0.43, 审计报告 F5). 15 tools = 基础工具集 12 + 关系管理 3。inputSchema 为占位，需补全。（债务 D-428 追踪补全）",
-  "version": "0.0.43-skeleton",
+  "title": "Kairos MCP Tool Registry",
+  "description": "Derived from docs/specification/api-spec.md §6.8 MCP Bridge tool table (changelog 0.0.43, 审计报告 F5) and §2 Agent Tool definitions. 15 tools = 基础工具集 12 + 关系管理 3。inputSchema 已补全（债务 D-428 闭合）。参数语义以 api-spec.md 为权威。",
+  "version": "0.1.0-slice",
   "toolCount": 15,
   "tools": [
     {
@@ -11,9 +11,18 @@
       "mapsTo": "POST /v1/memories",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "记忆写入（S-15 provenance 必填；contract 五值枚举，intention 仅系统内部路径）",
+        "properties": {
+          "path": { "type": "string", "description": "存储路径（kairos:// 前缀）" },
+          "content": { "type": "string", "description": "记忆内容（64KB 硬上限）" },
+          "contract": { "type": "string", "enum": ["permanent", "ondemand", "environmental", "temporary", "intention"], "default": "ondemand", "description": "契约类型" },
+          "memory_types": { "type": "array", "items": { "type": "string", "enum": ["episodic", "semantic", "procedural"] }, "description": "记忆类型列表（可多类型）" },
+          "vad": { "type": "object", "description": "情感坐标: {\"v\": float, \"a\": float, \"d\": float}，各维 [-1,1]" },
+          "provenance": { "type": "string", "enum": ["external_calibration", "internal_inference", "user_input", "system_generated", "exploration"], "description": "来源标识（必填，S-15 缺失返回 422）" },
+          "relations": { "type": "array", "items": { "type": "object" }, "description": "关系列表（可选）: [{\"target_id\": \"uuid\", \"relation_type\": \"causal\", \"strength\": 0.8}]" },
+          "encoding_context": { "type": "object", "description": "编码上下文（可选）: {\"task\": \"...\", \"session_id\": \"uuid\"}" }
+        },
+        "required": ["path", "content", "provenance"]
       }
     },
     {
@@ -22,9 +31,16 @@
       "mapsTo": "POST /v1/memories/search",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "三信号混合检索（语义 0.50 + BM25 0.35 + 实体 0.15，架构 §7.3a）",
+        "properties": {
+          "query": { "type": "string", "description": "查询内容（≤500 字符）" },
+          "mode": { "type": "string", "enum": ["hybrid", "semantic", "bm25"], "default": "hybrid" },
+          "weights": { "type": "object", "description": "三信号权重覆盖（默认 0.50/0.35/0.15，权重和恒为 1）" },
+          "limit": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 },
+          "path": { "type": "string", "description": "路径前置过滤（硬过滤边界）" },
+          "contract": { "type": "string", "enum": ["permanent", "ondemand", "environmental", "temporary", "intention"], "description": "契约过滤（可选）" }
+        },
+        "required": ["query"]
       }
     },
     {
@@ -33,8 +49,10 @@
       "mapsTo": "GET /v1/memories/heat-top",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
+        "description": "heat_score 降序热度最高记忆（热度由后台维护引擎 Light 模式维护）",
+        "properties": {
+          "limit": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 }
+        },
         "required": []
       }
     },
@@ -44,9 +62,12 @@
       "mapsTo": "POST /v1/graph/search",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "实体知识图谱检索（api-spec §6.2）",
+        "properties": {
+          "query": { "type": "string", "description": "检索内容" },
+          "limit": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 }
+        },
+        "required": ["query"]
       }
     },
     {
@@ -55,9 +76,12 @@
       "mapsTo": "POST /v1/entities/extract",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "从文本提取实体（entity_type 枚举见架构 §2.6.1 阶段二）",
+        "properties": {
+          "text": { "type": "string", "description": "待提取文本" },
+          "entity_type": { "type": "string", "enum": ["project", "people", "concept", "tool", "temporal"], "description": "限定提取实体类型（可选）" }
+        },
+        "required": ["text"]
       }
     },
     {
@@ -66,9 +90,12 @@
       "mapsTo": "MCP-only — 操作目录 §3（REST 不单独开放）",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "记忆完整生命周期轨迹（创建/更新/状态变更/审计）",
+        "properties": {
+          "memory_id": { "type": "string", "format": "uuid", "description": "记忆 UUID" },
+          "limit": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 }
+        },
+        "required": ["memory_id"]
       }
     },
     {
@@ -77,9 +104,13 @@
       "mapsTo": "POST /v1/memories/{id}/feedback",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "对检索结果反馈准确度（反馈进入校准路径）",
+        "properties": {
+          "memory_id": { "type": "string", "format": "uuid", "description": "记忆 UUID" },
+          "feedback": { "type": "string", "enum": ["helpful", "unhelpful", "incorrect"] },
+          "reason": { "type": "string", "description": "可选说明" }
+        },
+        "required": ["memory_id", "feedback"]
       }
     },
     {
@@ -88,9 +119,13 @@
       "mapsTo": "POST /v1/calibrate",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "外部校准信号（CAL-01；S-11 宪法修订唯一入口）",
+        "properties": {
+          "memory_id": { "type": "string", "format": "uuid", "description": "记忆 UUID" },
+          "narrative_coherence_score": { "type": "number", "minimum": 0, "maximum": 1, "description": "叙事自洽度评分" },
+          "source": { "type": "string", "description": "校准来源（如 user_review）" }
+        },
+        "required": ["memory_id", "narrative_coherence_score", "source"]
       }
     },
     {
@@ -99,7 +134,7 @@
       "mapsTo": "GET /v1/memories/stats",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
+        "description": "记忆库统计（总量/按类型/按状态/增长率）——无参数",
         "properties": {},
         "required": []
       }
@@ -110,9 +145,12 @@
       "mapsTo": "GET /v1/sessions",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "搜索历史会话（api-spec §6.1 会话消息 API）",
+        "properties": {
+          "query": { "type": "string", "description": "检索内容" },
+          "limit": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 }
+        },
+        "required": ["query"]
       }
     },
     {
@@ -121,8 +159,11 @@
       "mapsTo": "GET /v1/path/tree",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
+        "description": "路径空间树状浏览（path 默认根；depth 默认 2）",
+        "properties": {
+          "path": { "type": "string", "description": "起始路径，默认根" },
+          "depth": { "type": "integer", "minimum": 1, "maximum": 10, "default": 2 }
+        },
         "required": []
       }
     },
@@ -132,9 +173,11 @@
       "mapsTo": "DELETE /v1/memories/{id}",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "按契约删除记忆（permanent 拒删 403；temporary 硬删；其余软删；锁定态拒绝）",
+        "properties": {
+          "memory_id": { "type": "string", "format": "uuid", "description": "记忆 UUID" }
+        },
+        "required": ["memory_id"]
       }
     },
     {
@@ -143,9 +186,15 @@
       "mapsTo": "MCP-only — 关系管理 API（架构 §7.1a，无独立公开 REST 端点）",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "有向关系边创建（批量目标；必填 reason 留痕）",
+        "properties": {
+          "from_uri": { "type": "string", "format": "uuid", "description": "源记忆 URI" },
+          "uris": { "type": "array", "items": { "type": "string", "format": "uuid" }, "description": "目标记忆 URI 列表（支持批量）" },
+          "relation_type": { "type": "string", "description": "关系类型（基础六值 + 语义标记扩展）" },
+          "reason": { "type": "string", "description": "建立关系的理由（必填）" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "关系置信度（可选）" }
+        },
+        "required": ["from_uri", "uris", "reason"]
       }
     },
     {
@@ -154,9 +203,13 @@
       "mapsTo": "MCP-only — 关系管理 API（架构 §7.1a）",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "关系边移除（软删除，S-16 审计留痕）",
+        "properties": {
+          "from_uri": { "type": "string", "format": "uuid", "description": "源记忆 URI" },
+          "to_uri": { "type": "string", "format": "uuid", "description": "目标记忆 URI" },
+          "relation_type": { "type": "string", "description": "精确匹配类型，或 * 全删" }
+        },
+        "required": ["from_uri", "to_uri", "relation_type"]
       }
     },
     {
@@ -165,9 +218,13 @@
       "mapsTo": "MCP-only — 关系管理 API（架构 §7.1a）",
       "inputSchema": {
         "type": "object",
-        "description": "SKELETON — define real parameters in Phase 0",
-        "properties": {},
-        "required": []
+        "description": "关系边查询（入/出向）",
+        "properties": {
+          "memory_id": { "type": "string", "format": "uuid", "description": "记忆 UUID" },
+          "direction": { "type": "string", "enum": ["inbound", "outbound", "both"], "default": "both" },
+          "relation_type": { "type": "string", "description": "关系类型过滤（可选）" }
+        },
+        "required": ["memory_id"]
       }
     }
   ]

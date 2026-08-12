@@ -1,0 +1,25 @@
+{
+  "benchmark": "kairos-slice",
+  "date": "2026-08-11",
+  "seed_count": 10000,
+  "results": {
+    "write": {
+      "p50_ms": 10.976200002914993,
+      "p95_ms": 14.463999999861699,
+      "samples": 200
+    },
+    "path_retrieval": {
+      "p50_ms": 8.885599996574456,
+      "samples": 100
+    },
+    "semantic_search": {
+      "p50_ms": 2.4301999983435962,
+      "samples": 20
+    }
+  },
+  "criteria": {
+    "write_p50_le_ms": 50,
+    "path_p50_le_ms": 20,
+    "semantic_p50_le_ms": 100
+  }
+}

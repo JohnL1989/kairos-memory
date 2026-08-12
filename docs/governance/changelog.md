@@ -1998,6 +1998,7 @@ status: draft
 
 ---
 
+
 ## 0.0.96（2026-08-11）— 定稿审查处置批次（四组全量通读发现的低危缺口收口 + D-430 分类处置 + D-446 登记）
 
 > 依「全面了解所有项目文档、完成定稿」要求，对核心文档分四组全量通读（foundation / specification / development+ops / 治理+质量+安全+用户+参考，56 份核心文档），审查结论：**设计层无阻断级缺陷**（0.0.92 冻结后审计收敛至 0 高，竖切配套完整），发现一批低危真实缺口（1 处 P0 事实性错误 + 1 处竖切直接相关无归属缺口 + 若干机械性/口径问题）与 1 项编码启动硬门禁（D-430）分类处置，本批次全部收口。
@@ -2012,6 +2013,32 @@ status: draft
 **参数计数**：不变（374 项；D-446 的默认分数参数名与取值待编码启动首迭代登记）。
 
 **验证**：doc-audit 复跑 exit 0；deep-audit exit 0。受改 9 份文档（use-cases / cognitive-foundation / requirements-baseline / operation-catalog / architecture-v0.1.0 / deployment / api-spec / troubleshooting / debt-collection）+ changelog 本文件 + documentation-governance §3 执行记录同步 0.0.96 + README 批次索引登记（不计入受改清单）；核心计数变动：债务 **D-445→D-446**（新增 D-446）；其余（表 57 / 参数 374 / 错误码 43 / 术语 77 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / ADR 12 / 声明 37）零漂移。
+
+---
+
+## 0.0.97（2026-08-11）— 竖切代码启动批次（W1~W9 全量交付 + 基准 + 契约补全 D-428 竖切部分）
+
+> **代码状态里程碑**：文档定稿后竖切（v0.1.0-slice）开发启动，W1~W9 全部里程碑交付。docs/README 状态声明由「文档草稿阶段，无运行代码」更新为「竖切代码开发中（W1~W9 已交付）」；[project-plan.md](../governance/project-plan.md) 里程碑计划进入执行态。
+
+**代码交付**（`src/` 全量 35 个模块，151 项测试全绿 + ruff/mypy 全绿）：
+- **W1 骨架**：pyproject（Typer CLI 定档，W1 决策落地）、配置加载（竖切参数族 + S-01 启动校验）、密钥生成（PBKDF2-HMAC-SHA512 256k 迭代，security-spec §2.1）。
+- **W2 数据库与 CI**：Alembic 迁移链（schema-slice.sql 权威 DDL 执行，15 张竖切表 + FTS5 同步触发器，迁移可回滚）、pytest/ruff/mypy 管线、GitHub Actions CI（doc-audit/deep-audit/契约 lint）、**D-428 竖切部分闭合**（openapi 竖切 21 端点 request/response schema + mcp-tools.json 15 工具 inputSchema，`redocly lint` 零 error；全量 88 操作其余部分待 Phase 0 收尾）。
+- **W3 记忆 CRUD + 双副本**：写入（捕获门控五层 + 幂等键 + 单事务三分提交）、读取、更新（If-Match 乐观锁 + 版本链追加）、删除（契约分支：permanent 拒删 / intention 409 / temporary 硬删 / 其余软删）、双副本 S-14 隔离防线（使用权重永不反写见证锚定，单测断言）。
+- **W4 路径空间 + 事件总线**：`kairos://` 前缀索引（GLOB 走 B-tree，路径隔离污染率 0%）、4 类事件发布/订阅/背压（优先级 0-2 不被阻塞，7-9 超限丢弃）/trace_id 审计。
+- **W5 三信号混合检索**：语义（numpy 余弦扫描，1 万条基准 P50 ≤100ms）+ BM25（FTS5）+ 实体加成（词典匹配）融合（0.50/0.35/0.15，norm 归一化 + 运行时退化）。
+- **W6 遗忘 + 潜伏势能**：freshness 单曲线（2^(-days/69)）、三阈值状态转换、S-10 见证豁免、复兴（匹配验证 ≥0.65）、遗忘候选队列。
+- **W7 身份注册表**：初始赋予 + 双向更新（strengthen/降级判例门槛）+ 否决裁决器（§1.8 预提交总线检查）+ identity_demotion 审计（S-16）。
+- **W8 校准/降级/审计**：外部校准端口（S-11）、降级状态机（三模式 + 校准时延驱动 + 显式切换）、强制冻结（config 表持久化 + 写路径拒绝）、审计庭 HMAC 链（篡改检测）。
+- **W9 集成与基准**：REST 21 端点（Litestar + API Key 鉴权 + S-04 回环绑定）、CLI 15 条全量、基准脚本（写 P50 16.6ms ≤50ms ✓ / 路径检索 / 语义检索 1 万条），报告落盘 `reports/benchmark-baseline-0.1.0.json`。
+
+**实现偏差登记**（[debt-collection.md](../governance/debt-collection.md) 五段格式）：D-447（sqlite-vec 扩展在 Windows 官方 Python 不可加载，numpy 扫描替代）、D-448（BGE-M3 待接入，开发默认 HashEmbedder）——摘要表同步补行。
+
+**接口契约**：openapi.yaml 竖切 21 端点 schema 落地（MemoryWriteRequest/SearchResponse/HybridSearchRequest 等 26 个 schema 组件）+ mcp-tools.json 15 工具 inputSchema 补全；`redocly lint --extends minimal` 零 error 达成 D-428 竖切部分验收判据。
+
+**验证**：doc-audit 复跑 exit 0；deep-audit exit 0。受改 3 份文档（README / debt-collection / changelog 本文件）+ 契约 2 份（openapi.yaml / mcp-tools.json，非 md 不计入文档受改清单）；核心计数变动：债务 **D-446→D-448**（新增 D-447/D-448）；其余（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168）零漂移。
+
+---
+
 
 ---
 
@@ -2117,3 +2144,4 @@ status: draft
 | 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94，见本文件 0.0.94 叙述节）：0 高 / 0 中 / 2 低全闭环（另 2 观察项）——traceability-map 版本记录登记缺陷收口（0.0.90 行混入 0.0.93 内容移除 + 0.0.93 行补建，R53-02 同类复发）+ deployment 标准级宪法主权面措辞对齐架构 §0.5 + 「触及即登记」操作细节防复发规则 + **门禁 6.39 新增（受改批次版本记录覆盖性，WARN 级软门禁，首跑捕获 traceability-map 缺 0.0.94 行并补登）**；主审门禁盲区扫描（H1 全库/标题跳变/超长导航/中英空格/日期格式/软承诺追缴）全绿；参数计数不变；核心计数零漂移。 |
 | 0.0.95 | 2026-08-11 | Obsidian frontmatter 闭合缺陷修复批次（changelog 0.0.95，见本文件 0.0.95 叙述节）：6 份文档（adr / risks / slice-implementation-guide / acceptance-criteria / benchmark-plan / test-strategy）frontmatter 缺立即闭合 `---` 修复（Obsidian「无效属性」根因——正文引用块被卷入 YAML 区）+ 门禁 6.16 盲区增强（frontmatter 区内容合法性校验，突变测试验证捕获能力）；参数计数不变；核心计数零漂移。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96，见本文件 0.0.96 叙述节）：四组全量通读低危缺口收口——use-cases 三信号检索误归 v1.1 勘误、架构叙事自洽度评估器降级默认分数登记 D-446、D-430 分类处置（config show 契约登记 + 其余归 v0.1.0 全量阶段）、认知导航表/RTM/OP-054/deployment 环境变量/架构引用与版本标注等机械性修正；债务 D-445→D-446；参数计数不变；其余核心计数零漂移。 |
+| 0.0.97 | 2026-08-11 | 竖切代码启动批次（changelog 0.0.97，见本文件 0.0.97 叙述节）：W1~W9 全量交付——项目骨架（Typer 定档）、15 张竖切表迁移（Alembic + schema-slice 权威 DDL）、记忆 CRUD + 双副本（S-14 隔离）、路径空间（GLOB 前缀 + 污染率 0%）、事件总线（4 类 + 背压 + trace_id）、三信号检索（numpy 余弦 + FTS5 BM25 + 实体加成）、遗忘 + 潜伏势能、身份注册表（构造论 + 否决裁决器）、校准/降级/冻结 + 审计 HMAC 链；REST 21 端点 + CLI 15 条；基准（写 P50 16.6ms / 路径 / 语义 1 万条）；D-428 竖切部分闭合（redocly 零 error）；实现偏差登记 D-447/D-448；README 状态声明更新。 |
