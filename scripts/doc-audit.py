@@ -299,8 +299,26 @@ def check_format() -> None:
     print("[3/18] 交叉引用格式检查")
 
 
+def _parse_ver(s: str) -> tuple[int, ...]:
+    """版本号 → 整数元组（0.1.1 → (0, 1, 1)；废弃格式含 rc 时仅取数字）。"""
+    return tuple(int(x) for x in re.findall(r"\d+", s))
+
+
+def _latest_version() -> tuple[int, ...]:
+    """changelog 版本记录表当前最高版本（动态基准——替代 0.1.0 硬编码）。"""
+    text = (DOCS / "governance" / "changelog.md").read_text(encoding="utf-8")
+    vers = [
+        _parse_ver(m.group(1))
+        for m in re.finditer(r"^\| (\d+\.\d+\.\d+) \| \d{4}-\d{2}-\d{2} \|", text, re.M)
+    ]
+    return max(vers) if vers else (0, 1, 0)
+
+
 def check_version_records() -> None:
-    """4) 每份文档恰有一条 0.0.1 版本记录，且无旧版本行/旧版本标题。"""
+    """4) 每份文档恰有一条 0.0.1 版本记录；版本行/标题不得高于 changelog 当前
+    最新版本（0.1.x 演进后按动态基准判定），废弃格式（v0.1.0-rc / v1.0.0）报残留。"""
+    latest = _latest_version()
+    latest_str = ".".join(map(str, latest))
     for p in md_files():
         text = p.read_text(encoding="utf-8")
         # 0.0.16 起允许 0.0.1 行日期等于文档 created（新建文档不必伪造 2026-07-31）
@@ -311,11 +329,27 @@ def check_version_records() -> None:
         if not re.search(r"^#{1,6}\s*.*版本记录", text, re.M):
             fail(f"缺少版本记录章节: {p.relative_to(DOCS)}")
         for m in re.finditer(
-            r"^\| (?:v?0\.1\.[1-9][0-9.]*|v1\.0\.0|v0\.1\.0-rc[0-9.]*) \|", text, re.M
+            r"^\| (v?0\.1\.\d+(?:\.\d+)*|v1\.0\.0|v0\.1\.0-rc[0-9.]*) \|", text, re.M
         ):
-            fail(f"旧版本行残留: {p.relative_to(DOCS)} -> {m.group(1)}")
-        for m in re.finditer(r"^## (?:v?0\.1\.[1-9]|v1\.0\.0|v0\.1\.0-rc)", text, re.M):
-            fail(f"旧版本标题残留: {p.relative_to(DOCS)} -> {m.group(0)}")
+            ver = m.group(1).lstrip("v")
+            if "rc" in ver or ver.startswith("1.0.0"):
+                fail(f"废弃格式版本行残留: {p.relative_to(DOCS)} -> {m.group(1)}")
+            elif _parse_ver(ver) > latest:
+                fail(
+                    f"未来版本行（高于 changelog 最新 {latest_str}）: "
+                    f"{p.relative_to(DOCS)} -> {m.group(1)}"
+                )
+        for m in re.finditer(
+            r"^## (v?0\.1\.\d+(?:\.\d+)*|v1\.0\.0|v0\.1\.0-rc[0-9.]*)", text, re.M
+        ):
+            ver = m.group(1).lstrip("v")
+            if "rc" in ver or ver.startswith("1.0.0"):
+                fail(f"废弃格式版本标题残留: {p.relative_to(DOCS)} -> {m.group(0)}")
+            elif _parse_ver(ver) > latest:
+                fail(
+                    f"未来版本标题（高于 changelog 最新 {latest_str}）: "
+                    f"{p.relative_to(DOCS)} -> {m.group(0)}"
+                )
     print("[4/18] 版本记录检查")
 
 

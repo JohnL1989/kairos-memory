@@ -80,7 +80,7 @@ status: design-freeze
 | 路径 | 内容 |
 |:-----|:-----|
 | [`ops/deployment.md`](ops/deployment.md) | **部署指南** — 三级部署规模（轻量/标准/全量）+ 三级能力梯度（全量/标准/内核），环境变量、Docker 参考 |
-| [`ops/configuration.md`](ops/configuration.md) | **配置参数参考** — 227 项参数（2026-08-10 核定；口径：表格行首为 `KAIROS_*` 的参数定义行；含附录 A 全库索引 147 项，总计 374 项）+ 动态调参规则 |
+| [`ops/configuration.md`](ops/configuration.md) | **配置参数参考** — 227 项参数（2026-08-12 核定；口径：表格行首为 `KAIROS_*` 的参数定义行；含附录 A 全库索引 152 项，总计 379 项）+ 动态调参规则 |
 | [`ops/reliability.md`](ops/reliability.md) | **可靠性策略** — RTO/RPO、备份、WAL 归档、LLM 熔断 |
 | [`ops/observability.md`](ops/observability.md) | **可观测性设计** — 指标/日志/告警/检测器可见性 |
 | [`ops/troubleshooting.md`](ops/troubleshooting.md) | **故障排查** — 常见问题与恢复命令 |
@@ -185,5 +185,6 @@ status: design-freeze
 | 0.0.100 | 2026-08-12 | 竖切验收核对批次（changelog 0.0.100，批次索引登记）：索引无实质变更；核心计数零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.100 显式声明）。 |
 | 0.0.101 | 2026-08-12 | 接入层全通道交付批次（changelog 0.0.101，批次索引登记）：索引无实质变更；核心计数零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.101 显式声明）。 |
 | 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+| 0.1.1 | 2026-08-12 | Hermes Memory Provider 接入批次（changelog 0.1.1，批次索引登记）：配置参数计数 227 + 附录 A 152 = 379（接入层运行参数 5 项登记）；核心计数表 57/参数 379/错误码 43/端点 88/操作 66/组件 70/功能 168/债务 D-447~449；README 批次索引登记不计入 changelog 受改清单（0.1.1 沿用 0.0.89 显式声明）。 |
 
 

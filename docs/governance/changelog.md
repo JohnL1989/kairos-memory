@@ -2120,6 +2120,21 @@ status: draft
 
 **验证**：doc-audit 复跑 exit 0；deep-audit exit 0。结构性受改 53 份文档（全库版本升级——52 份 + changelog 本文件）；核心计数零漂移（表 57 / 参数 374 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / 债务 D-447~449）。
 
+## 0.1.1（2026-08-12）— Hermes Memory Provider 接入批次（契约对齐 + 端到端验证 + 部署登记）
+
+> **背景**：本批次接续 0.0.101（MCP Bridge）——Hermes 接入的 Provider 通道。参考实现（`src/access/provider/kairos_provider.py`）与插件壳（`src/access/provider/hermes_plugin/`）首版已就位，本批次对照 Hermes 本机安装（agent/memory_provider.py，MemoryProvider ABC）做真实接口契约对齐并完成端到端验证。0.1.0 后债务 D-447~449 闭合（debt-collection 已登记 0.1.1 版本记录行）——本条目为 changelog 叙述补记。
+
+**落地清单**：
+- **Hermes ABC 契约对齐**（对照本机 Hermes `agent/memory_provider.py` 真实签名）：① `handle_tool_call` 返回值由 dict 改为 **JSON 字符串**（Hermes 契约 `-> str`），签名对齐 `(tool_name, args, **kwargs)`；② 新增 `queue_prefetch`（轮后后台召回缓存，下一轮 `prefetch` 消费；无缓存时同步检索兜底——Hermes 以线程 + 8s 超时调用）；③ 新增 `on_session_switch`（/resume /branch /reset /new /压缩会话切换；reset 清空预取缓存）；④ 新增 `get_config_schema` / `save_config`（'hermes memory setup' 向导；secret 走 .env 不入 config.json）；⑤ `initialize` 记录 `agent_context`，非 primary（cron/flush/subagent）跳过记忆写入（Hermes 约定，防系统提示污染用户画像）；⑥ 插件壳同步全部委托转发。
+- **端口勘误**：provider 默认端口 8011 → **8010**（全库权威值——config `KAIROS_PORT` / MCP Bridge / api-spec 基础 URL；doc-audit 6.28 只查 openapi servers 端口，未覆盖 provider 默认值）。本机 8010 原被旧项目占用，用户清理后已归 Kairos 使用——默认端口端到端验证通过（含 `env -u KAIROS_BASE_URL` 走默认路径）。
+- **遗忘调度器缺陷修复（检索链路回归发现）**：新记忆 `last_access_at` 未初始化（None → freshness=0）→ 遗忘调度器 10s 防抖窗口后**立即归档**新写入记忆；且 use_event 消费仅更新影子副本、未刷新 `memories.last_access_at`（forgetting.py 声明「显式检索仅更新 last_access_at」语义落点缺失）——修复：① `memory_store.create` 初始化 `last_access_at=created_at`（新记忆 freshness≈1）；② `UsageEventSubscriber` 消费 use_event 时同步刷新 last_access_at。补回归测试 2 项（create 初始化 / use_event 刷新）。
+- **端到端验证**（Hermes venv 加载 + 真实服务 8010 默认端口）：加载/发现 ✓、initialize（primary/cron 上下文）✓、sync_turn 写入 ✓、queue_prefetch→prefetch 召回 ✓（召回依赖语义匹配；中文无空格查询在 FTS5 unicode61 整串不匹配属已知边界，见 D-417 jieba 精细分词 v1.1）、on_session_end ✓、calibrate 真实 id ✓（404 为服务端对不存在 memory_id 的设计语义）、on_session_switch ✓、cron 守卫跳过写入 ✓。
+- **测试**：`tests/unit/test_kairos_provider.py` 补 queue_prefetch / agent_context 守卫 / on_session_switch / 配置向导 / handle_tool_call JSON 契约用例 + `test_is_available` 环境变量隔离（monkeypatch 清模块常量）；新增 `tests/unit/test_hermes_plugin_contract.py`——AST 静态校验适配壳覆盖 Hermes ABC 全接口（防漂移，不依赖 Hermes 包导入）。222 项测试全过。
+- **部署登记**：[ops/deployment.md](../ops/deployment.md) 新增 §四·a 接入层部署（MCP Bridge stdio 注册 + Hermes Provider 插件部署/配置/行为）——补齐架构 §7.1a「部署配置见部署指南」引用落空缺口（0.0.101 遗留）；§四·a 纳入章节导航表。
+- **本地环境注记**（不入库）：`$HOME/.kairos/.env` 生成 `KAIROS_AUDIT_HMAC_KEY`（S-01 必填校验；项目根 .env 不参与加载——load_settings 的 .env 发现依赖显式 `KAIROS_DATA_DIR`）；**环境变量 `KAIROS_BASE_URL=http://127.0.0.1:8011` 为本机残留旧值**，会覆盖 provider 默认值指向 8011——已提醒用户清理/更新为 8010（验证以 `env -u KAIROS_BASE_URL` 执行默认路径）。
+
+**验证**：222 项测试全过（.venv）；Hermes 真实加载回归通过；doc-audit 复跑 exit 0。结构性受改 5 份文档（部署指南 / 配置参数 / 实现映射 / README + changelog 本文件，均已登记 0.1.1 版本记录行）；核心计数变动：参数 **374→379**（附录 A 147→152，登记接入层运行参数 5 项）；其余（表 57 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / 债务 D-447~449）零漂移。
+
 ---
 
 ## 版本记录
@@ -2230,3 +2245,4 @@ status: draft
 | 0.0.100 | 2026-08-12 | 竖切验收核对批次（changelog 0.0.100，见本文件 0.0.100 叙述节）：验收 9 项逐条核对（8 项代码侧达成 + 定稿评审待评审人）；事件总线入队非阻塞修复（基准挂起根因，恢复 PASS 4.7/3.4/1.4ms）；Agent Tool 层五工具；GET /health 补 scheduler/embedding 状态。 |
 | 0.0.101 | 2026-08-12 | 接入层全通道交付批次（changelog 0.0.101，见本文件 0.0.101 叙述节）：Agent Tool 层五工具 + MCP Bridge 15 工具（独立子进程 stdio）+ StorageBackend 抽象（D-449 前置）+ GET /health 增强——v0.1.0 接入层四通道齐备（REST/CLI/AgentTool/MCP）。 |
 | 0.1.0 | 2026-08-12 | v0.1.0 首版发布批次（changelog 0.1.0，见本文件 0.1.0 叙述节）：定稿评审通过（release-guide §2 十项全过 + §3 构建安装验证）——全库版本统一升级 0.0.x → 0.1.0、文档状态 draft → design-freeze。 |
+| 0.1.1 | 2026-08-12 | Hermes Memory Provider 接入批次（changelog 0.1.1，见本文件 0.1.1 叙述节）：Hermes ABC 契约对齐（handle_tool_call JSON 字符串 / queue_prefetch / on_session_switch / get_config_schema+save_config / agent_context 守卫）+ 端口勘误 8011→8010 + 遗忘调度器缺陷修复（create 初始化 last_access_at + use_event 刷新）+ 端到端验证（8010 默认端口）+ deployment §四·a 部署登记 + configuration 附录 A 登记接入层参数 5 项（参数 374→379）+ 契约测试新增；债务 D-447~449 闭合叙述补记（debt-collection 已登记）。 |
