@@ -465,32 +465,18 @@ async def seed_create(
     request: Request[Any, Any, Any],
     data: Annotated[dict[str, Any], Body(title="SeedCreateRequest")],
 ) -> dict[str, Any]:
-    """种子锚点管理（A-04，admin Key）。"""
-    app: KairosApp = request.app.state["kairos"]
-    from src.storage.models import Seed
+    """种子锚点管理（A-04，admin Key）。
 
-    async with app.db.session() as session:
-        seed = Seed(
-            id=str(__import__("uuid").uuid4()),
-            path=data["path"],
-            seed_type=data["seed_type"],
-            initial_confidence=data["initial_confidence"],
-            current_confidence=data["current_confidence"],
-            content_snapshot=json.dumps(data.get("content") or {}, ensure_ascii=False),
-        )
-        session.add(seed)
-        await session.commit()
-        return {
-            "seed": {
-                "path": seed.path,
-                "seed_type": seed.seed_type,
-                "status": seed.status,
-                "degradation_level": seed.degradation_level,
-                "initial_confidence": seed.initial_confidence,
-                "current_confidence": seed.current_confidence,
-                "review_count": seed.review_count,
-            }
-        }
+    经 KairosApp.seed_bootstrap 统一处理：Seed 落库；seed_type=identity 时
+    联动创建身份记忆 + 初始赋予（组件 5 冷启动锚点，slice-guide 组件 5）。
+    """
+    app: KairosApp = request.app.state["kairos"]
+    return await app.seed_bootstrap(
+        path=data["path"],
+        seed_type=data["seed_type"],
+        content=data.get("content") or {},
+        confidence=float(data.get("initial_confidence", 0.6)),
+    )
 
 
 @get("/v1/seeds", guards=[_api_key_guard], exception_handlers={KairosError: _error_handler})

@@ -374,5 +374,26 @@ def audit_log(
     _sync(_cli.cmd_audit_log)(limit)
 
 
+seed_app = typer.Typer(help="种子锚点管理（组件 5 冷启动锚点）", no_args_is_help=True)
+app.add_typer(seed_app, name="seed")
+
+
+@seed_app.command("add")
+def seed_add(
+    path: str = typer.Option(
+        ...,
+        "--path",
+        help="种子记忆路径（如 kairos://_user/hermes/identity/johnl1989）",
+    ),
+    seed_type: str = typer.Option(
+        "identity", "--type", help="种子类型（config/identity/calibration）"
+    ),
+    text: str = typer.Option(..., "--text", help="种子内容（身份事实描述）"),
+    confidence: float = typer.Option(0.6, "--confidence", help="初始置信度（0-1）"),
+) -> None:
+    """种子冷启动锚点：identity 种子 → 身份记忆 + 初始赋予（S-10 见证豁免生效）。"""
+    _sync(_cli.cmd_seed_add)(path, seed_type, text, confidence=confidence)
+
+
 if __name__ == "__main__":
     app()

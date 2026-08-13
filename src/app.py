@@ -10,8 +10,11 @@ MULTI_SIGNAL_SEARCH ON + NARRATIVE_IDENTITY ON + FORGETTING_ENGINE ON，
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
+from sqlalchemy import select
 
 from src.config import Settings
 from src.events.bus import EventBus
@@ -20,7 +23,7 @@ from src.storage.dual_copy import DualCopyManager
 from src.storage.forgetting import ForgettingScheduler
 from src.storage.hybrid_search import HybridSearch
 from src.storage.identity_registry import IdentityRegistry, VetoAdjudicator
-from src.storage.memory_store import MemoryStore
+from src.storage.memory_store import MemoryStore, MemoryWriteInput
 from src.storage.path_index import PathIndex
 from src.supervision.audit_tribunal import AuditTribunal
 from src.utils.embeddings import HashEmbedder
@@ -56,6 +59,82 @@ class KairosApp:
         if self.scheduler is not None:
             await self.scheduler.shutdown()
         await self.db.close()
+
+    async def seed_bootstrap(
+        self, *, path: str, seed_type: str, content: dict[str, Any], confidence: float
+    ) -> dict[str, Any]:
+        """种子冷启动锚点（组件 5 激活：slice-guide 组件 5 / 架构 §5.2）。
+
+        Seed 落库（seeds 表，seed_type 枚举 config/identity/calibration）；
+        seed_type=identity 时联动创建身份记忆（见证锚定写入 + 初始赋予
+        grant_initial_identity + S-16 审计 identity_initial_grant）——
+        此前 seeds 端点仅落库不建身份记忆，身份注册表（S-10 见证豁免）
+        处于在位未启用状态。
+
+        routes (POST /v1/seeds) 与 CLI (kairos seed add) 统一复用。
+        """
+        from uuid import uuid4
+
+        from src.storage.models import Seed
+
+        async with self.db.session() as session:
+            exists = (
+                await session.execute(select(Seed).where(Seed.path == path))
+            ).scalar_one_or_none()
+            if exists is not None:
+                from src.errors import VersionConflictError
+
+                raise VersionConflictError(f"种子路径已存在: {path}")
+
+        # 冷启动锚点：content dict → 可读文本 → 见证锚定写入 → 初始赋予
+        # （identity 类型先建记忆后落库 Seed——记忆门禁失败不留孤儿种子）
+        identity_memory: dict[str, Any] | None = None
+        if seed_type == "identity":
+            text = (
+                "；".join(f"{k}: {v}" for k, v in content.items())
+                if isinstance(content, dict)
+                else str(content)
+            )
+            created = await self.store.create(
+                MemoryWriteInput(
+                    path=path,
+                    content=text,
+                    provenance="system_generated",  # S-15：种子为系统冷启动锚点
+                )
+            )
+            grant = await self.identity.grant_initial_identity(created.id, confidence=confidence)
+            identity_memory = {
+                "memory_id": created.id,
+                "is_identity": grant["is_identity"],
+                "identity_confidence": grant["identity_confidence"],
+            }
+
+        async with self.db.session() as session:
+            seed = Seed(
+                id=str(uuid4()),
+                path=path,
+                seed_type=seed_type,
+                initial_confidence=confidence,
+                current_confidence=confidence,
+                content_snapshot=json.dumps(content, ensure_ascii=False),
+            )
+            session.add(seed)
+            await session.commit()
+
+        result: dict[str, Any] = {
+            "seed": {
+                "path": seed.path,
+                "seed_type": seed.seed_type,
+                "status": seed.status,
+                "degradation_level": seed.degradation_level,
+                "initial_confidence": seed.initial_confidence,
+                "current_confidence": seed.current_confidence,
+                "review_count": seed.review_count,
+            }
+        }
+        if identity_memory is not None:
+            result["identity_memory"] = identity_memory
+        return result
 
 
 def build_app(settings: Settings | None = None, *, db: Database | None = None) -> KairosApp:

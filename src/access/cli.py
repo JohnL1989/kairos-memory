@@ -308,3 +308,23 @@ async def cmd_config_reset() -> dict[str, Any]:
         return {"status": "reset", "removed": count}
     finally:
         await app.close()
+
+
+async def cmd_seed_add(
+    path: str, seed_type: str, text: str, *, confidence: float = 0.6
+) -> dict[str, Any]:
+    """kairos seed add --path --type --text（组件 5 冷启动锚点激活）。
+
+    经 KairosApp.seed_bootstrap：Seed 落库 + identity 类型联动（身份记忆
+    见证锚定写入 + 初始赋予 grant_initial_identity + S-16 审计）。
+    """
+    app = await _resolve_app()
+    try:
+        return await app.seed_bootstrap(
+            path=path,
+            seed_type=seed_type,
+            content={"text": text},
+            confidence=confidence,
+        )
+    finally:
+        await app.close()

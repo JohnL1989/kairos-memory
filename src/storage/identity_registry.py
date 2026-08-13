@@ -67,6 +67,15 @@ class IdentityRegistry:
             memory.identity_reviewed_at = utc_now()
             memory.identity_review_count += 1
             await session.commit()
+            # S-16 身份调整事件审计留痕（slice-guide 组件 5 验收 G-03：审计可追溯）
+            if self.tribunal is not None:
+                await self.tribunal.record(
+                    operator="seed_bootstrap",
+                    action="identity_initial_grant",
+                    target_type="memory",
+                    target_id=memory_id,
+                    details={"confidence": memory.identity_confidence},
+                )
             return {
                 "memory_id": memory_id,
                 "is_identity": True,

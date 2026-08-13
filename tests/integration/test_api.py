@@ -201,9 +201,13 @@ class TestSystemEndpoints:
                 "path": "kairos://_system/seeds/identity-core",
                 "initial_confidence": 0.9,
                 "current_confidence": 0.9,
+                "content": {"name": "identity-core 种子内容", "role": "system"},
             },
         )
         assert resp.status_code == 200
+        body = resp.json()
+        # 0.1.6 增强：identity 种子联动身份记忆（slice-guide 组件 5 冷启动锚点）
+        assert body["identity_memory"]["is_identity"] is True
         resp2 = await client.get("/v1/seeds")
         assert resp2.status_code == 200
         assert len(resp2.json()["seeds"]) >= 1

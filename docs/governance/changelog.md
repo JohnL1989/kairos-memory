@@ -2195,6 +2195,22 @@ status: draft
 
 ---
 
+## 0.1.6（2026-08-13）— 身份注册表激活批次（组件 5 冷启动锚点联动 + 审计补全）
+
+> **背景**：2026-08-13 运行态设计目的验证发现：身份注册表（slice-guide 组件 5 / 架构 §5.2 构造论）**在位未启用**——`POST /v1/seeds` 仅落库 seeds 表，不创建身份记忆（seeds 0 条、memories.is_identity 0 条），S-10 见证豁免无从生效。
+
+**落地清单**：
+- **`KairosApp.seed_bootstrap()` 协调层方法**（app.py）：Seed 落库 + seed_type=identity 时联动——见证锚定写入身份记忆（content dict → 可读文本，provenance=system_generated 符合 S-15）→ `grant_initial_identity` 初始赋予 → S-16 审计。**先建记忆后落库 Seed**（记忆门禁失败不留孤儿种子——0.1.5 批次同款教训的预防）。路由与 CLI 统一复用。
+- **`grant_initial_identity` 补审计留痕**（identity_registry.py）：`identity_initial_grant` 事件（S-16 身份调整事件；验收 G-03「审计可追溯」此前未落实）。
+- **CLI `kairos seed add`**（main.py + cli.py）：`--path --type --text --confidence`，冷启动锚点引导（CLI 21→22 命令）。
+- **`POST /v1/seeds` 重构**：原直接操作 Seed 模型 → 复用 `app.seed_bootstrap`（统一语义：identity 联动 + 类型校验）。
+- **测试**：`tests/integration/test_seed_bootstrap.py` 4 项（identity 种子 → 身份记忆 + 审计；S-10 遗忘豁免 skip_identity；config 种子不联动；路径冲突 409）。
+- **真实验证**：`kairos seed add` 创建用户身份种子 → seeds active / 身份记忆 is_identity=true / identity_initial_grant 审计留痕 / `GET /v1/seeds` 可见。
+
+**验证**：全量测试（见批次验证，0.1.5 基础上 +4）/ ruff 0 / mypy 0（50 文件）/ format 全绿。结构性受改：src/app.py / src/storage/identity_registry.py / src/access/api/routes.py / src/access/cli.py / src/main.py / tests/integration/test_seed_bootstrap.py（新）+ changelog 本文件。
+
+---
+
 ## 版本记录
 
 > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
@@ -2308,3 +2324,4 @@ status: draft
 | 0.1.3 | 2026-08-13 | 全面审计修复批次（changelog 0.1.3，见本文件 0.1.3 叙述节）：ruff 77→0 / mypy 10→0（CI code-checks 转绿）；Litestar 31 端点迁移 Annotated 新风格 + `<3` 上限（warnings 1217→1，3.0 升级兼容）；auth 守卫注入消除每请求配置重读；CLI 计数 18→21、api-spec §1 补登记 4 端点（端点 88→92）、openapi 补 4 端点；doc-audit 批次正则扩展 0.1.x + 6.39 偏移 bug 修复 + 0.1.x 治理欠账补登。 |
 | 0.1.4 | 2026-08-13 | 全面审计修复批次（changelog 0.1.4，见本文件 0.1.4 叙述节）：S-09 注入扫描实现（injection_scan + ingestion 第 5 层 + 4 用例）；S-01 生产密钥强制（KAIROS_ENV 参数 + production 密钥族必填 + development 无鉴权警告，config/deployment/configuration 登记，参数 380→381）；D-450 三级 Key 鉴权体系追缴登记 + D-430 状态部分闭合同步；CI mcp-tools schema 校验真实化（schema 文件创建 + fallback 收紧）；测试 288→292、覆盖率 81.52%→82.81%（auth 401 + D-430 命令补测）；AGENTS D-428 残留清除 + 覆盖率同步、changelog 指引/frontmatter、gitignore 补模式、development-setup 环境约束注记。 |
 | 0.1.5 | 2026-08-13 | 实体信号激活批次（changelog 0.1.5，见本文件 0.1.5 叙述节）：entity_extractor 公共提取器（规则法 + 类型推断 + user_id 解析）；MemoryStore.create 写入侧自动提取（entities 去重 + memory_entities 关联）；hybrid_search 归一化退化 bug 修复（单候选信号满配——entity 恒 0 深层根因）；extended.py 复用公共提取器 + 类型推断；测试 +13 项（305 全量）；真实验证三信号融合 0.35·1+0.15·1=0.5 吻合。 |
+| 0.1.6 | 2026-08-13 | 身份注册表激活批次（changelog 0.1.6，见本文件 0.1.6 叙述节）：KairosApp.seed_bootstrap 协调层（Seed 落库 + identity 联动身份记忆 + 初始赋予 + 审计，先建记忆防孤儿种子）；grant_initial_identity 补 S-16 审计；CLI seed add（21→22 命令）；POST /v1/seeds 重构复用；测试 +4 项（身份记忆/S-10 豁免/config 不联动/路径冲突）；真实验证种子 active + is_identity + 审计留痕。 |
