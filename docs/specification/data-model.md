@@ -132,6 +132,8 @@ status: design-freeze
 | `target_id` | UUID | FK → memories(id) | 目标记忆 |
 | `relation_type` | TEXT | NOT NULL | 基础六值：causal / independent / hierarchical（=认知基础「弱层级关系」）/ competitive / part_whole / derived_from。前四类对应认知基础四类关系（因果/部分独立/弱层级/竞争），`part_whole` 为粒度组合关系（父子记忆组成关系，对应认知基础「记忆粒度性质」声明），`derived_from` 为派生关系（mental_model → source，追踪高层认知框架的底层事实来源，对应 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §一 Mental Model 基于源头的可刷新性）——后两类与前四类对等关系不同属一个分类轴。**语义标记扩展**：架构层 MCP 链接（[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §7.3.1 kairos_link）与 ADD-only 提取协议（§7.3g）使用的补充语义标记 `supplement / refutation / reference / contextual / temporal` 作为本列的扩展值同列存储（TEXT 类型，无 CHECK 约束），语义细节记于 `reason` 字段；其中 `temporal` 由轻量级时间戳后处理（架构 §5.2）写入时间关系边。检索按 relation_type 精确过滤，六值与语义标记扩展不互斥——同一对记忆可同时存在不同 relation_type 的关系边（UNIQUE 约束按三元组区分）。 |
 | `strength` | FLOAT | DEFAULT 1.0, [0,1] | 关系强度 |
+| `reason` | TEXT | — | 关系语义细节（必填语义字段——`kairos_link` 契约强制 reason；语义标记扩展的细节记录于此） |
+| `confidence` | FLOAT | — | 关系置信度（可选，[0,1]） |
 | `created_at` | TIMESTAMPTZ | NOT NULL | |
 | `deleted_at` | TIMESTAMPTZ | — | 软删除时间戳——`kairos_unlink`（架构 §7.1a）移除关系边时标记此列而非物理删除，保留审计追溯；检索默认过滤 `deleted_at IS NULL` 行 |
 **约束**：UNIQUE(source_id, target_id, relation_type) 防止同一对记忆之间的同类型关系重复插入。
