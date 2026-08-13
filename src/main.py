@@ -313,9 +313,9 @@ def status() -> None:
 
 
 @app.command()
-def health() -> None:
-    """健康检查（GET /health）。"""
-    _sync(_cli.cmd_health)()
+def health(full: bool = typer.Option(False, "--full", help="全景健康报告（含记忆库统计/遗忘队列）")) -> None:
+    """健康检查（GET /health；--full 聚合报告，D-430 闭合）。"""
+    _sync(_cli.cmd_health_full if full else _cli.cmd_health)()
 
 
 @app.command()
@@ -352,6 +352,24 @@ app.add_typer(config_app, name="config")
 def config_show(key: str | None = typer.Argument(None, help="参数名（缺省输出全部）")) -> None:
     """配置查看（GET /v1/config；竖切参数族）。"""
     _sync(_cli.cmd_config_show)(key)
+
+
+@config_app.command("reset")
+def config_reset() -> None:
+    """配置重置（D-430 闭合）：清空 config 表运行时覆盖，恢复参数默认。"""
+    _sync(_cli.cmd_config_reset)()
+
+
+audit_app = typer.Typer(help="审计管理（D-430 闭合）", no_args_is_help=True)
+app.add_typer(audit_app, name="audit")
+
+
+@audit_app.command("log")
+def audit_log(
+    limit: int = typer.Option(20, "--limit", help="返回条数"),
+) -> None:
+    """审计日志查询（CAL-05，HMAC 链完整性校验）。"""
+    _sync(_cli.cmd_audit_log)(limit)
 
 
 if __name__ == "__main__":

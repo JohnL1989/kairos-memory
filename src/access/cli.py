@@ -203,3 +203,108 @@ async def cmd_config_show(key: str | None = None) -> dict[str, Any]:
         }
     finally:
         await app.close()
+
+
+async def cmd_health_full() -> dict[str, Any]:
+    """kairos health --full（D-430 闭合）：健康 + 记忆库统计 + 遗忘队列全景。"""
+    from sqlalchemy import func, select, text
+
+    from src.storage.models import ForgettingQueue, Memory
+
+    app = await _resolve_app()
+    try:
+        schema = await app.db.verify_schema()
+        async with app.db.session() as session:
+            total = (await session.execute(select(func.count()).select_from(Memory))).scalar() or 0
+            by_state = dict(
+                (await session.execute(
+                    select(Memory.status, func.count()).group_by(Memory.status)
+                )).all()
+            )
+            by_type = dict(
+                (
+                    await session.execute(
+                        text(
+                            "SELECT je.value AS mtype, COUNT(*) AS cnt "
+                            "FROM memories, json_each(memories.memory_types) je "
+                            "GROUP BY je.value ORDER BY cnt DESC"
+                        )
+                    )
+                ).all()
+            )
+            pending = (
+                await session.execute(
+                    select(func.count()).select_from(ForgettingQueue).where(
+                        ForgettingQueue.status == "pending_archive"
+                    )
+                )
+            ).scalar() or 0
+        return {
+            "status": "ok",
+            "components": {"api": "ok", "db": "ok", "tables": schema["tables"]},
+            "memory": {
+                "total": total,
+                "by_state": by_state,
+                "by_type": by_type,
+            },
+            "forgetting": {"pending_archive": pending},
+        }
+    finally:
+        await app.close()
+
+
+async def cmd_audit_log(limit: int = 20) -> dict[str, Any]:
+    """kairos audit log [--limit N]（D-430 闭合）：审计日志查询（HMAC 链验证）。"""
+    from sqlalchemy import text
+
+    app = await _resolve_app()
+    try:
+        verify = await app.tribunal.verify_chain(limit=limit)
+        async with app.db.session() as session:
+            rows = (
+                await session.execute(
+                    text(
+                        "SELECT id, timestamp, operator, action, target_type, "
+                        "target_id, details, redline_id FROM audit_log "
+                        "ORDER BY id DESC LIMIT :lim"
+                    ),
+                    {"lim": limit},
+                )
+            ).fetchall()
+        return {
+            "logs": [
+                {
+                    "id": r[0],
+                    "timestamp": r[1],
+                    "operator": r[2],
+                    "action": r[3],
+                    "target_type": r[4],
+                    "target_id": r[5],
+                    "details": r[6],
+                    "redline_id": r[7],
+                }
+                for r in rows
+            ],
+            "chain_valid": verify.get("chain_valid", False),
+            "broken_ids": verify.get("broken_ids", []),
+            "verified_total": verify.get("total", 0),
+        }
+    finally:
+        await app.close()
+
+
+async def cmd_config_reset() -> dict[str, Any]:
+    """kairos config reset（D-430 闭合）：清空 config 表运行时覆盖，恢复参数默认。"""
+    from sqlalchemy import func, select, text
+
+    from src.storage.models import ConfigEntry
+
+    app = await _resolve_app()
+    try:
+        async with app.db.session() as session:
+            count = (await session.execute(select(func.count()).select_from(ConfigEntry))).scalar() or 0
+            await session.execute(text("DELETE FROM config"))
+            await session.commit()
+        return {"status": "reset", "removed": count}
+    finally:
+        await app.close()

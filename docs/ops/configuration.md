@@ -17,16 +17,16 @@ status: design-freeze
 
 > **时间单位定义**：本文中「个调度周期」为相对时间单位，1 调度周期 = `KAIROS_SCHEDULER_INTERVAL` 配置值（默认 300 秒 / 5 分钟）。所有以「调度周期」为单位的参数均以此值为基准换算。
 
-> **参数名约定**：所有配置参数通过环境变量或配置文件设置，统一使用 `KAIROS_` 前缀。本文正文列出 227 项核心参数（v0.1.0 设计阶段的参数主索引）。可靠性参数（如 LLM 超时/熔断阈值）在正文 §7 定义；部署模式特有参数（如 [deployment.md](deployment.md) 中的 `KAIROS_DB_DSN`、`KAIROS_LITE_MODE`）在对应文档中定义，并已在**附录 A** 中建立全量索引（152 项）。**全库参数总数 = 227 + 152 = 379 项**，本文为唯一完整入口。（附录收录规则：正文已定义参数不入附录——`KAIROS_LLM_MAX_COST_PER_CALL_FEN`/`KAIROS_LLM_CIRCUIT_BREAK_FAILURES`/`KAIROS_LLM_CIRCUIT_BREAK_COOLDOWN_S` 曾两处重复登记，已按此规则在附录去重；历史计数链见版本记录。）
+> **参数名约定**：所有配置参数通过环境变量或配置文件设置，统一使用 `KAIROS_` 前缀。本文正文列出 227 项核心参数（v0.1.0 设计阶段的参数主索引）。可靠性参数（如 LLM 超时/熔断阈值）在正文 §7 定义；部署模式特有参数（如 [deployment.md](deployment.md) 中的 `KAIROS_DB_DSN`、`KAIROS_LITE_MODE`）在对应文档中定义，并已在**附录 A** 中建立全量索引（153 项）。**全库参数总数 = 227 + 153 = 380 项**，本文为唯一完整入口。（附录收录规则：正文已定义参数不入附录——`KAIROS_LLM_MAX_COST_PER_CALL_FEN`/`KAIROS_LLM_CIRCUIT_BREAK_FAILURES`/`KAIROS_LLM_CIRCUIT_BREAK_COOLDOWN_S` 曾两处重复登记，已按此规则在附录去重；历史计数链见版本记录。）
 
-> **计数口径：登记总数 ≠ v0.1.0 生效子集**。379（227 + 152）为**登记总数**，用于跨文档对账；实现方按下述子集取用，勿将登记总数当作"必须实现 373 个开关"。
+> **计数口径：登记总数 ≠ v0.1.0 生效子集**。380（227 + 153）为**登记总数**，用于跨文档对账；实现方按下述子集取用，勿将登记总数当作"必须实现 373 个开关"。
 >
 > | 口径 | 数量 | 构成 |
 > |:-----|:----:|:-----|
 > | 正文登记 | 227 | v0.1.0 参数主索引 |
 > | 正文中 **v0.1.0 不生效** | 7 | `KAIROS_SEARCH_WEIGHT_VECTOR` / `_BM25` / `_TIME` / `_RELIABILITY` / `_HEAT`（5 项，§8.3 废弃声明——5D 权重框架已被 §6.1 三信号检索替代）、`KAIROS_VIRTUAL_CALIBRATION_TIMEOUT`（§1，非独立生效，实际由 `KAIROS_CALIBRATION_*` 三参数联动承载）、`KAIROS_FORGETTING_SCORE_THRESHOLD`（§3，v1.1 二维遗忘曲面口径，v0.1.0 用 freshness 三阈值） |
 > | **正文 v0.1.0 生效子集** | **220** | 227 − 7 |
-> | 附录 A 索引 | 152 | 部署模式特有参数 + 蓝图 v1.1 参数 + 接入层运行参数（后者「来源」列指向 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md)，v0.1.0 不实现；接入层运行参数 `KAIROS_BASE_URL`/`KAIROS_MCP_BASE_URL`/`KAIROS_SRC`/`KAIROS_PORT`/`KAIROS_DATA_DIR` 为 0.1.1 批次登记）——**例外注记（round31 收敛）**：`KAIROS_FTS5_*` 基础参数族（ENABLED/TOKENIZER/CHINESE_SEGMENTATION/OPTIMIZE_INTERVAL）为 v0.1.0 已交付（轻量模式 BM25 承载，见架构 §7.3a / data-model §11），「来源」列已改指 v0.1.0 权威；蓝图 §P3-21 保留 jieba 精细分词与 Playbook 全文索引的 v1.1 增强语义 |
+> | 附录 A 索引 | 153 | 部署模式特有参数 + 蓝图 v1.1 参数 + 接入层运行参数（后者「来源」列指向 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md)，v0.1.0 不实现；接入层运行参数 `KAIROS_BASE_URL`/`KAIROS_MCP_BASE_URL`/`KAIROS_SRC`/`KAIROS_PORT`/`KAIROS_DATA_DIR` 为 0.1.1 批次登记）——**例外注记（round31 收敛）**：`KAIROS_FTS5_*` 基础参数族（ENABLED/TOKENIZER/CHINESE_SEGMENTATION/OPTIMIZE_INTERVAL）为 v0.1.0 已交付（轻量模式 BM25 承载，见架构 §7.3a / data-model §11），「来源」列已改指 v0.1.0 权威；蓝图 §P3-21 保留 jieba 精细分词与 Playbook 全文索引的 v1.1 增强语义 |
 >
 > 「不生效」项**保留登记**而非删除：废弃项保留供旧部署迁移比对（§8.3 迁移说明），v1.1 项保留供版本衔接，两类均在各自条目内已标注，读者按标注取用。
 
@@ -40,7 +40,7 @@ status: design-freeze
 > | 一、架构层参数（按章节） | 227 项正文参数主索引（§1~§10，按架构章节组织） |
 > | 二、运行时动态调整规则 | 动态调参模式、授权者与不变量 |
 > | §11 特征标志默认值 | 特征标志默认值对照（含竖切例外注记） |
-> | 附录 A：全库参数总索引 | 152 项正文未收录参数索引（合计 379 项）
+> | 附录 A：全库参数总索引 | 153 项正文未收录参数索引（合计 379 项）
 
 ## 一、架构层参数（按章节）
 
@@ -494,7 +494,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 
 ## 附录 A：全库参数总索引（正文未收录部分）
 
-> **用途**：本文正文各节收录 227 项核心参数；全库另有 **152 项** `KAIROS_*` 参数散落在架构、规格、部署、质量等文档中定义，此前无任何集中索引。本附录建立完整映射，使「配置参数入口」名副其实。（附录仅收录正文未定义的参数；计数口径：正文 227 项 + 附录 152 项 = 379 项。）
+> **用途**：本文正文各节收录 227 项核心参数；全库另有 **153 项** `KAIROS_*` 参数散落在架构、规格、部署、质量等文档中定义，此前无任何集中索引。本附录建立完整映射，使「配置参数入口」名副其实。（附录仅收录正文未定义的参数；计数口径：正文 227 项 + 附录 153 项 = 380 项。）
 >
 > **权威性**：默认值一栏自各参数的**定义出处**抄录，语义以出处文档为准；出处未给出默认值的标注 `—（待定义）`（共 10 项）。**分类处置（0.0.92 批次，追缴见 [债务 D-431](../governance/debt-collection.md)）**：8 项源头在 architecture-blueprint-v1.1 的 v1.1 域参数（`KAIROS_DERIVED_FROM_MIN_STRENGTH` / `KAIROS_PLAYBOOK_NEGATIVE_THRESHOLD` / `KAIROS_PLAYBOOK_PROMOTION_THRESHOLD` / `KAIROS_PROMPT_DEPENDENCY_STRATEGY` / `KAIROS_SKILL_EXPERIMENTAL_MAX_AGE` / `KAIROS_SUBLIMATION_ENCRYPTION_KEY` / `KAIROS_TEMPORAL_EXTRA_BUFFER_DAYS` / `KAIROS_PATH`（随 detailed-design 实体标签 schema 落地补齐））随对应功能迭代定义，不构成编码启动阻塞；2 项为部署环境变量（`KAIROS_ADMIN_IPS` / `KAIROS_DB_PASSWORD`）部署时点确定，非设计缺口。**竖切（v0.1.0-slice）相关参数无待定义项**。
 >
@@ -583,6 +583,7 @@ P6 禁止不可审计的维度信息丢失。以下参数定义 P6 压缩的硬�
 | `KAIROS_KNN_INCREMENTAL_THRESHOLD` | `100` | `architecture-v0.1.0.md §5.2 组件` |
 | `KAIROS_KNN_K` | `10` | `foundation/architecture-v0.1.0.md` §5.2 三链路（k 可配置，默认 10） |
 | `KAIROS_LITE_MODE` | `true` | `ops/deployment.md §三 环境变量` |
+| `KAIROS_PG_TEST_SKIP` | `0` | 测试专用环境变量（=1 跳过 PostgreSQL 后端集成测试——无 Docker PG 的 CI 回退；test_postgres_backend.py D-449 闭合，0.1.2 批次登记） |
 | `KAIROS_LLM_API_KEY` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_LLM_ENDPOINT` | —（必填，无默认值） | `ops/deployment.md §三 环境变量` |
 | `KAIROS_LOG_LEVEL` | `info` | `ops/deployment.md §三 环境变量` |

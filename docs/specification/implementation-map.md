@@ -15,7 +15,7 @@ status: design-freeze
 
 # Kairos 架构实现映射
 
-> **已对齐**（2026-08-03 核定，2026-08-04 复核）：表数 **57** 与 [data-model.md](data-model.md) 一致（该文档现有 65 个 `###` 条目——57 物理表 = 65 减 `retrieval_enhancement_config`（配置参数清单）减 8.12/8.17 两节标题减 13.1~13.5 五节；原「58 个 ### 条目」口径经勘误）；端点数 **85** 与 [api-spec.md](api-spec.md) 一致——口径为 `/v1` 业务端点（注册 `archive`/`restore` 后 78→80，新增 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85），另有 3 个无 `/v1` 前缀端点（`GET /health` 探针、`GET /audit/compression`、`GET /audit/compression/summary`）不计入（物理总数 88，见 [api-spec.md](api-spec.md) §版本记录）；本文档登记 **70** 个组件代码路径（按下方各表第二列 `src/` 路径行统计）；参数总数 **379**（configuration 正文 227 + 附录 A 152，见 [configuration.md](../ops/configuration.md)；批次口径同步）。
+> **已对齐**（2026-08-03 核定，2026-08-04 复核）：表数 **57** 与 [data-model.md](data-model.md) 一致（该文档现有 65 个 `###` 条目——57 物理表 = 65 减 `retrieval_enhancement_config`（配置参数清单）减 8.12/8.17 两节标题减 13.1~13.5 五节；原「58 个 ### 条目」口径经勘误）；端点数 **85** 与 [api-spec.md](api-spec.md) 一致——口径为 `/v1` 业务端点（注册 `archive`/`restore` 后 78→80，新增 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85），另有 3 个无 `/v1` 前缀端点（`GET /health` 探针、`GET /audit/compression`、`GET /audit/compression/summary`）不计入（物理总数 88，见 [api-spec.md](api-spec.md) §版本记录）；本文档登记 **70** 个组件代码路径（按下方各表第二列 `src/` 路径行统计）；参数总数 **380**（configuration 正文 227 + 附录 A 153，见 [configuration.md](../ops/configuration.md)；批次口径同步）。
 
 **引用约定：** `架构 §X.Y` 指 [foundation/architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) 第 X 节第 Y 小节。架构文档含 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0–[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §12（含 §10 质量属性与不变量等）。代码路径以 `src/` 为根。
 
@@ -137,7 +137,7 @@ status: design-freeze
 |:--------|:---------|:-----|
 | 事件总线 | `src/events/bus.py` | 事件发布/订阅/背压，基于 usage_events 表 |
 | 事件类型定义 | `src/events/types.py` | 10 类事件枚举 + 消息结构（权威源：架构 §10.10；首迭代实现 4 类：use_event/calibration_signal/degradation_switch/latent_trigger） |
-| 配置加载 | `src/config.py` | 环境变量/配置文件加载，379 项参数（configuration 正文 227 + 附录 A 152，与 configuration 一致） |
+| 配置加载 | `src/config.py` | 环境变量/配置文件加载，380 项参数（configuration 正文 227 + 附录 A 153，与 configuration 一致） |
 | CLI 入口 | `src/main.py` | 应用入口点（Click/Typer CLI 框架） |
 | 调度器 | `src/scheduler.py` | 升华/遗忘/重估等周期性任务调度（APScheduler） |
 | 工具函数 | `src/utils/` | 通用工具（嵌入/Hash/脱敏/日志等） |
@@ -173,6 +173,6 @@ status: design-freeze
 | 0.0.64 | 2026-08-08 | round30 全面深度审计修复批次（changelog 0.0.64，补登）：配置参数计数同步 370→373（正文 226 + 附录 A 147）。 |
 | 0.0.66 | 2026-08-09 | round32 全面深度审计修复批次（changelog 0.0.66）：版本记录补登批次——0.0.64 行（参数计数 373 同步）为前序批次实质变更漏登记，本批补登（governance §4「触及即登记」）；frontmatter updated/last_reviewed 同步 2026-08-09。 |
 | 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
-| 0.1.1 | 2026-08-12 | Hermes Memory Provider 接入批次（changelog 0.1.1）：参数总数 374→379（configuration 正文 227 + 附录 A 152，接入层运行参数 5 项登记）。 |
+| 0.1.1 | 2026-08-12 | Hermes Memory Provider 接入批次（changelog 0.1.1）：参数总数 374→379（configuration 正文 227 + 附录 A 153，接入层运行参数 5 项登记）。 |
 
 

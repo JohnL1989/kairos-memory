@@ -562,8 +562,11 @@ status: design-freeze
 | `kairos suppress <id>` | 定向遗忘 | `POST /v1/memories/{id}/suppress` | `kairos suppress uuid --reason compliance` |
 | `kairos restore <id>` | 归档恢复 / 抑制解除 | `POST /v1/memories/{id}/restore` | `kairos restore uuid --reason context_reemerged` |
 | `kairos health` | 健康检查 | `GET /health` | `kairos health` |
+| `kairos health --full` | 全景健康报告（健康 + 记忆库统计 + 遗忘队列；D-430 闭合，0.1.2 批次登记） | `GET /health` + 本地聚合 | `kairos health --full` |
 | `kairos config` | 配置管理 | `GET /v1/config`（查看）/ `PATCH /v1/config`（修改） | `kairos config set KAIROS_DAILY_BUDGET_FEN 20000` |
 | `kairos config show` | 配置查看（0.0.95 登记；竖切 CLI 15 交付项，组件 9——此前契约缺失，D-430 分类处置后登记） | `GET /v1/config` | `kairos config show KAIROS_LOG_LEVEL`（可带参数名查单项，缺省输出全部） |
+| `kairos config reset` | 配置重置（清空 config 表运行时覆盖，恢复参数默认；D-430 闭合，0.1.2 批次登记） | 本地执行 | `kairos config reset` |
+| `kairos audit log` | 审计日志查询（HMAC 链完整性校验；D-430 闭合，0.1.2 批次登记） | `GET /v1/audit-log` | `kairos audit log --limit 20` |
 | `kairos db` | 数据库管理 | 本地执行 | `kairos db init` / `kairos db migrate` / `kairos db verify` / `kairos db backup` / `kairos db vacuum` / `kairos db reindex` |
 | `kairos stop` | 停止服务 | 本地执行 | `kairos stop` |
 | `kairos logs` | 查看日志 | 本地执行 | `kairos logs --tail 100` |

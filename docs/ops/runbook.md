@@ -32,7 +32,7 @@ status: design-freeze
 >
 > **命令状态**：竖切交付的 `kairos` 子命令以 CLI 实现为准（`kairos --help`）。本文涉及的以下待定义命令尚未实现，以 `--help` 为准（见追缴清单）。
 >
-> **待定义命令追缴**：本手册直接使用的待定义命令包括 `kairos health --full`（§1.2 启动检查、§2.3 灾难恢复验证）、`kairos logs --level/--module/--since/--follow`（§1.3 日常操作、§5.2 故障排查）、`kairos config show`（§4.1 配置查看）、`kairos config reset`（§4.1 配置重置）、`kairos admin key revoke`（§4.2 密钥吊销）、`kairos admin key rotate --hmac`（§4.3 密钥轮换）、`kairos audit log`（§6.2/§6.4 审计查询）、`kairos audit approve-forgetting`（§6.2 遗忘审批）——全部纳入**债务 D-430** 追缴（api-spec §3 登记契约或从本手册移除），条目见 [debt-collection.md](../governance/debt-collection.md)。灾难恢复主链路命令（`db repair` / `db restore` / `db migrate rollback`）同属债务 D-430 范围。
+> **命令实现状态（D-430 闭合批次 0.1.2+）**：`kairos health --full`（§1.2/§2.3）、`kairos config show`（§4.1）、`kairos config reset`（§4.1）、`kairos audit log`（§6.2/§6.4）、`kairos db migrate rollback`（§2.3）**已实现**（契约登记见 [api-spec.md](../specification/api-spec.md) §3）。仍待定义（归 v0.1.0 全量阶段，债务 D-430 追缴）：`kairos logs --level/--module/--since/--follow`（§1.3/§5.2）、`kairos admin key revoke`（§4.2）、`kairos admin key rotate --hmac`（§4.3）、`kairos audit approve-forgetting`（§6.2）、`db repair` / `db restore`（§2.3 灾难恢复）。
 
 ---
 
