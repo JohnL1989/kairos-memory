@@ -340,43 +340,12 @@ class MemoryStore:
         architecture §7.3h（竖切取关键字降级侧，无 LLM 依赖）。
 
         失败不阻断主写入：实体为检索增强信号，非记忆本体（异常仅告警日志）。
+        实现复用公共函数 store_entities_for_memory（与 backfill 同源）。
         """
-        from src.storage.entity_extractor import extract_entities, extract_user_id, infer_type
-        from src.storage.models import Entity, MemoryEntity, utc_now
+        from src.storage.entity_extractor import store_entities_for_memory
 
         try:
-            names = extract_entities(content)
-            if not names:
-                return
-            user_id = extract_user_id(path)
-            async with self.db.session() as session:
-                for name in names:
-                    exists = (
-                        await session.execute(
-                            select(Entity).where(Entity.name == name, Entity.user_id == user_id)
-                        )
-                    ).scalar_one_or_none()
-                    if exists is None:
-                        ent = Entity(
-                            user_id=user_id,
-                            name=name,
-                            type=infer_type(name),
-                            description="",
-                        )
-                        session.add(ent)
-                        await session.flush()
-                        entity_id = ent.id
-                    else:
-                        entity_id = exists.id
-                    session.add(
-                        MemoryEntity(
-                            memory_id=memory_id,
-                            entity_id=entity_id,
-                            relation="mentions",
-                            valid_from=utc_now(),
-                        )
-                    )
-                await session.commit()
+            await store_entities_for_memory(self.db, memory_id, content, path)
         except Exception:
             logger.warning(
                 "entity extraction skipped for %s (non-blocking)", memory_id, exc_info=True

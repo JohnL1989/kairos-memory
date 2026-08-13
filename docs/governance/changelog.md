@@ -2211,6 +2211,35 @@ status: draft
 
 ---
 
+## 0.1.7（2026-08-13）— 存量实体回溯批次（backfill 命令 + 技术专名白名单）
+
+> **背景**：0.1.5 实体信号激活后，**存量 2086 条记忆无实体关联**（写入侧提取仅对新写入生效）；且规则法（纯大写缩写 + 中文专名）覆盖不到 **GitHub/SQLite 等混合大小写技术专名**（检索实测 entity=0）。
+
+**落地清单**：
+- **`store_entities_for_memory()` 公共函数提炼**（entity_extractor.py）：写入侧 `_store_entities` 与 backfill 统一复用（幂等：已关联跳过）。
+- **CLI `kairos db backfill-entities [--dry-run] [--force]`**（cli.py + main.py）：遍历无实体关联记忆批量提取入库；`--force` 重建全部关联（词典规则升级后覆盖存量——0.1.7 白名单增量场景）。
+- **技术专名白名单 `_TECH_NAMES`**（entity_extractor.py，38 项）：GitHub/SQLite/Docker/Kairos/Hermes 等混合大小写品牌/技术名 → 提取优先级第二（引号短语后）→ 类型归 tool。
+- **测试**：白名单提取（GitHub/Docker/SQLite）+ 幂等语义 + infer_type 白名单→tool。
+- **真实验证**：backfill（幂等）2079 条 → 8982 关联；--force 重建 → **10171 关联**（+1189，白名单增量）；GitHub/SQLite 存量检索 entity=1.0（top 或候选内）；实体库 2284（concept 958 / project 586 / tool 740）。测试数据已清理。
+
+**验证**：全量测试（0.1.6 基础上 +2，见批次验证）/ ruff 0 / mypy 0（50 文件）/ format 全绿。结构性受改：src/storage/entity_extractor.py / src/storage/memory_store.py / src/access/cli.py / src/main.py / tests/unit/test_entity_extractor.py + changelog 本文件。
+
+---
+
+## 0.1.8（2026-08-13）— 第三方来源零标记批次（来源清理 + 门禁 6.40 确立）
+
+> **背景**：用户指令——清理项目中所有直接指向第三方项目的内容；并确立门禁：项目的描述/参数不得直接使用第三方项目名。此前文档体系含大量吸收来源标记（PAPER-XX/VID-XX/REPO-XX 编号、EchoMind/Mem0/Letta/REMIT/LightMem/G-Memory/LangGraph 等第三方项目名、「外部实证/外部理念吸收」前缀），与「系统本来就长这样」的原生面貌纪律相悖。
+
+**落地清单**：
+- **全库来源标记清理**：architecture-v0.1.0.md 68 处 + 其他 7 份交付文档 55+30 处改写（两轮子代理 + 两轮批量定点）——删除 PAPER/VID/REPO 编号与第三方项目名，**机制语义与数字事实逐字保留**（740 万状态穷举/54% 失败率/0.12% 参数开销等）；集成目标枚举通用化（Claude Code/Codex/Cursor → 「支持 MCP 的 Agent」）；MetaLLM → 元 LLM；LangGraph Cloud → 远程执行平台。
+- **门禁 6.40 新增**（doc-audit.py `check_third_party_names`）：第三方来源名黑名单（30+ 项目/论文名 + PAPER/VID/REPO 编号形态），FAIL 级硬门禁。豁免边界显式声明：docs/analysis/（分析记录工作区）、changelog.md 与 documentation-governance.md（历史过程记录）、LongMemEval（Kairos 正式采用的公开评测基准契约，benchmark-plan §3.15）、已内化机制缩写（GSPO/MMR/RCW/KPop/Cross-encoder）。
+- **代码/数据清理**：entity_extractor 白名单移除 EchoMind（39→38 项）；测试断言同步；运行库 entities 表删除 EchoMind 实体 + 25 关联（记忆内容保留）。
+- **修复**：test_entity_boost_signal 适配自动提取语义（手动 INSERT 与白名单提取的 UNIQUE 冲突）；changelog 版本记录表管道符转义；治理执行记录补 0.1.5~0.1.7。
+
+**验证**：doc-audit 全门禁通过（6.40 零残留首跑）；deep-audit exit 0；全量测试见批次验证；ruff/mypy/format 全绿。结构性受改：scripts/doc-audit.py / src/storage/entity_extractor.py / src/access/cli.py / src/main.py / src/app.py / src/storage/identity_registry.py / src/storage/memory_store.py / src/storage/hybrid_search.py / src/access/api/{routes,extended}.py / tests/* / docs 10 份（architecture/cognitive-foundation/blueprint/data-model/feature-list/configuration/deployment/tech-stack/test-strategy/README/adr/debt-collection/troubleshooting/benchmark-plan/changelog/documentation-governance）+ changelog 本文件。
+
+---
+
 ## 版本记录
 
 > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
@@ -2325,3 +2354,5 @@ status: draft
 | 0.1.4 | 2026-08-13 | 全面审计修复批次（changelog 0.1.4，见本文件 0.1.4 叙述节）：S-09 注入扫描实现（injection_scan + ingestion 第 5 层 + 4 用例）；S-01 生产密钥强制（KAIROS_ENV 参数 + production 密钥族必填 + development 无鉴权警告，config/deployment/configuration 登记，参数 380→381）；D-450 三级 Key 鉴权体系追缴登记 + D-430 状态部分闭合同步；CI mcp-tools schema 校验真实化（schema 文件创建 + fallback 收紧）；测试 288→292、覆盖率 81.52%→82.81%（auth 401 + D-430 命令补测）；AGENTS D-428 残留清除 + 覆盖率同步、changelog 指引/frontmatter、gitignore 补模式、development-setup 环境约束注记。 |
 | 0.1.5 | 2026-08-13 | 实体信号激活批次（changelog 0.1.5，见本文件 0.1.5 叙述节）：entity_extractor 公共提取器（规则法 + 类型推断 + user_id 解析）；MemoryStore.create 写入侧自动提取（entities 去重 + memory_entities 关联）；hybrid_search 归一化退化 bug 修复（单候选信号满配——entity 恒 0 深层根因）；extended.py 复用公共提取器 + 类型推断；测试 +13 项（305 全量）；真实验证三信号融合 0.35·1+0.15·1=0.5 吻合。 |
 | 0.1.6 | 2026-08-13 | 身份注册表激活批次（changelog 0.1.6，见本文件 0.1.6 叙述节）：KairosApp.seed_bootstrap 协调层（Seed 落库 + identity 联动身份记忆 + 初始赋予 + 审计，先建记忆防孤儿种子）；grant_initial_identity 补 S-16 审计；CLI seed add（21→22 命令）；POST /v1/seeds 重构复用；测试 +4 项（身份记忆/S-10 豁免/config 不联动/路径冲突）；真实验证种子 active + is_identity + 审计留痕。 |
+| 0.1.7 | 2026-08-13 | 存量实体回溯批次（changelog 0.1.7，见本文件 0.1.7 叙述节）：store_entities_for_memory 公共函数提炼（写入侧 + backfill 复用，幂等）；CLI db backfill-entities [--dry-run / --force]（22→23 命令）；技术专名白名单 38 项（GitHub/SQLite 等混合大小写 → tool）；测试 +2；真实验证 2079→8982→10171 关联、GitHub/SQLite 存量检索 entity=1.0、实体库 2284。 |
+| 0.1.8 | 2026-08-13 | 第三方来源零标记批次（changelog 0.1.8，见本文件 0.1.8 叙述节）：全库来源标记清理（architecture 68 处 + 其他交付文档 85+ 处——PAPER/VID/REPO 编号与第三方项目名删除，机制语义与数字逐字保留）；门禁 6.40 新增（第三方来源名黑名单 FAIL 级，豁免 analysis/changelog/LongMemEval/已内化机制缩写）；entity_extractor 白名单 39→38（移 EchoMind）+ 运行库实体清理；测试适配自动提取语义；doc-audit 全门禁通过。 |

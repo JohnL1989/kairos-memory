@@ -298,7 +298,7 @@ status: design-freeze
 | P3-11 | Directives 系统 | Reflect 前注入 + compliance YAML 追踪 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-11 |
 | P3-12 | malloc_trim 管理 | glibc heap 释放 + RSS 防泄漏 | 规格待 v1.1 细化（当前无具体设计文本） |
 | P3-13 | Webhook 框架 | 订阅/投递/重试三表 + HMAC-SHA256 | [api-spec.md](api-spec.md) §1.8 POST /v1/webhooks |
-| P3-14 | 远程/本地升华 | LangGraph Cloud API 远程 L2→L4 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-14 |
+| P3-14 | 远程/本地升华 | 远程执行 API（L2→L4） | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-14 |
 | P3-15 | Prompt 依赖图 | SOUL.md 修改→通知关联 Skill | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-15 |
 | P3-16 | GraphRAG + Rust Core | petgraph/PyO3 + Louvain 检测 | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-16 |
 | P3-17 | TeamScope 多租户 | team_id + user_id 双层跨 host | [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-17 |

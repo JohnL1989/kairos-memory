@@ -328,3 +328,60 @@ async def cmd_seed_add(
         )
     finally:
         await app.close()
+
+
+async def cmd_backfill_entities(
+    *, dry_run: bool = False, force: bool = False
+) -> dict[str, Any]:
+    """kairos db backfill-entities [--dry-run] [--force]（存量实体回溯）。
+
+    遍历无实体关联的活跃记忆 → 规则法提取 → entities 去重 + memory_entities
+    关联。默认幂等（已关联跳过）；--force 重建全部关联（词典规则升级后
+    使白名单/新规则覆盖存量——如 0.1.7 技术专名白名单）。
+    """
+    from sqlalchemy import text
+
+    app = await _resolve_app()
+    try:
+        if force:
+            async with app.db.session() as session:
+                await session.execute(text("DELETE FROM memory_entities"))
+                await session.commit()
+        # 候选：活跃且无实体关联的记忆
+        async with app.db.session() as session:
+            rows = (
+                await session.execute(
+                    text(
+                        "SELECT m.id, m.content, m.path FROM memories m "
+                        "WHERE m.is_deleted = 0 AND m.is_latest = 1 "
+                        "AND NOT EXISTS (SELECT 1 FROM memory_entities me "
+                        "WHERE me.memory_id = m.id) "
+                        "ORDER BY m.created_at"
+                    )
+                )
+            ).fetchall()
+        total = len(rows)
+        if dry_run:
+            return {"candidates": total, "dry_run": True, "force": force}
+        from src.storage.entity_extractor import store_entities_for_memory
+
+        linked = 0
+        skipped_empty = 0
+        failed = 0
+        for mid, content, path in rows:
+            try:
+                n = await store_entities_for_memory(app.db, mid, content, path)
+                linked += n
+                if n == 0:
+                    skipped_empty += 1
+            except Exception:
+                failed += 1
+        return {
+            "candidates": total,
+            "linked_memories": linked,
+            "no_entity_content": skipped_empty,
+            "failed": failed,
+            "force": force,
+        }
+    finally:
+        await app.close()

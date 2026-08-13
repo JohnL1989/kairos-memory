@@ -117,23 +117,16 @@ class TestEntitySignal:
     async def test_entity_boost_signal(self, setup) -> None:
         """实体加成（RC-03）：查询命中实体词典 → score_entity = |Q∩E_R|/|Q|。"""
         store, search = setup
-        memory_id = await _write(store, "kairos://_user/u1/memories/", "项目 Kairos 的架构设计讨论")
+        # 0.1.5 起写入侧自动提取（白名单 Kairos → tool 实体）；不再手动 INSERT
+        memory_id = await _write(store, "kairos://_user/u1/memories/", "Kairos 架构设计讨论")
         # 无关记忆提供 norm 区分度（单候选信号 norm 退化至 0 属架构公式行为）
         await _write(store, "kairos://_user/u1/memories/", "quantum physics observation notes")
         await _write(store, "kairos://_user/u1/memories/", "cooking recipe collection")
-        # 注册实体 + 记忆-实体关联（实体知识图谱查询，架构 §7.3a 信号三）
-        async with store.db.session() as session:
-            from src.storage.models import Entity, MemoryEntity
-
-            entity = Entity(user_id="u1", name="Kairos", type="project")
-            session.add(entity)
-            await session.flush()
-            session.add(MemoryEntity(memory_id=memory_id, entity_id=entity.id))
-            await session.commit()
         result = await search.search("Kairos")
         assert any(d["id"] == memory_id for d in result["data"])
         hit = next(d for d in result["data"] if d["id"] == memory_id)
         assert hit["score"] > 0
+        assert hit["explanation"].get("entity", 0) > 0
 
     async def test_entity_signal_zero_when_no_match(self, setup) -> None:
         """实体信号无命中时 score=0（RC-03：|Q|=0 → 0），不阻断其余信号。"""

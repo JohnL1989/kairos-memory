@@ -174,7 +174,7 @@ curl http://localhost:8010/health  # 健康检查端点
 
 - 进程模型：FastMCP Server 独立子进程，与 Kairos 主进程经 localhost HTTP 通信——`KAIROS_MCP_BASE_URL`（默认 `http://127.0.0.1:8010`）指向主进程 REST API，工具调用继承主进程全部门禁（L1 权限 + L2 宪法约束 + L3 身份否决）。
 - 启动：`kairos mcp-bridge`（或等价子命令，见 [api-spec.md](../specification/api-spec.md) §3 CLI 清单）。
-- 注册：在支持 MCP 的 Agent（Hermes Agent / Claude Code / Codex 等）的 MCP 配置中注册为 stdio 子进程，传入 `KAIROS_API_KEY`（与 Kairos 服务鉴权一致）。
+- 注册：在支持 MCP 的 Agent（Hermes Agent 等）的 MCP 配置中注册为 stdio 子进程，传入 `KAIROS_API_KEY`（与 Kairos 服务鉴权一致）。
 - 工具：15 个（`kairos_store_memory` 等，清单见 [api-spec.md](../specification/api-spec.md) §6.8）。
 
 **Hermes Memory Provider（生命周期钩子，非工具）**：

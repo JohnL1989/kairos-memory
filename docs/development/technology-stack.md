@@ -102,7 +102,7 @@ status: design-freeze
 ---
 ## 七、MCP 协议与多语言 SDK（P3-07）
 
-Kairos 作为记忆基础设施，通过标准化协议和官方 SDK 降低集成门槛，使不同技术栈的 AI Agent（Hermes、Claude Code、Codex、Cursor 等）均可无缝接入。
+Kairos 作为记忆基础设施，通过标准化协议和官方 SDK 降低集成门槛，使不同技术栈的 AI Agent（Hermes 及各类支持 MCP 的 Agent 等）均可无缝接入。
 
 **MCP（Model Context Protocol）集成战略**：
 

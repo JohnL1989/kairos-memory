@@ -28,7 +28,7 @@ status: design-freeze
 >
 > **DDL 承载说明**：本文档描述逻辑数据模型（表/列/索引/约束），**不含内联 `CREATE TABLE` DDL**——DDL 集中在 [schema-slice.sql](schema-slice.sql)（竖切示例 DDL——14 张物理表 + 1 张 FTS5 虚拟表 `memories_fts`，合计 15 张；全量 57 张物理表的建表语句随实现阶段由 Alembic 迁移脚本承载）。此分离为有意为之（文档层描述结构、迁移层承载 DDL），非遗漏。
 
-> **物理分库取向注记（外部理念吸收 0.0.41；外部实证：OpenClaw VID-16）**：外部实现采用「每 agent 物理分库」的隔离取向——每个 agent 独立数据库实例，故障域与备份粒度天然隔离。Kairos 采用**逻辑域隔离**——单库多租户，隔离由 `kairos://_user/{id}/` 路径域 + `permission_acl` 路径级授权（§11）承载。评估记录：逻辑域隔离以零额外运维成本支撑 v0.1.0 单机/轻量模式起步，且与端云同步（`sync_queue`）共用同一事务域；物理分库的故障隔离、单租户恢复与租户级备份优势，在标准模式多租户场景下作为 v1.1+ 演进选项（与 blueprint TeamScope P3-17 多租户隔离衔接，见 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-17）——v0.1.0 维持逻辑域隔离，不引入物理分库。
+> **物理分库取向注记（外部理念吸收 0.0.41；外部实证）**：外部实现采用「每 agent 物理分库」的隔离取向——每个 agent 独立数据库实例，故障域与备份粒度天然隔离。Kairos 采用**逻辑域隔离**——单库多租户，隔离由 `kairos://_user/{id}/` 路径域 + `permission_acl` 路径级授权（§11）承载。评估记录：逻辑域隔离以零额外运维成本支撑 v0.1.0 单机/轻量模式起步，且与端云同步（`sync_queue`）共用同一事务域；物理分库的故障隔离、单租户恢复与租户级备份优势，在标准模式多租户场景下作为 v1.1+ 演进选项（与 blueprint TeamScope P3-17 多租户隔离衔接，见 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-17）——v0.1.0 维持逻辑域隔离，不引入物理分库。
 
 ---
 

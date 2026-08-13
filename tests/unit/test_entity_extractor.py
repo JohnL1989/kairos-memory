@@ -26,10 +26,16 @@ class TestExtractRules:
         assert "持续记忆协议" in extract_entities("「持续记忆协议」是核心设计。")
 
     def test_en_acronym(self) -> None:
-        """全大写缩写提取（SQLite 混合大小写不在纯大写规则内——规则法局限）。"""
+        """全大写缩写提取 + 白名单专名（混合大小写品牌名）。"""
         names = extract_entities("Kairos 使用 SQLite + FTS5 实现检索。")
         assert "FTS5" in names
-        assert "SQLite" not in names  # 混合大小写品牌名不在竖切规则内
+        assert "SQLite" in names  # 白名单（0.1.7 增强：混合大小写技术专名）
+
+    def test_tech_whitelist(self) -> None:
+        names = extract_entities("GitHub 与 Docker 协作，SQLite 是数据库引擎。")
+        assert "GitHub" in names
+        assert "Docker" in names
+        assert "SQLite" in names
 
     def test_en_stopword_filtered(self) -> None:
         """英文单字符/常见缩写（AI/OK/ID）不视为实体。"""
@@ -44,13 +50,16 @@ class TestExtractRules:
     def test_dedupe_ordered(self) -> None:
         names = extract_entities("「FTS5」与「FTS5」重复引用，SQLite 与 SQLite。")
         assert names.count("FTS5") == 1
-        assert names == ["FTS5"]  # 引号短语提取，其余无纯大写/中文专名
+        assert names.index("FTS5") < names.index("SQLite")
 
 
 class TestInferType:
     def test_tool(self) -> None:
         assert infer_type("FTS5") == "tool"
         assert infer_type("SQL") == "tool"
+        # 白名单技术专名（0.1.7 增强）
+        assert infer_type("GitHub") == "tool"
+        assert infer_type("SQLite") == "tool"
 
     def test_project(self) -> None:
         assert infer_type("Kairos 记忆系统") == "project"
@@ -59,8 +68,6 @@ class TestInferType:
     def test_concept(self) -> None:
         assert infer_type("持续记忆协议") == "concept"
         assert infer_type("「任意短语」") == "concept"
-        # 混合大小写品牌名（SQLite）不在纯大写规则内 → 归 concept（规则法局限，诚实标注）
-        assert infer_type("SQLite") == "concept"
 
 
 class TestExtractUserId:
@@ -151,3 +158,36 @@ class TestWriteSideExtraction:
         top = hits[0]
         explanation = top.get("explanation") or {}
         assert explanation.get("entity", 0) > 0, f"实体信号应 >0，实际 {explanation}"
+
+
+class TestBackfillSemantics:
+    """存量回溯语义（store_entities_for_memory 幂等；CLI 命令见真实验证）。"""
+
+    async def test_store_entities_idempotent(self, memory_db) -> None:
+        """写入侧已自动提取（0.1.5）→ 再次调用幂等跳过（backfill 可重复执行）。"""
+        from src.storage.entity_extractor import store_entities_for_memory
+        from src.storage.memory_store import MemoryStore, MemoryWriteInput
+
+        content = "「幂等验证」由 Kairos 记忆系统承载，FTS5 检索。"
+        store = MemoryStore(memory_db)
+        r = await store.create(
+            MemoryWriteInput(
+                path="kairos://_user/hermes/memories/",
+                content=content,
+                provenance="user_input",
+            )
+        )
+        # 首次：create 已自动提取，重复调用返回 0（已关联，幂等）
+        n = await store_entities_for_memory(memory_db, r.id, content, r.path)
+        assert n == 0
+        from sqlalchemy import select
+
+        from src.storage.models import MemoryEntity
+
+        async with memory_db.session() as session:
+            links = (
+                (await session.execute(select(MemoryEntity).where(MemoryEntity.memory_id == r.id)))
+                .scalars()
+                .all()
+            )
+        assert len(links) >= 1  # 关联确已存在

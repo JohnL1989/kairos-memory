@@ -140,7 +140,7 @@ status: design-freeze
 | [`analysis/external-videos/first-principles-review.md`](analysis/external-videos/first-principles-review.md) | **第一性原理对照评审** — 八原理逐条「支撑/挑战/未触及」 |
 | [`analysis/external-videos/absorption-proposals.md`](analysis/external-videos/absorption-proposals.md) | **吸收建议清单** — AP-01~52 吸收提案 + AT-01~09 张力记录 |
 | [`analysis/external-videos/notes/`](analysis/external-videos/notes/) | 逐视频精读笔记（N 份） |
-| [`analysis/external-videos/repos/`](analysis/external-videos/repos/) | GitHub 仓库源码级深读笔记（REPO-01~15） |
+| [`analysis/external-videos/repos/`](analysis/external-videos/repos/) | GitHub 仓库源码级深读笔记（编号 01~15） |
 | [`analysis/external-videos/process/fetch-guide.md`](analysis/external-videos/process/fetch-guide.md) | 字幕抓取/转写流程记录（不含凭据） |
 
 总计：**196 份 md + 3 份 yaml**（= 核心文档 56 份【53 md + 3 yaml：foundation 4 + specification 13(12 md+1 yaml: api-contract/openapi.yaml) + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1】+ 外部视频分析批次独立目录 [analysis/external-videos/](analysis/external-videos/README.md) 143 份【4 索引/报告 + 15 仓库笔记 + 102 视频笔记 + 21 论文笔记 + 1 流程记录】；审计过程材料不随仓库分发，处置记录见 changelog 各批次）。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。

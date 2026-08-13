@@ -3064,6 +3064,61 @@ def main() -> int:
     check_table_scope_consistency()
     check_threshold_self_consistency()
     check_batch_version_record_coverage()
+    check_third_party_names()
+
+
+def check_third_party_names() -> None:
+    """6.40 第三方来源名黑名单（来源零标记门禁，0.1.7 批次确立）。
+
+    项目描述/参数不得直接使用第三方项目名（吸收来源标记）——项目以
+    「系统本来就长这样」的原生面貌呈现。黑名单覆盖具体第三方项目/论文名
+    与编号形态（PAPER-XX / VID-XX / REPO-XX）。
+
+    豁免边界（显式声明）：
+    - docs/analysis/：外部项目分析记录工作区（其定位即分析第三方，非项目描述）
+    - changelog.md：历史变更过程记录（记录当时对照事实，改动破坏真实性）
+    - documentation-governance.md：治理执行记录含历史批次叙述
+    - 已内化机制缩写（GSPO/MMR/RCW/KPop/Cross-encoder）：无第三方项目指向，
+      是系统内部机制术语，不在黑名单
+    - LongMemEval：Kairos 正式采用的公开评测基准（benchmark-plan §3.15 契约，
+      test-plan TC-LME 依赖）——属运行时工具契约而非吸收来源标记，豁免
+    """
+    blacklist = [
+        "EchoMind", "Mnemosyne", "LightMem", "REMIT", "Mem0",
+        "MemGPT", "Letta", "Zep", "LangMem", "MemoryOS",
+        "Supermemory", "Marvis", "Graphiti", "ChromaDB", "Qdrant",
+        "OpenMemory", "OptMem", "OpenClaw", "Memorix", "MIRIX",
+        "SkillHone", "G-Memory", "Zero-Mem", "InMind", "GRAM",
+        "AutoGen", "DyLAN", "LangGraph", "Claude Code", "Mem\u00b2Evolve",
+        "DeMem", "Mem-W", "MemGen", "MemSkill", "AEL", "RF-Mem",
+        "PowerMem", "RE-TRAC", "MRAgent", "GAM", "MedRGAG", "MetaLLM",
+        r"\bPAPER-\d{2}\b", r"\bVID-\d{2}\b", r"\bREPO-\d{2}\b",
+    ]
+    excluded_paths = {"docs/analysis", "changelog.md", "documentation-governance.md"}
+    hits: list[tuple[str, str]] = []
+    for p in md_files():
+        rel = p.relative_to(ROOT).as_posix()
+        if any(rel.startswith(e) or rel.endswith(e) for e in excluded_paths):
+            continue
+        text = p.read_text(encoding="utf-8", errors="replace")
+        for name in blacklist:
+            if re.search(name, text):
+                hits.append((rel, name))
+    if hits:
+        seen: set[tuple[str, str]] = set()
+        for rel, name in hits:
+            if (rel, name) in seen:
+                continue
+            seen.add((rel, name))
+            fail(f"第三方来源名残留[{name}]: {rel}")
+            if len(seen) >= 20:
+                fail(f"[6.40] …另 {len(hits) - len(seen)} 处待清（共 {len(hits)} 处）")
+                break
+    else:
+        print("[6.40] 第三方来源名黑名单: 零残留")
+
+
+    # 输出汇总（main 尾部）
     print("-" * 60)
     for w in WARNS:
         print("[WARN]", w)
