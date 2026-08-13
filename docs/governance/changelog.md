@@ -2231,8 +2231,8 @@ status: draft
 > **背景**：用户指令——清理项目中所有直接指向第三方项目的内容；并确立门禁：项目的描述/参数不得直接使用第三方项目名。此前文档体系含大量吸收来源标记（PAPER-XX/VID-XX/REPO-XX 编号、EchoMind/Mem0/Letta/REMIT/LightMem/G-Memory/LangGraph 等第三方项目名、「外部实证/外部理念吸收」前缀），与「系统本来就长这样」的原生面貌纪律相悖。
 
 **落地清单**：
-- **全库来源标记清理**：architecture-v0.1.0.md 68 处 + 其他 7 份交付文档 55+30 处改写（两轮子代理 + 两轮批量定点）——删除 PAPER/VID/REPO 编号与第三方项目名，**机制语义与数字事实逐字保留**（740 万状态穷举/54% 失败率/0.12% 参数开销等）；集成目标枚举通用化（Claude Code/Codex/Cursor → 「支持 MCP 的 Agent」）；MetaLLM → 元 LLM；LangGraph Cloud → 远程执行平台。
-- **门禁 6.40 新增**（doc-audit.py `check_third_party_names`）：第三方来源名黑名单（30+ 项目/论文名 + PAPER/VID/REPO 编号形态），FAIL 级硬门禁。豁免边界显式声明：docs/analysis/（分析记录工作区）、changelog.md 与 documentation-governance.md（历史过程记录）、LongMemEval（Kairos 正式采用的公开评测基准契约，benchmark-plan §3.15）、已内化机制缩写（GSPO/MMR/RCW/KPop/Cross-encoder）。
+- **全库来源标记清理**：[architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) 68 处 + 其他 7 份交付文档 85+ 处改写（两轮子代理 + 两轮批量定点）——删除 PAPER/VID/REPO 编号与第三方项目名，**机制语义与数字事实逐字保留**（740 万状态穷举/54% 失败率/0.12% 参数开销等）；集成目标枚举通用化（Claude Code/Codex/Cursor → 「支持 MCP 的 Agent」）；MetaLLM → 元 LLM；LangGraph Cloud → 远程执行平台。
+- **门禁 6.40 新增**（doc-audit.py `check_third_party_names`）：第三方来源名黑名单（30+ 项目/论文名 + PAPER/VID/REPO 编号形态），FAIL 级硬门禁。豁免边界显式声明：docs/analysis/（分析记录工作区）、[changelog.md](changelog.md) 与 [documentation-governance.md](documentation-governance.md)（历史过程记录）、LongMemEval（Kairos 正式采用的公开评测基准契约，benchmark-plan §3.15）、已内化机制缩写（GSPO/MMR/RCW/KPop/Cross-encoder）。
 - **代码/数据清理**：entity_extractor 白名单移除 EchoMind（39→38 项）；测试断言同步；运行库 entities 表删除 EchoMind 实体 + 25 关联（记忆内容保留）。
 - **修复**：test_entity_boost_signal 适配自动提取语义（手动 INSERT 与白名单提取的 UNIQUE 冲突）；changelog 版本记录表管道符转义；治理执行记录补 0.1.5~0.1.7。
 
