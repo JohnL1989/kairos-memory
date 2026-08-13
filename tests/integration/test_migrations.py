@@ -48,6 +48,7 @@ class TestMigrationApply:
             "forgetting_queue",
             "journal_buffer",
             "memory_entities",
+            "memory_relations",
             "memory_states",
             "memory_versions",
             "memories",
@@ -97,6 +98,8 @@ class TestMigrationRollback:
 
     async def test_downgrade_drops_all_tables(self, file_db: Database) -> None:
         await file_db.run_migrations()
+        # 0001+0002 两级迁移：回退到 0 需两步（0002 → 0001 → 空）
+        await file_db.rollback_migration()
         await file_db.rollback_migration()
         async with file_db.engine.connect() as conn:
             rows = await conn.execute(

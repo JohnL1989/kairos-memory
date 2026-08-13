@@ -40,8 +40,8 @@ def _metadata_table_names() -> set[str]:
 
 class TestTableCoverage:
     def test_slice_table_count_is_15(self) -> None:
-        assert len(SLICE_TABLES) == 15
-        assert len(_ddl_tables()) == 15
+        assert len(SLICE_TABLES) == 16
+        assert len(_ddl_tables()) == 16
 
     def test_ddl_tables_match_slice_manifest(self) -> None:
         ddl = _ddl_tables()

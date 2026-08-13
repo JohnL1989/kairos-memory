@@ -39,11 +39,15 @@ def _ddl_statements() -> list[str]:
 
     行扫描 + 触发器块感知（CREATE TRIGGER ... BEGIN ... END 内含分号，
     不能按分号简单分割）；语句以分号或 END 收尾。
+
+    memory_relations（含其索引）由迁移 0002 承载，此处跳过——0001 保持
+    初始 15 表快照语义（schema-slice.sql 为当前 schema 权威 DDL，含 16 表）。
     """
     sql = _DDL_SOURCE.read_text(encoding="utf-8")
     statements: list[str] = []
     buf: list[str] = []
     in_trigger = False
+    in_skip = False  # memory_relations 块跳过标志（0002 承载）
     for raw_line in sql.splitlines():
         stripped = raw_line.strip()
         if not stripped:
@@ -57,6 +61,18 @@ def _ddl_statements() -> list[str]:
             continue
         if upper.startswith("PRAGMA") or upper.rstrip(";") in ("BEGIN", "COMMIT"):
             # 连接级配置/事务控制由 Alembic 与应用启动承载，跳过
+            continue
+        if upper.startswith("CREATE TABLE MEMORY_RELATIONS"):
+            in_skip = True  # 跳过整个块（含块内注释）
+            continue
+        if in_skip:
+            code_part_skip = stripped.split("--")[0].rstrip()
+            if code_part_skip.endswith(";"):
+                in_skip = False
+            continue
+        if upper.startswith("CREATE INDEX IDX_MEMORY_RELATIONS"):
+            # memory_relations 的索引同样由 0002 承载
+            buf = []
             continue
         buf.append(raw_line)
         if upper.startswith("CREATE TRIGGER"):

@@ -47,6 +47,18 @@ def bridge():
             return httpx.Response(
                 200, json={"tree": [{"path": "kairos://", "memory_count": 1}], "truncated": False}
             )
+        if request.url.path == "/v1/relations":
+            return httpx.Response(
+                200,
+                json={
+                    "created": [{"from": "m1", "to": "m2", "status": "created"}],
+                    "count": 1,
+                },
+            )
+        if request.url.path.startswith("/v1/relations/"):
+            return httpx.Response(
+                200, json={"memory_id": "m1", "inbound": [], "outbound": []}
+            )
         return httpx.Response(404, json={"code": "ERR-DB-004", "message": "not found"})
 
     b = KairosMCPBridge(base_url="http://mock", api_key="test-key")
@@ -116,7 +128,8 @@ class TestMcpOnlyTools:
     async def test_link_accepts(self, bridge) -> None:
         b, _calls = bridge
         result = await b.link("m1", ["m2"], "test reason")
-        assert result["status"] == "accepted"
+        assert result["count"] == 1
+        assert result["created"][0]["status"] == "created"
 
     async def test_relations_empty(self, bridge) -> None:
         b, _calls = bridge

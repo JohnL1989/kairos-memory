@@ -35,6 +35,18 @@ from src.access.api.routes import (  # 竖切 21 端点 handlers
     unfreeze,
     update_memory,
 )
+from src.access.api.extended import (  # MCP 工具契约补齐端点（§6.8）
+    entities_extract,
+    graph_search,
+    memories_heat_top,
+    memories_stats,
+    memory_feedback,
+    memory_traces,
+    relation_create,
+    relation_query,
+    relation_remove,
+    sessions_list,
+)
 from src.app import KairosApp, build_app
 from src.config import load_settings
 from src.errors import KairosError
@@ -61,6 +73,16 @@ _HANDLERS = [
     config_patch,
     seed_create,
     seed_list,
+    memories_stats,
+    memories_heat_top,
+    memory_feedback,
+    memory_traces,
+    entities_extract,
+    graph_search,
+    sessions_list,
+    relation_create,
+    relation_remove,
+    relation_query,
 ]
 
 

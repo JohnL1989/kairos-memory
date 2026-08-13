@@ -56,7 +56,8 @@ AUDIT_TARGET_TYPES = ("memory", "config", "user", "redline")
 # FTS5 虚拟表名（不经 ORM，由迁移 op.execute 创建，ADR-011）
 FTS_TABLE = "memories_fts"
 
-# 竖切表清单（15 张；口径见 slice-implementation-guide §二）
+# 竖切表清单（16 张；口径见 slice-implementation-guide §二——memory_relations 为
+# MCP 关系管理三工具数据层（§6.8 link/unlink/relations），0002 迁移补齐）
 SLICE_TABLES = (
     "memories",
     "memory_versions",
@@ -71,6 +72,7 @@ SLICE_TABLES = (
     "memory_states",
     "entities",
     "memory_entities",
+    "memory_relations",
     "memories_fts",
     "schema_version",
 )
@@ -515,6 +517,38 @@ class MemoryEntity(Base):
     superseded_by: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("memory_entities.id", ondelete="SET NULL")
     )
+
+
+class MemoryRelation(Base):
+    """记忆关系索引表（data-model §1 memory_relations 契约；kairos_link/unlink/relations 数据层）。
+
+    - relation_type 基础六值 + 语义标记扩展（TEXT 无 CHECK；六值与扩展不互斥）
+    - UNIQUE(source_id, target_id, relation_type) 防同类型重复边
+    - deleted_at 软删除（kairos_unlink 标记而非物理删除，检索过滤 deleted_at IS NULL）
+    """
+
+    __tablename__ = "memory_relations"
+    __table_args__ = (
+        UniqueConstraint(
+            "source_id", "target_id", "relation_type", name="uq_relations_triplet"
+        ),
+        Index("idx_memory_relations_target", "target_id"),
+        Index("idx_memory_relations_type", "relation_type"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    source_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("memories.id", ondelete="CASCADE"), nullable=False
+    )
+    target_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("memories.id", ondelete="CASCADE"), nullable=False
+    )
+    relation_type: Mapped[str] = mapped_column(String, nullable=False)
+    strength: Mapped[float] = mapped_column(Float, nullable=False, default=1.0)
+    reason: Mapped[str | None] = mapped_column(String)
+    confidence: Mapped[float | None] = mapped_column(Float)
+    created_at: Mapped[str] = mapped_column(String, nullable=False, default=utc_now)
+    deleted_at: Mapped[str | None] = mapped_column(String)
 
 
 # ---------------------------------------------------------------------------

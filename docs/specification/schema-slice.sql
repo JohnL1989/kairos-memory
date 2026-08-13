@@ -334,6 +334,30 @@ CREATE TABLE memory_entities (
 CREATE INDEX idx_memory_entities_entity ON memory_entities(entity_id);
 
 -- =============================================================================
+-- 13b. memory_relations — 记忆关系索引表（kairos_link/unlink/relations 数据层）
+-- =============================================================================
+-- 契约：data-model §1 memory_relations。relation_type 基础六值（causal/independent/
+-- hierarchical/competitive/part_whole/derived_from）+ 语义标记扩展（supplement/
+-- refutation/reference/contextual/temporal）同列存储（TEXT 无 CHECK）。
+-- UNIQUE(source_id, target_id, relation_type) 防同类型重复边；
+-- deleted_at 软删除（kairos_unlink 标记而非物理删除，检索过滤 deleted_at IS NULL）。
+CREATE TABLE memory_relations (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,                       -- BIGSERIAL
+  source_id     TEXT    NOT NULL REFERENCES memories(id) ON DELETE CASCADE,
+  target_id     TEXT    NOT NULL REFERENCES memories(id) ON DELETE CASCADE,
+  relation_type TEXT    NOT NULL,
+  strength      REAL    NOT NULL DEFAULT 1.0,
+  reason        TEXT,
+  confidence    REAL,
+  created_at    TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+  deleted_at    TEXT,
+  UNIQUE (source_id, target_id, relation_type)
+);
+
+CREATE INDEX idx_memory_relations_target ON memory_relations(target_id);
+CREATE INDEX idx_memory_relations_type ON memory_relations(relation_type);
+
+-- =============================================================================
 -- 14. memories_fts — FTS5 全文索引（组件 3，BM25 信号）
 -- =============================================================================
 -- contentless-external 模式：仅存倒排索引，原文通过 rowid 关联 memories。

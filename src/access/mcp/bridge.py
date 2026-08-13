@@ -78,8 +78,8 @@ class KairosMCPBridge:
         return await self._post("/v1/entities/extract", {"text": text})
 
     async def get_memory_traces(self, memory_id: str, limit: int = 20) -> Any:
-        """kairos_get_memory_traces → 记忆生命周期（MCP-only，经记忆版本/状态轨迹）。"""
-        return await self._get(f"/v1/memories/{memory_id}/versions")
+        """kairos_get_memory_traces → 记忆生命周期轨迹（memory_states 状态机历史）。"""
+        return await self._get(f"/v1/memories/{memory_id}/traces", {"limit": limit})
 
     async def feedback_memory(
         self, memory_id: str, feedback: str, reason: str | None = None
@@ -121,21 +121,27 @@ class KairosMCPBridge:
         return resp.json()
 
     async def link(self, from_uri: str, uris: list[str], reason: str, **kwargs: Any) -> Any:
-        """kairos_link → 关系管理（MCP-only；竖切内关系索引未交付——返回治理留痕）。"""
-        return {"status": "accepted", "from_uri": from_uri, "uris": uris, "reason": reason}
+        """kairos_link → POST /v1/relations（memory_relations 表，必填 reason）。"""
+        payload: dict[str, Any] = {"from_uri": from_uri, "uris": uris, "reason": reason}
+        if kwargs.get("relation_type"):
+            payload["relation_type"] = kwargs["relation_type"]
+        if kwargs.get("confidence") is not None:
+            payload["confidence"] = kwargs["confidence"]
+        return await self._post("/v1/relations", payload)
 
     async def unlink(self, from_uri: str, to_uri: str, relation_type: str) -> Any:
-        """kairos_unlink → 关系管理（MCP-only；同上）。"""
-        return {
-            "status": "accepted",
-            "from_uri": from_uri,
-            "to_uri": to_uri,
-            "relation_type": relation_type,
-        }
+        """kairos_unlink → DELETE /v1/relations/{source}/{target}（软删除留痕）。"""
+        resp = await self._client.delete(
+            f"/v1/relations/{from_uri}/{to_uri}",
+            params={"relation_type": relation_type},
+            headers=self._headers,
+        )
+        resp.raise_for_status()
+        return resp.json()
 
     async def relations(self, memory_id: str, direction: str = "both") -> Any:
-        """kairos_relations → 关系查询（MCP-only；返回空关系集——关系索引竖切外）。"""
-        return {"inbound": [], "outbound": [], "memory_id": memory_id}
+        """kairos_relations → GET /v1/relations/{id}（inbound/outbound）。"""
+        return await self._get(f"/v1/relations/{memory_id}", {"direction": direction})
 
 
 def create_mcp_server() -> FastMCP:
