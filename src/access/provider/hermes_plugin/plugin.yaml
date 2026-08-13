@@ -1,0 +1,16 @@
+name: kairos
+description: Kairos Memory Provider — 跨会话记忆持久化（三信号混合检索 + 生命周期钩子）。
+version: "0.1.0"
+author: kairos-memory
+platforms: [windows, linux, macos]
+
+memory_provider:
+  module: __init__
+  class: KairosMemoryProvider
+  description: >
+    通过 Kairos REST API 实现跨会话记忆持久化（架构 §7.1a 6 生命周期钩子：
+    on_session_end / prefetch+on_turn_start / on_pre_compress / on_memory_write /
+    on_delegation；on_calibration 经 calibrate 方法）。部署到
+    $HERMES_HOME/plugins/kairos/ 后执行
+    `hermes config set memory.provider kairos` 激活。
+    环境变量：KAIROS_BASE_URL（默认 http://127.0.0.1:8010）、KAIROS_API_KEY。

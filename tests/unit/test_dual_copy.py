@@ -107,6 +107,25 @@ class TestDualCopy:
         with pytest.raises(NotFoundError):
             await copies.read_usage("missing")
 
+    async def test_use_event_refreshes_last_access(self, setup) -> None:
+        """use_event 消费刷新 last_access_at（forgetting.py 声明语义落点）。"""
+        from src.events.subscribers import UsageEventSubscriber
+        from src.events.types import Event
+        from src.storage.models import Memory
+
+        _store, copies, memory_id = setup
+        subscriber = UsageEventSubscriber(copies.db)
+        await subscriber.handle(
+            Event(
+                event_type="use_event",
+                source_layer="access",
+                memory_id=memory_id,
+            )
+        )
+        async with copies.db.session() as session:
+            memory = await session.get(Memory, memory_id)
+            assert memory is not None and memory.last_access_at is not None
+
     async def test_differential_check_divergence(self, setup) -> None:
         """差异检验：权重升 + 见证分低 → suspect_flag 挂起合并。"""
         _store, copies, memory_id = setup

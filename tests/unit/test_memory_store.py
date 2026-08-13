@@ -60,6 +60,17 @@ class TestWrite:
             assert anchor is not None and anchor.narrative_coherence_score == 0.0
             assert weight is not None and weight.usage_count == 0
 
+    async def test_create_initializes_last_access_at(self, store: MemoryStore) -> None:
+        """新记忆 last_access_at 初始化——freshness=1，防遗忘调度器 10s 内归档。"""
+        from src.storage.forgetting import evaluate_freshness
+
+        result = await store.create(_input())
+        async with store.db.session() as session:
+            memory = await session.get(Memory, result.id)
+            assert memory is not None and memory.last_access_at is not None
+        # 毫秒级流逝允许近似（freshness ≈ 1，远高于 stale 阈值 0.1）
+        assert evaluate_freshness(memory.last_access_at) > 0.999
+
     async def test_create_records_state_trace(self, store: MemoryStore) -> None:
         """状态轨迹：initial_write 留痕（memory_states）。"""
         result = await store.create(_input())

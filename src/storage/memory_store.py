@@ -280,6 +280,7 @@ class MemoryStore:
                 occurred_at=data.occurred_at,
                 created_at=now,
                 updated_at=now,
+                last_access_at=now,  # 新记忆视为刚访问（freshness=1，防遗忘调度器 10s 内归档）
                 root_memory_id=memory_id,  # 版本链根节点（首次写入指向自身）
                 hall="canonical",  # 竖切无 WM 验证环，门禁通过直接 canonical
             )
