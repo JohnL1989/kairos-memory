@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
@@ -48,6 +49,8 @@ from src.storage.models import (
     utc_now,
 )
 from src.utils.embeddings import Embedder
+
+logger = logging.getLogger("kairos.memory_store")
 
 if TYPE_CHECKING:
     from src.events.bus import EventBus
@@ -325,7 +328,59 @@ class MemoryStore:
         await self._embed_after_write(memory_id, content)
         # use_event 发布（影子副本/审计依赖；首迭代接线）
         await self._publish_use_event(memory_id, action="memory_written")
+        # 写入侧实体提取（竖切组件 3 实体加成数据源：slice-guide 组件 3 / 架构 §7.3h）
+        await self._store_entities(memory_id, content, stored_path)
         return MemoryCreated(id=memory_id, path=stored_path, version=1)
+
+    async def _store_entities(self, memory_id: str, content: str, path: str) -> None:
+        """写入侧规则法实体提取 → entities 去重入库 → memory_entities 关联。
+
+        设计依据：slice-guide 组件 3（三信号融合 α_e=0.15，实体词典为检索侧
+        _entity_recall 的数据源——词典空则实体加成恒 0，本方法为激活点）；
+        architecture §7.3h（竖切取关键字降级侧，无 LLM 依赖）。
+
+        失败不阻断主写入：实体为检索增强信号，非记忆本体（异常仅告警日志）。
+        """
+        from src.storage.entity_extractor import extract_entities, extract_user_id, infer_type
+        from src.storage.models import Entity, MemoryEntity, utc_now
+
+        try:
+            names = extract_entities(content)
+            if not names:
+                return
+            user_id = extract_user_id(path)
+            async with self.db.session() as session:
+                for name in names:
+                    exists = (
+                        await session.execute(
+                            select(Entity).where(Entity.name == name, Entity.user_id == user_id)
+                        )
+                    ).scalar_one_or_none()
+                    if exists is None:
+                        ent = Entity(
+                            user_id=user_id,
+                            name=name,
+                            type=infer_type(name),
+                            description="",
+                        )
+                        session.add(ent)
+                        await session.flush()
+                        entity_id = ent.id
+                    else:
+                        entity_id = exists.id
+                    session.add(
+                        MemoryEntity(
+                            memory_id=memory_id,
+                            entity_id=entity_id,
+                            relation="mentions",
+                            valid_from=utc_now(),
+                        )
+                    )
+                await session.commit()
+        except Exception:
+            logger.warning(
+                "entity extraction skipped for %s (non-blocking)", memory_id, exc_info=True
+            )
 
     async def _lookup_idempotency(self, session: AsyncSession, key: str) -> dict[str, str] | None:
         """按幂等键查询已处理记录。"""

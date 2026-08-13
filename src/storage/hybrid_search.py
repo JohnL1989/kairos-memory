@@ -163,7 +163,15 @@ class HybridSearch:
             hi = max(scores)
             for mem_id, cand in candidates.items():
                 raw = cand[signal]
-                norm_val = 0.0 if raw is None or hi <= lo else (raw - lo) / (hi - lo)
+                if raw is None:
+                    norm_val = 0.0
+                elif hi <= lo:
+                    # 单候选/同分退化：唯一得分者信号满配——避免 (raw-lo)/(hi-lo)
+                    # 的 0 分母语义把分数归零（entity 词典激活早期常见单候选场景，
+                    # 旧逻辑致实体信号恒被压制为 0；语义单候选同理）
+                    norm_val = 1.0 if raw > 0 else 0.0
+                else:
+                    norm_val = (raw - lo) / (hi - lo)
                 normalized.setdefault(mem_id, {})[signal] = norm_val
 
         # 5. 融合加权（mode 单信号时仅取该信号）

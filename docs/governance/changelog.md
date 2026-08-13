@@ -2180,6 +2180,21 @@ status: draft
 
 ---
 
+## 0.1.5（2026-08-13）— 实体信号激活批次（竖切组件 3 未竟交付 + 归一化退化 bug 修复）
+
+> **背景**：2026-08-13 运行态设计目的验证发现：三信号混合检索的**实体加成信号实际未生效**（entities 词典空、explanation.entity 恒 0）——slice-guide 组件 3 承诺的三信号融合（α_e=0.15）属竖切交付未竟。根因两层：① 提取端点（`POST /v1/entities/extract`）存在但**无写入侧自动触发点**，词典无数据；② **归一化退化 bug**——`hybrid_search.py` 信号归一化 `hi <= lo`（单候选/同分）时 norm 恒置 0，唯一得分信号被压制（词典激活后单候选场景仍恒 0）。
+
+**落地清单**：
+- **`src/storage/entity_extractor.py`（新建）**：规则法实体提取器集中实现（引号短语 / 全大写缩写 / 中文专名三模式，stopword 过滤）+ 类型推断（tool/project/concept）+ user_id 路径解析——从 extended.py 提炼增强（原恒 concept）。
+- **写入侧自动提取**：`MemoryStore.create` 末尾新增 `_store_entities`——提取 → entities 去重入库（user_id 按路径解析）→ memory_entities 关联（relation=mentions）；失败仅告警不阻断主写入（实体为检索增强信号）。extended.py extract 端点复用公共提取器（消除重复）+ 类型推断增强。
+- **归一化退化 bug 修复**（hybrid_search.py L164-167）：`hi <= lo` 分支改为「唯一得分者信号满配」（raw>0 → norm=1.0），消除 (raw-lo)/(hi-lo) 零分母语义对单候选信号的压制。
+- **测试**：`tests/unit/test_entity_extractor.py` 13 项（提取规则 / 类型推断 / user_id 解析 / 写入侧入库去重 / 无实体内容跳过 / 检索 entity 信号激活）。
+- **真实验证**：服务重启后写入含实体记忆 → 检索 explanation `entity=1.0 bm25=1.0`，融合 score=0.5 = 0.35·1+0.15·1 数学吻合；测试数据已清理。存量 2086 条记忆不回溯提取（增量生效，全量 v0.1.0 处理）。
+
+**验证**：全量测试 305 passed（288+13+回归）/ ruff 0 / mypy 0（50 文件）/ format 全绿。结构性受改：src/storage/entity_extractor.py（新）/ memory_store.py / hybrid_search.py / extended.py / tests/unit/test_entity_extractor.py（新）+ changelog 本文件。
+
+---
+
 ## 版本记录
 
 > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
@@ -2292,3 +2307,4 @@ status: draft
 | 0.1.2 | 2026-08-13 | MCP 工具契约补齐批次（changelog 0.1.2，见本文件 0.1.2 叙述节）：扩展端点 10 个（stats/heat-top/feedback/traces/entities/graph/sessions/relations）+ memory_relations 表（16 张竖切表）+ bridge 假实现真实化——MCP 15 工具全可用；运行修复闭环（bus_drain 消费接线 / 订阅器 commit / load_settings 默认 .env / batch occurred_at）+ 2041 条误归档记忆恢复 active；CI 补 KAIROS_PG_TEST_SKIP=1；测试 288 项；README 竖切状态更新（16 表/31 端点/18 CLI/15 工具）。 |
 | 0.1.3 | 2026-08-13 | 全面审计修复批次（changelog 0.1.3，见本文件 0.1.3 叙述节）：ruff 77→0 / mypy 10→0（CI code-checks 转绿）；Litestar 31 端点迁移 Annotated 新风格 + `<3` 上限（warnings 1217→1，3.0 升级兼容）；auth 守卫注入消除每请求配置重读；CLI 计数 18→21、api-spec §1 补登记 4 端点（端点 88→92）、openapi 补 4 端点；doc-audit 批次正则扩展 0.1.x + 6.39 偏移 bug 修复 + 0.1.x 治理欠账补登。 |
 | 0.1.4 | 2026-08-13 | 全面审计修复批次（changelog 0.1.4，见本文件 0.1.4 叙述节）：S-09 注入扫描实现（injection_scan + ingestion 第 5 层 + 4 用例）；S-01 生产密钥强制（KAIROS_ENV 参数 + production 密钥族必填 + development 无鉴权警告，config/deployment/configuration 登记，参数 380→381）；D-450 三级 Key 鉴权体系追缴登记 + D-430 状态部分闭合同步；CI mcp-tools schema 校验真实化（schema 文件创建 + fallback 收紧）；测试 288→292、覆盖率 81.52%→82.81%（auth 401 + D-430 命令补测）；AGENTS D-428 残留清除 + 覆盖率同步、changelog 指引/frontmatter、gitignore 补模式、development-setup 环境约束注记。 |
+| 0.1.5 | 2026-08-13 | 实体信号激活批次（changelog 0.1.5，见本文件 0.1.5 叙述节）：entity_extractor 公共提取器（规则法 + 类型推断 + user_id 解析）；MemoryStore.create 写入侧自动提取（entities 去重 + memory_entities 关联）；hybrid_search 归一化退化 bug 修复（单候选信号满配——entity 恒 0 深层根因）；extended.py 复用公共提取器 + 类型推断；测试 +13 项（305 全量）；真实验证三信号融合 0.35·1+0.15·1=0.5 吻合。 |

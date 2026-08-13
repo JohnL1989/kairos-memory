@@ -15,7 +15,6 @@ kairos_search_sessions / kairos_link / kairos_unlink / kairos_relations。
 
 from __future__ import annotations
 
-import re
 from typing import Annotated, Any
 
 from litestar import Request, delete, get, post
@@ -25,6 +24,10 @@ from sqlalchemy import func, select, text, update
 from src.access.api.routes import _api_key_guard, _error_handler
 from src.app import KairosApp
 from src.errors import KairosError, MissingFieldError, NotFoundError
+
+# 规则实体提取集中实现（写入侧自动提取同源复用；extract 端点仅作显式入口）
+from src.storage.entity_extractor import extract_entities as _extract_entities_rules
+from src.storage.entity_extractor import infer_type as _infer_entity_type
 from src.storage.models import (
     Entity,
     Memory,
@@ -207,28 +210,6 @@ async def memory_traces(
 # 实体提取与图谱检索（§6.2 / §6.8 extract_entities, search_graph）
 # ---------------------------------------------------------------------------
 
-# 规则实体提取：引号短语、连续大写英文词、中文专名模式（XX项目/系统/协议/框架/模型）
-_QUOTED = re.compile(r"[「“]([^」”]{2,30})[」”]")
-_EN_ACRONYM = re.compile(r"\b[A-Z][A-Z0-9]{1,10}\b")
-_CN_PROPER = re.compile(
-    r"[\u4e00-\u9fff]{2,12}(?:项目|系统|协议|框架|模型|引擎|平台|服务|工具|数据库|引擎|网络|记忆|文档|目录)"
-)
-
-
-def _extract_entities_rules(text: str, limit: int = 20) -> list[str]:
-    """规则词典法实体提取（无 LLM 依赖；竖切语义内实现）。"""
-    found: list[str] = []
-    for m in _QUOTED.findall(text):
-        if m not in found:
-            found.append(m)
-    for m in _EN_ACRONYM.findall(text):
-        if m not in found:
-            found.append(m)
-    for m in _CN_PROPER.findall(text):
-        if m not in found:
-            found.append(m)
-    return found[:limit]
-
 
 @post(
     "/v1/entities/extract",
@@ -256,14 +237,15 @@ async def entities_extract(
                 )
             ).scalar_one_or_none()
             if exists is None:
+                etype = _infer_entity_type(name)
                 ent = Entity(
                     user_id=data.get("user_id", "default"),
                     name=name,
-                    type="concept",
+                    type=etype,
                     description="",
                 )
                 session.add(ent)
-                created.append({"name": name, "type": "concept"})
+                created.append({"name": name, "type": etype})
             else:
                 created.append({"name": name, "type": exists.type})
         await session.commit()
