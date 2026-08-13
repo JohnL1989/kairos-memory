@@ -14,7 +14,7 @@ status: design-freeze
 
 # Kairos 文档索引
 
-> **当前状态**：**v0.1.0 首版已发布（竖切交付完成）**。Kairos 为全面重新设计的系统，本文档库的竖切组件已有可运行代码（`src/` 下 16 张竖切表、记忆 CRUD/双副本、路径空间、事件总线、三信号检索、遗忘、身份注册表、审计 HMAC 链、校准/降级/冻结、REST 31 端点 + CLI 21 条 + Agent Tool 5 工具 + MCP 15 工具，288 项测试）；全量 v0.1.0 的 168 项能力（43 核心 + 125 扩展）仍处于架构就绪状态，核心引擎（升华/图谱/WM 等竖切外组件）未启动。代码启动与竖切交付进展见 [changelog](governance/changelog.md)。
+> **当前状态**：**v0.1.0 首版已发布（竖切交付完成）**。Kairos 为全面重新设计的系统，本文档库的竖切组件已有可运行代码（`src/` 下 16 张竖切表、记忆 CRUD/双副本、路径空间、事件总线、三信号检索、遗忘、身份注册表、审计 HMAC 链、校准/降级/冻结、REST 31 端点 + CLI 21 条 + Agent Tool 5 工具 + MCP 15 工具，292 项测试）；全量 v0.1.0 的 168 项能力（43 核心 + 125 扩展）仍处于架构就绪状态，核心引擎（升华/图谱/WM 等竖切外组件）未启动。代码启动与竖切交付进展见 [changelog](governance/changelog.md)。
 
 > **快速入口：** [系统架构](foundation/architecture-v0.1.0.md) · [认知基础](foundation/cognitive-foundation.md) · [待实现债务清单](governance/debt-collection.md)
 
