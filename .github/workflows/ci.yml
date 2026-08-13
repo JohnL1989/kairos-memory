@@ -41,6 +41,8 @@ jobs:
         run: uv run mypy src/
       - name: Unit + integration tests
         run: uv run pytest tests/unit tests/integration -q --cov=src --cov-report=term-missing
+        env:
+          KAIROS_PG_TEST_SKIP: "1"
       - name: E2E tests
         run: uv run pytest tests/e2e -q
 

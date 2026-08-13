@@ -2135,6 +2135,20 @@ status: draft
 
 **验证**：222 项测试全过（.venv）；Hermes 真实加载回归通过；doc-audit 复跑 exit 0。结构性受改 5 份文档（部署指南 / 配置参数 / 实现映射 / README + changelog 本文件，均已登记 0.1.1 版本记录行）；核心计数变动：参数 **374→379**（附录 A 147→152，登记接入层运行参数 5 项）；其余（表 57 / 错误码 43 / 端点 88 / 操作 66 / 组件 70 / 功能 168 / 债务 D-447~449）零漂移。
 
+## 0.1.2（2026-08-13）— MCP 工具契约补齐批次（15 工具全可用 + 运行修复闭环）
+
+> **背景**：0.0.101 交付的 MCP Bridge 15 工具（api-spec §6.8 权威清单）实测 9 个 404（服务端端点未实现）+ 3 个假实现（link/unlink/relations 返回治理留痕空壳，不落库不报错）——文档契约超前于服务端实现。本批次补全服务端能力，15 工具全部真实可用。
+
+**落地清单**：
+- **扩展端点**（`src/access/api/extended.py` 新增 10 端点）：`GET /v1/memories/stats`（记忆库报告）、`GET /v1/memories/heat-top`（热度，usage_weight 排序）、`POST /v1/memories/{id}/feedback`（可信度反馈，指数平滑更新 calibration_confidence + S-11 审计）、`GET /v1/memories/{id}/traces`（生命周期轨迹，memory_states 数据源）、`POST /v1/entities/extract`（规则法实体提取，entities 表入库去重）、`POST /v1/graph/search`（实体-记忆关联图谱检索）、`GET /v1/sessions`（对话记录聚合视图）、`POST/DELETE/GET /v1/relations`（关系管理 CRUD）。
+- **memory_relations 表**（第 16 张竖切表）：models.py `MemoryRelation`（data-model §1 契约：relation_type 六值 + 语义标记扩展、UNIQUE 三元组、deleted_at 软删除）+ schema-slice.sql DDL + 迁移 0002（IF NOT EXISTS 幂等；0001 跳过该表保持初始 15 表快照语义——修 0001 从 schema-slice.sql 全量解析导致重复建表冲突）。
+- **bridge.py 真实化**：memory_traces 改走 `/traces`；link/unlink/relations 假实现 → 真实 REST 调用。
+- **运行修复闭环（0.1.1 修复的深层根因）**：① 事件总线消费端缺失——`bus.drain()` 零调用点，use_event 只落 usage_events 表从不应用（0.1.1 的 use_event 刷新修复因无消费端实际未生效）；修复：scheduler 新增 `bus_drain` 任务（2s 周期，架构 §10.10 分发语义）；② 订阅器 last_access_at 刷新缺 commit——async with 退出回滚不落库；③ `load_settings` 未设 KAIROS_DATA_DIR 时默认读 `$HOME/.kairos/.env`（S-01 必填密钥）；④ batch 导入补 occurred_at 传递。**连带数据恢复**：2041 条记忆因 freshness=0 被误归档 → 恢复 active（last_access_at 补 created_at），修复后遗忘机制按真实时间自然运行。
+- **CI 修复**：ubuntu 无 PG 环境——`test_postgres_backend` 3 errors 拖红 CI；`.github/workflows/ci.yml` 补 `KAIROS_PG_TEST_SKIP=1`（3 skipped）。
+- **测试**：新增 `tests/integration/test_extended_api.py` 6 项（stats/heat-top/feedback/traces/entities/graph/sessions/relations 全流程）；schema 对齐/迁移/mcp_bridge 期望更新（SLICE_TABLES 15→16、两次回退）。
+
+**验证**：288 项测试全过（3 PG errors → skip）；MCP 15 工具 HTTP 层端到端 15/15 通过；doc-audit 全绿（修 data-model memory_relations 补 reason/confidence 列 + CRLF 统一）。结构性受改文档：README（竖切状态 16 表/31 端点/18 CLI/15 工具/288 测试）、slice-implementation-guide（§二 15→16 表、§三 端点口径）、api-spec §6.8（traces/relations 映射更新）、schema-slice.sql、data-model（memory_relations 补列）。
+
 ---
 
 ## 版本记录
@@ -2246,3 +2260,4 @@ status: draft
 | 0.0.101 | 2026-08-12 | 接入层全通道交付批次（changelog 0.0.101，见本文件 0.0.101 叙述节）：Agent Tool 层五工具 + MCP Bridge 15 工具（独立子进程 stdio）+ StorageBackend 抽象（D-449 前置）+ GET /health 增强——v0.1.0 接入层四通道齐备（REST/CLI/AgentTool/MCP）。 |
 | 0.1.0 | 2026-08-12 | v0.1.0 首版发布批次（changelog 0.1.0，见本文件 0.1.0 叙述节）：定稿评审通过（release-guide §2 十项全过 + §3 构建安装验证）——全库版本统一升级 0.0.x → 0.1.0、文档状态 draft → design-freeze。 |
 | 0.1.1 | 2026-08-12 | Hermes Memory Provider 接入批次（changelog 0.1.1，见本文件 0.1.1 叙述节）：Hermes ABC 契约对齐（handle_tool_call JSON 字符串 / queue_prefetch / on_session_switch / get_config_schema+save_config / agent_context 守卫）+ 端口勘误 8011→8010 + 遗忘调度器缺陷修复（create 初始化 last_access_at + use_event 刷新）+ 端到端验证（8010 默认端口）+ deployment §四·a 部署登记 + configuration 附录 A 登记接入层参数 5 项（参数 374→379）+ 契约测试新增；债务 D-447~449 闭合叙述补记（debt-collection 已登记）。 |
+| 0.1.2 | 2026-08-13 | MCP 工具契约补齐批次（changelog 0.1.2，见本文件 0.1.2 叙述节）：扩展端点 10 个（stats/heat-top/feedback/traces/entities/graph/sessions/relations）+ memory_relations 表（16 张竖切表）+ bridge 假实现真实化——MCP 15 工具全可用；运行修复闭环（bus_drain 消费接线 / 订阅器 commit / load_settings 默认 .env / batch occurred_at）+ 2041 条误归档记忆恢复 active；CI 补 KAIROS_PG_TEST_SKIP=1；测试 288 项；README 竖切状态更新（16 表/31 端点/18 CLI/15 工具）。 |
