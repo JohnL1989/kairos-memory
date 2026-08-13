@@ -56,9 +56,7 @@ def bridge():
                 },
             )
         if request.url.path.startswith("/v1/relations/"):
-            return httpx.Response(
-                200, json={"memory_id": "m1", "inbound": [], "outbound": []}
-            )
+            return httpx.Response(200, json={"memory_id": "m1", "inbound": [], "outbound": []})
         return httpx.Response(404, json={"code": "ERR-DB-004", "message": "not found"})
 
     b = KairosMCPBridge(base_url="http://mock", api_key="test-key")

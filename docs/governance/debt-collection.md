@@ -1234,6 +1234,19 @@ status: design-freeze
 
 ---
 
+### D-450 三级 API Key 鉴权体系（read/write/admin）未实现（竖切单 Key 即 admin）（2026-08-13 全面审计追缴）
+
+| 段 | 内容 |
+|:--|:-----|
+| **认知意图** | [api-spec.md](../specification/api-spec.md) §1 认证声明「API Key（read/write/admin 三级）」，多个端点标注「需 admin Key」（`POST /v1/constitution` / `POST /v1/degradation/switch` / `POST /v1/freeze` / `POST /v1/seeds`、解锁 PATCH `ERR-AUTH-004`）。竖切实现为**单 Key 全权**（[auth.py](../../src/access/auth.py)「竖切内单 Key 即 admin 权限」）——契约承诺的三级权限隔离未落地。本条目追缴**鉴权体系本身**（权限模型层）；与 D-430 的 `admin key revoke/rotate` **命令**（密钥管理命令层，已登记）不同。 |
+| **工程简化** | 竖切为本地单用户 [L] 模式，单 Key 即 admin 在本地场景可接受；多 Key 分级依赖 `api_keys` 表（表已建）与 Key 生命周期管理，归全量阶段。 |
+| **可接受成本** | 对外开放（[P] 模式）前任意持有 Key 者可执行 admin 操作（冻结/校准/种子管理），权限模型缺口成为安全债；本地 [L] 模式无实际暴露。 |
+| **预期版本** | v0.1.0 全量阶段（与 D-430 其余 6+1 命令同阶段，Phase 2 后、发布前） |
+| **升级触发条件** | 对外开放（[P] 模式）前必须实现 read/write/admin 三级分派；或从 api-spec §1 移除三级声明并同步 security-specification S-06/S-08 口径 |
+| **历史背景** | 2026-08-13 全面审计（P1-3）发现：api-spec 契约声明三级 Key 与竖切单 Key 实现存在未登记偏差——D-430 仅登记了 admin key 命令延迟，鉴权体系本身无追缴条目。 |
+
+---
+
 ## 四、已归档：认知-工程差距摘要（快速参考）
 > **决策 D-03 拆分说明**：D-005~D-019 在本文同时出现于「活跃区（工程级待办）」与「§5.4（文档级已闭环）」。二者记录不同维度的状态——§5.4 指认知层文档声明已补写，活跃区指架构层工程落地待办，非同一事实的矛盾。各活跃条目已加「状态（决策 D-03 拆分）」字段明示。
 >
@@ -1299,7 +1312,7 @@ status: design-freeze
 | D-427 | 记忆饱和与支撑集漂移研究议程 | v1.1 | 📋 新登记（正文 0.0.44 登记，摘要表 round24 补行） |
 | D-428 | 接口契约 schema 补全（机器可读契约骨架） | Phase 0 | 📋 新登记（正文 0.0.45 登记，摘要表 round24 补行） |
 | D-429 | `/metrics` Prometheus 暴露端点待登记 | v0.1.0 | 📋 新登记（round21 审计 R21-04 追缴） |
-| D-430 | 待定义 CLI 命令追缴（0.0.95 分类处置：竖切相关 config show 已登记契约；其余 10 条 + init --seed-path 归 v0.1.0 全量阶段 api-spec §3 登记） | v0.1.0 全量阶段 | 📋 新登记（round22 审计 R22-04 追缴；0.0.95 分类处置修订） |
+| D-430 | 待定义 CLI 命令追缴（0.0.95 分类处置：竖切相关 config show 已登记契约；0.1.2 已实现 health --full/audit log/config reset/db migrate rollback 四项；其余 6 项命令 + init --seed-path 归 v0.1.0 全量阶段 api-spec §3 登记） | v0.1.0 全量阶段 | 🟡 部分闭合（0.1.2 实现 4 项；剩余 6+1 项待全量阶段登记） |
 | D-431 | 10 项待定义配置参数补齐（configuration 附录 A 待定义项——0.0.92 分类处置：8 项 v1.1 域随功能迭代定义 + 2 项部署时点确定，竖切无待定义） | v1.1 域追踪 | 📋 新登记（round22 审计 S22-2 追缴；0.0.92 分类处置修订） |
 | D-432 | 可观测性栈 v1.1 引入（OpenTelemetry 自动插桩 + 跨服务 span + OTLP exporter 切换 + Grafana 看板交付） | v1.1 | 📋 新登记（round23 审计 R23-03 追缴；round26 审计 U-05 扩展可视化层） |
 | D-433 | 过程知识 Playbook 系统（blueprint 无编号承诺） | v1.1 | 📋 新登记（round24 审计 2.3-01 追缴） |
@@ -1319,6 +1332,7 @@ status: design-freeze
 | D-447 | 向量检索实现路径偏差（sqlite-vec 扩展在 Windows 官方 Python 不可加载，numpy 扫描替代） | ✅ 已闭合（0.1.0 后） | 自适应探针：可加载环境自动切回 SQL `vec_distance_cosine`，不可加载回落 numpy |
 | D-448 | 轻量模式默认嵌入器实现偏差（BGE-M3 待接入，开发默认 HashEmbedder） | ✅ 已闭合（0.1.0 后） | BgeM3Embedder 完整管线（sentence-transformers + 正交投影 + 持久化），模型就绪后切换 |
 | D-449 | 存储后端抽象层未建（竖切直接 SQLAlchemy，PG 适配时引入） | ✅ 已闭合（0.1.0 后） | StorageBackend + SQLiteBackend + PostgresBackend（asyncpg+pgvector，Docker 集成通过）+ MockPG |
+| D-450 | 三级 API Key 鉴权体系（read/write/admin）未实现（竖切单 Key 即 admin） | v0.1.0 全量阶段 | 📋 新登记（2026-08-13 全面审计 P1-3 追缴；与 D-430 admin key 命令分开追缴权限模型层） |
 | D-312 | **认知完整性轴参与帕累托计算** | v1.1 | 📅 路线图（前置条件） |
 | D-313 | **可及性轴完整实现** | v1.1 | 📅 路线图（协议槽位） |
 | D-321 | 裁决结果由单解改为解集（载荷解集化） | v0.1.0 | 📋 已在首版范围（v0.1.0 硬承诺，不可延后——延后即保留 P6 违规） |

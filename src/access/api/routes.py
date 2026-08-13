@@ -1,30 +1,35 @@
-"""竖切 21 端点 handlers（Litestar）。
+"""竖切 21 端点 handlers（Litestar；扩展 10 端点见 extended.py，合计 31）。
 
-请求/响应模型见 api-contract/openapi.yaml（竖切 21 端点 schema，D-428 补全）。
+请求/响应模型见 api-contract/openapi.yaml（竖切 31 端点 schema，D-428 补全）。
 """
 
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Annotated, Any
 
 from litestar import Request, Response, delete, get, patch, post
 from litestar.exceptions import HTTPException
-from litestar.params import Body, Parameter
+from litestar.params import Body, FromPath, FromQuery, Parameter
 
 from src.access.auth import ApiKeyGuard
 from src.app import KairosApp
-from src.config import ConfigError, load_settings, validate_runtime_override
+from src.config import ConfigError, validate_runtime_override
 from src.errors import KairosError
 from src.storage.hybrid_search import SearchFilter
 from src.storage.memory_store import MemoryWriteInput
 
 
 async def _api_key_guard(connection: Any, handler: Any) -> None:
-    """函数式鉴权守卫：运行时解析 KAIROS_API_KEY_HASH（Litestar 类 guard
-    无法 DI 构造参数，函数式保 S-01/S-06 认证生效）。"""
-    api_key_hash = load_settings().get("KAIROS_API_KEY_HASH")
-    await ApiKeyGuard(api_key_hash)(connection, handler)
+    """函数式鉴权守卫：从应用容器读取已加载配置（KairosApp.settings），
+    避免每请求 load_settings() 重读 .env（Litestar 类 guard 无法 DI 构造
+    参数，函数式保 S-01/S-06 认证生效）。"""
+    app: KairosApp = connection.app.state["kairos"]
+    guard = ApiKeyGuard(
+        app.settings.get("KAIROS_API_KEY_HASH"),
+        salt=app.settings.get("KAIROS_SALT") or "",
+    )
+    await guard(connection, handler)
 
 
 def _error_handler(_: Any, exc: Exception) -> Response[Any]:
@@ -50,7 +55,7 @@ def _error_handler(_: Any, exc: Exception) -> Response[Any]:
 @post("/v1/memories", guards=[_api_key_guard], exception_handlers={KairosError: _error_handler})
 async def create_memory(
     request: Request[Any, Any, Any],
-    data: dict[str, Any] = Body(title="MemoryWriteRequest"),
+    data: Annotated[dict[str, Any], Body(title="MemoryWriteRequest")],
 ) -> dict[str, Any]:
     """记忆写入（幂等键 Idempotency-Key 可选，api-spec §1.1）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -80,7 +85,7 @@ async def create_memory(
 )
 async def create_memories_batch(
     request: Request[Any, Any, Any],
-    data: dict[str, Any] = Body(title="BatchWriteRequest"),
+    data: Annotated[dict[str, Any], Body(title="BatchWriteRequest")],
 ) -> dict[str, Any]:
     """批量写入（W-03；最大 100 条，部分失败 207 语义）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -112,10 +117,10 @@ async def create_memories_batch(
 @get("/v1/memories", guards=[_api_key_guard], exception_handlers={KairosError: _error_handler})
 async def list_memories(
     request: Request[Any, Any, Any],
-    q: str | None = None,
-    path: str | None = None,
-    limit: int = Parameter(default=10, ge=1, le=100),
-    offset: int = Parameter(default=0, ge=0),
+    q: Annotated[str | None, FromQuery] = None,
+    path: Annotated[str | None, FromQuery] = None,
+    limit: Annotated[int, Parameter(ge=1, le=100)] = 10,
+    offset: Annotated[int, Parameter(ge=0)] = 0,
 ) -> dict[str, Any]:
     """记忆列表/关键词检索（GET /v1/memories?q=&path=）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -130,7 +135,9 @@ async def list_memories(
     guards=[_api_key_guard],
     exception_handlers={KairosError: _error_handler},
 )
-async def get_memory(request: Request[Any, Any, Any], memory_id: str) -> dict[str, Any]:
+async def get_memory(
+    request: Request[Any, Any, Any], memory_id: Annotated[str, FromPath]
+) -> dict[str, Any]:
     app: KairosApp = request.app.state["kairos"]
     return await app.store.get(memory_id)
 
@@ -142,8 +149,8 @@ async def get_memory(request: Request[Any, Any, Any], memory_id: str) -> dict[st
 )
 async def update_memory(
     request: Request[Any, Any, Any],
-    memory_id: str,
-    data: dict[str, Any] = Body(title="MemoryUpdateRequest"),
+    memory_id: Annotated[str, FromPath],
+    data: Annotated[dict[str, Any], Body(title="MemoryUpdateRequest")],
 ) -> dict[str, Any]:
     """记忆更新（If-Match 乐观锁强制，api-spec §1.3）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -166,7 +173,9 @@ async def update_memory(
     guards=[_api_key_guard],
     exception_handlers={KairosError: _error_handler},
 )
-async def delete_memory(request: Request[Any, Any, Any], memory_id: str) -> dict[str, Any]:
+async def delete_memory(
+    request: Request[Any, Any, Any], memory_id: Annotated[str, FromPath]
+) -> dict[str, Any]:
     """契约分支删除（api-spec §1.5）。"""
     app: KairosApp = request.app.state["kairos"]
     await app.store.delete(memory_id)
@@ -181,8 +190,8 @@ async def delete_memory(request: Request[Any, Any, Any], memory_id: str) -> dict
 )
 async def archive_memory(
     request: Request[Any, Any, Any],
-    memory_id: str,
-    data: dict[str, Any] = Body(title="ArchiveRequest"),
+    memory_id: Annotated[str, FromPath],
+    data: Annotated[dict[str, Any], Body(title="ArchiveRequest")],
 ) -> dict[str, Any]:
     """归档记忆（M-05，幂等）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -197,8 +206,8 @@ async def archive_memory(
 )
 async def restore_memory(
     request: Request[Any, Any, Any],
-    memory_id: str,
-    data: dict[str, Any] = Body(title="RestoreRequest"),
+    memory_id: Annotated[str, FromPath],
+    data: Annotated[dict[str, Any], Body(title="RestoreRequest")],
 ) -> dict[str, Any]:
     """归档恢复/抑制解除（M-05 配套；潜伏势能重估端口匹配验证）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -215,7 +224,7 @@ async def restore_memory(
 )
 async def search_memories(
     request: Request[Any, Any, Any],
-    data: dict[str, Any] = Body(title="HybridSearchRequest"),
+    data: Annotated[dict[str, Any], Body(title="HybridSearchRequest")],
 ) -> dict[str, Any]:
     """三信号混合检索（架构 §7.3a）。"""
     from src.errors import MissingFieldError
@@ -245,9 +254,9 @@ async def search_memories(
 @get("/v1/path", guards=[_api_key_guard], exception_handlers={KairosError: _error_handler})
 async def path_list(
     request: Request[Any, Any, Any],
-    path: str,
-    limit: int = Parameter(default=10, ge=1, le=100),
-    offset: int = Parameter(default=0, ge=0),
+    path: Annotated[str, FromQuery],
+    limit: Annotated[int, Parameter(ge=1, le=100)] = 10,
+    offset: Annotated[int, Parameter(ge=0)] = 0,
 ) -> dict[str, Any]:
     app: KairosApp = request.app.state["kairos"]
     items, total = await app.path_index.list_path(path, limit=limit, offset=offset)
@@ -257,8 +266,8 @@ async def path_list(
 @get("/v1/path/tree", guards=[_api_key_guard], exception_handlers={KairosError: _error_handler})
 async def path_tree(
     request: Request[Any, Any, Any],
-    path: str,
-    depth: int = Parameter(default=2, ge=1, le=10),
+    path: Annotated[str, FromQuery],
+    depth: Annotated[int, Parameter(ge=1, le=10)] = 2,
 ) -> dict[str, Any]:
     app: KairosApp = request.app.state["kairos"]
     root = await app.path_index.tree(path, depth=depth)
@@ -278,7 +287,7 @@ async def path_tree(
 )
 async def calibrate(
     request: Request[Any, Any, Any],
-    data: dict[str, Any] = Body(title="CalibrateRequest"),
+    data: Annotated[dict[str, Any], Body(title="CalibrateRequest")],
 ) -> dict[str, Any]:
     """外部校准信号（CAL-01）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -297,7 +306,7 @@ async def calibrate(
 )
 async def freeze(
     request: Request[Any, Any, Any],
-    data: dict[str, Any] = Body(title="FreezeRequest"),
+    data: Annotated[dict[str, Any], Body(title="FreezeRequest")],
 ) -> dict[str, Any]:
     """强制冻结（CAL-03）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -323,7 +332,7 @@ async def unfreeze(request: Request[Any, Any, Any]) -> dict[str, Any]:
 )
 async def degradation_switch(
     request: Request[Any, Any, Any],
-    data: dict[str, Any] = Body(title="DegradationSwitchRequest"),
+    data: Annotated[dict[str, Any], Body(title="DegradationSwitchRequest")],
 ) -> dict[str, Any]:
     """降级模式切换（CAL-04）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -338,7 +347,7 @@ async def degradation_switch(
 @get("/v1/audit-log", guards=[_api_key_guard], exception_handlers={KairosError: _error_handler})
 async def audit_log(
     request: Request[Any, Any, Any],
-    limit: int = Parameter(default=50, ge=1, le=200),
+    limit: Annotated[int, Parameter(ge=1, le=200)] = 50,
 ) -> dict[str, Any]:
     """审计日志查询（CAL-05，含 HMAC 链完整性校验）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -419,7 +428,7 @@ async def config_get(request: Request[Any, Any, Any]) -> dict[str, Any]:
 @patch("/v1/config", guards=[_api_key_guard], exception_handlers={KairosError: _error_handler})
 async def config_patch(
     request: Request[Any, Any, Any],
-    data: dict[str, Any] = Body(title="ConfigUpdateRequest"),
+    data: Annotated[dict[str, Any], Body(title="ConfigUpdateRequest")],
 ) -> dict[str, Any]:
     """运行时配置修改（A-02；仅接受竖切参数族，越界 400）。"""
     app: KairosApp = request.app.state["kairos"]
@@ -454,7 +463,7 @@ async def config_patch(
 )
 async def seed_create(
     request: Request[Any, Any, Any],
-    data: dict[str, Any] = Body(title="SeedCreateRequest"),
+    data: Annotated[dict[str, Any], Body(title="SeedCreateRequest")],
 ) -> dict[str, Any]:
     """种子锚点管理（A-04，admin Key）。"""
     app: KairosApp = request.app.state["kairos"]

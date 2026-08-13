@@ -4,12 +4,14 @@ version = "0.1.0"
 description = "Kairos Memory System — AI agent 记忆系统（竖切 v0.1.0-slice）"
 readme = "docs/README.md"
 requires-python = ">=3.11"
+# 许可证占位（正式许可证待 release-guide 定稿，当前以 Proprietary 占位保证构建元数据完整）
 license = { text = "Proprietary" }
 dependencies = [
     # CLI 框架（W1 定档：Typer——与 Litestar 类型安全理念一致，mypy 友好）
     "typer>=0.12",
-    # Web 框架（REST API）
-    "litestar>=2.0",
+    # Web 框架（REST API；<3 上限：3.0 移除 Body()/Parameter() 默认值写法，
+    # 已按 2.x Annotated 新风格迁移（routes/extended），3.0 发布后再评估升级）
+    "litestar>=2.0,<3",
     "uvicorn>=0.22",
     # 存储（轻量模式 SQLite；标准模式 PostgreSQL 竖切验收后适配，ADR-001）
     "sqlalchemy>=2.0",
@@ -85,10 +87,6 @@ python_version = "3.12"
 strict = true
 warn_unused_configs = true
 exclude = ["tests/"]
-[[tool.mypy.overrides]]
-module = ["tests.*"]
-disallow_untyped_defs = false
-check_untyped_defs = true
 
 [tool.coverage.run]
 source = ["src"]

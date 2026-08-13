@@ -91,3 +91,33 @@ class TestCliCommands:
         switched = await cli.cmd_degradation_switch("safe_hibernation")
         assert switched["mode"] == "safe_hibernation"
         await cli.cmd_unfreeze()
+
+    async def test_health_full_audit_config_reset(self, tmp_path) -> None:
+        """D-430 闭合命令：health --full / audit log / config reset（0.1.2 交付）。"""
+        import os
+
+        os.environ["KAIROS_DB_URL"] = f"sqlite:///{tmp_path / 'c6.db'}"
+        os.environ.setdefault("KAIROS_AUDIT_HMAC_KEY", "22" * 32)
+        created = await cli.cmd_write(
+            "kairos://_user/u1/memories/",
+            "CLI 审计测试记忆内容，长度足够用于测试。",
+            source="user_input",
+        )
+        # health --full：聚合报告（schema 校验 + 记忆库统计 + 遗忘队列）
+        full = await cli.cmd_health_full()
+        assert full["status"] == "ok"
+        assert full["components"]["tables"] >= 16
+        assert full["memory"]["total"] >= 1
+        # audit log：普通写入不产生审计记录（S-16 仅治理操作留痕）——空链仍有效
+        log = await cli.cmd_audit_log(limit=20)
+        assert log["chain_valid"] is True
+        assert log["verified_total"] == 0
+        # 治理操作（校准）→ 产生审计记录，HMAC 链校验通过
+        await cli.cmd_calibrate(created["id"], 0.8)
+        log2 = await cli.cmd_audit_log(limit=20)
+        assert log2["chain_valid"] is True
+        assert log2["verified_total"] >= 1
+        assert len(log2["logs"]) >= 1
+        # config reset：清空 config 表运行时覆盖（0 条待清亦幂等）
+        reset = await cli.cmd_config_reset()
+        assert reset["status"] == "reset"

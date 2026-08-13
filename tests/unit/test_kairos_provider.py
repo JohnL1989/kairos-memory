@@ -34,10 +34,17 @@ def _handler_ok(request: httpx.Request) -> httpx.Response:
     if request.url.path == "/v1/memories/search":
         return httpx.Response(
             200,
-            json={"data": [{"id": "m1", "content": "相关记忆内容甲"}, {"id": "m2", "content": "相关记忆内容乙"}]},
+            json={
+                "data": [
+                    {"id": "m1", "content": "相关记忆内容甲"},
+                    {"id": "m2", "content": "相关记忆内容乙"},
+                ]
+            },
         )
     if request.url.path == "/v1/memories":
-        return httpx.Response(201, json={"id": "p-1", "path": "kairos://_user/hermes/memories/p-1", "version": 1})
+        return httpx.Response(
+            201, json={"id": "p-1", "path": "kairos://_user/hermes/memories/p-1", "version": 1}
+        )
     if request.url.path == "/v1/calibrate":
         return httpx.Response(200, json={"status": "accepted", "memory_id": "m1"})
     return httpx.Response(404, json={})
@@ -107,7 +114,12 @@ class TestLifecycleHooks:
             return _handler_ok(req)
 
         p = _make_provider(handler)
-        p.on_session_end([{"role": "user", "content": "你好"}, {"role": "assistant", "content": "你好，有什么可以帮你"}])
+        p.on_session_end(
+            [
+                {"role": "user", "content": "你好"},
+                {"role": "assistant", "content": "你好，有什么可以帮你"},
+            ]
+        )
         assert len(calls) == 1
 
     def test_on_pre_compress_returns_summary(self) -> None:
@@ -267,7 +279,9 @@ class TestConfigWizard:
 
     def test_save_config_writes_json(self, tmp_path) -> None:
         p = KairosMemoryProvider()
-        p.save_config({"base_url": "http://example:8011", "api_key": "should-not-写入"}, str(tmp_path))
+        p.save_config(
+            {"base_url": "http://example:8011", "api_key": "should-not-写入"}, str(tmp_path)
+        )
         target = tmp_path / "kairos" / "config.json"
         assert target.is_file()
         data = json.loads(target.read_text(encoding="utf-8"))

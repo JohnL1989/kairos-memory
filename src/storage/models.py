@@ -529,9 +529,7 @@ class MemoryRelation(Base):
 
     __tablename__ = "memory_relations"
     __table_args__ = (
-        UniqueConstraint(
-            "source_id", "target_id", "relation_type", name="uq_relations_triplet"
-        ),
+        UniqueConstraint("source_id", "target_id", "relation_type", name="uq_relations_triplet"),
         Index("idx_memory_relations_target", "target_id"),
         Index("idx_memory_relations_type", "relation_type"),
     )

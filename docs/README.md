@@ -7,14 +7,14 @@ tags:
   - kairos
   - documentation
 created: 2026-07-18
-updated: 2026-08-12
-last_reviewed: 2026-08-12
+updated: 2026-08-13
+last_reviewed: 2026-08-13
 status: design-freeze
 ---
 
 # Kairos 文档索引
 
-> **当前状态**：**v0.1.0 首版已发布（竖切交付完成）**。Kairos 为全面重新设计的系统，本文档库的竖切组件已有可运行代码（`src/` 下 15 张竖切表、记忆 CRUD/双副本、路径空间、事件总线、三信号检索、遗忘、身份注册表、审计 HMAC 链、校准/降级/冻结、REST 21 端点 + CLI 15 条）；全量 v0.1.0 的 168 项能力（43 核心 + 125 扩展）仍处于架构就绪状态，核心引擎（升华/图谱/WM 等竖切外组件）未启动。代码启动与竖切交付进展见 [changelog](governance/changelog.md)。
+> **当前状态**：**v0.1.0 首版已发布（竖切交付完成）**。Kairos 为全面重新设计的系统，本文档库的竖切组件已有可运行代码（`src/` 下 16 张竖切表、记忆 CRUD/双副本、路径空间、事件总线、三信号检索、遗忘、身份注册表、审计 HMAC 链、校准/降级/冻结、REST 31 端点 + CLI 21 条 + Agent Tool 5 工具 + MCP 15 工具，288 项测试）；全量 v0.1.0 的 168 项能力（43 核心 + 125 扩展）仍处于架构就绪状态，核心引擎（升华/图谱/WM 等竖切外组件）未启动。代码启动与竖切交付进展见 [changelog](governance/changelog.md)。
 
 > **快速入口：** [系统架构](foundation/architecture-v0.1.0.md) · [认知基础](foundation/cognitive-foundation.md) · [待实现债务清单](governance/debt-collection.md)
 
@@ -47,7 +47,7 @@ status: design-freeze
 | [`specification/rl-weight-spec.md`](specification/rl-weight-spec.md) | **RL 权重优化器规格** — 五维权重 + 学习算法 |
 | [`specification/operation-catalog.md`](specification/operation-catalog.md) | **操作目录** — 66 项标准操作（OP-001~OP-066），按 ENC/RET/STR 三阶段组织，标注安全红线 |
 | [`specification/schema-slice.sql`](specification/schema-slice.sql) | **竖切 DDL** — 14 张物理竖切表可执行建表语句（另含 1 张 FTS5 虚拟表 `memories_fts`，合计 15 张；`slice-implementation-guide` 的「15 张表」即此口径）；data-model 指定的 DDL 唯一承载，全量 57 表 DDL 随实现阶段由 Alembic 迁移承载 |
-| [`specification/api-contract/openapi.yaml`](specification/api-contract/openapi.yaml) | **REST 契约骨架** — OpenAPI 3.1，81 路径 / 88 操作（骨架，request/response schema 待补全，见债务 D-428） |
+| [`specification/api-contract/openapi.yaml`](specification/api-contract/openapi.yaml) | **REST 契约** — OpenAPI 3.1，81 路径 / 88 操作，request/response schema 已全量补全（D-428 已闭合 0.0.99，redocly lint 零 error） |
 | [`specification/api-contract/mcp-tools.json`](specification/api-contract/mcp-tools.json) | **MCP 工具契约** — 15 工具清单（inputSchema 待补全，见债务 D-428） |
 
 ## 开发文档（怎么上手开发）
@@ -186,5 +186,7 @@ status: design-freeze
 | 0.0.101 | 2026-08-12 | 接入层全通道交付批次（changelog 0.0.101，批次索引登记）：索引无实质变更；核心计数零漂移；README 批次索引登记不计入 changelog 受改清单（0.0.101 显式声明）。 |
 | 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
 | 0.1.1 | 2026-08-12 | Hermes Memory Provider 接入批次（changelog 0.1.1，批次索引登记）：配置参数计数 227 + 附录 A 152 = 379（接入层运行参数 5 项登记）；核心计数表 57/参数 379/错误码 43/端点 88/操作 66/组件 70/功能 168/债务 D-447~449；README 批次索引登记不计入 changelog 受改清单（0.1.1 沿用 0.0.89 显式声明）。 |
+| 0.1.2 | 2026-08-13 | MCP 工具契约补齐批次（changelog 0.1.2，批次索引登记）：竖切状态更新至 16 表/31 端点/18 CLI/15 工具/288 测试；核心计数表 57/参数 379/错误码 43/端点 88/操作 66/组件 70/功能 168/债务 D-447~449 零漂移；README 批次索引登记不计入 changelog 受改清单（0.1.2 沿用 0.0.89 显式声明）。 |
+| 0.1.3 | 2026-08-13 | 全面审计修复批次（changelog 0.1.3，批次索引登记）：状态段更新（16 表/31 端点/21 CLI/15 工具/288 测试）+ api-contract 描述（D-428 已闭合）+ 0.1.2 版本记录补行；核心计数端点 88→92；README 批次索引登记不计入 changelog 受改清单（0.1.3 沿用 0.0.89 显式声明）。 |
 
 

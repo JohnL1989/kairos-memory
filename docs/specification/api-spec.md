@@ -8,8 +8,8 @@ tags:
   - design
   - api
 created: 2026-07-20
-updated: 2026-08-12
-last_reviewed: 2026-08-12
+updated: 2026-08-13
+last_reviewed: 2026-08-13
 status: design-freeze
 ---
 
@@ -247,6 +247,14 @@ status: design-freeze
 - 受 S-08（未授权管理访问拒绝）约束：回滚操作需 admin 权限
 **响应** `200`：返回回滚后的记忆对象
 
+**GET /v1/memories/{id}/traces** — 记忆生命周期轨迹（竖切交付，MCP §6.8 kairos_get_memory_traces）
+
+- 返回该记忆在 `memory_states` 表的状态机轨迹（state / previous_state / state_changed_at / reason / source），按 `state_changed_at` 降序
+- 数据来源：`memory_states` 表（见 [data-model.md](data-model.md) memory_states）
+- 支持 `limit` 查询参数（默认 50，最大 200）
+
+**响应** `200`：`{"memory_id": "...", "traces": [...], "total": N}`
+
 ### 1.5 记忆导出/删除/定向遗忘
 
 **GET /v1/memories/{id}/export?clearance=export** — 导出记忆（脱敏）
@@ -455,6 +463,41 @@ status: design-freeze
 {"queue": [{"id": "uuid", "stage": "raw", "status": "processing"}]}
 ```
 
+### 1.9 关系管理（竖切交付，MCP §6.8 kairos_link / kairos_unlink / kairos_relations）
+
+**POST /v1/relations** — 创建关系边（kairos_link）
+
+```json
+{
+  "from_uri": "kairos://_user/default/memories/abc",
+  "uris": ["kairos://_user/default/memories/def"],
+  "relation_type": "reference",
+  "reason": "会话引用",
+  "strength": 1.0,
+  "confidence": 0.9
+}
+```
+- `from_uri` / `uris` / `reason` 必填（缺失 → `422` `ERR-INPUT-004`）
+- `relation_type` 取值见 [data-model.md](data-model.md) memory_relations 契约（六值 + 语义标记扩展）
+- 源/目标记忆不存在 → `404`（`ERR-DB-004`）
+- 重复三元组（未软删除）幂等返回 `exists`
+
+**响应** `200`：`{"created": [{"from": "...", "to": "...", "status": "created|exists"}], "count": N}`
+
+**DELETE /v1/relations/{source_id}/{target_id}** — 移除关系边（kairos_unlink）
+
+- `relation_type` 查询参数（默认 `*` 全删；指定类型仅删该类）
+- 软删除（`deleted_at` 置位，保留审计留痕）
+
+**响应** `200`：`{"removed": N, "source_id": "...", "target_id": "..."}`
+
+**GET /v1/relations/{memory_id}** — 查询关系边（kairos_relations）
+
+- `direction` 查询参数（`inbound` | `outbound` | `both`，默认 `both`）
+- `relation_type` / `limit` 查询参数（limit 默认 50，最大 200）
+
+**响应** `200`：`{"memory_id": "...", "inbound": [...], "outbound": [...]}`
+
 ---
 
 ## §2 Agent Tool
@@ -564,7 +607,7 @@ status: design-freeze
 | `kairos health` | 健康检查 | `GET /health` | `kairos health` |
 | `kairos health --full` | 全景健康报告（健康 + 记忆库统计 + 遗忘队列；D-430 闭合，0.1.2 批次登记） | `GET /health` + 本地聚合 | `kairos health --full` |
 | `kairos config` | 配置管理 | `GET /v1/config`（查看）/ `PATCH /v1/config`（修改） | `kairos config set KAIROS_DAILY_BUDGET_FEN 20000` |
-| `kairos config show` | 配置查看（0.0.95 登记；竖切 CLI 15 交付项，组件 9——此前契约缺失，D-430 分类处置后登记） | `GET /v1/config` | `kairos config show KAIROS_LOG_LEVEL`（可带参数名查单项，缺省输出全部） |
+| `kairos config show` | 配置查看（0.0.95 登记；竖切 CLI 21 交付项，组件 9——此前契约缺失，D-430 分类处置后登记） | `GET /v1/config` | `kairos config show KAIROS_LOG_LEVEL`（可带参数名查单项，缺省输出全部） |
 | `kairos config reset` | 配置重置（清空 config 表运行时覆盖，恢复参数默认；D-430 闭合，0.1.2 批次登记） | 本地执行 | `kairos config reset` |
 | `kairos audit log` | 审计日志查询（HMAC 链完整性校验；D-430 闭合，0.1.2 批次登记） | `GET /v1/audit-log` | `kairos audit log --limit 20` |
 | `kairos db` | 数据库管理 | 本地执行 | `kairos db init` / `kairos db migrate` / `kairos db verify` / `kairos db backup` / `kairos db vacuum` / `kairos db reindex` |
@@ -1699,7 +1742,9 @@ v1.1 规划：
 | 0.0.87 | 2026-08-10 | round49 全面深度审计修复批次（changelog 0.0.87）：§1.1/§1.2「写入管线约束②」→「写入管线设计②」两处补改（round48 遗留，R49-02）+ L55 If-Match「建议携带」→「必须携带」口径统一（round47 H-05 同步，R49-04）。 |
 | 0.0.96 | 2026-08-11 | 定稿审查处置批次（changelog 0.0.96）：§3 CLI 表登记 `kairos config show` 契约（竖切 CLI 15 交付项，组件 9，D-430 分类处置——此前契约缺失）。 |
 | 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+| 0.1.2 | 2026-08-13 | MCP 工具契约补齐批次（changelog 0.1.2）：§6.8 MCP 工具映射更新（traces/relations 真实化）；§1 补登记扩展端点（traces + relations 三端点）；端点计数 85→89、88→92。 |
+| 0.1.3 | 2026-08-13 | 全面审计修复批次（changelog 0.1.3）：§1 补登记 traces/relations 四端点 + 新增 §1.9 关系管理、端点计数 85→89/88→92（0.1.2 遗留补登）。 |
 
 
 
-> **端点计数口径（决策 D-13 核定）**：全库声明的 **85** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（注册 `archive`/`restore` 两个竖切端点后 78→80；补 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §1.8）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §6.5），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **88** = 85 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88 歧义。
+> **端点计数口径（决策 D-13 核定）**：全库声明的 **89** 指 **`/v1` 前缀的业务端点**去重后的 `(METHOD, PATH)` 组合数（注册 `archive`/`restore` 两个竖切端点后 78→80；补 `health/calibration`、`health/memory-pressure` 与叙事线三端点后 80→85；0.1.2 后 MCP 契约补齐端点 `traces` + `relations` 三端点补登记 §1 后 85→89）。另有 **3 个**无 `/v1` 前缀端点：基础设施探针 `GET /health`（见 §1.8）与压缩审计端点 `GET /audit/compression`、`GET /audit/compression/summary`（见 §6.5），**不计入**业务端点总数。因此本文档定义的 HTTP 端点物理总数为 **92** = 89 业务端点 + 3 无前缀端点。引用端点数时须注明口径，避免再次产生 80/81/85/88/89/92 歧义。

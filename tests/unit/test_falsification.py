@@ -84,7 +84,10 @@ class TestH2ForgettingEngine:
 
     def test_h2_survival_log_format(self) -> None:
         """证伪日志格式（hypothesis_H2_survival）。"""
-        log = "hypothesis_H2_survival: true, reason: forgetting scan converges, evidence_count: 12, last_updated: 2026-08-12T00:00:00Z"
+        log = (
+            "hypothesis_H2_survival: true, reason: forgetting scan converges, "
+            "evidence_count: 12, last_updated: 2026-08-12T00:00:00Z"
+        )
         assert FALSIFICATION_LOG_PATTERN.match(log) is not None
 
 
@@ -135,10 +138,6 @@ class TestForgettingEngineFeature:
 
         app = ba(settings, db=memory_db)
         try:
-            # 调度器任务尊重标志（OFF 时跳过扫描）
-            from src.scheduler import KairosScheduler
-
-            scheduler = KairosScheduler(app)
             # 竖切装配为 ON——验证调度器在 ON 时执行、OFF 时跳过由标志层保证
             assert app.settings.get("KAIROS_FEATURE_FORGETTING_ENGINE") is True
         finally:

@@ -211,3 +211,64 @@ class TestSystemEndpoints:
     async def test_404_memory(self, client) -> None:
         resp = await client.get("/v1/memories/nonexistent")
         assert resp.status_code == 404  # ERR-DB-004
+
+
+@pytest.fixture
+async def auth_client(memory_db):
+    """带 API Key 鉴权的测试客户端（S-01 运行时 401 路径；守卫校验 Bearer 哈希）。"""
+    from src.app import build_app
+    from src.utils.keys import derive_api_key_hash
+
+    key = "test-secret-key"
+    salt = "test-salt"
+    key_hash = derive_api_key_hash(key, salt)
+    settings = type(
+        "S",
+        (),
+        {
+            "get": lambda self, k, d=None: {
+                "KAIROS_AUDIT_HMAC_KEY": "22" * 32,
+                "KAIROS_API_KEY_HASH": key_hash,
+                "KAIROS_SALT": salt,
+                "KAIROS_FORGETTING_HALF_LIFE": 69,
+                "KAIROS_FRESHNESS_ACTIVE_THRESHOLD": 0.3,
+                "KAIROS_FRESHNESS_STALE_THRESHOLD": 0.1,
+                "KAIROS_DEGRADATION_PERIOD_N": 50,
+                "KAIROS_DEGRADATION_PERIOD_M": 200,
+                "KAIROS_HOST": "127.0.0.1",
+                "KAIROS_PORT": 8010,
+            }.get(k, d)
+        },
+    )()
+    kairos = build_app(settings, db=memory_db)
+    app = create_app(kairos)
+    async with AsyncTestClient(app) as c:
+        yield c, key
+    await kairos.close()
+
+
+class TestAuthEndpoints:
+    """S-01 运行时鉴权：缺 token / 无效 token → 401；有效 token → 放行。"""
+
+    async def test_missing_token_401(self, auth_client) -> None:
+        c, _ = auth_client
+        resp = await c.post("/v1/memories", json=_write_payload())
+        assert resp.status_code == 401  # ERR-AUTH-001
+
+    async def test_invalid_token_401(self, auth_client) -> None:
+        c, _ = auth_client
+        resp = await c.post(
+            "/v1/memories",
+            json=_write_payload(),
+            headers={"Authorization": "Bearer wrong-key"},
+        )
+        assert resp.status_code == 401  # ERR-AUTH-001
+
+    async def test_valid_token_passes(self, auth_client) -> None:
+        c, key = auth_client
+        resp = await c.post(
+            "/v1/memories",
+            json=_write_payload(),
+            headers={"Authorization": f"Bearer {key}"},
+        )
+        assert resp.status_code in (200, 201)

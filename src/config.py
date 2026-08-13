@@ -11,17 +11,24 @@
 
 启动校验（S-01 失败关闭）：
     - KAIROS_AUDIT_HMAC_KEY 必填（无默认值，审计链 HMAC 密钥）
+    - KAIROS_ENV=production 时密钥族（KAIROS_API_KEY_HASH / KAIROS_SALT /
+      KAIROS_SECRET_KEY）必填——S-01「无 API Key 拒绝启动」的生产强制；
+      development（默认）允许未配置 API Key（守卫放行 + 警告日志），
+      部署文档明确该模式无鉴权
     - KAIROS_NARRATIVE_AUDIT_CYCLE_MAX > 12 拒绝启动（架构 §8 风险警告）
 """
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger("kairos.config")
 
 # ---------------------------------------------------------------------------
 # 常量与参数定义
@@ -73,6 +80,13 @@ _PARAM_SPECS: dict[str, tuple[Any, type, str]] = {
     "KAIROS_HOST": ("127.0.0.1", str, "服务监听地址（S-04 本地回环绑定）"),
     "KAIROS_PORT": (8010, int, "服务监听端口（api-spec 基础 URL http://localhost:8010）"),
     "KAIROS_DATA_DIR": ("$HOME/.kairos", str, "数据目录（数据库/日志/密钥文件）"),
+    # 运行环境（deployment §三；S-01 生产密钥强制）
+    "KAIROS_ENV": (
+        "development",
+        str,
+        "运行环境：development（默认，允许未配置 API Key 的开发放行）/ "
+        "production（强制密钥族必填，S-01）",
+    ),
 }
 
 
@@ -130,6 +144,14 @@ SLICE_PARAM_NAMES: tuple[str, ...] = tuple(_PARAM_SPECS.keys())
 
 # 必填无默认值参数（启动校验缺值即失败关闭，S-01）
 REQUIRED_PARAMS: tuple[str, ...] = ("KAIROS_AUDIT_HMAC_KEY",)
+
+# production 模式追加必填密钥族（S-01「无 API Key 拒绝启动」生产强制；
+# development 模式允许未配置，守卫放行 + 警告日志）
+PRODUCTION_REQUIRED_PARAMS: tuple[str, ...] = (
+    "KAIROS_API_KEY_HASH",
+    "KAIROS_SALT",
+    "KAIROS_SECRET_KEY",
+)
 
 # 特征标志参数族（configuration §0.8 竖切与特征标志）
 FEATURE_FLAGS: tuple[str, ...] = ("KAIROS_FEATURE_FORGETTING_ENGINE",)
@@ -208,14 +230,28 @@ def load_settings(env: dict[str, str] | None = None, dotenv_path: Path | None = 
             raw[key] = value
 
     # 4. 类型解析 + 校验
+    # 运行模式（S-01）：production 追加密钥族必填；development 允许未配置
+    # API Key（守卫放行），解析完成后以警告日志显式声明无鉴权状态
+    env_mode = str(raw.get("KAIROS_ENV", "development")).strip().lower()
+    if env_mode not in ("development", "production"):
+        raise ConfigError(
+            f"KAIROS_ENV 非法值: {env_mode!r}（仅支持 development / production，S-01）"
+        )
+    required = (
+        REQUIRED_PARAMS
+        if env_mode != "production"
+        else REQUIRED_PARAMS + PRODUCTION_REQUIRED_PARAMS
+    )
+
     values: dict[str, Any] = {}
     for name in _PARAM_SPECS:
         default, _typ, _desc = _PARAM_SPECS[name]
         if name not in raw:
-            if name in REQUIRED_PARAMS:
+            if name in required:
                 raise ConfigError(
-                    f"必填参数缺失: {name}（S-01 启动校验——审计链 HMAC 密钥无默认值，"
-                    "见 security-specification §2.1 / deployment §三）"
+                    f"必填参数缺失: {name}（S-01 启动校验——"
+                    f"{'生产模式密钥族' if env_mode == 'production' else '审计链 HMAC 密钥'}"
+                    "无默认值，见 security-specification §2.1 / deployment §三）"
                 )
             values[name] = default
             continue
@@ -230,6 +266,14 @@ def load_settings(env: dict[str, str] | None = None, dotenv_path: Path | None = 
     for name in ("KAIROS_DB_URL", "KAIROS_DATA_DIR"):
         if isinstance(values[name], str):
             values[name] = _expand_home(values[name])
+
+    # S-01 显式声明：development 模式未配置 API Key → 系统无鉴权运行
+    if env_mode == "development" and not (values.get("KAIROS_API_KEY_HASH") or "").strip():
+        logger.warning(
+            "KAIROS_ENV=development 且未配置 KAIROS_API_KEY_HASH——API 守卫放行，"
+            "本实例无鉴权运行（仅限本地开发；生产部署必须 KAIROS_ENV=production "
+            "并配置密钥族，见 deployment §三 / security-specification §2.1）"
+        )
 
     return Settings(values=values)
 

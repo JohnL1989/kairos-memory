@@ -1,7 +1,7 @@
 """Kairos CLI 入口（竖切 v0.1.0-slice）。
 
 命令契约单一事实源：docs/specification/api-spec.md §3（全量 25 条）；
-竖切交付子集 15 条见 docs/development/slice-implementation-guide.md §三。
+竖切交付子集 21 条见 docs/development/slice-implementation-guide.md §三。
 本模块按周次渐进注册：W1 骨架（--version + init），后续周次按里程碑补充。
 
 CLI 框架：Typer（W1 定档——与 Litestar 类型安全理念一致，mypy 友好）。
@@ -313,7 +313,9 @@ def status() -> None:
 
 
 @app.command()
-def health(full: bool = typer.Option(False, "--full", help="全景健康报告（含记忆库统计/遗忘队列）")) -> None:
+def health(
+    full: bool = typer.Option(False, "--full", help="全景健康报告（含记忆库统计/遗忘队列）"),
+) -> None:
     """健康检查（GET /health；--full 聚合报告，D-430 闭合）。"""
     _sync(_cli.cmd_health_full if full else _cli.cmd_health)()
 
@@ -336,7 +338,7 @@ def serve(
 
     from src.config import load_settings
 
-    settings = load_settings()
+    load_settings()  # S-01 启动前配置校验（缺 HMAC 密钥拒绝启动）
     if port:
         os.environ["KAIROS_PORT"] = str(port)
     from src.access.server import serve as _serve

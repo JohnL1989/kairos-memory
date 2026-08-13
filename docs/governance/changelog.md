@@ -7,8 +7,8 @@ tags:
   - governance
   - changelog
 created: 2026-07-20
-updated: 2026-08-11
-last_reviewed: 2026-08-12
+updated: 2026-08-13
+last_reviewed: 2026-08-13
 status: draft
 ---
 
@@ -16,7 +16,7 @@ status: draft
 
 > **定位**：按日期记录的变更日志，记录从什么变成什么。各文档内嵌的版本记录保留为文档级审计，CHANGELOG 提供跨文档的版本演进全景。
 >
-> **浏览指引**：本文件按批次时序组织（`## 0.0.x（日期）— 标题`），最新批次置顶、文末版本记录表为全景索引。定位方式：按版本号搜索 `## 0.0.x`；按日期搜索 `（2026-MM-DD）`；跨文档变更关系见 [README.md](../README.md) 与各文档内嵌版本记录。
+> **浏览指引**：本文件按批次**时间正序**组织（`## 0.0.x（日期）— 标题`，最早批次在顶部、最新批次位于叙述节末尾）；文末版本记录表为全景索引（亦按正序）。定位方式：按版本号搜索 `## 0.0.x`；按日期搜索 `（2026-MM-DD）`；跨文档变更关系见 [README.md](../README.md) 与各文档内嵌版本记录。
 
 ---
 
@@ -2147,7 +2147,36 @@ status: draft
 - **CI 修复**：ubuntu 无 PG 环境——`test_postgres_backend` 3 errors 拖红 CI；`.github/workflows/ci.yml` 补 `KAIROS_PG_TEST_SKIP=1`（3 skipped）。
 - **测试**：新增 `tests/integration/test_extended_api.py` 6 项（stats/heat-top/feedback/traces/entities/graph/sessions/relations 全流程）；schema 对齐/迁移/mcp_bridge 期望更新（SLICE_TABLES 15→16、两次回退）。
 
-**验证**：288 项测试全过（3 PG errors → skip）；MCP 15 工具 HTTP 层端到端 15/15 通过；doc-audit 全绿（修 data-model memory_relations 补 reason/confidence 列 + CRLF 统一）。结构性受改文档：README（竖切状态 16 表/31 端点/18 CLI/15 工具/288 测试）、slice-implementation-guide（§二 15→16 表、§三 端点口径）、api-spec §6.8（traces/relations 映射更新）、schema-slice.sql、data-model（memory_relations 补列）。
+**验证**：288 项测试全过（3 PG errors → skip）；MCP 15 工具 HTTP 层端到端 15/15 通过；doc-audit 全绿（修 data-model memory_relations 补 reason/confidence 列 + CRLF 统一）。结构性受改 5 份文档（README / slice-implementation-guide / api-spec / schema-slice.sql / data-model），均已登记 0.1.2 版本记录行。
+
+## 0.1.3（2026-08-13）— 全面审计修复批次（ruff/mypy 清零 + Litestar 新风格迁移 + 文档-代码同步 + 门禁 0.1.x 识别修复）
+
+> **背景**：2026-08-13 全面审计（工作区根 `audit-report-2026-08-13.md`，未随仓库分发）发现：CI code-checks 三步（ruff 77 errors + mypy 10 errors + format）非零退出、Litestar 2.x 弃用 API 大规模使用（1217 warnings，3.0 移除 `Body()` 默认值写法）、文档状态声明与代码漂移多处、doc-audit 批次识别未覆盖 0.1.x。本批次全量修复。
+
+**落地清单**：
+- **代码质量**：ruff 77→0（B008×15 随 Body 迁移清零、E501 32 处折行/格式化、UP006/UP045/I001/UP017/F401 自动修复、F841×4/B905×1 手动）；mypy 10→0（kairos_provider 两处 `resp.json()` 加 cast、hermes_plugin import-not-found/misc ignore 修正、cli/extended SQLAlchemy Row→dict 显式注解、pyproject mypy overrides 冲突移除）；Litestar 31 端点签名迁移 Annotated 新风格（`Annotated[T, Body()]` / `Annotated[T, Parameter(...)]` / `FromQuery` / `FromPath`，含 `Parameter(query=)` 弃用清除）+ pyproject 加 `litestar>=2.0,<3` 上限——warnings 1217→1、3.0 升级兼容（2.x 新风格与 3.x 兼容）。
+- **auth 重构**：`ApiKeyGuard` 构造注入 salt/api_key_hash（守卫从 `request.app.state` 应用容器读取已加载配置），消除每请求 `load_settings()`（.env 重读）——S-01/S-06 语义不变。
+- **文档-代码同步**：CLI 计数 18→21（代码实证 21 条命令；slice-implementation-guide §三 清单补全 21 条 + REST 31 扩展端点 10 行、project-plan/api-spec/README/AGENTS 同步）；docs/README 状态段（16 表/31 端点/21 CLI/15 工具/288 测试）+ api-contract 描述（D-428 已闭合）；api-spec §1 补登记 traces/relations 四端点 + 新增 §1.9 关系管理 + 端点计数 85→89、88→92；openapi.yaml 补 4 端点（operations 88→92）；main.py docstring 15→21。
+- **门禁修复**：doc-audit.py 批次正则 `0\.0\.\d+`→`0\.\d+\.\d+`（6.32/6.34/6.39 + 8 处版本记录表行跳过判断）；**6.39 叙述节切分偏移 bug 修复**（seg 已切片后用绝对偏移二次切片致 m_end 恒不匹配、seg 蔓延全文件误匹配历史行）；补 0.1.x 时代治理欠账——documentation-governance 执行记录补 0.1.0~0.1.2、slice-guide/api-spec/data-model 补 0.1.2 版本记录行、changelog 0.1.2 叙述受改清单格式修正（无份数致 6.39 跳过）。
+- **许可证**：pyproject license 加占位注释（正式许可证待 release-guide 定稿，当前 Proprietary 保证构建元数据完整）。
+
+**验证**：ruff lint/format 全绿（86 files formatted + All checks passed）；mypy strict 0 errors；288 测试全过（0.1.2 基线复验 + 鉴权相关 24 项 + Litestar 迁移 smoke 全链路）；doc-audit/deep-audit exit 0；pip-audit 0 已知漏洞。结构性受改 6 份文档（README / slice-implementation-guide / project-plan / api-spec / documentation-governance / changelog 本文件）+ scripts/doc-audit.py，均已登记 0.1.3 版本记录行。
+
+---
+
+## 0.1.4（2026-08-13）— 全面审计修复批次（安全契约三缺口 + CI 校验真实化 + 覆盖率加固）
+
+> **背景**：2026-08-13 全面审计跟进版（工作区根 `audit-report-2026-08-13-followup.md`，未随仓库分发）发现：S-09 注入扫描零实现零测试零登记、S-01「无 API Key 拒绝启动」未落地（REQUIRED 仅 HMAC key，守卫静默放行且注释声称的生产强制不存在）、S-06/S-08 三级 Key 契约 vs 单 Key 实现无债务登记、CI 覆盖率门禁余量 1.52pp、CI mcp-tools 校验引用不存在的 schema 文件（ajv 必然失败、校验从未真实生效）。本批次全量修复。
+
+**落地清单**：
+- **S-09 注入扫描**（P1-1）：新建 `src/utils/injection_scan.py`（隐形 Unicode 控制字符 + 角色劫持/指令泄露中英双语高置信短语库，完整短语匹配防误报）+ 接线 `IngestionGate._check_capture_gates` 第 5 层（命中 → 403 ERR-SEC-001，与 S-07 同级；常驻契约不豁免）+ `test_redlines.py` TestS09InjectionScan 4 用例（角色劫持/指令泄露/隐形 Unicode 拒绝 + 正常内容不误报）。
+- **S-01 生产密钥强制**（P1-2）：config.py 新增 `KAIROS_ENV`（development 默认 / production）+ production 追加密钥族（API_KEY_HASH/SALT/SECRET_KEY）必填拒绝启动 + 非法值拒绝 + development 未配置 API Key 启动警告日志（显式声明无鉴权状态）；auth.py 注释与实现一致；`test_redlines.py` TestS01ApiKey 补 3 用例。[configuration.md](../ops/configuration.md) 附录 A 登记（参数 380→381）+ [deployment.md](../ops/deployment.md) §三 加行并注明「生产部署必须显式设为 production」。
+- **D-450 登记**（P1-3）：debt-collection 新增「三级 API Key 鉴权体系（read/write/admin）未实现」追缴（五段式，与 D-430 的 admin key 命令层分开追缴权限模型层，v0.1.0 全量阶段）；D-430 摘要表状态同步为「🟡 部分闭合（0.1.2 实现 4 条）」。
+- **CI 校验真实化**（P2-4）：创建 `docs/specification/api-contract/mcp-tools.schema.json`（此前不存在——ajv 校验从未真实生效，仅 JSON 合法性降级检查）+ ci.yml 收紧（ajv 失败即红，`set -e`；toolCount≡tools 长度、mapsTo 合法形态校验）。
+- **覆盖率加固**（P1-4）：test_api.py 新增 TestAuthEndpoints（缺 token/无效 token → 401、有效 token 放行——auth.py 52% 主缺口）；test_cli.py 补 D-430 闭合命令（health --full / audit log / config reset）——测试 288→292，覆盖率 81.52%→82.81%（CI 口径实测，fail_under=80 余量 2.81pp）。
+- **文档同步**：[AGENTS.md](../../AGENTS.md) D-428 残留×2 清除 + 覆盖率声明 85.23%→82.81%；changelog 浏览指引「最新批次置顶」→「时间正序」修正 + frontmatter updated 2026-08-13；.gitignore 补 `audit-report-*.md` 模式（审计材料此前未被忽略）；development-setup §四 增运行环境约束注记（Windows 文件锁 / PYTHONPATH 劫持 / KAIROS_DATA_DIR 污染）。
+
+**验证**：定向 40/40 → 全量 292 passed / 3 skipped（PG）/ 1 warning；覆盖率 82.81%（CI 口径）；ruff/mypy/format 见批次验证（本地 --no-sync 实测）；doc-audit/deep-audit exit 0。结构性受改：debt-collection / configuration / deployment / development-setup / changelog 本文件 / AGENTS / .gitignore / ci.yml / mcp-tools.schema.json。
 
 ---
 
@@ -2261,3 +2290,5 @@ status: draft
 | 0.1.0 | 2026-08-12 | v0.1.0 首版发布批次（changelog 0.1.0，见本文件 0.1.0 叙述节）：定稿评审通过（release-guide §2 十项全过 + §3 构建安装验证）——全库版本统一升级 0.0.x → 0.1.0、文档状态 draft → design-freeze。 |
 | 0.1.1 | 2026-08-12 | Hermes Memory Provider 接入批次（changelog 0.1.1，见本文件 0.1.1 叙述节）：Hermes ABC 契约对齐（handle_tool_call JSON 字符串 / queue_prefetch / on_session_switch / get_config_schema+save_config / agent_context 守卫）+ 端口勘误 8011→8010 + 遗忘调度器缺陷修复（create 初始化 last_access_at + use_event 刷新）+ 端到端验证（8010 默认端口）+ deployment §四·a 部署登记 + configuration 附录 A 登记接入层参数 5 项（参数 374→379）+ 契约测试新增；债务 D-447~449 闭合叙述补记（debt-collection 已登记）。 |
 | 0.1.2 | 2026-08-13 | MCP 工具契约补齐批次（changelog 0.1.2，见本文件 0.1.2 叙述节）：扩展端点 10 个（stats/heat-top/feedback/traces/entities/graph/sessions/relations）+ memory_relations 表（16 张竖切表）+ bridge 假实现真实化——MCP 15 工具全可用；运行修复闭环（bus_drain 消费接线 / 订阅器 commit / load_settings 默认 .env / batch occurred_at）+ 2041 条误归档记忆恢复 active；CI 补 KAIROS_PG_TEST_SKIP=1；测试 288 项；README 竖切状态更新（16 表/31 端点/18 CLI/15 工具）。 |
+| 0.1.3 | 2026-08-13 | 全面审计修复批次（changelog 0.1.3，见本文件 0.1.3 叙述节）：ruff 77→0 / mypy 10→0（CI code-checks 转绿）；Litestar 31 端点迁移 Annotated 新风格 + `<3` 上限（warnings 1217→1，3.0 升级兼容）；auth 守卫注入消除每请求配置重读；CLI 计数 18→21、api-spec §1 补登记 4 端点（端点 88→92）、openapi 补 4 端点；doc-audit 批次正则扩展 0.1.x + 6.39 偏移 bug 修复 + 0.1.x 治理欠账补登。 |
+| 0.1.4 | 2026-08-13 | 全面审计修复批次（changelog 0.1.4，见本文件 0.1.4 叙述节）：S-09 注入扫描实现（injection_scan + ingestion 第 5 层 + 4 用例）；S-01 生产密钥强制（KAIROS_ENV 参数 + production 密钥族必填 + development 无鉴权警告，config/deployment/configuration 登记，参数 380→381）；D-450 三级 Key 鉴权体系追缴登记 + D-430 状态部分闭合同步；CI mcp-tools schema 校验真实化（schema 文件创建 + fallback 收紧）；测试 288→292、覆盖率 81.52%→82.81%（auth 401 + D-430 命令补测）；AGENTS D-428 残留清除 + 覆盖率同步、changelog 指引/frontmatter、gitignore 补模式、development-setup 环境约束注记。 |

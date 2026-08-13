@@ -92,7 +92,8 @@ class KairosScheduler:
         scheduler.start()
         self._scheduler = scheduler
         logger.info(
-            "kairos scheduler started (forgetting_scan/latent_reevaluation/forget_after_scan/degradation_tick/bus_drain)"
+            "kairos scheduler started "
+            "(forgetting_scan/latent_reevaluation/forget_after_scan/degradation_tick/bus_drain)"
         )
 
     async def shutdown(self) -> None:

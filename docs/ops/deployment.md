@@ -89,6 +89,7 @@ status: design-freeze
 | `KAIROS_DB_PASSWORD` | 标准模式需 | — | PostgreSQL 密码（docker-compose 部署用，非 DSN 内部含密码时不需要） |
 | `KAIROS_API_KEY` | 标准模式是；轻量模式否 | — | API 认证密钥（标准模式用；轻量模式以 `KAIROS_API_KEY_HASH` 单 Key 校验代替，见下行与 [security-specification.md](../security/security-specification.md) §2.1） |
 | `KAIROS_API_KEY_HASH` | 轻量模式是；标准模式否 | — | 轻量模式单 Key 认证（密钥哈希口径，文件权限 600；竖切形态，见 [slice-implementation-guide.md](../development/slice-implementation-guide.md) §一 组件 9 与 [configuration.md](../ops/configuration.md) 附录 A） |
+| `KAIROS_ENV` | 否 | `development` | 运行环境（S-01 生产密钥强制，2026-08-13 全面审计 P1-2 修复）：`development`（默认）允许未配置 API Key（守卫放行 + 启动警告，**无鉴权运行**）；`production` 强制 `KAIROS_API_KEY_HASH`/`KAIROS_SALT`/`KAIROS_SECRET_KEY` 必填，缺失拒绝启动。**生产部署必须显式设为 `production`** |
 | `KAIROS_SALT` | 是 | — | PBKDF2 盐值（S-05） |
 | `KAIROS_SECRET_KEY` | 是 | — | AES-256-GCM 敏感字段加密密钥 |
 | `KAIROS_AUDIT_HMAC_KEY` | 是 | — | HMAC-SHA256 审计链签名密钥 |

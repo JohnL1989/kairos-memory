@@ -35,7 +35,7 @@ import logging
 import os
 import threading
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 logger = logging.getLogger("kairos.access.provider")
 
@@ -117,7 +117,11 @@ class KairosMemoryProvider:
         try:
             resp = self._http.get("/health")
             resp.raise_for_status()
-            logger.info("kairos provider initialized (session=%s, context=%s)", session_id, self._agent_context)
+            logger.info(
+                "kairos provider initialized (session=%s, context=%s)",
+                session_id,
+                self._agent_context,
+            )
         except Exception as exc:
             logger.warning("kairos provider init: 服务不可达 %s", exc)
             raise RuntimeError(f"Kairos 服务不可达（{self.base_url}）: {exc}") from exc
@@ -281,7 +285,10 @@ class KairosMemoryProvider:
         if reset:
             self._prefetch_cache = None
         logger.debug(
-            "kairos on_session_switch → %s (parent=%s, reset=%s)", new_session_id, parent_session_id, reset
+            "kairos on_session_switch → %s (parent=%s, reset=%s)",
+            new_session_id,
+            parent_session_id,
+            reset,
         )
 
     # ------------------------------------------------------------------
@@ -297,7 +304,7 @@ class KairosMemoryProvider:
             json={"memory_id": memory_id, "narrative_coherence_score": score, "source": source},
         )
         resp.raise_for_status()
-        return resp.json()
+        return cast(dict[str, Any], resp.json())
 
     # ------------------------------------------------------------------
     # 配置向导（Hermes 'hermes memory setup'；config.json 模式）
@@ -334,9 +341,7 @@ class KairosMemoryProvider:
             except (OSError, json.JSONDecodeError):
                 existing = {}
         existing.update({k: v for k, v in values.items() if k != "api_key"})
-        target.write_text(
-            json.dumps(existing, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        target.write_text(json.dumps(existing, ensure_ascii=False, indent=2), encoding="utf-8")
         logger.info("kairos save_config → %s", target)
 
     # ------------------------------------------------------------------
@@ -391,9 +396,7 @@ class KairosMemoryProvider:
         if not self._http:
             return {"error": "not_initialized"}
         if self._agent_context not in ("primary", ""):
-            logger.debug(
-                "跳过记忆写入（agent_context=%s，非 primary）", self._agent_context
-            )
+            logger.debug("跳过记忆写入（agent_context=%s，非 primary）", self._agent_context)
             return {"skipped": True, "reason": f"agent_context={self._agent_context}"}
         try:
             resp = self._http.post(
@@ -407,7 +410,7 @@ class KairosMemoryProvider:
                 },
             )
             resp.raise_for_status()
-            return resp.json()
+            return cast(dict[str, Any], resp.json())
         except Exception as exc:
             logger.warning("记忆写入失败: %s", exc)
             return {"error": str(exc)}

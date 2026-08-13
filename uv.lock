@@ -705,7 +705,7 @@ requires-dist = [
     { name = "asyncpg", specifier = ">=0.29" },
     { name = "cryptography", specifier = ">=42.0" },
     { name = "httpx", specifier = ">=0.27" },
-    { name = "litestar", specifier = ">=2.0" },
+    { name = "litestar", specifier = ">=2.0,<3" },
     { name = "mcp", specifier = ">=1.0,<2" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "sqlalchemy", specifier = ">=2.0" },

@@ -45,11 +45,17 @@ def upgrade() -> None:
     # IF NOT EXISTS 幂等防御（schema-slice.sql 为当前权威含本表，0001 已跳过——
     # 防其他建库路径重复执行）
     op.execute(
-        _CREATE_TABLE.replace("CREATE TABLE memory_relations", "CREATE TABLE IF NOT EXISTS memory_relations")
+        _CREATE_TABLE.replace(
+            "CREATE TABLE memory_relations", "CREATE TABLE IF NOT EXISTS memory_relations"
+        )
     )
     # SQLAlchemy op.execute 单语句限制：索引逐条执行
-    op.execute("CREATE INDEX IF NOT EXISTS idx_memory_relations_target ON memory_relations(target_id);")
-    op.execute("CREATE INDEX IF NOT EXISTS idx_memory_relations_type ON memory_relations(relation_type);")
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS idx_memory_relations_target ON memory_relations(target_id);"
+    )
+    op.execute(
+        "CREATE INDEX IF NOT EXISTS idx_memory_relations_type ON memory_relations(relation_type);"
+    )
 
 
 def downgrade() -> None:

@@ -50,7 +50,9 @@ def _class_method_names() -> set[str]:
     tree = ast.parse((PLUGIN_DIR / "__init__.py").read_text(encoding="utf-8"))
     for node in tree.body:
         if isinstance(node, ast.ClassDef) and node.name == "KairosMemoryProvider":
-            return {n.name for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+            return {
+                n.name for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+            }
     raise AssertionError("hermes_plugin/__init__.py 缺少 KairosMemoryProvider 类")
 
 

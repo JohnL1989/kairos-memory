@@ -65,7 +65,7 @@ class AuditTribunal:
             chain_input = f"{timestamp}{operator}{action}{content_hash}{prev_hmac}".encode()
             hmac = hmac_sha256_hex(self.hmac_key, chain_input)
 
-            row = await session.execute(
+            await session.execute(
                 text(
                     "INSERT INTO audit_log (timestamp, operator, action, target_type, "
                     "target_id, content_hash, previous_hash, hmac, details, redline_id) "

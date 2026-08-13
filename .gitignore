@@ -37,4 +37,5 @@ outputs/
 
 # 审计报告（根目录，不随仓库分发，处置记录见 changelog 批次条目）
 *-audit-report.md
+audit-report-*.md
 *-deep-audit.md

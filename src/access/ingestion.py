@@ -186,7 +186,18 @@ class IngestionGate:
             if pattern.search(cleaned):
                 return CaptureVerdict(accepted=False, reason="maintenance_prompt")
 
-        # 5. 硬长度上限（S-03 → 413 ERR-INPUT-001）
+        # 5. S-09 常驻契约注入扫描（prompt injection / 角色劫持 / 后门 / 隐形 Unicode）
+        #    红线语义：命中即拒绝写入（403 ERR-SEC-001，与 S-07 同级；常驻契约不豁免）
+        from src.utils.injection_scan import scan_injection
+
+        injection_hits = scan_injection(cleaned)
+        if injection_hits:
+            raise SecurityRedlineError(
+                "捕获门控拒绝：检测到注入载体（prompt injection / 角色劫持 / 隐形 Unicode，S-09）",
+                details={"gate": "injection_scan", "hits": injection_hits},
+            )
+
+        # 6. 硬长度上限（S-03 → 413 ERR-INPUT-001）
         if len(cleaned.encode("utf-8")) > self.max_content_bytes:
             raise ContentTooLongError(
                 f"内容超过 {self.max_content_bytes} 字节硬上限（S-03）",

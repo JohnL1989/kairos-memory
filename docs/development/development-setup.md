@@ -74,6 +74,11 @@ kairos init --db postgresql://kairos:${KAIROS_DB_PASSWORD}@localhost:5432/kairos
 
 ## 四、运行测试
 
+> **运行环境约束（2026-08-13 全面审计实测登记）**：
+> 1. **Windows 文件锁**：`kairos serve` / `kairos mcp` 运行时，`uv sync` / `uv run`（不带 `--no-sync`）会因 `kairos.exe` 被占用而失败（`os error 32`）。依赖变更/重建需先停止服务，或临时用 `uv run --no-sync <cmd>` 绕过。
+> 2. **PYTHONPATH 劫持**：在 Hermes Agent 等宿主环境内运行时，宿主注入的 PYTHONPATH 会劫持 kairos 的 numpy（`_multiarray_umath` 缺失崩溃）。测试/服务命令需 `env -u PYTHONPATH`（详见 [troubleshooting.md](../ops/troubleshooting.md)）。
+> 3. **测试环境隔离**：跑 pytest 前 `unset KAIROS_DATA_DIR`——conftest 的 `_test_env` 用 `setdefault` 注入测试密钥，已导出的真实 KAIROS_DATA_DIR 会导致 load_settings 读真实 `.env`、全部 API 测试 401。
+
 ```bash
 # 单元测试
 pytest tests/unit/ -v --cov=src

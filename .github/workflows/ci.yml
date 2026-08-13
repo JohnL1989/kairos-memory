@@ -58,6 +58,20 @@ jobs:
         run: npx --yes @redocly/cli lint docs/specification/api-contract/openapi.yaml --extends minimal
       - name: mcp-tools schema validate
         run: |
+          set -e
+          # schema 结构校验（ajv-cli；schema 文件缺失即失败——2026-08-13 修复：
+          # 此前引用不存在的 schema 文件导致校验从未真实生效）
           npx --yes ajv-cli validate -s docs/specification/api-contract/mcp-tools.schema.json \
-            -d docs/specification/api-contract/mcp-tools.json 2>/dev/null \
-            || python -c "import json;json.load(open('docs/specification/api-contract/mcp-tools.json',encoding='utf-8'));print('mcp-tools.json valid JSON')"
+            -d docs/specification/api-contract/mcp-tools.json
+          # 契约一致性：toolCount 与 tools 数组长度、mapsTo 为合法形态
+          # （REST 端点动词开头，或 MCP-only 声明——traces/link/unlink/relations 无公开 REST 端点）
+          python - <<'EOF'
+          import json
+          data = json.load(open('docs/specification/api-contract/mcp-tools.json', encoding='utf-8'))
+          assert data['toolCount'] == len(data['tools']), \
+              f"toolCount {data['toolCount']} != tools 长度 {len(data['tools'])}"
+          for t in data['tools']:
+              assert t['mapsTo'].startswith(('POST ', 'GET ', 'PATCH ', 'DELETE ', 'MCP-only')), \
+                  f"{t['name']} mapsTo 非法形态: {t['mapsTo']}"
+          print(f"mcp-tools.json 校验通过：{len(data['tools'])} 工具，toolCount 一致，mapsTo 形态全部合法")
+          EOF

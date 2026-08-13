@@ -261,7 +261,8 @@ class QueryAnalyzer:
             rows = (
                 await session.execute(
                     text(
-                        "SELECT id, name, type FROM entities WHERE name IN (SELECT name FROM entities)"
+                        "SELECT id, name, type FROM entities "
+                        "WHERE name IN (SELECT name FROM entities)"
                     )
                 )
             ).fetchall()

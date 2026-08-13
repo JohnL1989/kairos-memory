@@ -216,27 +216,25 @@ async def cmd_health_full() -> dict[str, Any]:
         schema = await app.db.verify_schema()
         async with app.db.session() as session:
             total = (await session.execute(select(func.count()).select_from(Memory))).scalar() or 0
-            by_state = dict(
-                (await session.execute(
-                    select(Memory.status, func.count()).group_by(Memory.status)
-                )).all()
-            )
-            by_type = dict(
-                (
-                    await session.execute(
-                        text(
-                            "SELECT je.value AS mtype, COUNT(*) AS cnt "
-                            "FROM memories, json_each(memories.memory_types) je "
-                            "GROUP BY je.value ORDER BY cnt DESC"
-                        )
+            by_state_rows = (
+                await session.execute(select(Memory.status, func.count()).group_by(Memory.status))
+            ).all()
+            by_state: dict[str, int] = {r[0]: r[1] for r in by_state_rows}
+            by_type_rows = (
+                await session.execute(
+                    text(
+                        "SELECT je.value AS mtype, COUNT(*) AS cnt "
+                        "FROM memories, json_each(memories.memory_types) je "
+                        "GROUP BY je.value ORDER BY cnt DESC"
                     )
-                ).all()
-            )
+                )
+            ).all()
+            by_type: dict[str, int] = {r[0]: r[1] for r in by_type_rows}
             pending = (
                 await session.execute(
-                    select(func.count()).select_from(ForgettingQueue).where(
-                        ForgettingQueue.status == "pending_archive"
-                    )
+                    select(func.count())
+                    .select_from(ForgettingQueue)
+                    .where(ForgettingQueue.status == "pending_archive")
                 )
             ).scalar() or 0
         return {
@@ -302,7 +300,9 @@ async def cmd_config_reset() -> dict[str, Any]:
     app = await _resolve_app()
     try:
         async with app.db.session() as session:
-            count = (await session.execute(select(func.count()).select_from(ConfigEntry))).scalar() or 0
+            count = (
+                await session.execute(select(func.count()).select_from(ConfigEntry))
+            ).scalar() or 0
             await session.execute(text("DELETE FROM config"))
             await session.commit()
         return {"status": "reset", "removed": count}

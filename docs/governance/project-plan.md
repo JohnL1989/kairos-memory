@@ -8,8 +8,8 @@ tags:
   - governance
   - planning
 created: 2026-07-20
-updated: 2026-08-12
-last_reviewed: 2026-08-12
+updated: 2026-08-13
+last_reviewed: 2026-08-13
 status: design-freeze
 ---
 
@@ -31,7 +31,7 @@ status: design-freeze
 | 事件总线 | 4 类事件：use_event / calibration_signal / degradation_switch / latent_trigger（架构 §10.10） |
 | 身份模型 | 构造论：初始赋予（见证锚定写入触发）+ 叙事驱动双向更新（认知基础 D.2 / 架构 §5.2） |
 | 存储后端 | SQLite + sqlite-vec（首迭代）；PostgreSQL + pgvector 竖切验收后适配（ADR-001） |
-| 功能/表/端点 | feature-list 竖切标注（约 23 项功能）；data-model 竖切表子集（15 张，清单见 [slice-implementation-guide](../development/slice-implementation-guide.md)）；api-spec 竖切端点（REST 21 + CLI 15） |
+| 功能/表/端点 | feature-list 竖切标注（约 23 项功能）；data-model 竖切表子集（16 张，清单见 [slice-implementation-guide](../development/slice-implementation-guide.md)）；api-spec 竖切端点（REST 31 + CLI 21） |
 | 时间过滤基础窗口 | `KAIROS_TIME_FILTER_ENABLED` + `occurred_at` 可空加列（D-323）；竖切内第 5 周（W05）里程碑交付基础窗口，过滤执行待 v1.1/竖切扩展——「W5」此处为里程碑周次，与功能编号 W-05（关系标注）、竖切组件序号不混用 |
 
 ## 二、里程碑（周数按单人全时开发估算，实际以进度为准）
@@ -41,7 +41,7 @@ status: design-freeze
 | 周 | 里程碑 | 交付物 | 验证 |
 |:--|:------|:-------|:-----|
 | W1 | 项目骨架 | pyproject + uv 环境、CLI 入口（Click/Typer）、配置加载、git 仓库初始化、`scripts/doc-audit.py` 接入 | `kairos --version`；doc-audit 全绿 |
-| W2 | 数据库与 CI | SQLite 初始化 + schema 迁移（竖切表子集 15 张，清单见 slice-implementation-guide）、pytest/ruff/mypy 管线、**接口契约骨架补全**（`openapi.yaml` 通过 lint 零 error + `mcp-tools.json` inputSchema 补全，见债务 D-428） | 迁移可回滚；CI 通过；`redocly lint` 零 error |
+| W2 | 数据库与 CI | SQLite 初始化 + schema 迁移（竖切表子集 16 张，清单见 slice-implementation-guide）、pytest/ruff/mypy 管线、**接口契约骨架补全**（`openapi.yaml` 通过 lint 零 error + `mcp-tools.json` inputSchema 补全，见债务 D-428） | 迁移可回滚；CI 通过；`redocly lint` 零 error |
 
 ### Phase 1：核心存储与检索（第 3–6 周）
 
@@ -112,5 +112,6 @@ status: design-freeze
 | 0.0.84 | 2026-08-10 | round46 门禁建议落实批次（changelog 0.0.84）：Phase 0 门禁口径同步 6.13~6.38（门禁清单镜像补齐 round44 漏登的 6.34/6.35 + 本轮 6.36/6.37/6.38，清单以 engineering-workflow §四 为准）；frontmatter updated/last_reviewed 同步 2026-08-10。 |
 | 0.0.94 | 2026-08-11 | round54 全面深度审计修复批次（changelog 0.0.94）：Phase 0 门禁口径同步 6.13~6.39（6.39 受改批次版本记录覆盖性为 WARN 级软门禁，清单以 engineering-workflow §四 为准）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
 | 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+| 0.1.3 | 2026-08-13 | 全面审计修复批次（changelog 0.1.3）：竖切范围表/表/端点计数同步（16 张表、REST 31 + CLI 21）。 |
 
 

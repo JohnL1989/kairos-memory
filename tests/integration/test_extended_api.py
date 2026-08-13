@@ -42,16 +42,19 @@ async def client(memory_db):
     await kairos.close()
 
 
-def _write_payload(content: str, path: str = "kairos://_user/t/ext", provenance: str = "user_input"):
+def _write_payload(
+    content: str, path: str = "kairos://_user/t/ext", provenance: str = "user_input"
+):
     return {"path": path, "content": content, "provenance": provenance}
 
 
 @pytest.mark.asyncio
 async def test_stats_and_heat_top(client: AsyncTestClient) -> None:
     """stats 聚合 + heat-top 排序（kairos_get_stats / kairos_get_hot_memories）。"""
-    r = await client.post("/v1/memories", json=_write_payload("扩展端点测试记忆 统计验证 内容足够长"))
+    r = await client.post(
+        "/v1/memories", json=_write_payload("扩展端点测试记忆 统计验证 内容足够长")
+    )
     assert r.status_code == 201, r.text
-    mem_id = r.json()["id"]
 
     stats = (await client.get("/v1/memories/stats")).json()
     assert stats["total"] >= 1
@@ -65,10 +68,14 @@ async def test_stats_and_heat_top(client: AsyncTestClient) -> None:
 @pytest.mark.asyncio
 async def test_feedback_updates_confidence_and_audits(client: AsyncTestClient) -> None:
     """feedback 更新 calibration_confidence + 审计留痕（kairos_feedback_memory）。"""
-    r = await client.post("/v1/memories", json=_write_payload("反馈测试记忆 内容足够长 用于可信度更新"))
+    r = await client.post(
+        "/v1/memories", json=_write_payload("反馈测试记忆 内容足够长 用于可信度更新")
+    )
     mem_id = r.json()["id"]
 
-    fb = await client.post(f"/v1/memories/{mem_id}/feedback", json={"feedback": 0.9, "reason": "test"})
+    fb = await client.post(
+        f"/v1/memories/{mem_id}/feedback", json={"feedback": 0.9, "reason": "test"}
+    )
     assert fb.status_code == 201, fb.text
     body = fb.json()
     assert body["status"] == "applied"
@@ -87,7 +94,9 @@ async def test_feedback_updates_confidence_and_audits(client: AsyncTestClient) -
 @pytest.mark.asyncio
 async def test_traces_records_state_history(client: AsyncTestClient) -> None:
     """traces 返回状态机轨迹（kairos_get_memory_traces——memory_states 数据源）。"""
-    r = await client.post("/v1/memories", json=_write_payload("轨迹测试记忆 内容足够长 生命周期验证"))
+    r = await client.post(
+        "/v1/memories", json=_write_payload("轨迹测试记忆 内容足够长 生命周期验证")
+    )
     mem_id = r.json()["id"]
 
     # 归档触发状态转换（写入 memory_states）
@@ -120,7 +129,10 @@ async def test_sessions_lists_dialogue_memories(client: AsyncTestClient) -> None
     """sessions 列表识别对话记录记忆（kairos_search_sessions）。"""
     await client.post(
         "/v1/memories",
-        json=_write_payload("对话记录（session-test-123）:\n用户: 测试会话内容", path="kairos://_user/hermes/sessions/session-test-123"),
+        json=_write_payload(
+            "对话记录（session-test-123）:\n用户: 测试会话内容",
+            path="kairos://_user/hermes/sessions/session-test-123",
+        ),
     )
     sess = (await client.get("/v1/sessions?limit=5")).json()
     ids = [s["session_id"] for s in sess["data"]]
@@ -130,8 +142,12 @@ async def test_sessions_lists_dialogue_memories(client: AsyncTestClient) -> None
 @pytest.mark.asyncio
 async def test_relations_full_flow(client: AsyncTestClient) -> None:
     """关系全流程：link → query → unlink → query 空（kairos_link/unlink/relations）。"""
-    a = (await client.post("/v1/memories", json=_write_payload("关系源记忆 内容足够长 A"))).json()["id"]
-    b = (await client.post("/v1/memories", json=_write_payload("关系目标记忆 内容足够长 B"))).json()["id"]
+    a = (await client.post("/v1/memories", json=_write_payload("关系源记忆 内容足够长 A"))).json()[
+        "id"
+    ]
+    b = (
+        await client.post("/v1/memories", json=_write_payload("关系目标记忆 内容足够长 B"))
+    ).json()["id"]
 
     # link（必填 reason）
     lk = await client.post(

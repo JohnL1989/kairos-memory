@@ -2995,6 +2995,157 @@ paths:
           description: 语义校验失败（ERR-INPUT-003/004）（方法族基线，Phase 0 逐端点收敛）
         '429':
           description: 限流或预算耗尽（ERR-RATE-*）（方法族基线，Phase 0 逐端点收敛）
+  /v1/memories/{id}/traces:
+    get:
+      operationId: get_v1_memories_id_traces_89
+      summary: 记忆生命周期轨迹（竖切交付，MCP kairos_get_memory_traces）
+      tags:
+      - v1
+      x-kairos-delivery: v0.1.0
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 50
+          maximum: 200
+      responses:
+        '200':
+          description: 成功 — memory_states 状态机轨迹列表（api-spec §1.4）
+        '401':
+          description: 认证失败（ERR-AUTH-001/002）
+        '403':
+          description: 权限不足或红线拒绝（ERR-AUTH-003/004、ERR-SEC-001）
+        '404':
+          description: 资源不存在（ERR-DB-004）
+        '422':
+          description: 语义校验失败（ERR-INPUT-003/004）
+  /v1/relations:
+    post:
+      operationId: post_v1_relations_90
+      summary: 创建关系边（竖切交付，MCP kairos_link）
+      tags:
+      - v1
+      x-kairos-delivery: v0.1.0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - from_uri
+              - uris
+              - reason
+              properties:
+                from_uri:
+                  type: string
+                uris:
+                  type: array
+                  items:
+                    type: string
+                relation_type:
+                  type: string
+                  default: reference
+                reason:
+                  type: string
+                strength:
+                  type: number
+                  default: 1.0
+                confidence:
+                  type: number
+      responses:
+        '200':
+          description: 成功 — 关系边创建结果（api-spec §1.9）
+        '400':
+          description: 参数无效（方法族基线，Phase 0 逐端点收敛）
+        '401':
+          description: 认证失败（ERR-AUTH-001/002）
+        '403':
+          description: 权限不足或红线拒绝（ERR-AUTH-003/004、ERR-SEC-001）
+        '404':
+          description: 资源不存在（ERR-DB-004）
+        '422':
+          description: 语义校验失败（ERR-INPUT-003/004）
+  /v1/relations/{memory_id}:
+    get:
+      operationId: get_v1_relations_memory_id_91
+      summary: 查询关系边（竖切交付，MCP kairos_relations）
+      tags:
+      - v1
+      x-kairos-delivery: v0.1.0
+      parameters:
+      - name: memory_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: direction
+        in: query
+        schema:
+          type: string
+          enum:
+          - inbound
+          - outbound
+          - both
+          default: both
+      - name: relation_type
+        in: query
+        schema:
+          type: string
+          default: '*'
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 50
+          maximum: 200
+      responses:
+        '200':
+          description: 成功 — 关系边列表（api-spec §1.9）
+        '401':
+          description: 认证失败（ERR-AUTH-001/002）
+        '403':
+          description: 权限不足或红线拒绝（ERR-AUTH-003/004、ERR-SEC-001）
+        '404':
+          description: 资源不存在（ERR-DB-004）
+  /v1/relations/{source_id}/{target_id}:
+    delete:
+      operationId: delete_v1_relations_source_id_target_id_92
+      summary: 移除关系边（竖切交付，MCP kairos_unlink）
+      tags:
+      - v1
+      x-kairos-delivery: v0.1.0
+      parameters:
+      - name: source_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: target_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: relation_type
+        in: query
+        schema:
+          type: string
+          default: '*'
+      responses:
+        '200':
+          description: 成功 — 软删除结果（api-spec §1.9）
+        '401':
+          description: 认证失败（ERR-AUTH-001/002）
+        '403':
+          description: 权限不足或红线拒绝（ERR-AUTH-003/004、ERR-SEC-001）
+        '404':
+          description: 资源不存在（ERR-DB-004）
 components:
   schemas:
     # =========================================================================

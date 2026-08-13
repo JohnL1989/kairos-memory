@@ -8,6 +8,8 @@ last_access_at，不直接触发状态复兴」的实现落点）。
 
 from __future__ import annotations
 
+from datetime import UTC
+
 from sqlalchemy import update
 
 from src.events.types import Event
@@ -34,13 +36,11 @@ class UsageEventSubscriber:
         )
         # 访问刷新：显式检索/写入刷新 last_access_at（遗忘调度器 freshness
         # 依据；forgetting.py 声明语义落点，防记忆只减不增）
-        from datetime import datetime, timezone
+        from datetime import datetime
 
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         async with self.db.session() as session:
             await session.execute(
-                update(Memory)
-                .where(Memory.id == event.memory_id)
-                .values(last_access_at=now)
+                update(Memory).where(Memory.id == event.memory_id).values(last_access_at=now)
             )
             await session.commit()  # 缺 commit 则 async with 退出回滚，刷新不落库

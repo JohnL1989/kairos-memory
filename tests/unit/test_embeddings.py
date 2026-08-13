@@ -41,7 +41,7 @@ class TestHashEmbedder:
         e = HashEmbedder()
         a = await e.embed("主题甲的内容")
         b = await e.embed("主题乙的内容")
-        dot = sum(x * y for x, y in zip(a, b))
+        dot = sum(x * y for x, y in zip(a, b, strict=True))
         assert abs(dot) < 0.3
 
 

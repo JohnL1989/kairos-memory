@@ -34,7 +34,7 @@ Kairos 不是简单的键值存储或向量数据库，而是一套完整的记�
 | 阶段 | 状态 |
 |:-----|:-----|
 | 文档体系（52 份） | ✅ 已定稿（0.0.96） |
-| 竖切 v0.1.0-slice（W1~W10） | ✅ 已交付——16 张表、REST 31 端点、CLI 18 条、MCP 15 工具全可用、288 项测试 |
+| 竖切 v0.1.0-slice（W1~W10） | ✅ 已交付——16 张表、REST 31 端点、CLI 21 条、MCP 15 工具全可用、288 项测试 |
 | 全量 v0.1.0（升华/图谱/WM 等） | 📋 架构就绪，未启动 |
 
 进度追踪见 [changelog](docs/governance/changelog.md) 与 [项目计划](docs/governance/project-plan.md)；能力清单见 [功能清单](docs/specification/feature-list.md)（168 项能力：43 核心 + 125 扩展）。

@@ -92,7 +92,8 @@ class TestPostgresBackendContract:
         assert pool is not None
         async with pool.acquire() as conn:
             witness = await conn.fetchrow(
-                "SELECT narrative_coherence_score, calibration_count FROM witness_anchor WHERE memory_id = $1",
+                "SELECT narrative_coherence_score, calibration_count "
+                "FROM witness_anchor WHERE memory_id = $1",
                 m1.id,
             )
             usage = await conn.fetchrow(

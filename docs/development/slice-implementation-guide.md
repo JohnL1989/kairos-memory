@@ -8,8 +8,8 @@ tags:
   - development
   - slice
 created: 2026-07-31
-updated: 2026-08-12
-last_reviewed: 2026-08-12
+updated: 2026-08-13
+last_reviewed: 2026-08-13
 status: design-freeze
 ---
 
@@ -18,8 +18,8 @@ status: design-freeze
 > | 章节 | 主题 |
 > |:----|:----|
 > | 一、竖切组件清单 | 首交付组件范围 |
-> | 二、竖切 Schema 清单 | 15 张表 DDL 指引 |
-> | 三、竖切端点清单 | REST 21 + CLI 15 |
+> | 二、竖切 Schema 清单 | 16 张表 DDL 指引 |
+> | 三、竖切端点清单 | REST 31 + CLI 21 |
 > | 四、逐组件实现规格 | 各组件实现细节 |
 > | 五、实现顺序与依赖 | 依赖图与实现顺序 |
 > | 六、开发者阅读路径 | 上手指引 |
@@ -82,9 +82,9 @@ status: design-freeze
 
 ---
 
-## 三、竖切端点清单（REST 31 + CLI 18）
+## 三、竖切端点清单（REST 31 + CLI 21）
 
-> **口径**：竖切 CLI 15 条为竖切子集；全量 CLI 25 条（[api-spec.md](../specification/api-spec.md) §3）；[implementation-map.md](../specification/implementation-map.md) 的 27 条含规划扩展（竖切 15 + 全量增量）——三处口径不同属有意设计，引用时注明档位。
+> **口径**：竖切 CLI 21 条为竖切子集；全量 CLI 25 条（[api-spec.md](../specification/api-spec.md) §3）；[implementation-map.md](../specification/implementation-map.md) 的 27 条含规划扩展（竖切 21 + 全量增量）——三处口径不同属有意设计，引用时注明档位。
 
 **REST**（方法/路径以 [api-spec.md](../specification/api-spec.md) 为准）：
 
@@ -108,8 +108,18 @@ status: design-freeze
 | `GET /health` | 9 | A-01 |
 | `GET /v1/config` / `PATCH /v1/config` | 9 | A-02 |
 | `POST /v1/seeds` / `GET /v1/seeds` | 9 | A-04/A-05 |
+| `GET /v1/memories/stats` | 1 | 记忆库报告（kairos_get_stats，MCP §6.8） |
+| `GET /v1/memories/heat-top` | 1 | 热度排序（kairos_get_hot_memories，usage_weight） |
+| `POST /v1/memories/{id}/feedback` | 1 | 可信度反馈（kairos_feedback_memory，指数平滑 + S-11 审计） |
+| `GET /v1/memories/{id}/traces` | 4 | 生命周期轨迹（kairos_get_memory_traces，memory_states 数据源） |
+| `POST /v1/entities/extract` | 3 | 规则法实体提取（kairos_extract_entities，entities 表入库去重） |
+| `POST /v1/graph/search` | 3 | 实体-记忆关联图谱检索（kairos_search_graph） |
+| `GET /v1/sessions` | 1 | 会话列表聚合视图（kairos_search_sessions） |
+| `POST /v1/relations` | 1 | 关系边创建（kairos_link，必填 reason） |
+| `DELETE /v1/relations/{source_id}/{target_id}` | 1 | 关系边移除（kairos_unlink，软删除） |
+| `GET /v1/relations/{memory_id}` | 1 | 关系边查询（kairos_relations，direction 双向） |
 
-**CLI**：`kairos init`、`kairos write`、`kairos read`、`kairos search`、`kairos ls`、`kairos tree`、`kairos update`、`kairos forget`、`kairos calibrate`、`kairos freeze`、`kairos degradation switch`、`kairos status`、`kairos health`、`kairos db migrate`、`kairos config show`。
+**CLI**：`kairos init`、`kairos serve`、`kairos write`、`kairos read`、`kairos search`、`kairos ls`、`kairos tree`、`kairos update`、`kairos forget`、`kairos calibrate`、`kairos freeze`、`kairos unfreeze`、`kairos degradation switch`、`kairos status`、`kairos health`、`kairos mcp`、`kairos db migrate`、`kairos db verify`、`kairos config show`、`kairos config reset`、`kairos audit log`。
 
 ---
 
@@ -246,5 +256,7 @@ W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双
 | 0.0.93 | 2026-08-11 | round53 全面深度审计修复批次（changelog 0.0.93）：§一 计数口径注记措辞对齐（「project-plan §一 竖切组件列」→「竖切范围表组件行」）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
 | 0.0.95 | 2026-08-11 | round55 Obsidian frontmatter 闭合修复批次（changelog 0.0.95）：frontmatter 补立即闭合 `---`（章节导航引用块此前被卷入 YAML 区导致 Obsidian 无效属性）；frontmatter updated/last_reviewed 同步 2026-08-11。 |
 | 0.1.0 | 2026-08-12 | 定稿评审通过，版本统一升级（0.0.x → 0.1.0）——首版发布（见 changelog 0.1.0 批次） |
+| 0.1.2 | 2026-08-13 | MCP 工具契约补齐批次（changelog 0.1.2）：§二 竖切 Schema 15→16 张（memory_relations）；§三 端点清单补扩展端点（REST 31 + CLI 21 口径修正）。 |
+| 0.1.3 | 2026-08-13 | 全面审计修复批次（changelog 0.1.3）：§三 端点清单补全（REST 31 扩展端点 10 行 + CLI 15→21 条）、§一 导航表同步（16 张表）。 |
 
 

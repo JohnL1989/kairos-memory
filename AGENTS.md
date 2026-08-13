@@ -10,7 +10,7 @@ tags: [行为规范, Kairos, Hermes, AGENTS-v2]
 
 > 本文件由 Hermes / Claude Code / Codex 自动读取（AGENTS.md 仅当前目录生效；本目录已初始化 git（2026-08-06），不使用 .hermes.md）。
 > 结构：0 优先级 → 1 元规则 → 2 项目配置 → 3 红线（S/A）→ 4 项目规范 → 5 闭环
-> 项目性质：**竖切实现已交付**（REST 21 端点 / CLI 18 命令 / MCP Bridge 15 工具 / Agent Tool 5 个，186 项测试覆盖率 83%）。168 项能力（43 核心 + 125 扩展）中竖切范围外的部分处于架构就绪状态，见 [debt-collection.md](docs/governance/debt-collection.md) 与 [slice-implementation-guide.md](docs/development/slice-implementation-guide.md)。
+> 项目性质：**竖切实现已交付**（REST 31 端点 / CLI 21 命令 / MCP Bridge 15 工具 / Agent Tool 5 个，292 项测试，覆盖率 82.81%（CI 口径实测，2026-08-13 修复批次））。168 项能力（43 核心 + 125 扩展）中竖切范围外的部分处于架构就绪状态，见 [debt-collection.md](docs/governance/debt-collection.md) 与 [slice-implementation-guide.md](docs/development/slice-implementation-guide.md)。
 
 ## 0. 规则优先级（两维）
 
@@ -55,8 +55,8 @@ tags: [行为规范, Kairos, Hermes, AGENTS-v2]
 ## 2. 项目配置
 
 ### 2.1 基本信息
-- 项目名称：Kairos-Memory 文档库
-- 场景：文档治理（docs 知识库，无源码）
+- 项目名称：Kairos-Memory
+- 场景：AI 记忆系统（docs 文档体系 + 竖切实现代码 src/ + tests/ + scripts/ 审计脚本）
 - 权威来源：`docs/foundation/architecture-v0.1.0.md`（设计权威）
 
 ### 2.2 目录结构
@@ -65,7 +65,7 @@ kairos-memory/
 ├── docs/            # 文档体系（10 个内容目录 + README 索引，见 docs/README.md）
 │   ├── foundation/  # 为什么+是什么（架构/认知基础/理念关系/蓝图）
 │   ├── specification/ # 具体长什么样（168 能力/57 表/API/数据模型/映射）
-│   │   ├── api-contract/ # 机器可读契约骨架（openapi.yaml / mcp-tools.json，待补全见债务 D-428）
+│   │   ├── api-contract/ # 机器可读契约（openapi.yaml 92 操作 schema / mcp-tools.json 15 工具，D-428 已闭合）
 │   ├── development/ # 怎么开发（技术栈/环境/规范/集成/竖切）
 │   ├── governance/  # 规则与债务（debt-collection 等）
 │   ├── quality/     # 验证方法
@@ -121,7 +121,7 @@ kairos-memory/
 
 ### 4.1 文档体系职责（docs/ 10 个内容目录，详见 docs/README.md 索引）
 - foundation = 为什么 + 是什么（设计权威所在层）
-- specification = 具体长什么样（功能/数据/接口/实现/需求/NFR）；其下 `api-contract/` 子目录承载机器可读契约骨架（`openapi.yaml` / `mcp-tools.json`，以 `api-spec.md` 为权威描述，契约 schema 待补全见债务 D-428）
+- specification = 具体长什么样（功能/数据/接口/实现/需求/NFR）；其下 `api-contract/` 子目录承载机器可读契约（`openapi.yaml` 92 操作 schema / `mcp-tools.json` 15 工具 inputSchema，以 `api-spec.md` 为权威描述，D-428 已全量闭合）
 - development = 怎么上手开发
 - governance = 规则与债务追踪
 - quality = 验证方法与门禁

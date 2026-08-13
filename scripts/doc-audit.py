@@ -810,7 +810,7 @@ def check_feature_list_refs() -> None:
         r"§([0-9A-Z一二三四五六七八九十]+(?:\.[0-9A-Za-z]+)*(?:-[0-9]+)?[a-z]?)"
     )
     for ln_no, line in enumerate(fl.read_text(encoding="utf-8").splitlines(), 1):
-        if re.match(r"^\| *0\.0\.", line.lstrip()):
+        if re.match(r"^\| *0\.\d+\.", line.lstrip()):
             continue  # 版本记录表行
         if "|" not in line:
             continue
@@ -967,7 +967,7 @@ def check_feature_list_refs() -> None:
         pool[p.name] = _section_content_map(p.read_text(encoding="utf-8"))
     bad = 0
     for ln_no, line in enumerate(fl.read_text(encoding="utf-8").splitlines(), 1):
-        if re.match(r"^\| *0\.0\.", line.lstrip()):
+        if re.match(r"^\| *0\.\d+\.", line.lstrip()):
             continue  # 版本记录表行
         if "|" not in line:
             continue
@@ -1806,7 +1806,7 @@ def check_endpoint_source() -> None:
         text = p.read_text(encoding="utf-8")
         for ln_no, line in enumerate(text.splitlines(), 1):
             s = line.lstrip()
-            if re.match(r"^\| *0\.0\.", s):  # 版本记录表行（历史叙述）
+            if re.match(r"^\| *0\.\d+\.", s):  # 版本记录表行（历史叙述）
                 continue
             for m in ref_pat.finditer(line):
                 meth, ref = m.group(1), m.group(2).split("?")[0].rstrip("/")
@@ -1888,7 +1888,7 @@ def check_endpoint_section() -> None:
         text = p.read_text(encoding="utf-8")
         for ln_no, line in enumerate(text.splitlines(), 1):
             s = line.lstrip()
-            if re.match(r"^\| *0\.0\.", s):  # 版本记录表行（历史叙述）
+            if re.match(r"^\| *0\.\d+\.", s):  # 版本记录表行（历史叙述）
                 continue
             sect_m = sect_pat.search(line)
             if not sect_m:
@@ -1942,7 +1942,7 @@ def check_cognitive_deprovision() -> None:
     bad = 0
     for ln_no, line in enumerate(text.splitlines(), 1):
         s = line.lstrip()
-        if re.match(r"^\| *0\.0\.", s):  # 版本记录表行
+        if re.match(r"^\| *0\.\d+\.", s):  # 版本记录表行
             continue
         for m in version_pat.finditer(line):
             ctx = line[max(0, m.start() - 40): m.end() + 30]
@@ -2056,7 +2056,7 @@ def check_section_refs() -> None:
         text = p.read_text(encoding="utf-8")
         for ln_no, line in enumerate(text.splitlines(), 1):
             s = line.lstrip()
-            if re.match(r"^\| *0\.0\.", s):  # 版本记录表行
+            if re.match(r"^\| *0\.\d+\.", s):  # 版本记录表行
                 continue
             if "编号迁移" in line or "并入" in line or "保留编号空缺" in line:
                 continue  # 编号迁移注记行（认知基础 §1.5/1.6 空缺自述）
@@ -2222,7 +2222,7 @@ def check_section_refs() -> None:
             continue
         text = p.read_text(encoding="utf-8")
         for ln_no, line in enumerate(text.splitlines(), 1):
-            if re.match(r"^\| *0\.0\.", line.lstrip()):
+            if re.match(r"^\| *0\.\d+\.", line.lstrip()):
                 continue
             for m in link_kw_pat.finditer(line):
                 tgt = m.group(1).split("#")[0]
@@ -2572,7 +2572,7 @@ def check_gov_exec_record() -> None:
     gov = DOCS / "governance" / "documentation-governance.md"
     cl_text = changelog.read_text(encoding="utf-8")
     gv_text = gov.read_text(encoding="utf-8")
-    vers = re.findall(r"^\| (0\.0\.\d+) \|", cl_text, re.M)
+    vers = re.findall(r"^\| (0\.\d+\.\d+) \|", cl_text, re.M)
     if not vers:
         print("[6.32] 治理执行记录覆盖性: changelog 无版本记录（跳过）")
         return
@@ -2600,7 +2600,7 @@ def check_changelog_structure() -> None:
     """
     cl = DOCS / "governance" / "changelog.md"
     text = cl.read_text(encoding="utf-8")
-    nar = re.findall(r"^## (0\.0\.\d+)[（(]", text, re.M)
+    nar = re.findall(r"^## (0\.\d+\.\d+)[（(]", text, re.M)
     bad = 0
     for i in range(1, len(nar)):
         a = [int(x) for x in nar[i - 1].split(".")]
@@ -2719,7 +2719,7 @@ def check_version_mutex() -> None:
             continue
         for line in text.split("\n"):
             s = line.lstrip()
-            if re.match(r"^\| *0\.0\.", s):  # 版本记录表行（历史叙述）
+            if re.match(r"^\| *0\.\d+\.", s):  # 版本记录表行（历史叙述）
                 continue
             landed = _LANDED_RE.search(line)
             unlanded = _UNLANDED_RE.search(line)
@@ -2931,7 +2931,7 @@ def check_batch_version_record_coverage() -> None:
     if not changelog.exists():
         return
     cl_text = changelog.read_text(encoding="utf-8")
-    vers = re.findall(r"^\| (0\.0\.\d+) \|", cl_text, re.M)
+    vers = re.findall(r"^\| (0\.\d+\.\d+) \|", cl_text, re.M)
     if not vers:
         return
     latest = max(vers, key=lambda v: [int(x) for x in v.split(".")])
@@ -2940,9 +2940,12 @@ def check_batch_version_record_coverage() -> None:
     if not m_start:
         return
     seg = cl_text[m_start.start():]
-    m_end = re.search(r"^## (?:0\.0\.\d+（|版本记录)", seg[m_start.end():], re.M)
+    # seg 已相对切片——偏移须换算为 seg 内相对位置（原实现用绝对偏移二次切片，
+    # 起点越界致 m_end 恒不匹配、seg 蔓延全文件；0.1.2 批次起误报历史行）
+    rel = m_start.end() - m_start.start()
+    m_end = re.search(r"^## (?:0\.\d+\.\d+（|版本记录)", seg[rel:], re.M)
     if m_end:
-        seg = seg[: m_start.end() + m_end.start()]
+        seg = seg[: rel + m_end.start()]
     # 提取受改清单（0.0.98 起双轨制：结构性受改清单优先——机械性受改不登记
     # 版本记录；无「结构性受改」形态时回退旧「受改 N 份文档」格式兼容历史批次）
     list_m = re.search(r"结构性受改\s*\d+\s*份?文档?（([^）]+)）", seg)

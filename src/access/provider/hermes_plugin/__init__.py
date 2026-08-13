@@ -15,16 +15,19 @@
 
 from __future__ import annotations
 
+import os as _os
 import sys
 from pathlib import Path
-import os as _os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # MemoryProvider subclass — 插件门禁检测（plugins/memory/__init__.py 扫描）
-from agent.memory_provider import MemoryProvider
+# agent.memory_provider 为 Hermes 运行时模块（部署环境提供，本仓库无 stub），mypy 以 ignore 处理
+from agent.memory_provider import MemoryProvider  # type: ignore[import-not-found]
 
 # Kairos 参考实现路径（与 aion-memory 同模式：sys.path 插入项目源码）
-_kairos_src = Path(_os.environ.get("KAIROS_SRC", "D:/projects/kairos-memory"))  # hermes_plugin/ → kairos-memory/
+_kairos_src = Path(
+    _os.environ.get("KAIROS_SRC", "D:/projects/kairos-memory")
+)  # hermes_plugin/ → kairos-memory/
 if str(_kairos_src) not in sys.path:
     sys.path.insert(0, str(_kairos_src))
 
@@ -33,7 +36,7 @@ from src.access.provider.kairos_provider import (  # noqa: E402
 )
 
 
-class KairosMemoryProvider(MemoryProvider):
+class KairosMemoryProvider(MemoryProvider):  # type: ignore[misc]  # MemoryProvider 为 Any（外部模块无 stub）
     """Hermes MemoryProvider 适配壳（委托 Kairos 参考实现）。"""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -66,17 +69,17 @@ class KairosMemoryProvider(MemoryProvider):
         assistant_content: str,
         *,
         session_id: str = "",
-        messages: Optional[List[Dict[str, Any]]] = None,
+        messages: list[dict[str, Any]] | None = None,
     ) -> None:
         return self._impl.sync_turn(
             user_content, assistant_content, session_id=session_id, messages=messages
         )
 
-    def get_tool_schemas(self) -> List[Dict[str, Any]]:
+    def get_tool_schemas(self) -> list[dict[str, Any]]:
         return self._impl.get_tool_schemas()
 
     def handle_tool_call(
-        self, tool_name: str, args: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, tool_name: str, args: dict[str, Any] | None = None, **kwargs: Any
     ) -> str:
         return self._impl.handle_tool_call(tool_name, args, **kwargs)
 
@@ -88,10 +91,10 @@ class KairosMemoryProvider(MemoryProvider):
     def on_turn_start(self, turn_number: int, message: str, **kwargs: Any) -> None:
         return self._impl.on_turn_start(turn_number, message, **kwargs)
 
-    def on_session_end(self, messages: List[Dict[str, Any]]) -> None:
+    def on_session_end(self, messages: list[dict[str, Any]]) -> None:
         return self._impl.on_session_end(messages)
 
-    def on_pre_compress(self, messages: List[Dict[str, Any]]) -> str:
+    def on_pre_compress(self, messages: list[dict[str, Any]]) -> str:
         return self._impl.on_pre_compress(messages)
 
     def on_memory_write(
@@ -99,7 +102,7 @@ class KairosMemoryProvider(MemoryProvider):
         action: str,
         target: str,
         content: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         return self._impl.on_memory_write(action, target, content, metadata)
 
@@ -132,15 +135,15 @@ class KairosMemoryProvider(MemoryProvider):
 
     # -- Config wizard（'hermes memory setup'；config.json 模式） -------------
 
-    def get_config_schema(self) -> List[Dict[str, Any]]:
+    def get_config_schema(self) -> list[dict[str, Any]]:
         return self._impl.get_config_schema()
 
-    def save_config(self, values: Dict[str, Any], hermes_home: str) -> None:
+    def save_config(self, values: dict[str, Any], hermes_home: str) -> None:
         return self._impl.save_config(values, hermes_home)
 
     # -- Calibration（架构 on_calibration；Hermes 无原生钩子） ---------------
 
-    def calibrate(self, memory_id: str, score: float, source: str = "hermes") -> Dict[str, Any]:
+    def calibrate(self, memory_id: str, score: float, source: str = "hermes") -> dict[str, Any]:
         return self._impl.calibrate(memory_id, score, source)
 
 
