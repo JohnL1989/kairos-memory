@@ -131,10 +131,10 @@ class KairosMCPBridge:
 
     async def unlink(self, from_uri: str, to_uri: str, relation_type: str) -> Any:
         """kairos_unlink → DELETE /v1/relations/{source}/{target}（软删除留痕）。"""
+        # Authorization 头已随 AsyncClient 构造注入，无需重复传
         resp = await self._client.delete(
             f"/v1/relations/{from_uri}/{to_uri}",
             params={"relation_type": relation_type},
-            headers=self._headers,
         )
         resp.raise_for_status()
         return resp.json()
