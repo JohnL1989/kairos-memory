@@ -330,9 +330,7 @@ async def cmd_seed_add(
         await app.close()
 
 
-async def cmd_backfill_entities(
-    *, dry_run: bool = False, force: bool = False
-) -> dict[str, Any]:
+async def cmd_backfill_entities(*, dry_run: bool = False, force: bool = False) -> dict[str, Any]:
     """kairos db backfill-entities [--dry-run] [--force]（存量实体回溯）。
 
     遍历无实体关联的活跃记忆 → 规则法提取 → entities 去重 + memory_entities

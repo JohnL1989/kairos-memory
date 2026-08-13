@@ -192,9 +192,7 @@ def db_verify() -> None:
 @db_app.command("backfill-entities")
 def db_backfill_entities(
     dry_run: bool = typer.Option(False, "--dry-run", help="仅统计候选数不执行回溯"),
-    force: bool = typer.Option(
-        False, "--force", help="重建全部关联（词典规则升级后覆盖存量）"
-    ),
+    force: bool = typer.Option(False, "--force", help="重建全部关联（词典规则升级后覆盖存量）"),
 ) -> None:
     """存量实体回溯：无实体关联的活跃记忆批量提取入库（幂等；--force 重建）。"""
     _sync(_cli.cmd_backfill_entities)(dry_run=dry_run, force=force)
