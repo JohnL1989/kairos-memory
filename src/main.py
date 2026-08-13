@@ -1,7 +1,7 @@
 """Kairos CLI 入口（竖切 v0.1.0-slice）。
 
 命令契约单一事实源：docs/specification/api-spec.md §3（全量 25 条）；
-竖切交付子集 21 条见 docs/development/slice-implementation-guide.md §三。
+竖切交付子集 23 条见 docs/development/slice-implementation-guide.md §三。
 本模块按周次渐进注册：W1 骨架（--version + init），后续周次按里程碑补充。
 
 CLI 框架：Typer（W1 定档——与 Litestar 类型安全理念一致，mypy 友好）。

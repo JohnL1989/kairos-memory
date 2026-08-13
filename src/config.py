@@ -1,6 +1,6 @@
 """Kairos 配置加载（竖切子集）。
 
-权威来源：docs/ops/configuration.md（全量 227 项正文参数 + 附录 A 147 项）。
+权威来源：docs/ops/configuration.md（全量 227 项正文参数 + 附录 A 154 项，合计 381 项）。
 本模块仅承载竖切（v0.1.0-slice）消费的参数子集；参数名、默认值、取值范围
 均以 configuration.md 为唯一事实源，本模块不自行发明参数。
 

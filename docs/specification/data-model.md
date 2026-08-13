@@ -26,7 +26,7 @@ status: design-freeze
 >
 > 三者正交：一条记忆可同时为 `status=active`（可检索）、`extinction_status=extinct`（知识无效）、`memory_states.state=active`（当前态）。详见架构 [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §5.2 遗忘调度器与 extinction 关系。
 >
-> **DDL 承载说明**：本文档描述逻辑数据模型（表/列/索引/约束），**不含内联 `CREATE TABLE` DDL**——DDL 集中在 [schema-slice.sql](schema-slice.sql)（竖切示例 DDL——14 张物理表 + 1 张 FTS5 虚拟表 `memories_fts`，合计 15 张；全量 57 张物理表的建表语句随实现阶段由 Alembic 迁移脚本承载）。此分离为有意为之（文档层描述结构、迁移层承载 DDL），非遗漏。
+> **DDL 承载说明**：本文档描述逻辑数据模型（表/列/索引/约束），**不含内联 `CREATE TABLE` DDL**——DDL 集中在 [schema-slice.sql](schema-slice.sql)（竖切示例 DDL——15 张物理表 + 1 张 FTS5 虚拟表 `memories_fts`，合计 16 张；全量 57 张物理表的建表语句随实现阶段由 Alembic 迁移脚本承载）。此分离为有意为之（文档层描述结构、迁移层承载 DDL），非遗漏。
 
 > **物理分库取向注记（外部理念吸收 0.0.41；外部实证）**：外部实现采用「每 agent 物理分库」的隔离取向——每个 agent 独立数据库实例，故障域与备份粒度天然隔离。Kairos 采用**逻辑域隔离**——单库多租户，隔离由 `kairos://_user/{id}/` 路径域 + `permission_acl` 路径级授权（§11）承载。评估记录：逻辑域隔离以零额外运维成本支撑 v0.1.0 单机/轻量模式起步，且与端云同步（`sync_queue`）共用同一事务域；物理分库的故障隔离、单租户恢复与租户级备份优势，在标准模式多租户场景下作为 v1.1+ 演进选项（与 blueprint TeamScope P3-17 多租户隔离衔接，见 [architecture-blueprint-v1.1.md](../foundation/architecture-blueprint-v1.1.md) §P3-17）——v0.1.0 维持逻辑域隔离，不引入物理分库。
 
@@ -1371,9 +1371,9 @@ SQLite 无时区类型，故：
 
 ### 13.4 可执行 DDL
 
-竖切 15 张表的 SQLite 可执行 DDL 见 [`schema-slice.sql`](schema-slice.sql)（与本文同目录）。该文件是 W2「schema 迁移」里程碑的直接输入，字段语义以本文为准、类型转换以 §13.1 为准；两者不一致时以本文为准并修订 SQL。
+竖切 15 张物理表 + 1 张 FTS5 虚拟表（`memories_fts`）的 SQLite 可执行 DDL 见 [`schema-slice.sql`](schema-slice.sql)（与本文同目录）。该文件是 W2「schema 迁移」里程碑的直接输入，字段语义以本文为准、类型转换以 §13.1 为准；两者不一致时以本文为准并修订 SQL。
 
-**范围声明**：`schema-slice.sql` 仅覆盖竖切 15 张表（[slice-implementation-guide.md](../development/slice-implementation-guide.md) §二），非 v0.1.0 全量 57 张表；余下 42 张表的 DDL 在对应功能进入实现范围时按同一映射规则补齐。
+**范围声明**：`schema-slice.sql` 仅覆盖竖切 15 张物理表（另含 1 张 FTS5 虚拟表，[slice-implementation-guide.md](../development/slice-implementation-guide.md) §二），非 v0.1.0 全量 57 张物理表；余下 42 张表的 DDL 在对应功能进入实现范围时按同一映射规则补齐。
 
 ### 13.5 向量线性投影矩阵持久化（RC-05）
 

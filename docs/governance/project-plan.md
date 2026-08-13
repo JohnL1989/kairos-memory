@@ -31,7 +31,7 @@ status: design-freeze
 | 事件总线 | 4 类事件：use_event / calibration_signal / degradation_switch / latent_trigger（架构 §10.10） |
 | 身份模型 | 构造论：初始赋予（见证锚定写入触发）+ 叙事驱动双向更新（认知基础 D.2 / 架构 §5.2） |
 | 存储后端 | SQLite + sqlite-vec（首迭代）；PostgreSQL + pgvector 竖切验收后适配（ADR-001） |
-| 功能/表/端点 | feature-list 竖切标注（约 23 项功能）；data-model 竖切表子集（16 张，清单见 [slice-implementation-guide](../development/slice-implementation-guide.md)）；api-spec 竖切端点（REST 31 + CLI 21） |
+| 功能/表/端点 | feature-list 竖切标注（约 23 项功能）；data-model 竖切表子集（16 张，清单见 [slice-implementation-guide](../development/slice-implementation-guide.md)）；api-spec 竖切端点（REST 31 + CLI 23） |
 | 时间过滤基础窗口 | `KAIROS_TIME_FILTER_ENABLED` + `occurred_at` 可空加列（D-323）；竖切内第 5 周（W05）里程碑交付基础窗口，过滤执行待 v1.1/竖切扩展——「W5」此处为里程碑周次，与功能编号 W-05（关系标注）、竖切组件序号不混用 |
 
 ## 二、里程碑（周数按单人全时开发估算，实际以进度为准）

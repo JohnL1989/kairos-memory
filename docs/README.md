@@ -14,7 +14,7 @@ status: design-freeze
 
 # Kairos 文档索引
 
-> **当前状态**：**v0.1.0 首版已发布（竖切交付完成）**。Kairos 为全面重新设计的系统，本文档库的竖切组件已有可运行代码（`src/` 下 16 张竖切表、记忆 CRUD/双副本、路径空间、事件总线、三信号检索、遗忘、身份注册表、审计 HMAC 链、校准/降级/冻结、REST 31 端点 + CLI 21 条 + Agent Tool 5 工具 + MCP 15 工具，292 项测试）；全量 v0.1.0 的 168 项能力（43 核心 + 125 扩展）仍处于架构就绪状态，核心引擎（升华/图谱/WM 等竖切外组件）未启动。代码启动与竖切交付进展见 [changelog](governance/changelog.md)。
+> **当前状态**：**v0.1.0 首版已发布（竖切交付完成）**。Kairos 为全面重新设计的系统，本文档库的竖切组件已有可运行代码（`src/` 下 16 张竖切表、记忆 CRUD/双副本、路径空间、事件总线、三信号检索、遗忘、身份注册表、审计 HMAC 链、校准/降级/冻结、REST 31 端点 + CLI 23 条 + Agent Tool 5 工具 + MCP 15 工具，326 项测试）；全量 v0.1.0 的 168 项能力（43 核心 + 125 扩展）仍处于架构就绪状态，核心引擎（升华/图谱/WM 等竖切外组件）未启动。代码启动与竖切交付进展见 [changelog](governance/changelog.md)。
 
 > **快速入口：** [系统架构](foundation/architecture-v0.1.0.md) · [认知基础](foundation/cognitive-foundation.md) · [待实现债务清单](governance/debt-collection.md)
 
@@ -46,9 +46,9 @@ status: design-freeze
 | [`specification/use-cases.md`](specification/use-cases.md) | **使用场景** — 8 个典型交互场景 |
 | [`specification/rl-weight-spec.md`](specification/rl-weight-spec.md) | **RL 权重优化器规格** — 五维权重 + 学习算法 |
 | [`specification/operation-catalog.md`](specification/operation-catalog.md) | **操作目录** — 66 项标准操作（OP-001~OP-066），按 ENC/RET/STR 三阶段组织，标注安全红线 |
-| [`specification/schema-slice.sql`](specification/schema-slice.sql) | **竖切 DDL** — 14 张物理竖切表可执行建表语句（另含 1 张 FTS5 虚拟表 `memories_fts`，合计 15 张；`slice-implementation-guide` 的「15 张表」即此口径）；data-model 指定的 DDL 唯一承载，全量 57 表 DDL 随实现阶段由 Alembic 迁移承载 |
-| [`specification/api-contract/openapi.yaml`](specification/api-contract/openapi.yaml) | **REST 契约** — OpenAPI 3.1，81 路径 / 88 操作，request/response schema 已全量补全（D-428 已闭合 0.0.99，redocly lint 零 error） |
-| [`specification/api-contract/mcp-tools.json`](specification/api-contract/mcp-tools.json) | **MCP 工具契约** — 15 工具清单（inputSchema 待补全，见债务 D-428） |
+| [`specification/schema-slice.sql`](specification/schema-slice.sql) | **竖切 DDL** — 15 张物理竖切表可执行建表语句（另含 1 张 FTS5 虚拟表 `memories_fts`，合计 16 张；`slice-implementation-guide` 的「16 张表」即此口径）；data-model 指定的 DDL 唯一承载，全量 57 表 DDL 随实现阶段由 Alembic 迁移承载 |
+| [`specification/api-contract/openapi.yaml`](specification/api-contract/openapi.yaml) | **REST 契约** — OpenAPI 3.1，85 路径 / 92 操作，request/response schema 已全量补全（D-428 已闭合 0.0.99，redocly lint 零 error） |
+| [`specification/api-contract/mcp-tools.json`](specification/api-contract/mcp-tools.json) | **MCP 工具契约** — 15 工具清单（inputSchema 已全量补全，D-428 已闭合） |
 
 ## 开发文档（怎么上手开发）
 
@@ -58,7 +58,7 @@ status: design-freeze
 | [`development/development-setup.md`](development/development-setup.md) | **开发环境搭建** — 本地开发步骤 + IDE 配置 |
 | [`development/coding-conventions.md`](development/coding-conventions.md) | **开发规范** — 命名/结构/错误处理/日志 |
 | [`development/integration-design.md`](development/integration-design.md) | **集成设计** — Agent 全生命周期 + 并发/超时/错误传播 |
-| [`development/slice-implementation-guide.md`](development/slice-implementation-guide.md) | **竖切实现指南** — 竖切组件/15 张表/REST+CLI 端点/逐组件实现规格 |
+| [`development/slice-implementation-guide.md`](development/slice-implementation-guide.md) | **竖切实现指南** — 竖切组件/16 张表/REST+CLI 端点/逐组件实现规格 |
 | [`development/engineering-workflow.md`](development/engineering-workflow.md) | **工程流程** — 分支策略/PR 流程/提交规范/CI 门禁/发布流程 |
 
 ## 治理文档
@@ -131,7 +131,7 @@ status: design-freeze
 
 ## 分析文档（外部理念对照批次）
 
-> **目录边界说明**：`docs/analysis/` 为外部视频理念对照分析的**产物目录**（独立批次），随仓库分发、不随审计过程材料归档；其文档计入 `docs/` 全量 md 统计（含于总计 196 份 md），但**不计入「核心文档」权威子集（56 份）**，亦不参与架构/规格权威口径。
+> **目录边界说明**：`docs/analysis/` 为外部视频理念对照分析的**产物目录**（独立批次），随仓库分发、不随审计过程材料归档；其文档计入 `docs/` 全量 md 统计（含于总计 197 份 md），但**不计入「核心文档」权威子集（56 份）**，亦不参与架构/规格权威口径。
 
 | 路径 | 内容 |
 |:-----|:-----|
@@ -143,9 +143,9 @@ status: design-freeze
 | [`analysis/external-videos/repos/`](analysis/external-videos/repos/) | GitHub 仓库源码级深读笔记（编号 01~15） |
 | [`analysis/external-videos/process/fetch-guide.md`](analysis/external-videos/process/fetch-guide.md) | 字幕抓取/转写流程记录（不含凭据） |
 
-总计：**196 份 md + 3 份 yaml**（= 核心文档 56 份【53 md + 3 yaml：foundation 4 + specification 13(12 md+1 yaml: api-contract/openapi.yaml) + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1】+ 外部视频分析批次独立目录 [analysis/external-videos/](analysis/external-videos/README.md) 143 份【4 索引/报告 + 15 仓库笔记 + 102 视频笔记 + 21 论文笔记 + 1 流程记录】；审计过程材料不随仓库分发，处置记录见 changelog 各批次）。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
+总计：**197 份 md + 3 份 yaml**（= 核心文档 56 份【53 md + 3 yaml：foundation 4 + specification 13(12 md+1 yaml: api-contract/openapi.yaml) + development 6 + governance 9 + ops 6 + quality 4 + security 2 + user 2 + references 9(7 md+2 yaml) + README 1】+ 外部视频分析批次独立目录 [analysis/external-videos/](analysis/external-videos/README.md) 143 份【4 索引/报告 + 15 仓库笔记 + 102 视频笔记 + 21 论文笔记 + 1 流程记录】；审计过程材料不随仓库分发，处置记录见 changelog 各批次）。其中 [foundation/architecture-v0.1.0.md](foundation/architecture-v0.1.0.md) 为核心架构规格（全体系以架构文档为设计权威）。
 
-> **附属资产计数政策**：上列「196 份 md + 3 份 yaml」为 md/yaml 核心口径；`specification/schema-slice.sql`（全量 DDL 承载）、`specification/api-contract/mcp-tools.json`（MCP 工具契约）、`diagrams/system-architecture.html`（架构总览图）等附属资产不计入该计数（openapi.yaml 已计入 3 yaml 之一）。
+> **附属资产计数政策**：上列「197 份 md + 3 份 yaml」为 md/yaml 核心口径；`specification/schema-slice.sql`（全量 DDL 承载）、`specification/api-contract/mcp-tools.json`（MCP 工具契约）、`diagrams/system-architecture.html`（架构总览图）等附属资产不计入该计数（openapi.yaml 已计入 3 yaml 之一）。
 
 ## 阅读建议
 

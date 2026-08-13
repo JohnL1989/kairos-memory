@@ -3065,6 +3065,7 @@ def main() -> int:
     check_threshold_self_consistency()
     check_batch_version_record_coverage()
     check_third_party_names()
+    check_state_declaration_counts()
 
 
 def check_third_party_names() -> None:
@@ -3116,6 +3117,115 @@ def check_third_party_names() -> None:
                 break
     else:
         print("[6.40] 第三方来源名黑名单: 零残留")
+
+
+def check_state_declaration_counts() -> None:
+    """6.41 状态声明关键计数校验（状态声明零漂移门禁，0.1.9 批次确立）。
+
+    权威入口（AGENTS.md / docs/README.md）状态声明段引用的关键交付计数
+    必须与代码/契约实测一致；全库活跃文档不得残留过时计数形态。防
+    「CLI 21→23 / 测试 292→318 / 竖切表 15→16 / openapi 88→92」类
+    自由文本漂移复发（2026-08-13 第三轮审计 P2-3 根因：状态段为门禁盲区）。
+
+    关键计数（代码/契约实测，变更时同步本函数常量）：
+    - CLI 23 条（src/main.py 注册核对：15 顶层 + db 3 + degradation 1
+      + config 2 + audit 1 + seed 1）
+    - REST 31 端点（routes 21 + extended 10）
+    - 测试 326（pytest 全量实测，0.1.9 批次）
+    - 竖切表 16（15 物理 + 1 FTS5 虚拟）
+    - openapi 85 路径 / 92 操作（yaml 解析实测）
+
+    豁免边界（显式声明）：
+    - docs/analysis/：外部项目分析记录工作区
+    - changelog.md / documentation-governance.md / debt-collection.md：
+      历史过程记录与债务账目（documentation-governance §6 豁免条款）
+    - 版本记录表区域：历史快照（「## 版本记录」至下一个同级标题）
+    """
+    # 权威入口期望计数（positive 断言）
+    _POSITIVE: dict[str, tuple[str, ...]] = {
+        "AGENTS.md": ("CLI 23 命令", "326 项测试"),
+        "docs/README.md": (
+            "CLI 23 条",
+            "326 项测试",
+            "16 张竖切表",
+            "85 路径 / 92 操作",
+            "15 张物理竖切表",
+        ),
+    }
+    # 过时计数形态黑名单（negative 扫描；活跃文档零容忍）
+    _STALE_PATTERNS: list[re.Pattern[str]] = [
+        re.compile(r"CLI 21(?: 命令| 条)?"),
+        re.compile(r"292 项测试|292 测试|288 项测试|288 测试"),
+        re.compile(r"88 操作|81 路径"),
+        re.compile(r"14 张物理竖切表|14 张物理表"),
+        re.compile(r"inputSchema 待补全|schema 待补全"),
+        re.compile(r"REST 31 \+ CLI 21"),
+    ]
+    _EXCLUDED_PATHS = {
+        "docs/analysis",
+        "changelog.md",
+        "documentation-governance.md",
+        "debt-collection.md",
+    }
+
+    def _strip_version_sections(text: str) -> str:
+        """剔除版本记录表区域（历史快照不参与计数一致性校验）。"""
+        lines: list[str] = []
+        in_ver = False
+        for line in text.splitlines():
+            if re.match(r"^#{1,6}\s*.*版本记录", line):
+                in_ver = True
+            elif in_ver and line.startswith("#"):
+                in_ver = False
+            if not in_ver:
+                lines.append(line)
+        return "\n".join(lines)
+
+    # 1. positive：权威入口必须含当前实测计数
+    for rel, expected in _POSITIVE.items():
+        p = ROOT / rel
+        if not p.is_file():
+            fail(f"[6.41] 状态声明文件缺失: {rel}")
+            continue
+        text = _strip_version_sections(p.read_text(encoding="utf-8", errors="replace"))
+        for token in expected:
+            if token not in text:
+                fail(
+                    f"[6.41] 状态声明计数缺失: {rel} 应含「{token}」"
+                    "（代码/契约实测值，见 6.41 函数常量）"
+                )
+
+    # 2. negative：全库活跃文档 + 关键源码入口 过时形态零容忍
+    scan_files = list(md_files())
+    for extra in (
+        ROOT / "AGENTS.md",
+        ROOT / "src/main.py",
+        ROOT / "src/config.py",
+        ROOT / "src/storage/models.py",
+        ROOT / "src/storage/__init__.py",
+    ):
+        if extra.is_file():
+            scan_files.append(extra)
+    hits: list[tuple[str, str]] = []
+    for p in scan_files:
+        rel = p.relative_to(ROOT).as_posix()
+        if any(rel.startswith(e) or rel.endswith(e) for e in _EXCLUDED_PATHS):
+            continue
+        text = _strip_version_sections(p.read_text(encoding="utf-8", errors="replace"))
+        for pat in _STALE_PATTERNS:
+            if pat.search(text):
+                hits.append((rel, pat.pattern))
+    if hits:
+        seen: set[tuple[str, str]] = set()
+        for rel, pat in hits:
+            if (rel, pat) in seen:
+                continue
+            seen.add((rel, pat))
+            fail(f"[6.41] 过时计数形态残留[{pat}]: {rel}")
+        if len(seen) >= 20:
+            fail(f"[6.41] …另 {len(hits) - len(seen)} 处待清（共 {len(hits)} 处）")
+    else:
+        print("[6.41] 状态声明关键计数: 一致")
 
 
     # 输出汇总（main 尾部）

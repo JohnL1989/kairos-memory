@@ -1,6 +1,6 @@
 [project]
 name = "kairos"
-version = "0.1.0"
+version = "0.2.0"
 description = "Kairos Memory System — AI agent 记忆系统（竖切 v0.1.0-slice）"
 readme = "docs/README.md"
 requires-python = ">=3.11"
@@ -44,6 +44,7 @@ dev = [
     "ruff>=0.5",
     "mypy>=1.10",
     "types-python-dateutil",
+    "pytest-xdist>=3.8.0",
 ]
 
 [build-system]
@@ -91,6 +92,9 @@ exclude = ["tests/"]
 [tool.coverage.run]
 source = ["src"]
 branch = true
+# parallel=true：pytest-xdist 并行时各 worker 写独立 .coverage.* 数据文件，
+# 主进程自动合并——否则并行模式覆盖率被低估（2026-08-13 第三轮审计 P1-1 修复）
+parallel = true
 
 [tool.coverage.report]
 fail_under = 80

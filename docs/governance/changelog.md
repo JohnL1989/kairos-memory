@@ -2240,6 +2240,40 @@ status: draft
 
 ---
 
+## 0.1.9（2026-08-13）— 第三轮全面审计修复批次（测试并行化 + 状态声明零漂移 + 覆盖率补测）
+
+> **背景**：2026-08-13 第三轮全面审计（工作区根 `audit-report-2026-08-13-round3.md`，未随仓库分发）发现：全量测试耗时膨胀近 6 倍（318 测试 ~602s，0.1.3 记录 ~90s）；状态声明计数漂移第三次复发（8 处核心 + 同模式 9 处——CLI 21→23、测试 292→318、竖切表 15→16、openapi 88→92）；覆盖率余量收窄至 2.62pp（hermes_plugin/main.py 0% 覆盖缺口）；memory_store 单体化与 CI 远端状态为遗留项。本批次全量修复。
+
+**落地清单**：
+- **测试并行化**（P1-1）：dev 依赖新增 `pytest-xdist>=3.8.0`；CI unit+integration 步骤加 `-n 2`（双进程并行，实测 451s→273s，省 40%）；`[tool.coverage.run] parallel=true`（worker 独立 .coverage.* 自动合并——否则并行下覆盖率被低估 79.56% 跌破门禁，修复后 82.62% 正常）。定位结论：无单个极端慢测试（最慢 2.35s），耗时来自测试基数 + 每测 fixture 建库 + 机器负载波动。
+- **状态声明零漂移**（P2-3）：8 处核心漂移同步（AGENTS CLI 23/测试 318、README L17/L49/L50/L51/L61、main.py docstring 23 条、config.py docstring 附录 154）+ 全库同模式 9 处（slice-guide 4、implementation-map 竖切 23、project-plan、api-spec、data-model 2、models.py/storage __init__ 物理表口径、troubleshooting 2 处去计数）；**门禁 6.41 新增**（`check_state_declaration_counts`——权威入口 positive 断言 + 全库过时形态 negative 扫描，FAIL 级，豁免 changelog/debt-collection/版本记录表）；troubleshooting 6.24 章节引用修正（config show §3→§1.8）。
+- **覆盖率补测**（P2-4）：`tests/unit/test_hermes_plugin_delegate.py`（新，4 用例——mock 注入 agent.memory_provider 动态导入，测适配壳委托，hermes_plugin 0%→100%）；`tests/unit/test_main_cli.py`（新，4 用例——Typer CliRunner 全命令注册 + write→read 真实链路，main.py 0%→覆盖）；测试 318→326。
+- **memory_store 职责索引**（P3-5）：模块 docstring 补分区职责索引 + 拆分触发条件（687 行拆分风险/收益比不佳保留，以注释固化边界）。
+- **遗留**（P1-2）：CI 远端 Actions 状态仍未验证（本地无 gh 授权，三轮遗留）。
+
+**验证**：全量测试 326 项（CI 口径 319 passed / 3 skipped / 1 warning，并行 `-n 2` 实测 185s——较串行 451s 省 59%）；覆盖率 **86.03%**（CI 口径实测，较 0.1.8 的 82.62% 提升 3.41pp）；ruff/mypy/format 全绿；doc-audit（含 6.41）/deep-audit exit 0。结构性受改：pyproject.toml / uv.lock / ci.yml / scripts/doc-audit.py / AGENTS / docs 14 份（README/slice-implementation-guide/implementation-map/api-spec/data-model/project-plan/troubleshooting/changelog/documentation-governance 等）/ src 6 文件（main/config/storage models/__init__/memory_store）/ tests 2 文件（新）+ changelog 本文件。
+
+---
+
+## 0.2.0 发布（2026-08-13）— v0.2.0 Release（版本机制确立 + 九个批次聚合发布）
+
+> **发布记录**：按 [release-policy.md](release-policy.md) 机制（2026-08-13 确立）执行 MINOR 升级——聚合 0.1.1~0.1.9 九个功能/修复批次发布为 **v0.2.0**（包版本 pyproject 0.1.0 → 0.2.0）。发布前置门禁全部通过（ruff/mypy/format 全绿、pytest 320 passed、doc-audit/deep-audit exit 0、远端 CI 全绿）。
+
+**聚合内容**（详见各批次叙述节）：
+- **0.1.1** Hermes Memory Provider 接入（ABC 契约 + 端口勘误 + 遗忘修复 + 端到端验证）
+- **0.1.2** MCP 工具契约补齐（10 扩展端点 + memory_relations + bridge 真实化 + 事件总线修复）
+- **0.1.3** 全面审计修复（ruff 77→0 / mypy 10→0 / Litestar Annotated 迁移 / warnings 1217→1）
+- **0.1.4** 安全契约闭环（S-09 注入扫描 + S-01 生产密钥强制 KAIROS_ENV + D-450 追缴 + CI schema 真实化）
+- **0.1.5** 实体信号激活（entity_extractor + 写入侧自动提取 + 归一化退化 bug 修复——三信号 3/3）
+- **0.1.6** 身份注册表激活（seed_bootstrap 协调层 + 审计补全 + CLI seed add）
+- **0.1.7** 存量实体回溯（db backfill-entities + 技术专名白名单 + 10171 关联）
+- **0.1.8** 第三方来源零标记（全库来源清理 + 门禁 6.40）
+- **0.1.9** 第三轮全面审计修复（pytest-xdist 并行化 451s→185s + 状态声明零漂移门禁 6.41 + 覆盖率 82.62%→86.03% + 测试 318→326）
+
+**版本记录**：`| 0.2.0 | 2026-08-13 | v0.2.0 Release（版本机制确立，聚合 0.1.1~0.1.9，pyproject 0.2.0，tag v0.2.0，见 [release-policy.md](release-policy.md)）。 |`
+
+---
+
 ## 版本记录
 
 > 草稿阶段从 0.0.1 起；发生实质性内容变更时按 0.0.2 → 0.0.3 … 递增，并在本表登记变更原因；待定稿后升级版本号。
@@ -2356,3 +2390,4 @@ status: draft
 | 0.1.6 | 2026-08-13 | 身份注册表激活批次（changelog 0.1.6，见本文件 0.1.6 叙述节）：KairosApp.seed_bootstrap 协调层（Seed 落库 + identity 联动身份记忆 + 初始赋予 + 审计，先建记忆防孤儿种子）；grant_initial_identity 补 S-16 审计；CLI seed add（21→22 命令）；POST /v1/seeds 重构复用；测试 +4 项（身份记忆/S-10 豁免/config 不联动/路径冲突）；真实验证种子 active + is_identity + 审计留痕。 |
 | 0.1.7 | 2026-08-13 | 存量实体回溯批次（changelog 0.1.7，见本文件 0.1.7 叙述节）：store_entities_for_memory 公共函数提炼（写入侧 + backfill 复用，幂等）；CLI db backfill-entities [--dry-run / --force]（22→23 命令）；技术专名白名单 38 项（GitHub/SQLite 等混合大小写 → tool）；测试 +2；真实验证 2079→8982→10171 关联、GitHub/SQLite 存量检索 entity=1.0、实体库 2284。 |
 | 0.1.8 | 2026-08-13 | 第三方来源零标记批次（changelog 0.1.8，见本文件 0.1.8 叙述节）：全库来源标记清理（architecture 68 处 + 其他交付文档 85+ 处——PAPER/VID/REPO 编号与第三方项目名删除，机制语义与数字逐字保留）；门禁 6.40 新增（第三方来源名黑名单 FAIL 级，豁免 analysis/changelog/LongMemEval/已内化机制缩写）；entity_extractor 白名单 39→38（移 EchoMind）+ 运行库实体清理；测试适配自动提取语义；doc-audit 全门禁通过。 |
+| 0.1.9 | 2026-08-13 | 第三轮全面审计修复批次（changelog 0.1.9，见本文件 0.1.9 叙述节）：测试并行化（pytest-xdist `-n 2` + coverage parallel=true，CI 耗时 -40%）；状态声明零漂移（8 处核心 + 同模式 9 处——CLI 23/测试 318/竖切表 16/openapi 85·92/D-428 清除）+ **门禁 6.41 新增**（状态声明关键计数校验 FAIL 级）；覆盖率补测（hermes_plugin 0%→100%、main.py 0%→覆盖，测试 318→326）；memory_store 职责索引；troubleshooting 6.24 引用修正；CI 远端状态仍待验证。 |

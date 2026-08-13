@@ -19,7 +19,7 @@ status: design-freeze
 > |:----|:----|
 > | 一、竖切组件清单 | 首交付组件范围 |
 > | 二、竖切 Schema 清单 | 16 张表 DDL 指引 |
-> | 三、竖切端点清单 | REST 31 + CLI 21 |
+> | 三、竖切端点清单 | REST 31 + CLI 23 |
 > | 四、逐组件实现规格 | 各组件实现细节 |
 > | 五、实现顺序与依赖 | 依赖图与实现顺序 |
 > | 六、开发者阅读路径 | 上手指引 |
@@ -82,9 +82,9 @@ status: design-freeze
 
 ---
 
-## 三、竖切端点清单（REST 31 + CLI 21）
+## 三、竖切端点清单（REST 31 + CLI 23）
 
-> **口径**：竖切 CLI 21 条为竖切子集；全量 CLI 25 条（[api-spec.md](../specification/api-spec.md) §3）；[implementation-map.md](../specification/implementation-map.md) 的 27 条含规划扩展（竖切 21 + 全量增量）——三处口径不同属有意设计，引用时注明档位。
+> **口径**：竖切 CLI 23 条为竖切子集；全量 CLI 25 条（[api-spec.md](../specification/api-spec.md) §3）；[implementation-map.md](../specification/implementation-map.md) 的 27 条 = api-spec 25 条 + 已注册规划扩展 2 条（`kairos layers ls`/`kairos layers distill`）——三处口径不同属有意设计，引用时注明档位。
 
 **REST**（方法/路径以 [api-spec.md](../specification/api-spec.md) 为准）：
 
@@ -212,7 +212,7 @@ status: design-freeze
 ## 五、实现顺序与依赖（对应 [project-plan](../governance/project-plan.md)）
 
 ```text
-W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双副本（组件 1）
+W1 骨架（组件 9 前置）→ W2 schema 迁移（16 张表）→ W3 CRUD+双副本（组件 1）
 → W4 路径空间+事件总线（组件 2+7）→ W5 检索（组件 3，依赖 7 的 use_event）
 → W6 遗忘（组件 4，依赖 7 的 latent_trigger）→ W7 身份（组件 5，依赖 6 的审计）
 → W8 校准+降级+审计（组件 6+8）→ W9 基准+文档对齐 → W10 竖切验收
@@ -229,8 +229,8 @@ W1 骨架（组件 9 前置）→ W2 schema 迁移（15 张表）→ W3 CRUD+双
 | 系统全貌 | [architecture-v0.1.0.md](../foundation/architecture-v0.1.0.md) §0（总览与速查表） |
 | 认知依据（可选） | [cognitive-foundation.md](../foundation/cognitive-foundation.md) §1.1（度量空间） |
 | 竖切范围 | 本文档 + [feature-list 竖切标注](../specification/feature-list.md) |
-| 表定义 | [data-model.md](../specification/data-model.md) 对应 15 张表 |
-| 表 DDL（可执行） | [schema-slice.sql](../specification/schema-slice.sql) — 竖切 15 张表 SQLite DDL，W2 直接输入 |
+| 表定义 | [data-model.md](../specification/data-model.md) 对应 16 张表 |
+| 表 DDL（可执行） | [schema-slice.sql](../specification/schema-slice.sql) — 竖切 16 张表 SQLite DDL（15 物理 + 1 FTS5 虚拟），W2 直接输入 |
 | 接口契约 | [api-spec.md](../specification/api-spec.md) 竖切端点 |
 | 参数默认值 | [configuration.md](../ops/configuration.md) 对应章节 |
 | 验收口径 | [acceptance-criteria.md](../quality/acceptance-criteria.md)「〇、竖切验收标准」 |

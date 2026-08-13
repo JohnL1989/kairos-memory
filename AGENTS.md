@@ -10,7 +10,7 @@ tags: [行为规范, Kairos, Hermes, AGENTS-v2]
 
 > 本文件由 Hermes / Claude Code / Codex 自动读取（AGENTS.md 仅当前目录生效；本目录已初始化 git（2026-08-06），不使用 .hermes.md）。
 > 结构：0 优先级 → 1 元规则 → 2 项目配置 → 3 红线（S/A）→ 4 项目规范 → 5 闭环
-> 项目性质：**竖切实现已交付**（REST 31 端点 / CLI 21 命令 / MCP Bridge 15 工具 / Agent Tool 5 个，292 项测试，覆盖率 82.81%（CI 口径实测，2026-08-13 修复批次））。168 项能力（43 核心 + 125 扩展）中竖切范围外的部分处于架构就绪状态，见 [debt-collection.md](docs/governance/debt-collection.md) 与 [slice-implementation-guide.md](docs/development/slice-implementation-guide.md)。
+> 项目性质：**竖切实现已交付**（REST 31 端点 / CLI 23 命令 / MCP Bridge 15 工具 / Agent Tool 5 个，326 项测试，覆盖率 86.03%（CI 口径实测，2026-08-13 第三轮审计修复批次））。168 项能力（43 核心 + 125 扩展）中竖切范围外的部分处于架构就绪状态，见 [debt-collection.md](docs/governance/debt-collection.md) 与 [slice-implementation-guide.md](docs/development/slice-implementation-guide.md)。
 
 ## 0. 规则优先级（两维）
 

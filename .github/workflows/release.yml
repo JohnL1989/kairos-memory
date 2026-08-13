@@ -1,0 +1,86 @@
+name: Release
+
+# 版本发布机制（docs/governance/release-policy.md §4 方式 A）
+# 手动触发：Actions → Release → Run workflow → 选择 bump 类型
+# 自动完成：bump pyproject 版本 → 快速门禁 → commit + tag + push → GitHub Release
+# 完整质量门禁由 ci.yml 在 tag 推送后兜底（ci.yml 覆盖 push 与 tag）
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 版本类型（语义化版本，见 release-policy §2）
+        required: true
+        type: choice
+        options:
+          - minor
+          - patch
+          - major
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Bump version (semver)
+        id: bump
+        run: |
+          python - <<'EOF'
+          import os
+          import re
+          src = open("pyproject.toml", encoding="utf-8").read()
+          m = re.search(r'^version = "(\d+)\.(\d+)\.(\d+)"', src, re.M)
+          if not m:
+              raise SystemExit("pyproject version not found")
+          major, minor, patch = (int(x) for x in m.groups())
+          bump = "${{ github.event.inputs.bump }}"
+          if bump == "major":
+              major, minor, patch = major + 1, 0, 0
+          elif bump == "minor":
+              minor, patch = minor + 1, 0
+          elif bump == "patch":
+              patch += 1
+          else:
+              raise SystemExit(f"unknown bump type: {bump}")
+          new = f"{major}.{minor}.{patch}"
+          open("pyproject.toml", "w", encoding="utf-8").write(
+              re.sub(r'^version = "[\d.]+"', f'version = "{new}"', src, count=1, flags=re.M)
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"version={new}\n")
+          print(f"bumped to {new}")
+          EOF
+        env:
+          PYTHONUTF8: "1"
+
+      - name: Quick quality gates
+        run: |
+          uv run --frozen ruff check src/ tests/ migrations/
+          uv run --frozen mypy src/
+
+      - name: Commit + tag + push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml
+          git commit -m "chore: bump version to v${{ steps.bump.outputs.version }}"
+          git tag -a v${{ steps.bump.outputs.version }} -m "Kairos v${{ steps.bump.outputs.version }}"
+          git push origin main --tags
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create v${{ steps.bump.outputs.version }} --generate-notes

@@ -1,4 +1,4 @@
-"""数据模型定义（竖切 15 张表 ORM）。
+"""数据模型定义（竖切 15 张物理表 ORM；FTS5 虚拟表 memories_fts 不经 ORM，由 db.py 直接建）。
 
 权威来源：docs/specification/schema-slice.sql（DDL 唯一承载）+ data-model.md（字段语义）。
 类型映射（schema-slice §约定）：

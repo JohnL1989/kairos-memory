@@ -112,7 +112,7 @@ status: design-freeze
 | 架构组件 | 代码路径 | 说明 |
 |:--------|:---------|:-----|
 | REST API 路由 | `src/access/api/` | Litestar handler（设计目标 85 个 `/v1` 业务端点 + 3 个无 `/v1` 前缀端点：`GET /health` 探针、`GET /audit/compression`、`GET /audit/compression/summary`，详见 [api-spec.md](api-spec.md) §版本记录） |
-| CLI 命令 | `src/access/cli.py` | 27 条 CLI 命令（27 = api-spec §3 全量 25 条 ＋ §5 已注册新增 2 条 `kairos layers ls`/`kairos layers distill`；竖切子集 15 条——三档口径见 [slice-implementation-guide.md](../development/slice-implementation-guide.md)） |
+| CLI 命令 | `src/access/cli.py` | 27 条 CLI 命令（27 = api-spec §3 全量 25 条 ＋ §5 已注册新增 2 条 `kairos layers ls`/`kairos layers distill`；竖切子集 23 条——三档口径见 [slice-implementation-guide.md](../development/slice-implementation-guide.md)） |
 | MCP Bridge | `src/access/mcp/bridge.py` | MCP 服务器进程，15 个工具（见 [api-spec.md](api-spec.md) §6.8） |
 | Memory Provider | `src/access/provider/kairos_provider.py` | Hermes 原生记忆 Provider，6 lifecycle hooks |
 | Agent Tool 定义 | `src/access/tools.py` | 5 个 Agent Tool（memories_write/memories_search/path_browse/memories_list_recent/memories_merge） |

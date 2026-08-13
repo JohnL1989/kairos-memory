@@ -10,6 +10,18 @@
   门禁（IngestionGate 捕获门控五层）→ 幂等键去重 → 单事务三分提交：
   事实源（memories 主记录）+ 状态轨迹（memory_states）+ 幂等记录（journal_buffer 承载）
   → 双副本初始化（witness_anchor 主副本 + usage_weight 影子副本，S-14 隔离）
+
+职责索引（2026-08-13 第三轮审计 P3-5 补记——模块 687 行偏大，拆分风险/收益比
+不佳暂缓，先以分区注释固化边界）：
+- MemoryCreated / MemoryWriteInput   写入入参与产出 DTO
+- create → update → delete → archive    CRUD 主链（共享 session 事务/幂等/审计/状态机）
+- get / list                           读取路径（get 含时间过滤，list 含分页）
+- _publish_use_event / _embed_after_write   写入后置副作用（事件 + 向量）
+- _store_entities                   实体关联（0.1.5 起复用 entity_extractor 公共函数）
+- _lookup_idempotency               幂等键查重（journal_buffer 承载）
+- _record_state / _check_locked     状态轨迹追加 / 冻结锁校验
+拆分触发条件：若 create/update 再增 >50 行，将幂等与状态轨迹段提取
+至独立模块（需共享 Session 上下文对象，须全量 318 测试回归）。
 """
 
 from __future__ import annotations
