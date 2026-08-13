@@ -984,16 +984,16 @@ MCP Bridge 不通过 REST API 暴露，而是通过独立的 MCP 服务器进程
 | `kairos_get_hot_memories` | 热度最高记忆 | GET /v1/memories/heat-top （定义见 §1） |
 | `kairos_search_graph` | 图谱检索 | POST /v1/graph/search |
 | `kairos_extract_entities` | 实体提取 | POST /v1/entities/extract |
-| `kairos_get_memory_traces` | 记忆生命周期历史 | 记忆状态机五态历史（[data-model.md](data-model.md) §1 memories 状态机；操作目录 §三 OP-054~066 记忆管理操作覆盖归档/恢复/版本回滚等生命周期操作）——生命周期历史仅经 MCP `kairos_get_memory_traces` 访问，REST 不单独开放 |
+| `kairos_get_memory_traces` | 记忆生命周期历史 | 记忆状态机五态历史（[data-model.md](data-model.md) §1 memories 状态机；操作目录 §三 OP-054~066 记忆管理操作覆盖归档/恢复/版本回滚等生命周期操作）——GET /v1/memories/{id}/traces（memory_states 表轨迹，竖切实现） |
 | `kairos_feedback_memory` | 可信度反馈 | POST /v1/memories/{id}/feedback （定义见 §1） |
 | `kairos_calibrate` | 校准信号 | POST /v1/calibrate |
 | `kairos_get_stats` | 记忆库报告 | GET /v1/memories/stats （定义见 §1） |
 | `kairos_search_sessions` | 会话搜索 | GET /v1/sessions |
 | `kairos_tree` | 路径浏览 | GET /v1/path/tree |
 | `kairos_delete_memory` | 软删除记忆 | DELETE /v1/memories/{id} |
-| `kairos_link` | 创建两条记忆间的有向关系边（from_uri → uris，支持批量链接；必填 `reason`，可选 `relation_type` 基础六值 + 语义标记扩展、`confidence`，权威枚举见 [data-model.md](data-model.md) memory_relations 表） | —（无独立公开 REST 端点，经 MCP 工具直连关系索引，见架构 §7.1a 关系管理 API） |
-| `kairos_unlink` | 移除两条记忆间的指定关系边（按 `relation_type` 精确匹配或 `relation_type=*` 全删；软删除保留审计追溯） | —（同上） |
-| `kairos_relations` | 查询某记忆的所有关系边（`{inbound, outbound}`，支持 `relation_type` 过滤与 `direction` 限定） | —（同上） |
+| `kairos_link` | 创建两条记忆间的有向关系边（from_uri → uris，支持批量链接；必填 `reason`，可选 `relation_type` 基础六值 + 语义标记扩展、`confidence`，权威枚举见 [data-model.md](data-model.md) memory_relations 表） | POST /v1/relations（memory_relations 表，竖切实现） |
+| `kairos_unlink` | 移除两条记忆间的指定关系边（按 `relation_type` 精确匹配或 `relation_type=*` 全删；软删除保留审计追溯） | DELETE /v1/relations/{source_id}/{target_id} |
+| `kairos_relations` | 查询某记忆的所有关系边（`{inbound, outbound}`，支持 `relation_type` 过滤与 `direction` 限定） | GET /v1/relations/{memory_id} |
 
 ### 6.9 知识加工区 API
 

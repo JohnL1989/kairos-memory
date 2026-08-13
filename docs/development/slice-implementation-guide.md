@@ -55,9 +55,9 @@ status: design-freeze
 
 ---
 
-## 二、竖切 Schema 清单（15 张表）
+## 二、竖切 Schema 清单（16 张表）
 
-> 从 [data-model.md](../specification/data-model.md) 全量 57 张表筛出，仅含竖切组件消费的表；字段定义与索引以 [data-model.md](../specification/data-model.md) 为准。竖切外表的字段若被竖切表引用（如 memories 的 `domain`），按 [data-model.md](../specification/data-model.md) 全量定义保留。15 张表的 SQLite 可执行 DDL 见 [schema-slice.sql](../specification/schema-slice.sql)（[data-model.md](../specification/data-model.md) §13.4 的 W2「schema 迁移」直接输入，字段语义以 data-model 为准）。
+> 从 [data-model.md](../specification/data-model.md) 全量 57 张表筛出，仅含竖切组件消费的表；字段定义与索引以 [data-model.md](../specification/data-model.md) 为准。竖切外表的字段若被竖切表引用（如 memories 的 `domain`），按 [data-model.md](../specification/data-model.md) 全量定义保留。16 张表的 SQLite 可执行 DDL 见 [schema-slice.sql](../specification/schema-slice.sql)（[data-model.md](../specification/data-model.md) §13.4 的 W2「schema 迁移」直接输入，字段语义以 data-model 为准）。
 
 | # | 表 | 服务组件 | 说明 |
 |:-:|:---|:--------|:-----|
@@ -74,14 +74,15 @@ status: design-freeze
 | 11 | `memory_states` | 1/4 | 状态变更审计轨迹 |
 | 12 | `entities` | 3 | 实体表（实体加成简化信号） |
 | 13 | `memory_entities` | 3 | 记忆-实体关联 |
-| 14 | `memories_fts` | 3 | FTS5 全文索引（BM25 信号） |
-| 15 | `schema_version` | 9 | schema 版本管理 |
+| 14 | `memory_relations` | 8 | 记忆关系索引（kairos_link/unlink/relations 数据层，MCP 工具契约 §6.8 补齐） |
+| 15 | `memories_fts` | 3 | FTS5 全文索引（BM25 信号） |
+| 16 | `schema_version` | 9 | schema 版本管理 |
 
 **竖切外主要表及排除理由**：升华管道 7 张（sublimation_queue / journal_entries / session_summaries / daily_reports / weekly_packs / user_profiles / sublimation_outputs——升华不在竖切）；同步与对话（sync_queue / conversation_messages——端云同步/对话持久化不在竖切）；实体图谱扩展（memory_chunks / entity_communities / skills / skill_versions / procedural_playbooks / playbook_versions / procedural_playbooks_fts / causal_links / memory_semantic_knn——分块/社区/技能/图谱遍历不在竖切）；维护与新鲜度（fact_freshness / freshness_inference_log / debounced_tasks / memory_flags / knowledge_evolution——后台维护扩展不在竖切）；权限与加工区（permission_acl / solution_branches / extinction_fossils——P3-25/知识加工区不在竖切）；密钥管理（api_keys——多 Key 轮换/吊销属平台模式，v0.1.0 轻量模式采用 `KAIROS_API_KEY_HASH` 单 Key 环境变量校验（密钥哈希口径，文件权限 600），见 [security-specification.md](../security/security-specification.md) §2.1 的 L/P 适用标注）；上下文块与查询增强（memory_blocks / memory_block_versions / query_analysis_cache / query_time_buckets——编译管线/QueryAnalyzer 不在竖切）；图谱分析（narrative_threads / compaction_snapshots / world_model_rules / prompt_dependencies）；基础设施日志（training_checkpoints / stmt_cache_metrics）；图片（image_blobs——竖切 W-04 仅记录 VAD 元数据，无图片摄取）。
 
 ---
 
-## 三、竖切端点清单（REST 21 + CLI 15）
+## 三、竖切端点清单（REST 31 + CLI 18）
 
 > **口径**：竖切 CLI 15 条为竖切子集；全量 CLI 25 条（[api-spec.md](../specification/api-spec.md) §3）；[implementation-map.md](../specification/implementation-map.md) 的 27 条含规划扩展（竖切 15 + 全量增量）——三处口径不同属有意设计，引用时注明档位。
 
